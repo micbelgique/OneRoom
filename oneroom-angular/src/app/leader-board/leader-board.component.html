@@ -7,7 +7,18 @@
       </mat-expansion-panel-header>
       <mat-card-content>
         <div mat-card-avatar class="example-header-image"><img src='{{ item.urlAvatar }}'></div>
-        <div
+        <table>
+          <tbody>
+            <tr>
+              <td>Name:</td>
+              <td>{{ item.name }}</td>
+            </tr>
+            <tr>
+              <td>PersonId:</td>
+              <td>{{ item.personId }}</td>
+            </tr>
+          </tbody>
+        </table>
       </mat-card-content>
     </mat-expansion-panel>
   </mat-accordion>
