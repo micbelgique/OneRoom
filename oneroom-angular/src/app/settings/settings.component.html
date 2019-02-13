@@ -1,3 +1,10 @@
-<p>
-  settings works!
-</p>
+<div class="example-container">
+    <mat-form-field>
+      <input matInput placeholder="enter your subscriptionKey" type='url' [(ngModel)]="tempSubcriptionKey">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="enter your endPoint" type='url' [(ngModel)]="tempEndPoint">
+    </mat-form-field>
+    <button mat-raised-button color='primary' (click)='test()' *ngIf="!testResult">Test</button>
+    <button mat-raised-button *ngIf="testResult">Save</button>
+  </div>

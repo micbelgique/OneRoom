@@ -10,7 +10,9 @@ import {
   MatCardModule,
   MatGridListModule,
   MatIconModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatFormFieldModule,
+  MatInputModule,
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -20,6 +22,7 @@ import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LeaderBoardComponent } from './leader-board/leader-board.component';
 import { SettingsComponent } from './settings/settings.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,10 @@ import { SettingsComponent } from './settings/settings.component';
     MatIconModule,
     MatExpansionModule,
     WebcamModule,
-    HttpClientModule
+    HttpClientModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule
   ],
   providers: [FaceService],
   bootstrap: [AppComponent]

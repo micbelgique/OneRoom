@@ -12,7 +12,7 @@ export class SettingsComponent implements OnInit {
   _subscriptionKey = localStorage.getItem('subscriptionKey');
   tempEndPoint: string;
   tempSubcriptionKey: string;
-
+  testResult: boolean;
   public get endPoint(): string {
     return this._endPoint;
   }
@@ -33,13 +33,15 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
   }
   verifyEndPoint(): boolean {
+    // Not implemented
     return true;
   }
   verifySub(): boolean {
+    // Not implemented
     return true;
   }
-  test(): boolean {
-    return this.verifyEndPoint() && this.verifySub();
+  test(): void {
+    this.testResult = this.verifyEndPoint() && this.verifySub();
   }
   save(): void {
     this.subscriptionKey = this.tempSubcriptionKey;
