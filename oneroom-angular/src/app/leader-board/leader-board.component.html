@@ -6,9 +6,9 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-        <div mat-card-avatar class="example-header-image"><img src='{{ item.urlAvatar }}'></div>
+        <div mat-card-avatar class="example-header-image"><img class='img-avatar' src='{{ item.urlAvatar }}'></div>
         <table>
-          <tbody>
+          <thead>
             <tr>
               <td>Name:</td>
               <td>{{ item.name }}</td>
@@ -17,7 +17,7 @@
               <td>PersonId:</td>
               <td>{{ item.personId }}</td>
             </tr>
-          </tbody>
+          </thead>
         </table>
       </mat-card-content>
     </mat-expansion-panel>

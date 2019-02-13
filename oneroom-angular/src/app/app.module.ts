@@ -19,13 +19,15 @@ import {WebcamModule} from 'ngx-webcam';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LeaderBoardComponent } from './leader-board/leader-board.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UsercardComponent,
     CamcardComponent,
-    LeaderBoardComponent
+    LeaderBoardComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

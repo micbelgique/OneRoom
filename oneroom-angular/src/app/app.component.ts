@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FaceService } from './services/cognitive/face.service';
 import { PersonGroupService } from './services/cognitive/person-group.service';
+import { environment } from 'src/environments/environment.prod';
 
 export interface Tile {
   color: string;
@@ -18,8 +19,7 @@ export class AppComponent implements OnInit {
 
   title = 'OneRoom';
 
-  constructor(private groupService: PersonGroupService) {
-  }
+  constructor(private groupService: PersonGroupService) { }
 
   ngOnInit(): void {
     // creation group lobby pour stockage de personnes

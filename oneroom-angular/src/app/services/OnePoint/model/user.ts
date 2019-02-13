@@ -7,7 +7,9 @@ export class User {
   personId: string;
   name: string;
   faces: Face[];
+
   constructor() {}
+
   generateAvatar(): void {
     if (this.faces && this.faces.length) {
       this.urlAvatar = this.faces[0].isMale ?
