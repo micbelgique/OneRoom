@@ -13,7 +13,8 @@ import {
   MatExpansionModule,
   MatFormFieldModule,
   MatInputModule,
-  MatListModule
+  MatListModule,
+  MatTabsModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -55,7 +56,8 @@ import { RouterModule } from '@angular/router';
       { path: 'settings', component: SettingsComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
-    MatListModule
+    MatListModule,
+    MatTabsModule
   ],
   providers: [FaceService],
   bootstrap: [AppComponent]
