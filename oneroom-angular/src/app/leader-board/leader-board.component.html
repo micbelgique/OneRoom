@@ -1,0 +1,13 @@
+<mat-accordion class="example-headers-align" *ngFor="let item of users">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div mat-card-title>{{ item.name }}</div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+        <div mat-card-avatar class="example-header-image"><img src='{{ item.urlAvatar }}'></div>
+        <div
+      </mat-card-content>
+    </mat-expansion-panel>
+  </mat-accordion>

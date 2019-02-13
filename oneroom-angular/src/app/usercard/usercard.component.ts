@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Person } from '../services/cognitive/person-group-person.service';
 
 @Component({
   selector: 'app-usercard',
@@ -7,6 +8,10 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class UsercardComponent implements OnInit {
 
+  @Input()
+  name: string;
+  @Input()
+  surname: string;
   step = 0;
 
   constructor() { }

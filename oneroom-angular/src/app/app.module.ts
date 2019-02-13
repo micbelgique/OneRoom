@@ -18,12 +18,14 @@ import { CamcardComponent } from './camcard/camcard.component';
 import {WebcamModule} from 'ngx-webcam';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
+import { LeaderBoardComponent } from './leader-board/leader-board.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UsercardComponent,
-    CamcardComponent
+    CamcardComponent,
+    LeaderBoardComponent
   ],
   imports: [
     BrowserModule,
