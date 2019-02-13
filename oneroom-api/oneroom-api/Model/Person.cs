@@ -9,6 +9,8 @@ namespace oneroom_api.Model
         public string Name { get; set; }
         public List<Face> Faces { get; set; } = new List<Face>();
 
+        public Person() { }
+
         public Person(Person p)
         {
             this.Faces = p.Faces;
@@ -16,9 +18,6 @@ namespace oneroom_api.Model
             this.PersonId = p.PersonId;
         }
 
-        public Person()
-        {
-
-        }
+        
     }
 }

@@ -1,5 +1,4 @@
 ﻿using oneroom_api.Utilities;
-using System.Linq;
 using System.Text;
 
 namespace oneroom_api.Model
@@ -10,6 +9,8 @@ namespace oneroom_api.Model
         public int UserId { get; set; }
         public string Username { get; set; }
         public string UrlAvatar { get; set; }
+
+        public User() { }
 
         public User(Person p) : base(p)
         {
