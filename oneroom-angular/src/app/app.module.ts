@@ -10,7 +10,11 @@ import {
   MatCardModule,
   MatGridListModule,
   MatIconModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatListModule,
+  MatTabsModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -18,12 +22,18 @@ import { CamcardComponent } from './camcard/camcard.component';
 import {WebcamModule} from 'ngx-webcam';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
+import { LeaderBoardComponent } from './leader-board/leader-board.component';
+import { SettingsComponent } from './settings/settings.component';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     AppComponent,
     UsercardComponent,
-    CamcardComponent
+    CamcardComponent,
+    LeaderBoardComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +46,18 @@ import { HttpClientModule } from '@angular/common/http';
     MatIconModule,
     MatExpansionModule,
     WebcamModule,
-    HttpClientModule
+    HttpClientModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    RouterModule.forRoot([
+      { path: 'leaderboard', component: LeaderBoardComponent },
+      { path: 'welcome', component: CamcardComponent },
+      { path: 'settings', component: SettingsComponent },
+      { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+    ]),
+    MatListModule,
+    MatTabsModule
   ],
   providers: [FaceService],
   bootstrap: [AppComponent]

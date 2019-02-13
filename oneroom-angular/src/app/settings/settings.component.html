@@ -1,0 +1,18 @@
+<div class="example-container">
+    <mat-list>
+      <mat-list-item>
+        Your endPoint at the moment: {{endPoint}}
+      </mat-list-item>
+      <mat-list-item>
+        Your subscription key at the moment: {{subscriptionKey}}
+      </mat-list-item>
+    </mat-list>
+    <mat-form-field>
+      <input matInput placeholder="enter your subscriptionKey" type='url' [(ngModel)]="tempSubcriptionKey" value='{{ subscriptionKey }}'>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="enter your endPoint" type='url' [(ngModel)]="tempEndPoint">
+    </mat-form-field>
+    <button mat-raised-button color='primary' (click)='test()' *ngIf="!testResult">Test</button>
+    <button mat-raised-button *ngIf="testResult" (click)='save()' disabled='{{!saved}}'>Save</button>
+  </div>
