@@ -1,0 +1,14 @@
+<mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>Register</mat-card-title>
+      <mat-card-subtitle>Take a picture</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+            <webcam [trigger]="this.triggerObservable" [allowCameraSwitch]="true" [width]="400" (imageCapture)="imageCapture($event)"></webcam>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <button style="width: 100%" (click)="triggerCapture()" mat-raised-button color="primary">Capture</button>
+    </mat-card-actions>
+  </mat-card>
