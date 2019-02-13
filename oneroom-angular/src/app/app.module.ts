@@ -23,6 +23,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LeaderBoardComponent } from './leader-board/leader-board.component';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,13 @@ import { FormsModule } from '@angular/forms';
     HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    RouterModule.forRoot([
+      { path: 'leaderboard', component: LeaderBoardComponent },
+      { path: 'welcome', component: CamcardComponent },
+      { path: 'settings', component: SettingsComponent },
+      { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+    ])
   ],
   providers: [FaceService],
   bootstrap: [AppComponent]
