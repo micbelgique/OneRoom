@@ -13,6 +13,7 @@ import {
   MatExpansionModule,
   MatFormFieldModule,
   MatInputModule,
+  MatListModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -53,7 +54,8 @@ import { RouterModule } from '@angular/router';
       { path: 'welcome', component: CamcardComponent },
       { path: 'settings', component: SettingsComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
-    ])
+    ]),
+    MatListModule
   ],
   providers: [FaceService],
   bootstrap: [AppComponent]

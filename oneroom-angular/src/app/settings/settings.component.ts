@@ -13,12 +13,13 @@ export class SettingsComponent implements OnInit {
   tempEndPoint: string;
   tempSubcriptionKey: string;
   testResult: boolean;
+  saved = true;
   public get endPoint(): string {
     return this._endPoint;
   }
-  public set endPoint(endPointEnv: string) {
-    this._endPoint = endPointEnv;
-    localStorage.setItem('endpoint', endPointEnv);
+  public set endPoint(endPoint: string) {
+    this._endPoint = endPoint;
+    localStorage.setItem('endpoint', endPoint);
   }
   public get subscriptionKey(): string {
     return this._subscriptionKey;
@@ -45,6 +46,7 @@ export class SettingsComponent implements OnInit {
   }
   save(): void {
     this.subscriptionKey = this.tempSubcriptionKey;
-    this.endPoint = this.endPoint;
+    this.endPoint = this.tempEndPoint;
+    this.saved = !this.saved;
   }
 }
