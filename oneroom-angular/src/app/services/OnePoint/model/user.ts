@@ -3,7 +3,7 @@ import { GlassesType } from './glasses-type.enum';
 
 export class User {
   urlAvatar: string;
-  personId: string;
+  userId: string;
   name: string;
   faces: Face[];
 
