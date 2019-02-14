@@ -49,9 +49,8 @@ namespace oneroom_api.Model
                 context.Users.AddRange(
                     new User
                     {
-                        UserId = 1,
+                        UserId = new Guid(),
                         UrlAvatar = "https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious&options[skin][]=light&options[topChance]=100&options[accessories][]=round&options[accessoriesChance]=100&options[facialHair][]=magestic&options[hairColor][]=brown&options[facialHairColor][]=brown",
-                        PersonId = new Guid(),
                         Name = "Joueur 1",
                         Faces = faces
                     }

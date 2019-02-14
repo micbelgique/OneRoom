@@ -11,6 +11,5 @@ namespace oneroom_api.Model
             : base(options)
         {
         }
-
     }
 }

@@ -75,7 +75,22 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<Face>> PostFace(Face face)
         {
             _context.Faces.Add(face);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if ( FaceExists(face.FaceId))
+                {
+                    return Conflict(new { message = $"An existing record for the face with the id `{face.FaceId}` was already found." });
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtAction("GetFace", new { id = face.FaceId }, face);
         }

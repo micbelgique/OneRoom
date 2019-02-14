@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace oneroom_api.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,12 +11,9 @@ namespace oneroom_api.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    PersonId = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Username = table.Column<string>(nullable: true),
-                    UrlAvatar = table.Column<string>(nullable: true)
+                    UserId = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    UrlAvatar = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -25,7 +21,7 @@ namespace oneroom_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Face",
+                name: "Faces",
                 columns: table => new
                 {
                     FaceId = table.Column<Guid>(nullable: false),
@@ -36,30 +32,30 @@ namespace oneroom_api.Migrations
                     BeardLevel = table.Column<double>(nullable: false),
                     GlassesType = table.Column<int>(nullable: false),
                     BaldLevel = table.Column<double>(nullable: false),
-                    HairColor = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true)
+                    HairColor = table.Column<string>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Face", x => x.FaceId);
+                    table.PrimaryKey("PK_Faces", x => x.FaceId);
                     table.ForeignKey(
-                        name: "FK_Face_Users_UserId",
+                        name: "FK_Faces_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Face_UserId",
-                table: "Face",
+                name: "IX_Faces_UserId",
+                table: "Faces",
                 column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Face");
+                name: "Faces");
 
             migrationBuilder.DropTable(
                 name: "Users");
