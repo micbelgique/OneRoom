@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
 
 namespace oneroom_api.Model
 {

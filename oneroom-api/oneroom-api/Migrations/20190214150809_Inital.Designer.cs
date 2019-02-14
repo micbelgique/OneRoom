@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190214100211_Validation2")]
-    partial class Validation2
+    [Migration("20190214150809_Inital")]
+    partial class Inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,7 +43,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("SmileLevel");
 
-                    b.Property<int?>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("FaceId");
 
@@ -54,14 +54,11 @@ namespace oneroom_api.Migrations
 
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<Guid>("PersonId");
 
                     b.Property<string>("UrlAvatar")
                         .IsRequired();

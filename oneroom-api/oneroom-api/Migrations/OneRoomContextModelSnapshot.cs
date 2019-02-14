@@ -41,7 +41,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("SmileLevel");
 
-                    b.Property<int?>("UserId");
+                    b.Property<Guid?>("UserId");
 
                     b.HasKey("FaceId");
 
@@ -52,14 +52,11 @@ namespace oneroom_api.Migrations
 
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<Guid>("PersonId");
 
                     b.Property<string>("UrlAvatar")
                         .IsRequired();
