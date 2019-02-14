@@ -1,16 +1,20 @@
-﻿using oneroom_api.Utilities;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace oneroom_api.Model
 {
-    public class User : Person
+    public class User
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
+        [Required]
+        public string Name { get; set; }
         [Required]
         [Url]
         public string UrlAvatar { get; set; }
+        public List<Face> Faces { get; set; } = new List<Face>();
 
         public User() { }
+       
     }
 }
