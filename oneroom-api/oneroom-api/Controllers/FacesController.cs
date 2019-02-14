@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
@@ -24,14 +23,14 @@ namespace oneroom_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Face>>> GetFace()
         {
-            return await _context.Face.ToListAsync();
+            return await _context.Faces.ToListAsync();
         }
 
         // GET: api/Faces/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Face>> GetFace(Guid id)
         {
-            var face = await _context.Face.FindAsync(id);
+            var face = await _context.Faces.FindAsync(id);
 
             if (face == null)
             {
@@ -75,7 +74,7 @@ namespace oneroom_api.Controllers
         [HttpPost]
         public async Task<ActionResult<Face>> PostFace(Face face)
         {
-            _context.Face.Add(face);
+            _context.Faces.Add(face);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetFace", new { id = face.FaceId }, face);
@@ -85,13 +84,13 @@ namespace oneroom_api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Face>> DeleteFace(Guid id)
         {
-            var face = await _context.Face.FindAsync(id);
+            var face = await _context.Faces.FindAsync(id);
             if (face == null)
             {
                 return NotFound();
             }
 
-            _context.Face.Remove(face);
+            _context.Faces.Remove(face);
             await _context.SaveChangesAsync();
 
             return face;
@@ -99,7 +98,7 @@ namespace oneroom_api.Controllers
 
         private bool FaceExists(Guid id)
         {
-            return _context.Face.Any(e => e.FaceId == id);
+            return _context.Faces.Any(e => e.FaceId == id);
         }
     }
 }

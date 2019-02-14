@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using oneroom_api.Model;
 
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    partial class OneRoomContextModelSnapshot : ModelSnapshot
+    [Migration("20190214100211_Validation2")]
+    partial class Validation2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
