@@ -17,6 +17,7 @@ import {
   MatTabsModule,
   MatMenuModule,
   MatSlideToggleModule,
+  MatSidenavModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -67,7 +68,8 @@ import { FilterComponent } from './filter/filter.component';
     MatListModule,
     MatTabsModule,
     MatMenuModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSidenavModule
   ],
   providers: [
     FaceService,

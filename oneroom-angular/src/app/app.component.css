@@ -4,3 +4,6 @@
 .example-spacer {
   flex: 1 1 auto;
 }
+.container-sidenav {
+  height: 100vh;
+}
