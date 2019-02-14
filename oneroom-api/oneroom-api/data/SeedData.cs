@@ -21,7 +21,7 @@ namespace oneroom_api.Model
                 }
 
                 // Look for any Faces.
-                if (context.Face.Any())
+                if (context.Faces.Any())
                 {
                     return;   // DB has been seeded
                 }
@@ -36,14 +36,13 @@ namespace oneroom_api.Model
                     BeardLevel = 0.1,
                     GlassesType = Microsoft.Azure.CognitiveServices.Vision.Face.Models.GlassesType.ReadingGlasses,
                     BaldLevel = 0.15,
-                    HairColor = "brown",
-                    Rectangle = new System.Drawing.Rectangle { X = 237, Y = 22, Height = 172, Width = 172 }
+                    HairColor = "brown"
                 };
 
                 List<Face> faces = new List<Face>();
                 faces.Add(face);
 
-                context.Face.AddRange(
+                context.Faces.AddRange(
                     face
                 );
 
@@ -51,7 +50,6 @@ namespace oneroom_api.Model
                     new User
                     {
                         UserId = 1,
-                        Username = "Joueur 1",
                         UrlAvatar = "https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious&options[skin][]=light&options[topChance]=100&options[accessories][]=round&options[accessoriesChance]=100&options[facialHair][]=magestic&options[hairColor][]=brown&options[facialHairColor][]=brown",
                         PersonId = new Guid(),
                         Name = "Joueur 1",

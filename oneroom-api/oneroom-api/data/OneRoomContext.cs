@@ -4,6 +4,7 @@ namespace oneroom_api.Model
 {
     public class OneRoomContext : DbContext
     {
+        public DbSet<Face> Faces { get; set; }
         public DbSet<User> Users { get; set; }
 
         public OneRoomContext(DbContextOptions<OneRoomContext> options)
@@ -11,12 +12,5 @@ namespace oneroom_api.Model
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Face>()
-                .Ignore(f => f.Rectangle);
-        }
-
-        public DbSet<Face> Face { get; set; }
     }
 }
