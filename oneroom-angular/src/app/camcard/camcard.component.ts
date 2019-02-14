@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { WebcamImage } from 'ngx-webcam';
-import { FaceService } from '../services/cognitive/face.service';
-import { PersonGroupPersonService } from '../services/cognitive/person-group-person.service';
-import { PersonGroupService } from '../services/cognitive/person-group.service';
+import { Group, PersonGroupService } from '../services/cognitive/person-group.service';
+import { FaceProcessService } from '../utilities/face-process.service';
 
 @Component({
   selector: 'app-camcard',
@@ -17,10 +16,7 @@ export class CamcardComponent implements OnInit {
   // webcam snapshot trigger
   private trigger: Subject<void> = new Subject<void>();
 
-  constructor(
-    private faceService: FaceService,
-    private personService: PersonGroupPersonService,
-    private groupService: PersonGroupService) { }
+  constructor(private faceProcess: FaceProcessService) { }
 
   ngOnInit() {
   }
@@ -30,32 +26,17 @@ export class CamcardComponent implements OnInit {
     this.trigger.next();
   }
 
-  imageCapture($webcamImage: WebcamImage) {
-    console.log($webcamImage.imageAsDataUrl);
+  async imageCapture($webcamImage: WebcamImage) {
+    console.log('capturing image');
     this.webcamImage = $webcamImage;
     const stream = this.makeblob($webcamImage.imageAsDataUrl);
-    // 0. Create group or not if exists
-    // const group$ = this.groupService.create();
-    // 1. Detect
-    const detect$ = this.faceService.detect(stream.blob, stream.rawlength);
-    detect$.subscribe((faces) => {
-      for (const face of faces) {
-        // 2. Identify
-        console.log('face detected : ');
-        console.log(face);
-        console.log('------------');
-        const identify$ = this.faceService.identify([face.faceId], 'SectInformatik01Id', 1, 0.5);
-      }
-    });
-
-    // 3. Create person or not if exists
-    // const person$ = this.personService.create();
-    // 4. Add Face to person
-    // const face$ = this.personService.addFace();
-    // 5. train group
-    // const train$ = this.groupService.train();
-    // 6. training status
-    // const trainStatus$ = this.groupService.getTrainingStatus();
+    const group = new Group();
+    group.personGroupId = 'mic2019';
+    group.name = 'mic_stage_2019';
+    group.userData = 'Group de test en developpement pour oneroom';
+    // traitement face API
+    // REMOVE this to call the API and get results in console
+    // this.faceProcess.byImg(stream.blob, group);
   }
 
   public get triggerObservable(): Observable<void> {

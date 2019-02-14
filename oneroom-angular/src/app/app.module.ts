@@ -18,6 +18,9 @@ import { CamcardComponent } from './camcard/camcard.component';
 import {WebcamModule} from 'ngx-webcam';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
+import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
+import { PersonGroupService } from './services/cognitive/person-group.service';
+import { FaceProcessService } from './utilities/face-process.service';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,12 @@ import { HttpClientModule } from '@angular/common/http';
     WebcamModule,
     HttpClientModule
   ],
-  providers: [FaceService],
+  providers: [
+    FaceService,
+    PersonGroupPersonService,
+    PersonGroupService,
+    FaceProcessService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
