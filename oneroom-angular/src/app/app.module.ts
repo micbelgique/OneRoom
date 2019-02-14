@@ -15,7 +15,8 @@ import {
   MatInputModule,
   MatListModule,
   MatTabsModule,
-  MatMenuModule
+  MatMenuModule,
+  MatSlideToggleModule,
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -30,6 +31,7 @@ import { RouterModule } from '@angular/router';
 import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
 import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
+import { FilterComponent } from './filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +66,8 @@ import { FaceProcessService } from './utilities/face-process.service';
     ]),
     MatListModule,
     MatTabsModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSlideToggleModule
   ],
   providers: [
     FaceService,

@@ -1,3 +1,41 @@
-<p>
-  filter works!
-</p>
+<mat-slide-toggle color="primary" [(ngModel)]="glassesSelect">glasses ?</mat-slide-toggle><br>
+<mat-slide-toggle color="primary" [(ngModel)]="moustacheSelect">Moustache ?</mat-slide-toggle><br>
+<mat-slide-toggle color="primary" [(ngModel)]="beardSelect">Beard ?</mat-slide-toggle>
+<mat-accordion class="example-headers-align" *ngFor="let item of filteredUsers">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          <div mat-card-title>{{ item.name }}</div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+      <mat-grid-list cols="2" [rowHeight]=200>
+        <mat-grid-tile>
+            <div mat-card-avatar class="example-header-image"><img width=100% class='img-avatar' src='{{ item.urlAvatar }}'></div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-tab-group dynamicHeight>
+                <mat-tab label="Person info">
+                  <div>
+                    Name: {{ item.name}}<br>
+                    PersonId: {{ item.personId}}
+                  </div>
+                </mat-tab>
+                <mat-tab label="Face info" *ngIf=item.faces[0]>
+                  <div>
+                    Age: {{ item.faces[0].age}} <br>
+                    Gender: {{ item.faces[0].isMale ? 'male' : 'female' }} <br>
+                    smileLevel: {{ item.faces[0].smileLevel }} <br>
+                    moustacheLevel: {{ item.faces[0].moustacheLevel }} <br>
+                    beardLevel: {{ item.faces[0].beardLevel }} <br>
+                    baldLevel: {{ item.faces[0].baldLevel }} <br>
+                    HairColor: {{ item.faces[0].HairColor }} <br>
+                    glassesType: {{ item.faces[0].glassesType}}
+                  </div>
+                </mat-tab>
+              </mat-tab-group>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-card-content>
+  </mat-expansion-panel>
+</mat-accordion>
