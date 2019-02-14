@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment.prod';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { FaceRectangle } from './face/model/face-rectangle';
 
 export class PersistedFace {
   persistedFaceId: string;
@@ -43,29 +44,45 @@ export class PersonGroupPersonService {
   /*
   Add a face image to a person into a person group for face identification or verification.
   */
-  addFace(personGroupId: string, personId: string, stream: Blob, contentLength: number): Observable<PersistedFace> {
+  // tslint:disable-next-line:max-line-length
+  addFace(personGroupId: string, personId: string, stream: Blob, targetFace: FaceRectangle = null, userData: string = null): Observable<PersistedFace> {
 
-    let customHeaders = this.headers.append('Content-Type', 'application/octet-stream');
-    customHeaders = customHeaders.append('Content-Length', contentLength + '' );
+    const customHeaders = this.headers.set('Content-Type', 'application/octet-stream');
+    // customHeaders = customHeaders.set('Content-Length', contentLength + '' );
 
     const httpOptions = {
       headers: customHeaders
     };
 
+    let parameters = '?';
+
+    if (targetFace !== null) {
+        parameters += 'targetFace=' +  targetFace.left + ',' + targetFace.top + ',' + targetFace.width + ',' + targetFace.height + '&';
+    }
+
+    if (userData !== null) {
+        parameters += 'userData=' + userData;
+    }
+
     // tslint:disable-next-line:max-line-length
-    return this.http.post<PersistedFace>(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId + '/persistedFaces', stream, httpOptions);
+    return this.http.post<PersistedFace>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId + '/persistedFaces' + parameters, stream, httpOptions);
   }
 
   /*
   Create a new person in a specified person group
   */
-  create(personGroupId: string, name: string): Observable<PersistedPerson> {
+  create(personGroupId: string, name: string, userData: string = ''): Observable<PersistedPerson> {
 
     const httpOptions = {
       headers: this.headers
     };
 
-    return this.http.post<PersistedPerson>(this.endPoint + '/persongroups/' + personGroupId + '/persons', {name: name + ''}, httpOptions);
+    const body = {
+      name: name + '',
+      userData : userData + ''
+    };
+
+    return this.http.post<PersistedPerson>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons', body, httpOptions);
   }
 
   /*
@@ -115,20 +132,29 @@ export class PersonGroupPersonService {
     };
 
     // tslint:disable-next-line:max-line-length
-    return this.http.get<PersistedFace>(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, httpOptions);
+    return this.http.get<PersistedFace>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, httpOptions);
   }
 
   /*
   List all persons’ information in the specified person group.
   */
-  list(personGroupId: string, startPersonGroupId: string = '', topCount: number = 1000): Observable<Person> {
+  list(personGroupId: string, startPersonGroupId: string = null, topCount: number = 1000): Observable<Person[]> {
 
     const httpOptions = {
       headers: this.headers
     };
 
+    let parameters = '?';
+
+    if (startPersonGroupId !== null) {
+        parameters += 'start=' + startPersonGroupId.toLowerCase() + '&';
+    }
+
+    parameters += 'top=' + topCount;
+
+
     // tslint:disable-next-line:max-line-length
-    return this.http.get<Person>(this.endPoint + '/persongroups/' + personGroupId + '/persons?start=' + startPersonGroupId + '&top=' + topCount, httpOptions);
+    return this.http.get<Person[]>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons' + parameters, httpOptions);
   }
 
   /*
@@ -140,7 +166,8 @@ export class PersonGroupPersonService {
       headers: this.headers
     };
 
-    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId, {name: name + ''}, httpOptions);
+    // tslint:disable-next-line:max-line-length
+    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId, {name: name + ''}, httpOptions);
   }
 
   /*
@@ -153,6 +180,6 @@ export class PersonGroupPersonService {
     };
 
     // tslint:disable-next-line:max-line-length
-    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, { userData: userData + ''}, httpOptions);
+    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, { userData: userData + ''}, httpOptions);
   }
 }

@@ -27,7 +27,9 @@ import { LeaderBoardComponent } from './leader-board/leader-board.component';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { FilterComponent } from './filter/filter.component';
+import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
+import { PersonGroupService } from './services/cognitive/person-group.service';
+import { FaceProcessService } from './utilities/face-process.service';
 
 @NgModule({
   declarations: [
@@ -64,7 +66,12 @@ import { FilterComponent } from './filter/filter.component';
     MatTabsModule,
     MatMenuModule
   ],
-  providers: [FaceService],
+  providers: [
+    FaceService,
+    PersonGroupPersonService,
+    PersonGroupService,
+    FaceProcessService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

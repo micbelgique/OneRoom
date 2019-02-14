@@ -21,14 +21,7 @@ export class AppComponent implements OnInit {
 
   constructor(private groupService: PersonGroupService) { }
 
-  ngOnInit(): void {
-    // creation group lobby pour stockage de personnes
-    const group$ = this.groupService.create('SectInformatik01Id', 'SectInformatik', 'Group de test en developpement pour oneroom');
-    group$.subscribe(() => {
-      console.log('groupe SectInformatik créé');
-    }, (error) => {
-      console.log('group déjà existant !');
-    });
+  async ngOnInit() {
   }
 
 }

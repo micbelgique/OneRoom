@@ -4,8 +4,8 @@
       <mat-card-subtitle>Take a picture</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <div>
-            <webcam [trigger]="this.triggerObservable" [allowCameraSwitch]="true" [width]="400" (imageCapture)="imageCapture($event)"></webcam>
+      <div style="text-align: center">
+            <webcam [trigger]="this.triggerObservable" [allowCameraSwitch]="true" [width]="500" (imageCapture)="imageCapture($event)"></webcam>
       </div>
     </mat-card-content>
     <mat-card-actions>

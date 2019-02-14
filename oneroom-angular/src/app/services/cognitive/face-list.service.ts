@@ -41,8 +41,8 @@ export class FaceListService {
     let parameters = '?';
 
     // prepare http header options
-    let customHeaders = this.headers.append('Content-Type', 'application/octet-stream');
-    customHeaders = customHeaders.append('Content-Length', contentLength + '' );
+    let customHeaders = this.headers.set('Content-Type', 'application/octet-stream');
+    customHeaders = customHeaders.set('Content-Length', contentLength + '' );
 
     const httpOptions = {
       headers: customHeaders
