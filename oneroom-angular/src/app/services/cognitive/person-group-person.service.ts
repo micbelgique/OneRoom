@@ -15,7 +15,7 @@ export class PersistedPerson {
 
 export class Person {
   personId: string;
-  persistedFaceIds: string[];
+  persistedFaceIds: string[] = [];
   name: string;
   userData: string;
 }

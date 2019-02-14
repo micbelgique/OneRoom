@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
 import { FaceService, FaceCandidate } from '../services/cognitive/face.service';
-import { PersonGroupPersonService } from '../services/cognitive/person-group-person.service';
+import { PersonGroupPersonService, PersistedPerson, Person } from '../services/cognitive/person-group-person.service';
 import { PersonGroupService, Group } from '../services/cognitive/person-group.service';
 import { Face } from '../services/cognitive/face/model/face';
+import { Observable, Subject } from 'rxjs';
+
+export class PersonGroup {
+  group: Group;
+  persons: PersonGroupPerson[] = [];
+}
+
+export class PersonGroupPerson {
+  person: Person;
+  faces: Face[] = [];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,28 +21,38 @@ import { Face } from '../services/cognitive/face/model/face';
 export class FaceProcessService {
 
 
+  result$: Subject<PersonGroup> = new Subject<PersonGroup>();
+  private result: PersonGroup = new PersonGroup();
+
   constructor(
     private faceService: FaceService,
     private personService: PersonGroupPersonService,
     private groupService: PersonGroupService) {}
 
 
-  async byImg(stream: Blob, group: Group) {
+  byImg(stream: Blob, group: Group): Observable<PersonGroup> {
     // 0. Create group or not if exists
     const getGroup$ = this.groupService.get(group.personGroupId);
     getGroup$.subscribe(
     (g) => {
-      this.detect(stream, group);
+      // saving group
+      this.result.group = g;
+      this.detect(stream, g);
     },
     (error) => {
       console.log('CREATING GROUP');
       const group$ = this.groupService.create(group.personGroupId, group.name, group.userData);
       group$.subscribe(
-      () => this.detect(stream, group),
+      () => {
+        // saving group
+        this.result.group = group;
+        this.detect(stream, group);
+      },
       () => {}
       );
     });
 
+    return this.result$;
   }
 
   private detect(stream: Blob, group: Group) {
@@ -54,16 +75,16 @@ export class FaceProcessService {
   private identify(face: Face, group: Group, stream: Blob) {
             // 2. Identify person
             console.log(face);
-            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.7);
+            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
             identify$.subscribe(
             (faceCandidates) => {
               console.log('identified candidates : ' + faceCandidates.length);
               for (const candidate of faceCandidates) {
                 console.log('Face ID : ' + candidate.faceId);
                 if (candidate.candidates.length === 1) {
-                    this.addFace(group, candidate.candidates[0].personId, stream, face);
+                  this.addFace(group, candidate.candidates[0].personId, stream, face);
                 } else {
-                    this.createPerson(group, stream, face);
+                  this.createPerson(group, stream, face);
                 }
               }
             },
@@ -81,6 +102,21 @@ export class FaceProcessService {
           const face$ = this.personService.addFace(group.personGroupId, personId, stream, face.faceRectangle);
           face$.subscribe(
           (data) => {
+            // saving candidates info
+            const idx = this.result.persons.map(per => per.person.personId).indexOf(personId);
+            if ( idx > -1) {
+                // person already exists in array
+                this.result.persons[idx].faces.push(face);
+                this.result.persons[idx].person.persistedFaceIds.push(data.persistedFaceId);
+            } else {
+              const p = new PersonGroupPerson();
+              p.person = new Person();
+              p.person.personId = personId;
+              this.result.persons.push(p);
+              this.result.persons[this.result.persons.length - 1].faces.push(face);
+              this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
+            }
+
             console.log('ADDING FACE');
             console.log('persisted Face ID : ' + data.persistedFaceId);
             this.train(group.personGroupId);
@@ -91,7 +127,7 @@ export class FaceProcessService {
   }
 
  private createPerson(group: Group, stream: Blob, face: Face) {
-    // 3. Create person and add face
+    // 3. Create person
     // tslint:disable-next-line:max-line-length
     const person$ = this.personService.create(group.personGroupId, 'user_' + Math.random(), 'test person created to train a model');
 
@@ -131,6 +167,8 @@ export class FaceProcessService {
 
   private list(groupId) {
     // list person with their face
+    this.result$.next(this.result);
+    /*
     const $persons = this.personService.list(groupId);
     $persons.subscribe(
     (data) => {
@@ -140,7 +178,7 @@ export class FaceProcessService {
           console.log('person : ' + p.name);
           console.log(p);
       }
-    });
+    });*/
   }
 
 }

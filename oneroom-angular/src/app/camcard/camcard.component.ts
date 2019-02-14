@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { WebcamImage } from 'ngx-webcam';
-import { Group, PersonGroupService } from '../services/cognitive/person-group.service';
+import { Group } from '../services/cognitive/person-group.service';
 import { FaceProcessService } from '../utilities/face-process.service';
 
 @Component({
@@ -11,6 +11,7 @@ import { FaceProcessService } from '../utilities/face-process.service';
 })
 export class CamcardComponent implements OnInit {
 
+  public mirrorImage = 'always';
   // latest snapshot
   public webcamImage: WebcamImage = null;
   // webcam snapshot trigger
@@ -35,8 +36,8 @@ export class CamcardComponent implements OnInit {
     group.name = 'mic_stage_2019';
     group.userData = 'Group de test en developpement pour oneroom';
     // traitement face API
-    // REMOVE this to call the API and get results in console
-    // this.faceProcess.byImg(stream.blob, group);
+    // return an observable
+    const res$ = this.faceProcess.byImg(stream.blob, group);
   }
 
   public get triggerObservable(): Observable<void> {
