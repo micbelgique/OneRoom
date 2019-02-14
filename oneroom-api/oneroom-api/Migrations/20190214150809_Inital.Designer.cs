@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190214112434_MergeUserPerson")]
-    partial class MergeUserPerson
+    [Migration("20190214150809_Inital")]
+    partial class Inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
