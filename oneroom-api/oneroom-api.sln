@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oneroom-api", "oneroom-api\oneroom-api.csproj", "{E2F62DB8-AD0F-4C54-856C-554FFED7D5BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2F62DB8-AD0F-4C54-856C-554FFED7D5BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2F62DB8-AD0F-4C54-856C-554FFED7D5BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2F62DB8-AD0F-4C54-856C-554FFED7D5BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2F62DB8-AD0F-4C54-856C-554FFED7D5BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3111F6E-C54D-4FFA-AD20-3CAACEDB0211}
+	EndGlobalSection
+EndGlobal

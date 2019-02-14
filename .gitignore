@@ -375,3 +375,4 @@ ASALocalRun/
 # System Files
 /oneroom-angular/.DS_Store
 /oneroom-angular/Thumbs.db
+/oneroom-angular/package-lock.json
