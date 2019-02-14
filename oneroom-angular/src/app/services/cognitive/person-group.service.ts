@@ -62,7 +62,7 @@ export class PersonGroupService {
       headers : this.headers
     };
 
-    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId, httpOptions);
+    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId.toLowerCase(), httpOptions);
   }
 
   /*
@@ -74,7 +74,7 @@ export class PersonGroupService {
       headers : this.headers
     };
 
-    return this.http.get<Group>(this.endPoint + '/persongroups/' + personGroupId, httpOptions);
+    return this.http.get<Group>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase(), httpOptions);
   }
 
   /*
@@ -86,7 +86,7 @@ export class PersonGroupService {
       headers : this.headers
     };
 
-    return this.http.get<TrainingStatus>(this.endPoint + '/persongroups/' + personGroupId + '/training', httpOptions);
+    return this.http.get<TrainingStatus>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/training', httpOptions);
   }
 
   /*
@@ -112,7 +112,7 @@ export class PersonGroupService {
       headers : this.headers
     };
 
-    return this.http.post(this.endPoint + '/persongroups/' + personGroupId + '/train', null, httpOptions);
+    return this.http.post(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/train', null, httpOptions);
 
   }
 

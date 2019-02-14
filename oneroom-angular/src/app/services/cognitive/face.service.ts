@@ -53,10 +53,10 @@ export class FaceService {
   /*
   Detect human faces in an image, return face rectangles, and optionally with faceIds, landmarks, and attributes.
   */
-  detect(stream: Blob, contentLength: number): Observable<Face[]> {
+  detect(stream: Blob): Observable<Face[]> {
     // prepare http header options
-    let customHeaders = this.headers.append('Content-Type', 'application/octet-stream');
-    customHeaders = customHeaders.append('Content-Length', contentLength + '' );
+    const customHeaders = this.headers.append('Content-Type', 'application/octet-stream');
+    // customHeaders = customHeaders.append('Content-Length', contentLength + '' );
 
     const httpOptions = {
       headers: customHeaders
