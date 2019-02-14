@@ -25,6 +25,13 @@ export class UserService {
       catchError(this.handleError)
       );
   }
+  addUsers(users: User[]): Observable<User[]> {
+    console.log(users);
+    return this.http.post<User[]>(this.userUrl, users, { headers: this.headers })
+      .pipe(tap(data => console.log('all:' + JSON.stringify(data))),
+      catchError(this.handleError)
+      );
+  }
   private handleError(err: HttpErrorResponse) {
     let errorMessage = '';
     if (err.error instanceof ErrorEvent) {

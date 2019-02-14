@@ -3,6 +3,10 @@ import { Observable, Subject } from 'rxjs';
 import { WebcamImage } from 'ngx-webcam';
 import { Group } from '../services/cognitive/person-group.service';
 import { FaceProcessService } from '../utilities/face-process.service';
+import { User } from '../services/OnePoint/model/user';
+import { Face } from '../services/OnePoint/model/face';
+import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
+import { UserService } from '../services/OnePoint/user.service';
 
 @Component({
   selector: 'app-camcard',
@@ -17,7 +21,7 @@ export class CamcardComponent implements OnInit {
   // webcam snapshot trigger
   private trigger: Subject<void> = new Subject<void>();
 
-  constructor(private faceProcess: FaceProcessService) { }
+  constructor(private faceProcess: FaceProcessService, private userService: UserService) { }
 
   ngOnInit() {
   }
@@ -38,6 +42,38 @@ export class CamcardComponent implements OnInit {
     // traitement face API
     // return an observable
     const res$ = this.faceProcess.byImg(stream.blob, group);
+    res$.subscribe(
+      (data) => {
+        const users: User[] = [];
+        data.persons.forEach(element => {
+          const u = new User();
+          u.name = 'test';
+          u.userId = element.person.personId;
+          u.faces = [];
+          element.faces.forEach(face => {
+            const f = new Face();
+            f.age = face.faceAttributes.age;
+            f.baldLevel = face.faceAttributes.hair.bald;
+            f.beardLevel = face.faceAttributes.facialHair.beard;
+            f.glassesType = face.faceAttributes.glasses === GlassesType.NoGlasses.toString() ?
+            GlassesType.NoGlasses : face.faceAttributes.glasses === GlassesType.ReadingGlasses.toString() ?
+            GlassesType.ReadingGlasses : face.faceAttributes.glasses === GlassesType.Sunglasses.toString() ?
+            GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
+            f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+            f.isMale = face.faceAttributes.gender === 'male';
+            f.moustacheLevel = face.faceAttributes.facialHair.moustache;
+            f.smileLevel = face.faceAttributes.smile;
+            u.faces.push(f);
+          }
+          );
+          u.generateAvatar();
+          users.push(u);
+          console.log(u);
+        });
+        console.log('coucou');
+        this.userService.addUsers(users).subscribe();
+      }
+    );
   }
 
   public get triggerObservable(): Observable<void> {
