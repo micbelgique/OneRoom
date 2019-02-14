@@ -111,7 +111,7 @@ namespace oneroom_api.Controllers
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(List<User> users)
+        public async Task<ActionResult<List<User>>> PostUser(List<User> users)
         {
             List<User> usersRemoved = new List<User>();
             users.ForEach(u =>
@@ -170,7 +170,7 @@ namespace oneroom_api.Controllers
             StringBuilder sb = new StringBuilder();
             usersRemoved.ForEach(u => sb.Append($"An existing record for the user or the face with the user id '{u.UserId}' was already found."));
 
-            return CreatedAtAction("GetUsers", new { message = sb.ToString()});
+            return CreatedAtAction("GetUsers", new { message = sb.ToString()}, users);
         }
 
         // DELETE: api/Users/5
