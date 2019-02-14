@@ -1,6 +1,3 @@
-<mat-toolbar style="margin-bottom:10px" role="heading" >
-  <span>{{ title }}</span>
-</mat-toolbar>
 
 <!--
 <mat-grid-list cols="4" rowHeight="100px">
@@ -13,9 +10,35 @@
   </mat-grid-tile>
 </mat-grid-list>
 -->
+<mat-toolbar color="" style="margin-bottom:10px" role="heading" >
+    <mat-toolbar-row>
+        <button mat-icon-button (click)="toggleMenu()">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <span class="example-spacer"></span>
+        <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >{{ title }}</a></span>
+    </mat-toolbar-row>
+  </mat-toolbar>
 
+<mat-sidenav-container class="container-sidenav">
+    <mat-sidenav #sidenav mode="side" [(opened)]="opened">
+      <mat-list>
+        <mat-list-item>
+            <span><a [routerLink]="['/leaderboard']" routerLinkActive="router-link-active" >leaderboard</a></span>
+        </mat-list-item>
+        <mat-list-item>
+            <span><a [routerLink]="['/filter']" routerLinkActive="router-link-active" >Filter</a></span>
+        </mat-list-item>
+        <mat-list-item>
+            <a [routerLink]="['/settings']" routerLinkActive="router-link-active" >Settings</a>
+        </mat-list-item>
+      </mat-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
 <br>
-<router-outlet></router-outlet>
 <br>
 
 <!--

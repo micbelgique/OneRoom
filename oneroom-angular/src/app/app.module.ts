@@ -14,7 +14,10 @@ import {
   MatFormFieldModule,
   MatInputModule,
   MatListModule,
-  MatTabsModule
+  MatTabsModule,
+  MatMenuModule,
+  MatSlideToggleModule,
+  MatSidenavModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -29,6 +32,7 @@ import { RouterModule } from '@angular/router';
 import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
 import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
+import { FilterComponent } from './filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +40,8 @@ import { FaceProcessService } from './utilities/face-process.service';
     UsercardComponent,
     CamcardComponent,
     LeaderBoardComponent,
-    SettingsComponent
+    SettingsComponent,
+    FilterComponent
   ],
   imports: [
     BrowserModule,
@@ -57,10 +62,14 @@ import { FaceProcessService } from './utilities/face-process.service';
       { path: 'leaderboard', component: LeaderBoardComponent },
       { path: 'welcome', component: CamcardComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'filter', component: FilterComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
     MatListModule,
-    MatTabsModule
+    MatTabsModule,
+    MatMenuModule,
+    MatSlideToggleModule,
+    MatSidenavModule
   ],
   providers: [
     FaceService,

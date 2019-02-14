@@ -2,7 +2,6 @@ import { Face } from './face';
 import { GlassesType } from './glasses-type.enum';
 
 export class User {
-  username: string;
   urlAvatar: string;
   personId: string;
   name: string;
