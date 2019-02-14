@@ -27,6 +27,7 @@ import { LeaderBoardComponent } from './leader-board/leader-board.component';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { FilterComponent } from './filter/filter.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { RouterModule } from '@angular/router';
     UsercardComponent,
     CamcardComponent,
     LeaderBoardComponent,
-    SettingsComponent
+    SettingsComponent,
+    FilterComponent
   ],
   imports: [
     BrowserModule,
@@ -55,6 +57,7 @@ import { RouterModule } from '@angular/router';
       { path: 'leaderboard', component: LeaderBoardComponent },
       { path: 'welcome', component: CamcardComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'filter', component: FilterComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
     MatListModule,

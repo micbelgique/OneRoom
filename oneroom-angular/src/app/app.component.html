@@ -1,6 +1,11 @@
-<mat-toolbar color="primary" style="margin-bottom:10px" role="heading" >
+<mat-toolbar color="" style="margin-bottom:10px" role="heading" >
   <mat-toolbar-row>
       <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >{{ title }}</a></span>
+      <span class="example-spacer"></span>
+      <span><a [routerLink]="['/liveboard']" routerLinkActive="router-link-active" >Liveboard</a></span>
+      <span class="example-spacer"></span>
+
+      <span><a [routerLink]="['/filter']" routerLinkActive="router-link-active" >Filter</a></span>
       <span class="example-spacer"></span>
       <button mat-icon-button>
           <a [routerLink]="['/settings']" routerLinkActive="router-link-active" ><mat-icon>more_vert</mat-icon></a>
