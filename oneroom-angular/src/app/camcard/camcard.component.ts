@@ -55,9 +55,10 @@ export class CamcardComponent implements OnInit {
             f.age = face.faceAttributes.age;
             f.baldLevel = face.faceAttributes.hair.bald;
             f.beardLevel = face.faceAttributes.facialHair.beard;
-            f.glassesType = face.faceAttributes.glasses === GlassesType.NoGlasses.toString() ?
-            GlassesType.NoGlasses : face.faceAttributes.glasses === GlassesType.ReadingGlasses.toString() ?
-            GlassesType.ReadingGlasses : face.faceAttributes.glasses === GlassesType.Sunglasses.toString() ?
+            console.log(face.faceAttributes.glasses);
+            f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
+            GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
+            GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
             GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
             f.hairColor = face.faceAttributes.hair.hairColor[0].color;
             f.isMale = face.faceAttributes.gender === 'male';
@@ -68,9 +69,7 @@ export class CamcardComponent implements OnInit {
           );
           u.generateAvatar();
           users.push(u);
-          console.log(u);
         });
-        console.log('coucou');
         this.userService.addUsers(users).subscribe();
       }
     );

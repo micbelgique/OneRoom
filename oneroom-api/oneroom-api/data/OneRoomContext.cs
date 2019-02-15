@@ -6,6 +6,7 @@ namespace oneroom_api.Model
     {
         public DbSet<Face> Faces { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Group> Group { get; set; }
 
         public OneRoomContext(DbContextOptions<OneRoomContext> options)
             : base(options)
@@ -35,5 +36,6 @@ namespace oneroom_api.Model
                 .WithMany(g => g.Users)
                 .OnDelete(DeleteBehavior.Cascade);
         }
+       
     }
 }
