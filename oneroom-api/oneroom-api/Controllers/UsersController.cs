@@ -31,11 +31,11 @@ namespace oneroom_api.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
             var user = await _context.Users
                                      .Include(u => u.Faces)
-                                     .FirstOrDefaultAsync(u => u.UserId == id);
+                                     .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {
@@ -47,9 +47,9 @@ namespace oneroom_api.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(int id, User user)
         {
-            if (id != user.UserId)
+            if (id != user.Id)
             {
                 return BadRequest();
             }
@@ -116,14 +116,14 @@ namespace oneroom_api.Controllers
             List<User> usersRemoved = new List<User>();
             users.ForEach(u =>
             {
-                if (UserExists(u.UserId))
+                if (UserExists(u.Id))
                 {
                     usersRemoved.Add(u);
                     return;
                 }
                 u.Faces.ForEach(f =>
                 {
-                    if (FaceExists(f.FaceId))
+                    if (FaceExists(f.Id))
                     {
                         usersRemoved.Add(u);
                         return;
@@ -140,42 +140,40 @@ namespace oneroom_api.Controllers
             }
             catch (DbUpdateException)
             {
-                User user = null;
-                users.ForEach(u => {
-                    if (UserExists(u.UserId))
-                    {
-                        user = u;
-                        return;
-                    }
-                });
-                if (user != null)
-                {
-                    return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found." });
-                }
-                else
-                {
-                    Face face = null;
-                    users.ForEach(u => u.Faces.ForEach(f => {
-                        if (FaceExists(f.FaceId))
-                        {
-                            face = f;
-                            return;
-                        }
-                    }));
-                    if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
-                    throw;
-                }
+                //User user = null;
+                //users.ForEach(u => {
+                //    if (UserExists(u.UserId))
+                //    {
+                //        user = u;
+                //        return;
+                //    }
+                //});
+                //if (user != null)
+                //{
+                //    return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found." });
+                //}
+                //else
+                //{
+                //    Face face = null;
+                //    users.ForEach(u => u.Faces.ForEach(f => {
+                //        if (FaceExists(f.FaceId))
+                //        {
+                //            face = f;
+                //            return;
+                //        }
+                //    }));
+                //    if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
+                //    throw;
+                //}
+                return Conflict(new { message = $"An existing record with for one of the element of the list was already found." });
             }
 
-            StringBuilder sb = new StringBuilder();
-            usersRemoved.ForEach(u => sb.Append($"An existing record for the user or the face with the user id '{u.UserId}' was already found."));
-
-            return CreatedAtAction("GetUsers", new { message = sb.ToString()}, users);
+            return CreatedAtAction("GetUsers", users);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(Guid id)
+        public async Task<ActionResult<User>> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
@@ -189,14 +187,14 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        private bool UserExists(Guid id)
+        private bool UserExists(int id)
         {
-            return _context.Users.Any(e => e.UserId == id);
+            return _context.Users.Any(u => u.Id == id);
         }
 
-        private bool FaceExists(Guid id)
+        private bool FaceExists(int id)
         {
-            return _context.Faces.Any(e => e.FaceId == id);
+            return _context.Faces.Any(f => f.Id == id);
         }
     }
 }
