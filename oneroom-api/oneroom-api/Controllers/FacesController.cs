@@ -40,8 +40,8 @@ namespace oneroom_api.Controllers
             return face;
         }
 
-        // PUT: api/Faces/5
-        [HttpPut("{id}")]
+        // POST: api/Faces/5
+        [HttpPost("{id}")]
         public async Task<IActionResult> PutFace(Guid id, Face face)
         {
             if (id != face.FaceId)
