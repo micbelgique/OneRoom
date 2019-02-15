@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using oneroom_api.Model;
 
 namespace oneroom_api.Model
 {
@@ -7,12 +6,36 @@ namespace oneroom_api.Model
     {
         public DbSet<Face> Faces { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Group> Group { get; set; }
 
         public OneRoomContext(DbContextOptions<OneRoomContext> options)
             : base(options)
         {
         }
 
-        public DbSet<oneroom_api.Model.Group> Group { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Unique <Type>Id
+            modelBuilder.Entity<Face>()
+                .HasIndex(f => f.FaceId)
+                .IsUnique();
+            modelBuilder.Entity<Group>()
+                .HasIndex(g => g.GroupId)
+                .IsUnique();
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserId)
+                .IsUnique();
+
+            // OnDelete = Cascade
+            modelBuilder.Entity<Face>()
+                .HasOne<User>()
+                .WithMany(u => u.Faces)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<User>()
+                .HasOne<Group>()
+                .WithMany(g => g.Users)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+       
     }
 }

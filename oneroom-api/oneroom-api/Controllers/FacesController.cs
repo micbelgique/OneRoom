@@ -28,7 +28,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/Faces/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Face>> GetFace(Guid id)
+        public async Task<ActionResult<Face>> GetFace(int id)
         {
             var face = await _context.Faces.FindAsync(id);
 
@@ -42,9 +42,9 @@ namespace oneroom_api.Controllers
 
         // PUT: api/Faces/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFace(Guid id, Face face)
+        public async Task<IActionResult> PutFace(int id, Face face)
         {
-            if (id != face.FaceId)
+            if (id != face.Id)
             {
                 return BadRequest();
             }
@@ -82,7 +82,7 @@ namespace oneroom_api.Controllers
             }
             catch (DbUpdateException)
             {
-                if ( FaceExists(face.FaceId))
+                if ( FaceExists(face.Id))
                 {
                     return Conflict(new { message = $"An existing record for the face with the id `{face.FaceId}` was already found." });
                 }
@@ -97,7 +97,7 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Faces/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Face>> DeleteFace(Guid id)
+        public async Task<ActionResult<Face>> DeleteFace(int id)
         {
             var face = await _context.Faces.FindAsync(id);
             if (face == null)
@@ -111,9 +111,9 @@ namespace oneroom_api.Controllers
             return face;
         }
 
-        private bool FaceExists(Guid id)
+        private bool FaceExists(int id)
         {
-            return _context.Faces.Any(e => e.FaceId == id);
+            return _context.Faces.Any(f => f.Id == id);
         }
     }
 }

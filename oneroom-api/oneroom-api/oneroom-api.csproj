@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>oneroom_api</RootNamespace>
+    <UserSecretsId>71fb264a-e878-4e45-b31d-805f6b0f700d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

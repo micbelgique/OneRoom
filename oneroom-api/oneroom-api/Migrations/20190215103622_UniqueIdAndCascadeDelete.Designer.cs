@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190215084537_Emotion")]
-    partial class Emotion
+    [Migration("20190215103622_UniqueIdAndCascadeDelete")]
+    partial class UniqueIdAndCascadeDelete
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,8 +23,9 @@ namespace oneroom_api.Migrations
 
             modelBuilder.Entity("oneroom_api.Model.Face", b =>
                 {
-                    b.Property<Guid>("FaceId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("Age");
 
@@ -34,6 +35,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("EmotionDominant")
                         .IsRequired();
+
+                    b.Property<Guid>("FaceId");
 
                     b.Property<int>("GlassesType");
 
@@ -46,19 +49,43 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("SmileLevel");
 
-                    b.Property<Guid?>("UserId");
+                    b.Property<int?>("UserId");
 
-                    b.HasKey("FaceId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("FaceId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Faces");
                 });
 
+            modelBuilder.Entity("oneroom_api.Model.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<Guid>("GroupId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId")
+                        .IsUnique();
+
+                    b.ToTable("Group");
+                });
+
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("GroupId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -66,7 +93,14 @@ namespace oneroom_api.Migrations
                     b.Property<string>("UrlAvatar")
                         .IsRequired();
 
-                    b.HasKey("UserId");
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -75,7 +109,16 @@ namespace oneroom_api.Migrations
                 {
                     b.HasOne("oneroom_api.Model.User")
                         .WithMany("Faces")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("oneroom_api.Model.User", b =>
+                {
+                    b.HasOne("oneroom_api.Model.Group")
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

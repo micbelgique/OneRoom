@@ -11,8 +11,8 @@ namespace oneroom_api.Model
         [Key]
         public int Id { get; }
         public Guid GroupId { get; set; }
-        public List<User> Users = new List<User>();
         public DateTime CreationDate { get; } = new DateTime();
+        public List<User> Users { get; set; } = new List<User>();
 
     }
 }
