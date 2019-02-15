@@ -62,6 +62,7 @@ export class FaceProcessService {
         (faces) => {
           // data
           console.log('face detected : ' + faces.length);
+          // Simple message with an action.
           for (const face of faces) {
               this.identify(face, group, stream);
           }

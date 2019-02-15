@@ -6,6 +6,8 @@ namespace oneroom_api.Model
 {
     public class User
     {
+        [Key]
+        int Id;
         public Guid UserId { get; set; }
         [Required]
         public string Name { get; set; }

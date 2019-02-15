@@ -8,6 +8,7 @@ import { User } from '../services/OnePoint/model/user';
   styleUrls: ['./leader-board.component.css']
 })
 export class LeaderBoardComponent implements OnInit {
+  @Input()
   users: User[] = [];
   errorMessage: string;
   constructor(private userService: UserService) { }
