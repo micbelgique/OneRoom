@@ -26,6 +26,7 @@ namespace oneroom_api
 
             services.AddDbContext<OneRoomContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

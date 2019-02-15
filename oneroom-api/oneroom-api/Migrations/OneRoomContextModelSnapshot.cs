@@ -15,15 +15,14 @@ namespace oneroom_api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("oneroom_api.Model.Face", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("FaceId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double>("Age");
 
@@ -33,8 +32,6 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("EmotionDominant")
                         .IsRequired();
-
-                    b.Property<Guid>("FaceId");
 
                     b.Property<int>("GlassesType");
 
@@ -47,9 +44,9 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("SmileLevel");
 
-                    b.Property<int?>("UserId");
+                    b.Property<Guid?>("UserId");
 
-                    b.HasKey("Id");
+                    b.HasKey("FaceId");
 
                     b.HasIndex("FaceId")
                         .IsUnique();
@@ -61,15 +58,12 @@ namespace oneroom_api.Migrations
 
             modelBuilder.Entity("oneroom_api.Model.Group", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("GroupId")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreationDate");
+                    b.Property<string>("Name");
 
-                    b.Property<Guid>("GroupId");
-
-                    b.HasKey("Id");
+                    b.HasKey("GroupId");
 
                     b.HasIndex("GroupId")
                         .IsUnique();
@@ -79,11 +73,10 @@ namespace oneroom_api.Migrations
 
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("GroupId");
+                    b.Property<Guid?>("GroupId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -91,9 +84,7 @@ namespace oneroom_api.Migrations
                     b.Property<string>("UrlAvatar")
                         .IsRequired();
 
-                    b.Property<Guid>("UserId");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.HasIndex("GroupId");
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,101 +18,61 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
-        // GET: api/Faces
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Face>>> GetFace()
+        // POST: api/Facesv2/2
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Face>> PostFace(int id,Face face)
         {
-            return await _context.Faces.ToListAsync();
-        }
-
-        // GET: api/Faces/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Face>> GetFace(int id)
-        {
-            var face = await _context.Faces.FindAsync(id);
-
-            if (face == null)
+            if (face.FaceId != Guid.Empty)
             {
-                return NotFound();
-            }
+                var u = (from usr in _context.Users where usr.Id == id select usr)
+                    .Include(us=>us.Faces).FirstOrDefault();
 
-            return face;
-        }
-
-        // PUT: api/Faces/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFace(int id, Face face)
-        {
-            if (id != face.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(face).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FaceExists(id))
+                if (u != null)
                 {
-                    return NotFound();
+
+                    if (!u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
+                    {
+                        return Conflict("face already exists");
+                    }
+
+                    u.Faces.Add(face);
+                    _context.Entry(u).State = EntityState.Modified;
+                    
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    } catch(Exception)
+                    {
+                        return StatusCode(500);
+                    }
+
+                    return CreatedAtAction("GetFace", new { id = face.Id }, face);
                 }
                 else
-                {
-                    throw;
-                }
+                    return NotFound("user not found");
             }
-
-            return NoContent();
+            else
+                return NotFound("face not found");
         }
 
-        // POST: api/Faces
-        [HttpPost]
-        public async Task<ActionResult<Face>> PostFace(Face face)
-        {
-            _context.Faces.Add(face);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if ( FaceExists(face.Id))
-                {
-                    return Conflict(new { message = $"An existing record for the face with the id `{face.FaceId}` was already found." });
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetFace", new { id = face.FaceId }, face);
-        }
-
-        // DELETE: api/Faces/5
+        // DELETE: api/Facesv2/5 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Face>> DeleteFace(int id)
         {
             var face = await _context.Faces.FindAsync(id);
+
             if (face == null)
-            {
                 return NotFound();
-            }
 
             _context.Faces.Remove(face);
             await _context.SaveChangesAsync();
 
-            return face;
+            return Ok(face);
         }
 
         private bool FaceExists(int id)
         {
-            return _context.Faces.Any(f => f.Id == id);
+            return _context.Faces.Any(e => e.Id == id);
         }
     }
 }

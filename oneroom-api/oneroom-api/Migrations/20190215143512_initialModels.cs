@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace oneroom_api.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initialModels : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,44 +11,38 @@ namespace oneroom_api.Migrations
                 name: "Group",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GroupId = table.Column<Guid>(nullable: false),
-                    CreationDate = table.Column<DateTime>(nullable: false)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Group", x => x.Id);
+                    table.PrimaryKey("PK_Group", x => x.GroupId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     UrlAvatar = table.Column<string>(nullable: false),
-                    GroupId = table.Column<int>(nullable: true)
+                    GroupId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_Users_Group_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Group",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "GroupId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Faces",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     FaceId = table.Column<Guid>(nullable: false),
                     Age = table.Column<double>(nullable: false),
                     IsMale = table.Column<bool>(nullable: false),
@@ -60,23 +53,24 @@ namespace oneroom_api.Migrations
                     GlassesType = table.Column<int>(nullable: false),
                     BaldLevel = table.Column<double>(nullable: false),
                     HairColor = table.Column<string>(nullable: false),
-                    UserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Faces", x => x.Id);
+                    table.PrimaryKey("PK_Faces", x => x.FaceId);
                     table.ForeignKey(
                         name: "FK_Faces_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Faces_FaceId",
                 table: "Faces",
-                column: "FaceId");
+                column: "FaceId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Faces_UserId",
@@ -86,7 +80,8 @@ namespace oneroom_api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Group_GroupId",
                 table: "Group",
-                column: "GroupId");
+                column: "GroupId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GroupId",
@@ -96,7 +91,8 @@ namespace oneroom_api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Users_UserId",
                 table: "Users",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

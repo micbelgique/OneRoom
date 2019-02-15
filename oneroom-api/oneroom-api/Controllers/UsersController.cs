@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,22 +19,18 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/UsersV2
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users
-                                 .Include(u => u.Faces)
-                                 .ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/UsersV2/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users
-                                     .Include(u => u.Faces)
-                                     .FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
@@ -45,15 +40,24 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/UsersV2/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> UpdateAvatar(int id, string urlAvatar)
         {
-            if (id != user.Id)
+
+            if (urlAvatar == null || urlAvatar.Equals(""))
             {
-                return BadRequest();
+                return BadRequest("Bad uri for avatar");
             }
 
+            var user = await _context.Users.FindAsync(id);
+
+            if(user == null)
+            {
+                return BadRequest("user not found");
+            }
+
+            user.UrlAvatar = urlAvatar;
             _context.Entry(user).State = EntityState.Modified;
 
             try
@@ -66,7 +70,7 @@ namespace oneroom_api.Controllers
                 {
                     return NotFound();
                 }
-                else 
+                else
                 {
                     throw;
                 }
@@ -75,105 +79,27 @@ namespace oneroom_api.Controllers
             return NoContent();
         }
 
-        //// POST: api/Users
-        //[HttpPost]
-        //public async Task<ActionResult<User>> PostUser(User user)
-        //{
-        //    _context.Users.Add(user);
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateException)
-        //    {
-        //        //if (UserExists(user.UserId))
-        //        //{
-        //        //    return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found." });
-        //        //}
-        //        //else
-        //        //{
-        //        //    Face face = null;
-        //        //    user.Faces.ForEach(f =>
-        //        //    {
-        //        //        if (FaceExists(f.FaceId))
-        //        //        {
-        //        //            face = f;
-        //        //            return;
-        //        //        }
-        //        //    });
-        //        //    if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
-        //        //    throw;
-        //        //}
-        //        return Conflict(new { message = $"An existing record with for one of the element of the list was already found." });
-        //    }
-
-        //    return CreatedAtAction("GetUser", new { id = user.UserId }, user);
-        //}
-
-        // POST: api/Users
+        // POST: api/UsersV2
         [HttpPost]
-        public async Task<ActionResult<List<User>>> PostUser(List<User> users)
+        public async Task<ActionResult<User>> PostUser(User user)
         {
-            List<User> usersRemoved = new List<User>();
-            users.ForEach(u =>
+            if(user == null)
             {
-                if (UserExists(u.Id))
-                {
-                    usersRemoved.Add(u);
-                    return;
-                }
-                u.Faces.ForEach(f =>
-                {
-                    if (FaceExists(f.Id))
-                    {
-                        usersRemoved.Add(u);
-                        return;
-                    }
-                });
-            });
-
-            usersRemoved.ForEach(u => users.Remove(u));
-            _context.Users.AddRange(users);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                //User user = null;
-                //users.ForEach(u => {
-                //    if (UserExists(u.UserId))
-                //    {
-                //        user = u;
-                //        return;
-                //    }
-                //});
-                //if (user != null)
-                //{
-                //    return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found." });
-                //}
-                //else
-                //{
-                //    Face face = null;
-                //    users.ForEach(u => u.Faces.ForEach(f => {
-                //        if (FaceExists(f.FaceId))
-                //        {
-                //            face = f;
-                //            return;
-                //        }
-                //    }));
-                //    if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
-                //    throw;
-                //}
-                return Conflict(new { message = $"An existing record with for one of the element of the list was already found." });
+                return BadRequest();
             }
 
-            return CreatedAtAction("GetUsers", users);
+            if(!ModelState.IsValid)
+            {
+                return BadRequest("Invalid user");
+            }
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/UsersV2/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(int id)
         {
@@ -191,12 +117,7 @@ namespace oneroom_api.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.Users.Any(u => u.Id == id);
-        }
-
-        private bool FaceExists(int id)
-        {
-            return _context.Faces.Any(f => f.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

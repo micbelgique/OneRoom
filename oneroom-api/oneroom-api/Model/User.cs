@@ -14,6 +14,7 @@ namespace oneroom_api.Model
         public string Name { get; set; }
         [Required]
         [Url]
+        [RegularExpression("^https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?")]
         public string UrlAvatar { get; set; }
         public List<Face> Faces { get; set; } = new List<Face>();
     }

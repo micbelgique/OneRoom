@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
@@ -22,7 +21,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/Groups
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Group>>> GetGroup()
+        public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
         {
             return await _context.Group.ToListAsync();
         }
@@ -31,26 +30,31 @@ namespace oneroom_api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Group>> GetGroup(int id)
         {
-            var @group = await _context.Group.FindAsync(id);
+            var group = await _context.Group.FindAsync(id);
 
-            if (@group == null)
+            if (group == null)
             {
                 return NotFound();
             }
 
-            return @group;
+            return group;
         }
 
         // PUT: api/Groups/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGroup(int id, Group @group)
+        public async Task<IActionResult> PutGroup(int id, Group group)
         {
-            if (id != @group.Id)
+            if (id != group.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(@group).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Group invalid");
+            }
+
+            _context.Entry(group).State = EntityState.Modified;
 
             try
             {
@@ -73,12 +77,22 @@ namespace oneroom_api.Controllers
 
         // POST: api/Groups
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(Group @group)
+        public async Task<ActionResult<Group>> PostGroup(Group group)
         {
-            _context.Group.Add(@group);
+            if(group == null)
+            {
+                return BadRequest();
+            }
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            _context.Group.Add(group);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGroup", new { id = @group.Id }, @group);
+            return CreatedAtAction("GetGroup", new { id = group.Id }, group);
         }
 
         // DELETE: api/Groups/5
