@@ -19,6 +19,13 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
+
+        // OPTIONS: api/UsersV2
+        public ActionResult OptionsUsers()
+        {
+            return Ok();
+        }
+
         // GET: api/UsersV2
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
