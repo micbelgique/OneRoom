@@ -7,7 +7,7 @@ namespace oneroom_api.Model
     public class User
     {
         [Key]
-        int Id;
+        public int Id { get; set; }
         public Guid UserId { get; set; }
         [Required]
         public string Name { get; set; }
@@ -15,8 +15,5 @@ namespace oneroom_api.Model
         [Url]
         public string UrlAvatar { get; set; }
         public List<Face> Faces { get; set; } = new List<Face>();
-
-        public User() { }
-       
     }
 }

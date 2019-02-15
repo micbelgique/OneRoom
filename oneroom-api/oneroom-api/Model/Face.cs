@@ -8,7 +8,7 @@ namespace oneroom_api.Model
     public class Face
     {
         [Key]
-        int Id;
+        public int Id { get; set; }
         public Guid FaceId { get; set; }
         [Range(0,150)]
         public double Age { get; set; }

@@ -11,5 +11,15 @@ namespace oneroom_api.Model
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Face>()
+                .HasIndex(f => f.FaceId);
+            modelBuilder.Entity<Group>()
+                .HasIndex(g => g.GroupId);
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserId);
+        }
     }
 }
