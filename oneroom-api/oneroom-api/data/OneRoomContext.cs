@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using oneroom_api.Model;
 
 namespace oneroom_api.Model
 {
@@ -11,5 +12,7 @@ namespace oneroom_api.Model
             : base(options)
         {
         }
+
+        public DbSet<oneroom_api.Model.Group> Group { get; set; }
     }
 }
