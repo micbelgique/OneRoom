@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
 
 namespace oneroom_api.Controllers
@@ -18,12 +20,24 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2 
         [HttpPost]
-        public async Task<ActionResult<Face>> PostFace(Face face)
+        public async Task<ActionResult<Face>> PostFace(Face face,Guid user)
         {
-            _context.Faces.Add(face);
-            await _context.SaveChangesAsync();
+            if (face.FaceId != Guid.Empty)
+            {
+                var u = (from e in _context.Users where e.UserId == user select e).Include(us=>us.Faces).FirstOrDefault();
+                if (u != null)
+                {
+                    u.Faces.Add(face);
+                    _context.Entry(u).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFace", new { id = face.Id }, face);
+                    return CreatedAtAction("GetFace", new { id = face.Id }, face);
+                }
+                else
+                    return NotFound("user not found");
+            }
+            else
+                return NotFound("face not found");
         }
 
         // DELETE: api/Facesv2/5 
