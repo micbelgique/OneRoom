@@ -6,8 +6,6 @@ namespace oneroom_api.Model
 {
     public class Group
     {
-        [Key]
-        public int Id { get; }
         public Guid GroupId { get; set; }
         public string Name { get; set; }
         public DateTime CreationDate { get; } = new DateTime();

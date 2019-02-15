@@ -7,6 +7,7 @@ import { User } from '../services/OnePoint/model/user';
 import { Face } from '../services/OnePoint/model/face';
 import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
 import { UserService } from '../services/OnePoint/user.service';
+import { GroupService } from '../services/OnePoint/group.service';
 
 @Component({
   selector: 'app-camcard',
@@ -21,7 +22,9 @@ export class CamcardComponent implements OnInit {
   // webcam snapshot trigger
   private trigger: Subject<void> = new Subject<void>();
 
-  constructor(private faceProcess: FaceProcessService, private userService: UserService) { }
+  constructor(
+    private faceProcess: FaceProcessService,
+    private userService: UserService) { }
 
   ngOnInit() {
   }
@@ -65,12 +68,14 @@ export class CamcardComponent implements OnInit {
             f.moustacheLevel = face.faceAttributes.facialHair.moustache;
             f.smileLevel = face.faceAttributes.smile;
             u.faces.push(f);
-          }
-          );
+          });
           u.generateAvatar();
           users.push(u);
         });
-        this.userService.addUsers(users).subscribe();
+        console.log('adding users');
+        console.log(users);
+        const users$ = this.userService.addUsers(users);
+        users$.subscribe((response) => console.log(response));
       }
     );
   }

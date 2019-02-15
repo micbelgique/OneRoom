@@ -26,11 +26,11 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
-        public async Task<ActionResult<Face>> PostFace(int id,Face face)
+        public async Task<ActionResult<Face>> PostFace(Guid id, Face face)
         {
             if (face.FaceId != Guid.Empty)
             {
-                var u = (from usr in _context.Users where usr.Id == id select usr)
+                var u = (from usr in _context.Users where usr.UserId.Equals(Guid.Empty) select usr)
                     .Include(us=>us.Faces).FirstOrDefault();
 
                 if (u != null)
@@ -52,7 +52,7 @@ namespace oneroom_api.Controllers
                         return StatusCode(500);
                     }
 
-                    return CreatedAtAction("GetFace", new { id = face.Id }, face);
+                    return CreatedAtAction("GetFace", new { id = face.FaceId }, face);
                 }
                 else
                     return NotFound("user not found");
@@ -63,7 +63,7 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Facesv2/5 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Face>> DeleteFace(int id)
+        public async Task<ActionResult<Face>> DeleteFace(Guid id)
         {
             var face = await _context.Faces.FindAsync(id);
 
@@ -76,9 +76,9 @@ namespace oneroom_api.Controllers
             return Ok(face);
         }
 
-        private bool FaceExists(int id)
+        private bool FaceExists(Guid id)
         {
-            return _context.Faces.Any(e => e.Id == id);
+            return _context.Faces.Any(e => e.FaceId.Equals(id));
         }
     }
 }

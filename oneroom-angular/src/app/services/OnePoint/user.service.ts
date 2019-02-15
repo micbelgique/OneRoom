@@ -8,7 +8,7 @@ import { User } from './model/user';
   providedIn: 'root'
 })
 export class UserService {
-  private userUrl = 'https://oneroom-api20190213113008.azurewebsites.net/api/users';
+  private userUrl = 'http://localhost:54218/api/users';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
@@ -26,13 +26,16 @@ export class UserService {
       catchError(this.handleError)
       );
   }
+
   addUsers(users: User[]): Observable<User[]> {
     console.log(users);
+    // tslint:disable-next-line:object-literal-shorthand
     return this.http.post<User[]>(this.userUrl, users, { headers: this.headers })
       .pipe(tap(data => console.log('all:' + JSON.stringify(data))),
       catchError(this.handleError)
       );
   }
+
   private handleError(err: HttpErrorResponse) {
     let errorMessage = '';
     if (err.error instanceof ErrorEvent) {

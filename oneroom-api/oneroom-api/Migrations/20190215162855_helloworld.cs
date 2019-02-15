@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace oneroom_api.Migrations
 {
-    public partial class initialModels : Migration
+    public partial class helloworld : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,7 +46,7 @@ namespace oneroom_api.Migrations
                     FaceId = table.Column<Guid>(nullable: false),
                     Age = table.Column<double>(nullable: false),
                     IsMale = table.Column<bool>(nullable: false),
-                    EmotionDominant = table.Column<string>(nullable: false),
+                    EmotionDominant = table.Column<string>(nullable: true),
                     SmileLevel = table.Column<double>(nullable: false),
                     MoustacheLevel = table.Column<double>(nullable: false),
                     BeardLevel = table.Column<double>(nullable: false),

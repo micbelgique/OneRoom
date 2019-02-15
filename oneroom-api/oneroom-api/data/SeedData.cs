@@ -10,6 +10,7 @@ namespace oneroom_api.Model
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
+            return;
             using (var context = new OneRoomContext(
                 serviceProvider.GetRequiredService<
                     DbContextOptions<OneRoomContext>>()))

@@ -34,7 +34,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/Groups/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Group>> GetGroup(int id)
+        public async Task<ActionResult<Group>> GetGroup(Guid id)
         {
             var group = await _context.Group.FindAsync(id);
 
@@ -48,9 +48,9 @@ namespace oneroom_api.Controllers
 
         // PUT: api/Groups/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGroup(int id, Group group)
+        public async Task<IActionResult> PutGroup(Guid id, Group group)
         {
-            if (id != group.Id)
+            if (id != group.GroupId)
             {
                 return BadRequest();
             }
@@ -98,28 +98,28 @@ namespace oneroom_api.Controllers
             _context.Group.Add(group);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGroup", new { id = group.Id }, group);
+            return CreatedAtAction("GetGroup", new { id = group.GroupId }, group);
         }
 
         // DELETE: api/Groups/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Group>> DeleteGroup(int id)
+        public async Task<ActionResult<Group>> DeleteGroup(Guid id)
         {
-            var @group = await _context.Group.FindAsync(id);
-            if (@group == null)
+            var group = await _context.Group.FindAsync(id);
+            if (group == null)
             {
                 return NotFound();
             }
 
-            _context.Group.Remove(@group);
+            _context.Group.Remove(group);
             await _context.SaveChangesAsync();
 
-            return @group;
+            return group;
         }
 
-        private bool GroupExists(int id)
+        private bool GroupExists(Guid id)
         {
-            return _context.Group.Any(e => e.Id == id);
+            return _context.Group.Any(e => e.GroupId.Equals(id));
         }
     }
 }

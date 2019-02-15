@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190215143512_initialModels")]
-    partial class initialModels
+    [Migration("20190215192228_remove_ids")]
+    partial class remove_ids
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,8 +32,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("BeardLevel");
 
-                    b.Property<string>("EmotionDominant")
-                        .IsRequired();
+                    b.Property<string>("EmotionDominant");
 
                     b.Property<int>("GlassesType");
 

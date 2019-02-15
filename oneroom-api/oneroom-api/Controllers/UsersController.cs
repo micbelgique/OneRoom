@@ -35,7 +35,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/UsersV2/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<User>> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -49,10 +49,10 @@ namespace oneroom_api.Controllers
 
         // PUT: api/UsersV2/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAvatar(int id, string urlAvatar)
+        public async Task<IActionResult> UpdateAvatar(Guid id, string urlAvatar)
         {
 
-            if (urlAvatar == null || urlAvatar.Equals(""))
+            if (urlAvatar == null || !urlAvatar.Contains("https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?"))
             {
                 return BadRequest("Bad uri for avatar");
             }
@@ -88,41 +88,39 @@ namespace oneroom_api.Controllers
 
         // POST: api/UsersV2
         [HttpPost]
-        public async Task<ActionResult<bool>> PostUser(User[] users)
+        public async Task<ActionResult<bool>> PostUser(User user)
         {
             try
             {
-                if (users == null)
+                if (user == null)
                 {
-                    return BadRequest();
+                    return BadRequest("user is empty");
                 }
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid user");
                 }
-                var listUser = _context.Users;
-                for (int i = 0; i < users.Length; i++)
-                {
-                    var user = (from e in listUser where e.Id == users[i].Id select e).FirstOrDefault();
-                    if (user != null)
-                        _context.Entry(user).State = EntityState.Modified;
-                    else
-                        _context.Users.Add(user);
-                }
+
+               var u = _context.Users.Find(user.UserId);
+               if (u != null)
+                   return Conflict();
+               else
+                   _context.Users.Add(user);
+
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Une erreur est survenue");
             }
 
         }
 
         // DELETE: api/UsersV2/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
+        public async Task<ActionResult<User>> DeleteUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
@@ -136,9 +134,9 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        private bool UserExists(int id)
+        private bool UserExists(Guid id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.UserId.Equals(id));
         }
     }
 }

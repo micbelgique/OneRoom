@@ -6,14 +6,12 @@ namespace oneroom_api.Model
 {
     public class Face
     {
-        [Key]
-        public int Id { get; }
         public Guid FaceId { get; set; }
         public DateTime CreationDate { get; } = new DateTime();
         [Range(0,150)]
         public double Age { get; set; }
         public bool IsMale { get; set; }
-        [Required]
+        //[Required]
         public string EmotionDominant { get; set; }
         [Range(0, 1)]
         public double SmileLevel { get; set; }
