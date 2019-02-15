@@ -40,7 +40,7 @@ export class CamcardComponent implements OnInit {
     group.name = 'mic_stage_2019';
     group.userData = 'Group de test en developpement pour oneroom';
     // traitement face API
-    // return an observable
+    // return an observable;
     const res$ = this.faceProcess.byImg(stream.blob, group);
     res$.subscribe(
       (data) => {
