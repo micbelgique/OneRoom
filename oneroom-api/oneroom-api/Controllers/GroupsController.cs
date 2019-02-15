@@ -19,6 +19,12 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
+        // OPTIONS: api/Groups
+        public ActionResult OptionsGroups()
+        {
+            return Ok();
+        }
+
         // GET: api/Groups
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Group>>> GetGroups()

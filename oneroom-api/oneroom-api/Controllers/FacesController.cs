@@ -18,6 +18,12 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
+        // OPTIONS: api/Faces
+        public ActionResult OptionsFaces()
+        {
+            return Ok();
+        }
+
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
         public async Task<ActionResult<Face>> PostFace(int id,Face face)
