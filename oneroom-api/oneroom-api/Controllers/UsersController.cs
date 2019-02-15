@@ -81,22 +81,36 @@ namespace oneroom_api.Controllers
 
         // POST: api/UsersV2
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<bool>> PostUser(User[] users)
         {
-            if(user == null)
+            try
             {
-                return BadRequest();
+                if (users == null)
+                {
+                    return BadRequest();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid user");
+                }
+                var listUser = _context.Users;
+                for (int i = 0; i < users.Length; i++)
+                {
+                    var user = (from e in listUser where e.Id == users[i].Id select e).FirstOrDefault();
+                    if (user != null)
+                        _context.Entry(user).State = EntityState.Modified;
+                    else
+                        _context.Users.Add(user);
+                }
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
 
-            if(!ModelState.IsValid)
-            {
-                return BadRequest("Invalid user");
-            }
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/UsersV2/5
