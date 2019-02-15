@@ -87,23 +87,25 @@ namespace oneroom_api.Controllers
         //    }
         //    catch (DbUpdateException)
         //    {
-        //        if ( UserExists(user.UserId))
-        //        {
-        //            return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found."});
-        //        }
-        //        else
-        //        {
-        //            Face face = null;
-        //            user.Faces.ForEach(f => {
-        //                if (FaceExists(f.FaceId))
-        //                {
-        //                    face = f;
-        //                    return;
-        //                }
-        //            });
-        //            if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
-        //            throw;
-        //        }
+        //        //if (UserExists(user.UserId))
+        //        //{
+        //        //    return Conflict(new { message = $"An existing record with for the user the id '{user.UserId}' was already found." });
+        //        //}
+        //        //else
+        //        //{
+        //        //    Face face = null;
+        //        //    user.Faces.ForEach(f =>
+        //        //    {
+        //        //        if (FaceExists(f.FaceId))
+        //        //        {
+        //        //            face = f;
+        //        //            return;
+        //        //        }
+        //        //    });
+        //        //    if (face != null) return Conflict(new { message = $"An existing record for the face with the id '{face.FaceId}' was already found." });
+        //        //    throw;
+        //        //}
+        //        return Conflict(new { message = $"An existing record with for one of the element of the list was already found." });
         //    }
 
         //    return CreatedAtAction("GetUser", new { id = user.UserId }, user);
