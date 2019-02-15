@@ -10,9 +10,9 @@ namespace oneroom_api.Model
     {
         [Key]
         int Id;
-        Guid GroupId;
+        Guid GroupId { get; set; }
         List<User> Users = new List<User>();
-        DateTime CreationDate;
+        DateTime CreationDate { get; } = new DateTime();
 
     }
 }
