@@ -113,9 +113,9 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                return BadRequest(ex.Message);
             }
 
         }
