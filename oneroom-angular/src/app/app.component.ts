@@ -19,12 +19,12 @@ export class AppComponent implements OnInit {
 
   title = 'OneRoom';
   opened = false;
-  constructor(private groupService: PersonGroupService) { }
 
-  async ngOnInit() {
-  }
+  constructor() { }
+
+  async ngOnInit() {}
+
   toggleMenu(): void {
     this.opened = !this.opened;
-    console.log(this.opened);
   }
 }

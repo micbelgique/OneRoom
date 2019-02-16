@@ -48,12 +48,13 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        // PUT: api/UsersV2/5
+        // PUT: api/UsersV2/id
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAvatar(Guid id, string urlAvatar)
         {
 
-            if (urlAvatar == null || !urlAvatar.Contains("https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?"))
+            // todo regex check uri match 
+            if (urlAvatar == null)
             {
                 return BadRequest("Bad uri for avatar");
             }

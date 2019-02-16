@@ -51,10 +51,6 @@ namespace oneroom_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGroup(Guid id, Group group)
         {
-            if (id != group.GroupId)
-            {
-                return BadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
