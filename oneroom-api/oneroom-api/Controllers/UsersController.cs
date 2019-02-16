@@ -21,6 +21,7 @@ namespace oneroom_api.Controllers
 
 
         // OPTIONS: api/UsersV2
+        [HttpOptions]
         public ActionResult OptionsUsers()
         {
             return Ok();
@@ -103,10 +104,16 @@ namespace oneroom_api.Controllers
                 }
 
                var u = _context.Users.Find(user.UserId);
+               var count = _context.Users.Count(); 
+
                if (u != null)
-                   return Conflict();
+                   return Conflict("user already exists");
                else
-                   _context.Users.Add(user);
+                {
+                    user.Name = "Player " + (count + 1);
+                    _context.Users.Add(user);
+                }
+                  
 
                 await _context.SaveChangesAsync();
                 return true;

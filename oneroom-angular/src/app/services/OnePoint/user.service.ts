@@ -13,7 +13,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {
     this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
+      'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       'Access-Control-Allow-Headers': '*',
     });
@@ -27,13 +27,13 @@ export class UserService {
       );
   }
 
-  addUsers(users: User[]): Observable<User[]> {
-    console.log(users);
+  addUser(user: User): Observable<boolean> {
     // tslint:disable-next-line:object-literal-shorthand
-    return this.http.post<User[]>(this.userUrl, users, { headers: this.headers })
-      .pipe(tap(data => console.log('all:' + JSON.stringify(data))),
-      catchError(this.handleError)
-      );
+    return this.http.post<boolean>(this.userUrl, user, { headers: this.headers });
+  }
+
+  updateAvatar(userId: string, urlAvatar: string): Observable<any> {
+    return this.http.put<any>(this.userUrl + '/' + userId, urlAvatar, { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

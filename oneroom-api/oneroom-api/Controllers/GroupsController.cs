@@ -20,6 +20,7 @@ namespace oneroom_api.Controllers
         }
 
         // OPTIONS: api/Groups
+        [HttpOptions]
         public ActionResult OptionsGroups()
         {
             return Ok();

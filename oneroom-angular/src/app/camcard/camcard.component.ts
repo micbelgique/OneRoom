@@ -7,7 +7,7 @@ import { User } from '../services/OnePoint/model/user';
 import { Face } from '../services/OnePoint/model/face';
 import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
 import { UserService } from '../services/OnePoint/user.service';
-import { GroupService } from '../services/OnePoint/group.service';
+import { FaceService } from '../services/OnePoint/face.service';
 
 @Component({
   selector: 'app-camcard',
@@ -24,11 +24,13 @@ export class CamcardComponent implements OnInit {
 
   constructor(
     private faceProcess: FaceProcessService,
-    private userService: UserService) { }
+    private userService: UserService,
+    private faceService: FaceService) { }
 
   ngOnInit() {
   }
 
+  // trigger capture with btn
   triggerCapture() {
     console.log('triggering capture');
     this.trigger.next();
@@ -72,18 +74,46 @@ export class CamcardComponent implements OnInit {
           u.generateAvatar();
           users.push(u);
         });
-        console.log('adding users');
-        console.log(users);
-        const users$ = this.userService.addUsers(users);
-        users$.subscribe((response) => console.log(response));
+
+        // adding users
+        for (const user of users) {
+          const user$ = this.userService.addUser(user);
+          user$.subscribe(
+            (response) => console.log(response)
+          , (error) => {
+              console.log(error);
+              if (error.status === 409 && error.ok === false) {
+                // update avatar
+                const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
+                // tslint:disable-next-line:no-shadowed-variable
+                avatar$.subscribe((response) => console.log(response), (error) => console.log(error));
+                // adding face to already existant user
+                for (const face of user.faces) {
+                    console.log('adding face');
+                    const face$ = this.faceService.addFace(face);
+                    face$.subscribe(
+                    (response) => {
+                      console.log('avatar updated');
+                      console.log(response);
+                    },
+                    // tslint:disable-next-line:no-shadowed-variable
+                    (error) => {
+                      console.log(error);
+                    });
+                }
+              }
+          });
+        }
       }
     );
   }
 
+  // capture picture with webcam
   public get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
 
+  // transform dataUrl in blob
   private makeblob(dataURL) {
     const BASE64_MARKER = ';base64,';
     if (dataURL.indexOf(BASE64_MARKER) === -1) {

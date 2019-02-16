@@ -19,6 +19,7 @@ namespace oneroom_api.Controllers
         }
 
         // OPTIONS: api/Faces
+        [HttpOptions]
         public ActionResult OptionsFaces()
         {
             return Ok();
@@ -26,11 +27,11 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
-        public async Task<ActionResult<Face>> PostFace(Guid id, Face face)
+        public async Task<ActionResult<bool>> PostFace(Face face)
         {
             if (face.FaceId != Guid.Empty)
             {
-                var u = (from usr in _context.Users where usr.UserId.Equals(Guid.Empty) select usr)
+                var u = (from usr in _context.Users where usr.UserId.Equals(face.FaceId) select usr)
                     .Include(us=>us.Faces).FirstOrDefault();
 
                 if (u != null)
@@ -49,10 +50,10 @@ namespace oneroom_api.Controllers
                         await _context.SaveChangesAsync();
                     } catch(Exception)
                     {
-                        return StatusCode(500);
+                        return StatusCode(500,false);
                     }
 
-                    return CreatedAtAction("GetFace", new { id = face.FaceId }, face);
+                    return Ok(true);
                 }
                 else
                     return NotFound("user not found");
