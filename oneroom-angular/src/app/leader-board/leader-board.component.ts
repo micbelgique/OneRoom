@@ -13,13 +13,14 @@ export class LeaderBoardComponent implements OnInit {
   users: User[] = [];
   errorMessage: string;
   private timeSubscription;
+  private userSub;
   constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.getData();
   }
   private getData(): void {
-    this.userService.getUsers().subscribe(
+    this.userSub = this.userService.getUsers().subscribe(
       usersList => {
         this.users = usersList;
         this.refreshData();
@@ -28,7 +29,15 @@ export class LeaderBoardComponent implements OnInit {
     );
   }
   private refreshData(): void {
-    this.timeSubscription = timer(5000);
-    const sub = this.timeSubscription.subscribe(val => this.getData());
+    this.timeSubscription = timer(5000).subscribe(val => this.getData());
+  }
+  // tslint:disable-next-line:use-life-cycle-interface
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
+    if (this.timeSubscription) {
+      this.timeSubscription.unsubscribe();
+    }
   }
 }
