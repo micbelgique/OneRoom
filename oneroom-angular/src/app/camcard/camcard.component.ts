@@ -112,7 +112,7 @@ export class CamcardComponent implements OnInit {
             GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
             GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
             GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
-            f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+            f.hairColor = face.faceAttributes.hair.hairColor ? face.faceAttributes.hair.hairColor[0].color : null;
             f.isMale = face.faceAttributes.gender === 'male';
             f.moustacheLevel = face.faceAttributes.facialHair.moustache;
             f.smileLevel = face.faceAttributes.smile;
