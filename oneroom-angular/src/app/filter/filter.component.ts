@@ -18,6 +18,8 @@ export class FilterComponent implements OnInit {
   _moustacheSelect = false;
   // tslint:disable-next-line:variable-name
   _glassesSelect = false;
+  // tslint:disable-next-line:variable-name
+  _activate = false;
 
   public get beardSelect(): boolean {
     return this._beardSelect;
@@ -40,7 +42,13 @@ export class FilterComponent implements OnInit {
     this._glassesSelect = v;
     this.filteredUsers = this.filter();
   }
-
+  public get activate(): boolean {
+    return this._activate;
+  }
+  public set activate(v: boolean) {
+    this._activate = v;
+    this.filteredUsers = this.filter();
+  }
 
   constructor(private userService: UserService) { }
 
@@ -53,8 +61,12 @@ export class FilterComponent implements OnInit {
     );
   }
   filter(): User[] {
-    return this.users.filter((user: User) => user.faces[0].beardLevel > 0.2 === this._beardSelect &&
+    if (this._activate) {
+      return this.users.filter((user: User) => user.faces[0].beardLevel > 0.2 === this._beardSelect &&
       user.faces[0].moustacheLevel > 0.2 === this._moustacheSelect &&
       (user.faces[0].glassesType !== GlassesType.NoGlasses) === this._glassesSelect);
+    } else {
+      return this.users;
+    }
   }
 }

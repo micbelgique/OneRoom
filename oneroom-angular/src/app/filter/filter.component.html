@@ -1,6 +1,17 @@
-<mat-slide-toggle color="primary" [(ngModel)]="glassesSelect">glasses ?</mat-slide-toggle><br>
-<mat-slide-toggle color="primary" [(ngModel)]="moustacheSelect">Moustache ?</mat-slide-toggle><br>
-<mat-slide-toggle color="primary" [(ngModel)]="beardSelect">Beard ?</mat-slide-toggle>
+<mat-grid-list cols=3 rowHeight="6:1">
+  <mat-grid-tile colspan=3 rows=1>
+      <mat-slide-toggle color="primary" [(ngModel)]="activate">active filters</mat-slide-toggle>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-slide-toggle color="primary" [(ngModel)]="glassesSelect">glasses ?</mat-slide-toggle>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-slide-toggle color="primary" [(ngModel)]="moustacheSelect">Moustache ?</mat-slide-toggle>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-slide-toggle color="primary" [(ngModel)]="beardSelect">Beard ?</mat-slide-toggle>
+  </mat-grid-tile>
+</mat-grid-list>
 <mat-accordion class="example-headers-align" *ngFor="let item of filteredUsers">
   <mat-expansion-panel>
     <mat-expansion-panel-header>
