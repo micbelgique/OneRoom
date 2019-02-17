@@ -2,8 +2,8 @@ import { Face } from './face';
 import { GlassesType } from './glasses-type.enum';
 
 export class User {
-  urlAvatar: string;
   userId: string;
+  urlAvatar: string;
   name: string;
   faces: Face[];
 

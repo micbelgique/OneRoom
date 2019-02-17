@@ -18,8 +18,10 @@ export class FaceService {
     });
   }
 
-  addFace(face: Face) {
-    return this.http.post<boolean>(this.userUrl, face, { headers: this.headers });
+  addFace(userId: string, face: Face) {
+    const url = this.userUrl + '/' + userId;
+    console.log(url);
+    return this.http.post<boolean>(url, face, { headers: this.headers });
   }
 
 }

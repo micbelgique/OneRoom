@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { WebcamImage } from 'ngx-webcam';
+import { WebcamImage, WebcamInitError, WebcamUtil } from 'ngx-webcam';
 import { Group } from '../services/cognitive/person-group.service';
 import { FaceProcessService } from '../utilities/face-process.service';
 import { User } from '../services/OnePoint/model/user';
@@ -22,13 +22,60 @@ export class CamcardComponent implements OnInit {
   // webcam snapshot trigger
   private trigger: Subject<void> = new Subject<void>();
 
+  // toggle webcam on/off
+  public showWebcam = true;
+  public allowCameraSwitch = true;
+  public multipleWebcamsAvailable = false;
+  public deviceId: string;
+  public videoOptions: MediaTrackConstraints = {
+    // width: {ideal: 1024},
+    // height: {ideal: 576}
+  };
+  public errors: WebcamInitError[] = [];
+
+  // switch to next / previous / specific webcam; true/false: forward/backwards, string: deviceId
+  private nextWebcam: Subject<boolean|string> = new Subject<boolean|string>();
+
+  public ngOnInit(): void {
+    WebcamUtil.getAvailableVideoInputs()
+      .then((mediaDevices: MediaDeviceInfo[]) => {
+        this.multipleWebcamsAvailable = mediaDevices && mediaDevices.length > 1;
+      });
+  }
+
+  public triggerSnapshot(): void {
+    this.trigger.next();
+  }
+
+  public toggleWebcam(): void {
+    this.showWebcam = !this.showWebcam;
+  }
+
+  public handleInitError(error: WebcamInitError): void {
+    this.errors.push(error);
+  }
+
+  public showNextWebcam(directionOrDeviceId: boolean|string): void {
+    // true => move forward through devices
+    // false => move backwards through devices
+    // string => move to device with given deviceId
+    this.nextWebcam.next(directionOrDeviceId);
+  }
+
+  public cameraWasSwitched(deviceId: string): void {
+    console.log('active device: ' + deviceId);
+    this.deviceId = deviceId;
+  }
+
+  public get nextWebcamObservable(): Observable<boolean|string> {
+    return this.nextWebcam.asObservable();
+  }
+
   constructor(
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService) { }
 
-  ngOnInit() {
-  }
 
   // trigger capture with btn
   triggerCapture() {
@@ -57,10 +104,10 @@ export class CamcardComponent implements OnInit {
           u.faces = [];
           element.faces.forEach(face => {
             const f = new Face();
+            f.faceId = face.faceId;
             f.age = face.faceAttributes.age;
             f.baldLevel = face.faceAttributes.hair.bald;
             f.beardLevel = face.faceAttributes.facialHair.beard;
-            console.log(face.faceAttributes.glasses);
             f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
             GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
             GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
@@ -69,6 +116,40 @@ export class CamcardComponent implements OnInit {
             f.isMale = face.faceAttributes.gender === 'male';
             f.moustacheLevel = face.faceAttributes.facialHair.moustache;
             f.smileLevel = face.faceAttributes.smile;
+            let emotion = 0;
+            let emotionType = '';
+            if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
+              emotion = face.faceAttributes.emotion.anger;
+              emotionType = 'anger';
+            } else {
+              emotion = face.faceAttributes.emotion.contempt;
+              emotionType = 'contempt';
+            }
+            if (emotion > face.faceAttributes.emotion.disgust) {
+              emotion =  face.faceAttributes.emotion.disgust;
+              emotionType = 'disgust';
+            }
+            if (emotion > face.faceAttributes.emotion.fear) {
+              emotion = face.faceAttributes.emotion.fear;
+              emotionType = 'fear';
+            }
+            if (emotion > face.faceAttributes.emotion.happinness) {
+              emotion = face.faceAttributes.emotion.happinness;
+              emotionType = 'happinness';
+            }
+            if (emotion > face.faceAttributes.emotion.neutral) {
+              emotion = face.faceAttributes.emotion.neutral;
+              emotionType = 'neutral';
+            }
+            if (emotion > face.faceAttributes.emotion.sadness) {
+              emotion = face.faceAttributes.emotion.sadness;
+              emotionType = 'sadness';
+            }
+            if (emotion > face.faceAttributes.emotion.surprise) {
+              emotion = face.faceAttributes.emotion.surprise;
+              emotionType = 'surprise';
+            }
+            f.emotionDominant = emotionType;
             u.faces.push(f);
           });
           u.generateAvatar();
@@ -90,10 +171,10 @@ export class CamcardComponent implements OnInit {
                 // adding face to already existant user
                 for (const face of user.faces) {
                     console.log('adding face');
-                    const face$ = this.faceService.addFace(face);
+                    const face$ = this.faceService.addFace(user.userId, face);
                     face$.subscribe(
                     (response) => {
-                      console.log('avatar updated');
+                      console.log('Avatar updated');
                       console.log(response);
                     },
                     // tslint:disable-next-line:no-shadowed-variable
@@ -104,6 +185,7 @@ export class CamcardComponent implements OnInit {
               }
           });
         }
+        data = null;
       }
     );
   }

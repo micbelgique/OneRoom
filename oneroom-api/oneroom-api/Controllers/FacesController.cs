@@ -27,11 +27,10 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
-        public async Task<ActionResult<bool>> PostFace(Face face)
+        public async Task<ActionResult<bool>> PostFace(Guid id, Face face)
         {
-            if (face.FaceId != Guid.Empty)
-            {
-                var u = (from usr in _context.Users where usr.UserId.Equals(face.FaceId) select usr)
+
+                var u = (from usr in _context.Users where usr.UserId.Equals(id) select usr)
                     .Include(us=>us.Faces).FirstOrDefault();
 
                 if (u != null)
@@ -57,9 +56,7 @@ namespace oneroom_api.Controllers
                 }
                 else
                     return NotFound("user not found");
-            }
-            else
-                return NotFound("face not found");
+            
         }
 
         // DELETE: api/Facesv2/5 

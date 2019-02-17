@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190215192228_remove_ids")]
-    partial class remove_ids
+    [Migration("20190216181935_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,8 +36,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<int>("GlassesType");
 
-                    b.Property<string>("HairColor")
-                        .IsRequired();
+                    b.Property<string>("HairColor");
 
                     b.Property<bool>("IsMale");
 

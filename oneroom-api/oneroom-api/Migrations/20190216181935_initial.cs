@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace oneroom_api.Migrations
 {
-    public partial class helloworld : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -52,7 +52,7 @@ namespace oneroom_api.Migrations
                     BeardLevel = table.Column<double>(nullable: false),
                     GlassesType = table.Column<int>(nullable: false),
                     BaldLevel = table.Column<double>(nullable: false),
-                    HairColor = table.Column<string>(nullable: false),
+                    HairColor = table.Column<string>(nullable: true),
                     UserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>

@@ -34,8 +34,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<int>("GlassesType");
 
-                    b.Property<string>("HairColor")
-                        .IsRequired();
+                    b.Property<string>("HairColor");
 
                     b.Property<bool>("IsMale");
 
