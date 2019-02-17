@@ -4,7 +4,7 @@
         Your own endPoint at the moment: {{endPoint}}
       </mat-list-item>
       <mat-list-item>
-          Your endPoint for cognitive services at the moment: {{endPoint}}
+          Your endPoint for cognitive services at the moment: {{endPointCognitive}}
         </mat-list-item>
         <mat-list-item>
         Your subscription key for cognitive services at the moment: {{subscriptionKey}}
@@ -14,7 +14,7 @@
         <input matInput placeholder="enter your endPoint" type='url' [(ngModel)]="tempEndPoint">
     </mat-form-field>
     <mat-form-field>
-        <input matInput placeholder="enter your endPoint cognitive" type='url' [(ngModel)]="tempEndPoint">
+        <input matInput placeholder="enter your endPoint cognitive" type='url' [(ngModel)]="tempEndPointCognitive">
     </mat-form-field>
     <mat-form-field>
       <input matInput placeholder="enter your subscriptionKey" type='url' [(ngModel)]="tempSubcriptionKey" value='{{ subscriptionKey }}'>

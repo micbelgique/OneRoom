@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   faceApi: {
     SubscriptionKey : localStorage.getItem('subscriptionKey'),
-    EndPoint : 'https://northeurope.api.cognitive.microsoft.com/face/v1.0',
+    EndPoint : localStorage.getItem('endpointCognitive'),
   },
   Data: {
     EndPoint : localStorage.getItem('endpoint')
