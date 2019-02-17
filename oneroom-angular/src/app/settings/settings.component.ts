@@ -19,6 +19,7 @@ export class SettingsComponent implements OnInit {
   }
   public set endPoint(endPoint: string) {
     this._endPoint = endPoint;
+    localStorage.removeItem('endpoint');
     localStorage.setItem('endpoint', endPoint);
   }
   public get subscriptionKey(): string {
@@ -26,6 +27,7 @@ export class SettingsComponent implements OnInit {
   }
   public set subscriptionKey(subscriptionKey: string) {
     this._subscriptionKey = subscriptionKey;
+    localStorage.removeItem('subscriptionKey');
     localStorage.setItem('subscriptionKey', subscriptionKey);
   }
 
