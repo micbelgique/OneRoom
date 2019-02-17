@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Face } from './model/face';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FaceService {
 
-  private userUrl = 'http://localhost:54218/api/faces';
+  private userUrl = environment.Data.EndPoint + '/faces';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
