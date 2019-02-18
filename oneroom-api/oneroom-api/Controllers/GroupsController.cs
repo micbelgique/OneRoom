@@ -21,6 +21,7 @@ namespace oneroom_api.Controllers
 
         // OPTIONS: api/Groups
         [HttpOptions]
+        [ProducesResponseType(200)]
         public ActionResult OptionsGroups()
         {
             return Ok();
@@ -28,6 +29,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/Groups
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Group>>>))]
         public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
         {
             return await _context.Group.ToListAsync();
@@ -35,6 +37,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Groups/5
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Group>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Group>> GetGroup(Guid id)
         {
             var group = await _context.Group.FindAsync(id);
@@ -49,6 +53,9 @@ namespace oneroom_api.Controllers
 
         // PUT: api/Groups/5
         [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> PutGroup(Guid id, Group group)
         {
 
@@ -80,6 +87,8 @@ namespace oneroom_api.Controllers
 
         // POST: api/Groups
         [HttpPost]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<Group>>))]
+        [ProducesResponseType(400)]
         public async Task<ActionResult<Group>> PostGroup(Group group)
         {
             if(group == null)
@@ -100,6 +109,8 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Groups/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Group>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Group>> DeleteGroup(Guid id)
         {
             var group = await _context.Group.FindAsync(id);

@@ -22,6 +22,7 @@ namespace oneroom_api.Controllers
 
         // OPTIONS: api/UsersV2
         [HttpOptions]
+        [ProducesResponseType(200)]
         public ActionResult OptionsUsers()
         {
             return Ok();
@@ -29,6 +30,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/UsersV2
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.Include(u=>u.Faces).ToListAsync();
@@ -36,6 +38,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/UsersV2/5
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -50,6 +54,9 @@ namespace oneroom_api.Controllers
 
         // PUT: api/UsersV2/id
         [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateAvatar(Guid id, string urlAvatar)
         {
 
@@ -90,6 +97,9 @@ namespace oneroom_api.Controllers
 
         // POST: api/UsersV2
         [HttpPost]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<bool>>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
         public async Task<ActionResult<bool>> PostUser(User user)
         {
             try
@@ -128,6 +138,8 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/UsersV2/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<User>> DeleteUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);

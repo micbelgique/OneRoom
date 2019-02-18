@@ -20,6 +20,7 @@ namespace oneroom_api.Controllers
 
         // OPTIONS: api/Faces
         [HttpOptions]
+        [ProducesResponseType(200)]
         public ActionResult OptionsFaces()
         {
             return Ok();
@@ -27,6 +28,10 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<bool>>))]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(500, Type = typeof(Task<ActionResult<bool>>))]
         public async Task<ActionResult<bool>> PostFace(Guid id, Face face)
         {
 
@@ -61,6 +66,8 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Facesv2/5 
         [HttpDelete("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Face>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Face>> DeleteFace(Guid id)
         {
             var face = await _context.Faces.FindAsync(id);
