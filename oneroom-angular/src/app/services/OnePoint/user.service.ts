@@ -13,6 +13,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {
     this.headers = new HttpHeaders({
+      'Content-Type' : 'application/json'
       // 'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
       // 'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       // 'Access-Control-Allow-Headers': '*',
@@ -31,7 +32,7 @@ export class UserService {
   }
 
   updateAvatar(userId: string, urlAvatar: string): Observable<any> {
-    return this.http.put<any>(this.userUrl + '/' + userId, {urlAvatar} , { headers: this.headers });
+    return this.http.put<any>(this.userUrl + '/' + userId, JSON.stringify({url : urlAvatar.toString()}), { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

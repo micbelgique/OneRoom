@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
+using oneroom_api.ViewModels;
 
 namespace oneroom_api.Controllers
 {
@@ -57,11 +58,10 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateAvatar(Guid id, [FromBody] string urlAvatar)
+        public async Task<IActionResult> UpdateAvatar(Guid id, Avatar model)
         {
-
             // todo regex check uri match 
-            if (urlAvatar == null)
+            if (model.Url == null)
             {
                 return BadRequest("avatar url is null");
             }
@@ -73,9 +73,8 @@ namespace oneroom_api.Controllers
                 return BadRequest("user not found");
             }
 
-            user.UrlAvatar = urlAvatar;
-            if (user.UrlAvatar == urlAvatar) return NoContent();
-            user.UrlAvatar = urlAvatar;
+            if (user.UrlAvatar == model.Url) return NoContent();
+            user.UrlAvatar = model.Url;
             _context.Entry(user).State = EntityState.Modified;
 
             try
