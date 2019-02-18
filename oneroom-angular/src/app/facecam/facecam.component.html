@@ -1,0 +1,8 @@
+<div style="text-align: center">
+  <select #devices (change)="this.startStream()" >
+      <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
+  </select>
+  <br>
+  <video style='display: none' #webcam autoplay></video>
+  <canvas #canvas></canvas>
+</div>

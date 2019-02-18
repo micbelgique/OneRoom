@@ -33,6 +33,7 @@ import { PersonGroupPersonService } from './services/cognitive/person-group-pers
 import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
 import { FilterComponent } from './filter/filter.component';
+import { FacecamComponent } from './facecam/facecam.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { FilterComponent } from './filter/filter.component';
     CamcardComponent,
     LeaderBoardComponent,
     SettingsComponent,
-    FilterComponent
+    FilterComponent,
+    FacecamComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +62,7 @@ import { FilterComponent } from './filter/filter.component';
     FormsModule,
     RouterModule.forRoot([
       { path: 'leaderboard', component: LeaderBoardComponent },
-      { path: 'welcome', component: CamcardComponent },
+      { path: 'welcome', component: FacecamComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'filter', component: FilterComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
