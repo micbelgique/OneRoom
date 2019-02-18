@@ -31,6 +31,7 @@ export class FaceProcessService {
 
 
   byImg(stream: Blob, group: Group): Observable<PersonGroup> {
+    this.result = new PersonGroup();
     // 0. Create group or not if exists
     const getGroup$ = this.groupService.get(group.personGroupId);
     getGroup$.subscribe(
@@ -118,8 +119,6 @@ export class FaceProcessService {
               this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
             }
 
-            console.log('ADDING FACE');
-            console.log('persisted Face ID : ' + data.persistedFaceId);
             this.train(group.personGroupId);
           },
           () => {
@@ -134,8 +133,6 @@ export class FaceProcessService {
 
     person$.subscribe(
           (data) => {
-            console.log('CREATING PERSON');
-            console.log('Person created persisted ID : ' + data.personId);
             this.addFace(group, data.personId, stream, face);
           },
           () => {
@@ -148,21 +145,12 @@ export class FaceProcessService {
     const train$ = this.groupService.train(groupId);
     train$.subscribe(
     () => {
-      console.log('TRAINING');
-      console.log('Group trained ! ');
       this.list(groupId);
     },
     () => {
-      console.log('ERROR : Training group');
       // 6. training status
       const trainStatus$ = this.groupService.getTrainingStatus(groupId);
-      trainStatus$.subscribe(
-      (status) => {
-          console.log('TRAINING STATUS');
-          console.log('Status : ' + status.status);
-          console.log('Action Date : ' + status.lastActionDateTime);
-          console.log('Creation Date : ' + status.createdDateTime);
-      });
+      trainStatus$.subscribe();
     });
   }
 

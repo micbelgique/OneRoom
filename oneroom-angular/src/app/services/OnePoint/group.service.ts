@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Group } from './model/group';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
 
-  private userUrl = environment.Data.EndPoint + '/groups';
+  private userUrl = localStorage.getItem('endpoint') + '/groups';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {

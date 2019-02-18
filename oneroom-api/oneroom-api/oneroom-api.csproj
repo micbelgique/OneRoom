@@ -12,6 +12,8 @@
     <Compile Remove="Migrations\20190218085412_DateTimeAdd.Designer.cs" />
     <Compile Remove="Migrations\20190218085704_DateTimeAdd.cs" />
     <Compile Remove="Migrations\20190218085704_DateTimeAdd.Designer.cs" />
+    <Compile Remove="Migrations\20190218102049_UrlRemoveForUser.cs" />
+    <Compile Remove="Migrations\20190218102049_UrlRemoveForUser.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

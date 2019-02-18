@@ -40,16 +40,15 @@ namespace oneroom_api.Controllers
 
                 if (u != null)
                 {
-
-                    if (!u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
+                    
+                    if (u.Faces.Select(f => f.FaceId).Equals(face.FaceId))
                     {
-                        return Conflict("face already exists");
+                        return Conflict("face already exists"+ face.FaceId);
                     }
-
                     u.Faces.Add(face);
                     _context.Entry(u).State = EntityState.Modified;
-                    
-                    try
+
+                try
                     {
                         await _context.SaveChangesAsync();
                     } catch(Exception)

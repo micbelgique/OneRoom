@@ -3,29 +3,26 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { User } from './model/user';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private userUrl = environment.Data.EndPoint + '/Users';
+  private userUrl = localStorage.getItem('endpoint') + '/Users';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
     this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': '*',
+      // 'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
+      // 'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      // 'Access-Control-Allow-Headers': '*',
     });
 
   }
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.userUrl, { headers: this.headers })
-      .pipe(tap(data => console.log('all: ' + JSON.stringify(data))),
-      catchError(this.handleError)
-      );
+      .pipe(catchError(this.handleError));
   }
 
   addUser(user: User): Observable<boolean> {
@@ -34,9 +31,8 @@ export class UserService {
   }
 
   updateAvatar(userId: string, urlAvatar: string): Observable<any> {
-    const url = this.userUrl + '/' + userId;
-    console.log(url);
-    return this.http.put<any>(url, urlAvatar, { headers: this.headers });
+    const url = this.userUrl;
+    return this.http.put<any>(url, {urlAvatar , id: userId } , { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

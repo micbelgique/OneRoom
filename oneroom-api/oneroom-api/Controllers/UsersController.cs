@@ -53,7 +53,7 @@ namespace oneroom_api.Controllers
         }
 
         // PUT: api/UsersV2/id
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -63,7 +63,7 @@ namespace oneroom_api.Controllers
             // todo regex check uri match 
             if (urlAvatar == null)
             {
-                return BadRequest("Bad uri for avatar");
+                return BadRequest("avatar url is null");
             }
 
             var user = await _context.Users.FindAsync(id);

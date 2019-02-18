@@ -63,7 +63,6 @@ export class CamcardComponent implements OnInit {
   }
 
   public cameraWasSwitched(deviceId: string): void {
-    console.log('active device: ' + deviceId);
     this.deviceId = deviceId;
   }
 
@@ -79,12 +78,10 @@ export class CamcardComponent implements OnInit {
 
   // trigger capture with btn
   triggerCapture() {
-    console.log('triggering capture');
     this.trigger.next();
   }
 
   async imageCapture($webcamImage: WebcamImage) {
-    console.log('capturing image');
     this.webcamImage = $webcamImage;
     const stream = this.makeblob($webcamImage.imageAsDataUrl);
     const group = new Group();
@@ -162,25 +159,15 @@ export class CamcardComponent implements OnInit {
           user$.subscribe(
             (response) => console.log(response)
           , (error) => {
-              console.log(error);
               if (error.status === 409 && error.ok === false) {
                 // update avatar
                 const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
                 // tslint:disable-next-line:no-shadowed-variable
-                avatar$.subscribe((response) => console.log(response), (error) => console.log(error));
+                avatar$.subscribe();
                 // adding face to already existant user
                 for (const face of user.faces) {
-                    console.log('adding face');
                     const face$ = this.faceService.addFace(user.userId, face);
-                    face$.subscribe(
-                    (response) => {
-                      console.log('Avatar updated');
-                      console.log(response);
-                    },
-                    // tslint:disable-next-line:no-shadowed-variable
-                    (error) => {
-                      console.log(error);
-                    });
+                    face$.subscribe();
                 }
               }
           });
