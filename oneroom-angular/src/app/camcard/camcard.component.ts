@@ -157,8 +157,7 @@ export class CamcardComponent implements OnInit {
         for (const user of users) {
           const user$ = this.userService.addUser(user);
           user$.subscribe(
-            (response) => console.log(response)
-          , (error) => {
+            (response) => {}, (error) => {
               if (error.status === 409 && error.ok === false) {
                 // update avatar
                 const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
