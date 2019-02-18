@@ -7,7 +7,7 @@ namespace oneroom_api.Model
     public class User
     {
         public Guid UserId { get; set; }
-        public DateTime CreationDate { get; } = new DateTime();
+        public DateTime CreationDate { get; set; } = DateTime.Now;
         [Required]
         public string Name { get; set; }
         [Required]

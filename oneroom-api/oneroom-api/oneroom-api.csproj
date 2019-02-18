@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190218085412_DateTimeAdd.cs" />
+    <Compile Remove="Migrations\20190218085412_DateTimeAdd.Designer.cs" />
+    <Compile Remove="Migrations\20190218085704_DateTimeAdd.cs" />
+    <Compile Remove="Migrations\20190218085704_DateTimeAdd.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />

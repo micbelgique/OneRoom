@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using oneroom_api.Model;
 
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    partial class OneRoomContextModelSnapshot : ModelSnapshot
+    [Migration("20190218085903_DateTimeAdd")]
+    partial class DateTimeAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,8 +31,6 @@ namespace oneroom_api.Migrations
                     b.Property<double>("BaldLevel");
 
                     b.Property<double>("BeardLevel");
-
-                    b.Property<DateTime>("CreationDate");
 
                     b.Property<string>("EmotionDominant");
 
@@ -60,8 +60,6 @@ namespace oneroom_api.Migrations
                 {
                     b.Property<Guid>("GroupId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationDate");
 
                     b.Property<string>("Name");
 

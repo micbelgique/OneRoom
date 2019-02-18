@@ -7,7 +7,7 @@ namespace oneroom_api.Model
     public class Face
     {
         public Guid FaceId { get; set; }
-        public DateTime CreationDate { get; } = new DateTime();
+        public DateTime CreationDate { get; set; } = DateTime.Now;
         [Range(0,150)]
         public double Age { get; set; }
         public bool IsMale { get; set; }

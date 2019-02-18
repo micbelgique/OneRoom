@@ -31,7 +31,7 @@ namespace oneroom_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.Include(u=>u.Faces).ToListAsync();
+            return await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
         }
 
         // GET: api/UsersV2/5
