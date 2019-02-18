@@ -74,6 +74,8 @@ namespace oneroom_api.Controllers
             }
 
             user.UrlAvatar = urlAvatar;
+            if (user.UrlAvatar == urlAvatar) return NoContent();
+            user.UrlAvatar = urlAvatar;
             _context.Entry(user).State = EntityState.Modified;
 
             try
