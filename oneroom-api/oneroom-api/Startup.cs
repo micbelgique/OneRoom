@@ -27,6 +27,9 @@ namespace oneroom_api
             services.AddDbContext<OneRoomContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
 
+            // Register the Swagger services
+            services.AddSwaggerDocument();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +47,10 @@ namespace oneroom_api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseSwagger();
+            app.UseSwaggerUi3();
         }
     }
 }
