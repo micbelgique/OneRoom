@@ -85,3 +85,6 @@ namespace oneroom_api.Controllers
         }
     }
 }
+
+                    
+                    if (u.Faces.Select(f => f.FaceId).Equals(face.FaceId))

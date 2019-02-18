@@ -94,6 +94,7 @@ export class CamcardComponent implements OnInit {
     res$.subscribe(
       (data) => {
         const users: User[] = [];
+        console.log(users.length);
         data.persons.forEach(element => {
           const u = new User();
           u.name = 'test';
@@ -163,9 +164,10 @@ export class CamcardComponent implements OnInit {
                 // update avatar
                 const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
                 // tslint:disable-next-line:no-shadowed-variable
-                avatar$.subscribe();
+                console.log(user.faces.length);
                 // adding face to already existant user
                 for (const face of user.faces) {
+                    console.log(face);
                     const face$ = this.faceService.addFace(user.userId, face);
                     face$.subscribe();
                 }
