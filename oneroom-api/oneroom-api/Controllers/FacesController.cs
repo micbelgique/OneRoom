@@ -28,11 +28,10 @@ namespace oneroom_api.Controllers
 
         // POST: api/Facesv2/2
         [HttpPost("{id}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<bool>>))]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        [ProducesResponseType(500, Type = typeof(Task<ActionResult<bool>>))]
-        public async Task<ActionResult<bool>> PostFace(Guid id, Face face)
+        public async Task<ActionResult<Face>> PostFace(Guid id, Face face)
         {
 
                 var u = (from usr in _context.Users where usr.UserId.Equals(id) select usr)
@@ -41,7 +40,7 @@ namespace oneroom_api.Controllers
                 if (u != null)
                 {
 
-                    if (!u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
+                    if (u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
                     {
                         return Conflict("face already exists");
                     }
@@ -57,7 +56,7 @@ namespace oneroom_api.Controllers
                         return StatusCode(500,false);
                     }
 
-                    return Ok(true);
+                    return CreatedAtAction("GetUser", "Users", new { id }, face);
                 }
                 else
                     return NotFound("user not found");
