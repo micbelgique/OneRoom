@@ -1,5 +1,5 @@
 <div style="text-align: center">
-  <select #devices >
+  <select #devices (change)="this.startStream()" >
       <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
   </select>
   <br>

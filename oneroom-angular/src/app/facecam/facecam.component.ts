@@ -4,6 +4,13 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import * as canvas from 'canvas';
 
 import * as faceapi from 'face-api.js';
+import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
+import { Face } from '../services/OnePoint/model/face';
+import { User } from '../services/OnePoint/model/user';
+import { Group } from '../services/cognitive/person-group.service';
+import { FaceProcessService } from '../utilities/face-process.service';
+import { UserService } from '../services/OnePoint/user.service';
+import { FaceService } from '../services/OnePoint/face.service';
 
 @Component({
   selector: 'app-facecam',
@@ -24,7 +31,13 @@ export class FacecamComponent implements OnInit {
   public video;
   private stream;
 
-  constructor() {}
+  private lock = false;
+
+  constructor(
+    private faceProcess: FaceProcessService,
+    private userService: UserService,
+    private faceService: FaceService
+  ) {}
 
   ngOnInit() {
     this.opencam();
@@ -45,10 +58,25 @@ export class FacecamComponent implements OnInit {
   }
 
   public async detectFaces() {
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement).withFaceLandmarks();
+        // small input size => near the webcam
+        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.65 });
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks(true);
         const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
         await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
+        const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+        await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: true });
         console.log('Detected : ' + fullFaceDescriptions.length);
+        if (fullFaceDescriptions.length > 0) {
+            const imgData = this.capture();
+            if (!this.lock) {
+              this.lock = true;
+              setTimeout( () => {
+                console.log('Sending to face API');
+                this.imageCapture(imgData);
+                this.lock = false;
+              }, 20000);
+            }
+        }
   }
 
   private opencam() {
@@ -80,18 +108,7 @@ export class FacecamComponent implements OnInit {
 
   /* take a capture of the video stream and returns an image element : call stream first ! */
   private capture() {
-    const width = this.video.offsetWidth;
-    const height = this.video.offsetHeight;
-
-    this.canvas = this.canvas || document.createElement('canvas');
-    this.canvas.width = width;
-    this.canvas.height = height;
-
-    const context = this.canvas.getContext('2d');
-    context.drawImage(this.video, 0, 0, width, height);
-    const img = document.createElement('img');
-    img.src = this.canvas.toDataURL('image/png');
-    return img;
+    return this.canvas.nativeElement.toDataURL('image/png');
   }
 
   /* record a video from the camera and returns a video element : call stream first !*/
@@ -125,7 +142,7 @@ export class FacecamComponent implements OnInit {
   }
 
    /* Start or restart the stream using a specific videosource and inject it in a container */
-  private startStream() {
+  public startStream() {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
@@ -263,5 +280,143 @@ export class FacecamComponent implements OnInit {
     const blob = new Blob(byteArrays, { type: contentType });
     return blob;
 }
+
+async imageCapture(dataUrl) {
+  console.log('capturing image');
+  const stream = this.makeblob(dataUrl);
+  const group = new Group();
+  group.personGroupId = 'mic2019';
+  group.name = 'mic_stage_2019';
+  group.userData = 'Group de test en developpement pour oneroom';
+  // traitement face API
+  // return an observable;
+  const res$ = this.faceProcess.byImg(stream.blob, group);
+  res$.subscribe(
+    (data) => {
+      const users: User[] = [];
+      data.persons.forEach(element => {
+        const u = new User();
+        u.name = 'test';
+        u.userId = element.person.personId;
+        u.faces = [];
+        element.faces.forEach(face => {
+          const f = new Face();
+          f.faceId = face.faceId;
+          f.age = face.faceAttributes.age;
+          f.baldLevel = face.faceAttributes.hair.bald;
+          f.beardLevel = face.faceAttributes.facialHair.beard;
+          f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
+          GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
+          GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
+          GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
+          f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+          f.isMale = face.faceAttributes.gender === 'male';
+          f.moustacheLevel = face.faceAttributes.facialHair.moustache;
+          f.smileLevel = face.faceAttributes.smile;
+          let emotion = 0;
+          let emotionType = '';
+          if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
+            emotion = face.faceAttributes.emotion.anger;
+            emotionType = 'anger';
+          } else {
+            emotion = face.faceAttributes.emotion.contempt;
+            emotionType = 'contempt';
+          }
+          if (emotion > face.faceAttributes.emotion.disgust) {
+            emotion =  face.faceAttributes.emotion.disgust;
+            emotionType = 'disgust';
+          }
+          if (emotion > face.faceAttributes.emotion.fear) {
+            emotion = face.faceAttributes.emotion.fear;
+            emotionType = 'fear';
+          }
+          if (emotion > face.faceAttributes.emotion.happinness) {
+            emotion = face.faceAttributes.emotion.happinness;
+            emotionType = 'happinness';
+          }
+          if (emotion > face.faceAttributes.emotion.neutral) {
+            emotion = face.faceAttributes.emotion.neutral;
+            emotionType = 'neutral';
+          }
+          if (emotion > face.faceAttributes.emotion.sadness) {
+            emotion = face.faceAttributes.emotion.sadness;
+            emotionType = 'sadness';
+          }
+          if (emotion > face.faceAttributes.emotion.surprise) {
+            emotion = face.faceAttributes.emotion.surprise;
+            emotionType = 'surprise';
+          }
+          f.emotionDominant = emotionType;
+          u.faces.push(f);
+        });
+        u.generateAvatar();
+        users.push(u);
+      });
+
+      // adding users
+      for (const user of users) {
+        const user$ = this.userService.addUser(user);
+        user$.subscribe(
+          (response) => console.log(response)
+        , (error) => {
+            console.log(error);
+            if (error.status === 409 && error.ok === false) {
+              // update avatar
+              const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
+              // tslint:disable-next-line:no-shadowed-variable
+              avatar$.subscribe((response) => console.log(response), (error) => console.log(error));
+              // adding face to already existant user
+              for (const face of user.faces) {
+                  console.log('adding face');
+                  const face$ = this.faceService.addFace(user.userId, face);
+                  face$.subscribe(
+                  (response) => {
+                    console.log('Avatar updated');
+                    console.log(response);
+                  },
+                  // tslint:disable-next-line:no-shadowed-variable
+                  (error) => {
+                    console.log(error);
+                  });
+              }
+            }
+        });
+      }
+      data = null;
+    }
+  );
+}
+
+  // transform dataUrl in blob
+  private makeblob(dataURL) {
+    const BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) === -1) {
+        // tslint:disable-next-line:no-shadowed-variable
+        const parts = dataURL.split(',');
+        // tslint:disable-next-line:no-shadowed-variable
+        const contentType = parts[0].split(':')[1];
+        // tslint:disable-next-line:no-shadowed-variable
+        const raw = decodeURIComponent(parts[1]);
+        return {
+          rawlength: raw.length,
+          blob: new Blob([raw], { type: contentType })
+        };
+    }
+    const parts = dataURL.split(BASE64_MARKER);
+    const contentType = parts[0].split(':')[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+
+    const uInt8Array = new Uint8Array(rawLength);
+
+    for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return {
+      rawlength: raw.length,
+      blob: new Blob([uInt8Array], { type: contentType })
+    };
+    }
 
 }
