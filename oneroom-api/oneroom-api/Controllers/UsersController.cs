@@ -97,10 +97,10 @@ namespace oneroom_api.Controllers
 
         // POST: api/UsersV2
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<bool>>))]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<bool>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(User user)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace oneroom_api.Controllers
                   
 
                 await _context.SaveChangesAsync();
-                return true;
+                return CreatedAtAction("GetUser", new { id = user.UserId }, user);
             }
             catch (Exception)
             {
