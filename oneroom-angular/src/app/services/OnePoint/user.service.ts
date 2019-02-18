@@ -31,8 +31,9 @@ export class UserService {
   }
 
   updateAvatar(userId: string, urlAvatar: string): Observable<any> {
-    const url = this.userUrl;
-    return this.http.put<any>(url, {urlAvatar , id: userId } , { headers: this.headers });
+    console.log(userId);
+    console.log(urlAvatar);
+    return this.http.put<any>(this.userUrl + '/' + userId, {urlAvatar} , { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

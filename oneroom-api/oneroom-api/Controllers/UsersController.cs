@@ -53,11 +53,11 @@ namespace oneroom_api.Controllers
         }
 
         // PUT: api/UsersV2/id
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateAvatar(Guid id, string urlAvatar)
+        public async Task<IActionResult> UpdateAvatar(Guid id, [FromBody] string urlAvatar)
         {
 
             // todo regex check uri match 
