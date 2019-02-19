@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class FaceService {
 
-  private userUrl = localStorage.getItem('endpoint') + '/faces';
+  private faceUrl = localStorage.getItem('endpoint') + '/faces';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
@@ -20,8 +20,7 @@ export class FaceService {
   }
 
   addFace(userId: string, face: Face) {
-    const url = this.userUrl + '/' + userId;
-    return this.http.post<boolean>(url, face, { headers: this.headers });
+    return this.http.post<boolean>(this.faceUrl + '/' + userId, face, { headers: this.headers });
   }
 
 }

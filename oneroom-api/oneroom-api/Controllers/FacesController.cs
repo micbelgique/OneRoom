@@ -40,7 +40,7 @@ namespace oneroom_api.Controllers
                 if (u != null)
                 {
 
-                    if (!u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
+                    if (u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
                     {
                         return Conflict("face already exists"+ face.FaceId);
                     }
@@ -50,9 +50,9 @@ namespace oneroom_api.Controllers
                 try
                     {
                         await _context.SaveChangesAsync();
-                    } catch(Exception)
+                    } catch(DbUpdateException)
                     {
-                        return StatusCode(500,false);
+                         return Conflict("face already exists"+ face.FaceId);
                     }
 
                     return CreatedAtAction("GetUser", "Users", new { id }, face);
