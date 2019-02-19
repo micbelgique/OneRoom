@@ -30,6 +30,10 @@ export class UserService {
     return this.http.post<boolean>(this.userUrl, user, { headers: this.headers });
   }
 
+  deleteUser(userId: string): Observable<User> {
+    return this.http.delete<User>(this.userUrl + '/' + userId, { headers: this.headers });
+  }
+
   updateAvatar(userId: string, urlAvatar: string): Observable<any> {
     return this.http.put<any>(this.userUrl + '/' + userId, {urlAvatar} , { headers: this.headers });
   }

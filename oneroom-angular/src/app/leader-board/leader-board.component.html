@@ -1,3 +1,4 @@
+<button *ngIf='this.refreshBtn && this.users.length > 0' mat-raised-button style="width: 100%" (click)="this.refreshData()" color="accent">Refresh</button>
 <mat-accordion class="example-headers-align" *ngFor="let item of users">
     <mat-expansion-panel [expanded]=true>
       <mat-expansion-panel-header>
@@ -26,7 +27,7 @@
                       moustacheLevel: {{ item.faces[item.faces.length-1].moustacheLevel }} <br>
                       beardLevel: {{ item.faces[item.faces.length-1].beardLevel }} <br>
                       baldLevel: {{ item.faces[item.faces.length-1].baldLevel }} <br>
-                      HairColor: {{ item.faces[item.faces.length-1].HairColor }} <br>
+                      HairColor: {{ item.faces[item.faces.length-1].hairColor }} <br>
                       glassesType: {{ item.faces[item.faces.length-1].glassesType}}
                     </div>
                   </mat-tab>
@@ -34,5 +35,8 @@
           </mat-grid-tile>
         </mat-grid-list>
       </mat-card-content>
+      <mat-card-actions>
+          <button mat-raised-button style="width: 100%" (click)='this.deletePlayer(item.userId)' color="primary">Delete</button>
+      </mat-card-actions>
     </mat-expansion-panel>
   </mat-accordion>

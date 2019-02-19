@@ -17,7 +17,9 @@ import {
   MatTabsModule,
   MatMenuModule,
   MatSlideToggleModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatProgressBarModule,
+  MatSnackBarModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -59,7 +61,9 @@ import { FacecamComponent } from './facecam/facecam.component';
     HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressBarModule,
     FormsModule,
+    MatSnackBarModule,
     RouterModule.forRoot([
       { path: 'leaderboard', component: LeaderBoardComponent },
       { path: 'welcome', component: FacecamComponent },

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
 // implements nodejs wrappers for HTMLCanvasElement, HTMLImageElement, ImageData
 import * as canvas from 'canvas';
@@ -11,13 +11,15 @@ import { Group } from '../services/cognitive/person-group.service';
 import { FaceProcessService } from '../utilities/face-process.service';
 import { UserService } from '../services/OnePoint/user.service';
 import { FaceService } from '../services/OnePoint/face.service';
+import { MatSnackBar } from '@angular/material';
+import { FaceRectangle } from '../services/cognitive/face/model/face-rectangle';
 
 @Component({
   selector: 'app-facecam',
   templateUrl: './facecam.component.html',
   styleUrls: ['./facecam.component.css']
 })
-export class FacecamComponent implements OnInit {
+export class FacecamComponent implements OnInit, OnDestroy {
 
   /* input stream devices */
   @ViewChild('devices')
@@ -31,51 +33,74 @@ export class FacecamComponent implements OnInit {
   public video;
   private stream;
 
+  displayStream = 'none';
+  isLoading = true;
+
+  private rect;
+
+  private streamId;
+  private detectId;
+
   private lock = false;
 
   constructor(
+    private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.opencam();
-    this.loadModels();
-    this.startStream();
+    await this.loadModels();
   }
 
   async loadModels() {
-    await faceapi.loadSsdMobilenetv1Model('../../assets/models/');
-    await faceapi.loadTinyFaceDetectorModel('../../assets/models/');
-    await faceapi.loadFaceLandmarkModel('../../assets/models/');
-    await faceapi.loadFaceLandmarkTinyModel('../../assets/models/');
-
-    setTimeout( () => {
-      setInterval(() => { this.detectFaces(); }, 1500);
-    }, 1000);
-
+    await faceapi.loadSsdMobilenetv1Model('../../assets/models/').then(
+      async () => await faceapi.loadFaceLandmarkModel('../../assets/models/').finally(
+        async () => {
+          this.startStream();
+          this.detectId = setInterval( () => {
+            this.detectFaces();
+          }, 1500);
+        }
+      )
+    );
+    // await faceapi.loadTinyFaceDetectorModel('../../assets/models/');
+    // await faceapi.loadFaceLandmarkTinyModel('../../assets/models/');
   }
 
   public async detectFaces() {
         // small input size => near the webcam
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks(true);
-        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
-        const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: true });
-        console.log('Detected : ' + fullFaceDescriptions.length);
+        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65 });
+        // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.60 });
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.video.nativeElement, options).withFaceLandmarks();
         if (fullFaceDescriptions.length > 0) {
+            const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+            await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
+            const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+            await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: false });
             const imgData = this.capture();
+            /*this.rect = new FaceRectangle();
+            this.rect.width = detectionsArray[0].box.width;
+            this.rect.height = detectionsArray[0].box.height;
+            this.rect.left = detectionsArray[0].box.left;
+            this.rect.top = detectionsArray[0].box.top;*/
             if (!this.lock) {
               this.lock = true;
               setTimeout( () => {
-                console.log('Sending to face API');
+                console.log('Sending to face API now');
                 this.imageCapture(imgData);
                 this.lock = false;
-              }, 20000);
+              }, 5000);
             }
+        } else {
+          this.rect = null;
+        }
+
+        if (this.displayStream === 'none') {
+          this.displayStream = 'block';
+          this.isLoading = false;
         }
   }
 
@@ -147,7 +172,6 @@ export class FacecamComponent implements OnInit {
     if (navigator.mediaDevices) {
         // select specific camera on mobile
         const videoSource = this.videoSelect.nativeElement.value;
-        console.log(videoSource);
         // access the web cam
         navigator.mediaDevices.getUserMedia({
             video: {
@@ -165,20 +189,17 @@ export class FacecamComponent implements OnInit {
                   this.canvas.nativeElement.height = this.video.nativeElement.videoHeight;
                 });
 
-                this.video.nativeElement.addEventListener('play', () => {
-                  // tslint:disable-next-line:only-arrow-functions
-                  const $this = this.video.nativeElement;
-                  const $ctx = this.canvas.nativeElement.getContext('2d');
-                  function loop() {
-                    if (!$this.paused && !$this.ended) {
-                      $ctx.drawImage($this, 0, 0, $this.videoWidth, $this.videoHeight);
-                      setTimeout(loop, 1000 / 30); // drawing at 30fps
-                    }
+                const loop = () => {
+                  if (!this.video.nativeElement.paused && !this.video.nativeElement.ended) {
+                    // tslint:disable-next-line:max-line-length
+                    this.canvas.nativeElement.getContext('2d').drawImage(this.video.nativeElement, 0, 0, this.video.nativeElement.videoWidth, this.video.nativeElement.videoHeight);
                   }
+                  this.streamId = setTimeout(loop, 1000 / 30); // drawing at 30fps
+                };
+
+                this.video.nativeElement.addEventListener('play', () => {
                   requestAnimationFrame(loop);
                 }, 0);
-                // edge
-                // video.src = window.URL.createObjectURL(stream);
             })
             // permission denied:
             .catch( (error) => {
@@ -285,7 +306,7 @@ async imageCapture(dataUrl) {
   console.log('capturing image');
   const stream = this.makeblob(dataUrl);
   const group = new Group();
-  group.personGroupId = 'mic2019';
+  group.personGroupId = localStorage.getItem('groupid');
   group.name = 'mic_stage_2019';
   group.userData = 'Group de test en developpement pour oneroom';
   // traitement face API
@@ -293,10 +314,10 @@ async imageCapture(dataUrl) {
   const res$ = this.faceProcess.byImg(stream.blob, group);
   res$.subscribe(
     (data) => {
-      const users: User[] = [];
+      let users: User[] = [];
       data.persons.forEach(element => {
         const u = new User();
-        u.name = 'test';
+        u.name = 'user';
         u.userId = element.person.personId;
         u.faces = [];
         element.faces.forEach(face => {
@@ -309,7 +330,12 @@ async imageCapture(dataUrl) {
           GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
           GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
           GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
-          f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+          // check haircolor
+          if (face.faceAttributes.hair.hairColor.length > 0) {
+            f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+          } else {
+            f.hairColor = '';
+          }
           f.isMale = face.faceAttributes.gender === 'male';
           f.moustacheLevel = face.faceAttributes.facialHair.moustache;
           f.smileLevel = face.faceAttributes.smile;
@@ -357,10 +383,18 @@ async imageCapture(dataUrl) {
       for (const user of users) {
         const user$ = this.userService.addUser(user);
         user$.subscribe(
-          (response) => console.log(response)
+          (response) => {
+            this.snackBar.open('User created', 'Ok', {
+              duration: 2000
+            });
+            console.log(response);
+          }
         , (error) => {
             console.log(error);
             if (error.status === 409 && error.ok === false) {
+              this.snackBar.open('User recognized', 'Ok', {
+                duration: 2000
+              });
               // update avatar
               const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
               // tslint:disable-next-line:no-shadowed-variable
@@ -382,7 +416,7 @@ async imageCapture(dataUrl) {
             }
         });
       }
-      data = null;
+      users = null;
     }
   );
 }
@@ -417,6 +451,11 @@ async imageCapture(dataUrl) {
       rawlength: raw.length,
       blob: new Blob([uInt8Array], { type: contentType })
     };
+    }
+
+    ngOnDestroy(): void {
+      clearInterval(this.detectId);
+      clearTimeout(this.streamId);
     }
 
 }

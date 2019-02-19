@@ -1,24 +1,20 @@
 <div class="example-container">
-    <mat-list>
-      <mat-list-item>
-        Your own endPoint at the moment: {{endPoint}}
-      </mat-list-item>
-      <mat-list-item>
-          Your endPoint for cognitive services at the moment: {{endPointCognitive}}
-        </mat-list-item>
-        <mat-list-item>
-        Your subscription key for cognitive services at the moment: {{subscriptionKey}}
-      </mat-list-item>
-    </mat-list>
     <mat-form-field>
-        <input matInput placeholder="enter your endPoint" type='url' [(ngModel)]="tempEndPoint">
+        <input matInput placeholder="Coordinator endPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
     </mat-form-field>
     <mat-form-field>
-        <input matInput placeholder="enter your endPoint cognitive" type='url' [(ngModel)]="tempEndPointCognitive">
+        <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="enter your subscriptionKey" type='url' [(ngModel)]="tempSubcriptionKey" value='{{ subscriptionKey }}'>
+      <input matInput placeholder="SubscriptionKey" type='url' [(ngModel)]="subscriptionKey" value='{{subscriptionKey}}'>
     </mat-form-field>
     <button mat-raised-button color='primary' (click)='test()' *ngIf="!testResult">Test</button>
     <button mat-raised-button *ngIf="testResult" (click)='save()' disabled='{{!saved}}'>Save</button>
+    <br>
+    <mat-form-field>
+        <input matInput placeholder="Group ID" type='text' [(ngModel)]="group" value='{{group}}'>
+    </mat-form-field>
+    <button mat-raised-button (click)='create()' color="primary">Create</button>
+    <br>
+    <button mat-raised-button (click)='delete()' color="accent">Delete</button>
   </div>
