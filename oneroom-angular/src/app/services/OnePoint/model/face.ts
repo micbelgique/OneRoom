@@ -11,4 +11,5 @@ export class Face {
   hairColor: string;
   glassesType: GlassesType;
   emotionDominant: string;
+  skinColor: string;
 }
