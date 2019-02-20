@@ -13,6 +13,7 @@ import { UserService } from '../services/OnePoint/user.service';
 import { FaceService } from '../services/OnePoint/face.service';
 import { MatSnackBar } from '@angular/material';
 import { FaceRectangle } from '../services/cognitive/face/model/face-rectangle';
+import { VisioncomputerService } from '../services/cognitive/vision/visioncomputer.service';
 
 @Component({
   selector: 'app-facecam',
@@ -47,7 +48,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
-    private faceService: FaceService
+    private faceService: FaceService,
+    private visonComputerService: VisioncomputerService
   ) {}
 
   async ngOnInit() {
@@ -72,12 +74,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   public async detectFaces() {
         // small input size => near the webcam
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks(true);
-        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
-        const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: true });
+        // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement).withFaceLandmarks();
         console.log('Detected : ' + fullFaceDescriptions.length);
         if (fullFaceDescriptions.length > 0) {
             const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
@@ -310,6 +308,14 @@ async imageCapture(dataUrl) {
   console.log('capturing image');
   const stream = this.makeblob(dataUrl);
   const group = new Group();
+  let skinColor = '';
+  this.visonComputerService.getSkinColor(stream.blob).subscribe(
+    (result) => {
+      skinColor = result.predictions[0].tagName;
+      console.log(skinColor);
+    }
+  );
+
   group.personGroupId = localStorage.getItem('groupid');
   group.name = 'mic_stage_2019';
   group.userData = 'Group de test en developpement pour oneroom';
@@ -377,6 +383,7 @@ async imageCapture(dataUrl) {
             emotionType = 'surprise';
           }
           f.emotionDominant = emotionType;
+          f.skinColor = skinColor;
           u.faces.push(f);
         });
         u.generateAvatar();
