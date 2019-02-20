@@ -48,12 +48,12 @@ namespace oneroom_api.Controllers
                     _context.Entry(u).State = EntityState.Modified;
 
                 try
-                    {
-                        await _context.SaveChangesAsync();
-                    } catch(DbUpdateException)
-                    {
-                         return Conflict("face already exists"+ face.FaceId);
-                    }
+                {
+                    await _context.SaveChangesAsync();
+                } catch(DbUpdateException)
+                {
+                    return Conflict("face already exists : "+ face.FaceId);
+                }
 
                     return CreatedAtAction("GetUser", "Users", new { id }, face);
                 }

@@ -33,13 +33,15 @@ export class User {
         '&options[facialHair][]=magnum' : this.faces[this.faces.length - 1].moustacheLevel > 0.2 ?
         '&options[facialHair][]=fancy' : '&options[facialHair][]=magestic';
 
-      this.urlAvatar += '&options[hairColor][]=';
-      this.urlAvatar += this.faces[this.faces.length - 1].hairColor === 'Other' ?
-       'black' : this.faces[this.faces.length - 1].hairColor === 'Unknown' ?
-       'black' : this.faces[this.faces.length - 1].hairColor === 'Blonde' ?
-       'blonde' : this.faces[this.faces.length - 1].hairColor === 'Red' ?
-       'auburn' : this.faces[this.faces.length - 1].hairColor === 'White' ?
-       'gray' : this.faces[this.faces.length - 1].hairColor.toLowerCase();
+      if(this.faces[this.faces.length - 1].hairColor) {
+        this.urlAvatar += '&options[hairColor][]=';
+        this.urlAvatar += this.faces[this.faces.length - 1].hairColor === 'Other' ?
+         'black' : this.faces[this.faces.length - 1].hairColor === 'Unknown' ?
+         'black' : this.faces[this.faces.length - 1].hairColor === 'Blonde' ?
+         'blonde' : this.faces[this.faces.length - 1].hairColor === 'Red' ?
+         'auburn' : this.faces[this.faces.length - 1].hairColor === 'White' ?
+         'gray' : this.faces[this.faces.length - 1].hairColor.toLowerCase();
+      }
     }
   }
 }

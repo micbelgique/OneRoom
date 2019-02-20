@@ -19,7 +19,7 @@
                       PersonId: {{ item.userId }}
                     </div>
                   </mat-tab>
-                  <mat-tab label="Face info" *ngIf=item.faces[0]>
+                  <mat-tab label="Face info" *ngIf=item.faces[item.faces.length-1]>
                     <div>
                       Age: {{ item.faces[item.faces.length-1].age}} <br>
                       Gender: {{ item.faces[item.faces.length-1].isMale ? 'male' : 'female' }} <br>

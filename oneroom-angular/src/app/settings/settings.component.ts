@@ -23,7 +23,8 @@ export class SettingsComponent implements OnInit {
   testResult: boolean;
   saved = true;
 
-  group: string;
+  group = '';
+  callStatus = true;
 
   constructor(
     private snackBar: MatSnackBar,
@@ -34,6 +35,8 @@ export class SettingsComponent implements OnInit {
     this.endPoint = localStorage.getItem('endpoint');
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
+    this.callStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+    console.log(this.callStatus);
   }
 
   verifyEndPoint(): boolean {
@@ -80,5 +83,20 @@ export class SettingsComponent implements OnInit {
       });
       console.log(x);
     });
+  }
+
+  toggleCognitiveCalls() {
+    const status = localStorage.getItem('cognitiveStatus');
+    if (status === 'true') {
+      localStorage.setItem('cognitiveStatus', 'false');
+      this.snackBar.open('Calls disabled', 'Ok', {
+        duration: 2000
+      });
+    } else {
+      localStorage.setItem('cognitiveStatus', 'true');
+      this.snackBar.open('Calls enabled', 'Ok', {
+        duration: 2000
+      });
+    }
   }
 }

@@ -1,4 +1,7 @@
 <div class="example-container">
+  <br>
+    <mat-slide-toggle [(ngModel)]='callStatus' color="primary" (click)='this.toggleCognitiveCalls()'>Cognitives calls</mat-slide-toggle>
+  <br>
     <mat-form-field>
         <input matInput placeholder="Coordinator endPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
     </mat-form-field>

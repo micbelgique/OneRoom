@@ -12,7 +12,6 @@ import { FaceProcessService } from '../utilities/face-process.service';
 import { UserService } from '../services/OnePoint/user.service';
 import { FaceService } from '../services/OnePoint/face.service';
 import { MatSnackBar } from '@angular/material';
-import { FaceRectangle } from '../services/cognitive/face/model/face-rectangle';
 
 @Component({
   selector: 'app-facecam',
@@ -36,8 +35,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
   displayStream = 'none';
   isLoading = true;
 
-  private rect;
-
   private streamId;
   private detectId;
 
@@ -56,8 +53,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   async loadModels() {
-    await faceapi.loadSsdMobilenetv1Model('../../assets/models/').then(
-      async () => await faceapi.loadFaceLandmarkModel('../../assets/models/').finally(
+    await faceapi.loadSsdMobilenetv1Model('./../../assets/models/').then(
+      async () => await faceapi.loadFaceLandmarkModel('./../../assets/models/').finally(
         async () => {
           this.startStream();
           this.detectId = setInterval( () => {
@@ -71,17 +68,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   public async detectFaces() {
+        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
         // small input size => near the webcam
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks(true);
-        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
-        const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: true });
-        console.log('Detected : ' + fullFaceDescriptions.length);
+        // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks();
+        // console.log('Detected : ' + fullFaceDescriptions.length);
         if (fullFaceDescriptions.length > 0) {
+            // tslint:disable-next-line:no-shadowed-variable
             const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
             await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
+            // tslint:disable-next-line:no-shadowed-variable
             const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
             await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: false });
             /*this.rect = new FaceRectangle();
@@ -89,17 +85,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
             this.rect.height = detectionsArray[0].box.height;
             this.rect.left = detectionsArray[0].box.left;
             this.rect.top = detectionsArray[0].box.top;*/
-            if (!this.lock) {
+            if (this.lock === false) {
+              console.log('Lock off');
               const imgData = this.capture();
               this.lock = true;
               setTimeout( () => {
                 console.log('Sending to face API now');
                 this.imageCapture(imgData);
-                this.lock = false;
-              }, 1500);
+              }, 5000);
             }
-        } else {
-          this.rect = null;
         }
 
         if (this.displayStream === 'none') {
@@ -207,8 +201,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
             })
             // permission denied:
             .catch( (error) => {
-              console.log(error);
-              document.body.textContent = 'Could not access the camera. Error: ' + error.name;
+              console.log('Camera init failed : ' + error.name);
+              // document.body.textContent = 'Could not access the camera. Error: ' + error.name;
             });
     }
     return this.video;
@@ -306,8 +300,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
     return blob;
 }
 
-async imageCapture(dataUrl) {
-  console.log('capturing image');
+  imageCapture(dataUrl) {
+  if (localStorage.getItem('cognitiveStatus') === 'false') {
+    console.log('calls disabled');
+    return;
+  }
+  try {
+  console.log('starting');
   const stream = this.makeblob(dataUrl);
   const group = new Group();
   group.personGroupId = localStorage.getItem('groupid');
@@ -318,13 +317,16 @@ async imageCapture(dataUrl) {
   const res$ = this.faceProcess.byImg(stream.blob, group);
   res$.subscribe(
     (data) => {
+      console.log('detection');
       let users: User[] = [];
       data.persons.forEach(element => {
+        console.log('person');
         const u = new User();
-        u.name = 'user';
+        u.name = 'user_' + Math.random();
         u.userId = element.person.personId;
         u.faces = [];
         element.faces.forEach(face => {
+          console.log('face');
           const f = new Face();
           f.faceId = face.faceId;
           f.age = face.faceAttributes.age;
@@ -391,10 +393,8 @@ async imageCapture(dataUrl) {
             this.snackBar.open('User created', 'Ok', {
               duration: 2000
             });
-            console.log(response);
           }
         , (error) => {
-            console.log(error);
             if (error.status === 409 && error.ok === false) {
               this.snackBar.open('User recognized', 'Ok', {
                 duration: 2000
@@ -403,30 +403,38 @@ async imageCapture(dataUrl) {
               const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
               // tslint:disable-next-line:no-shadowed-variable
               avatar$.subscribe(
-                (response) => console.log(response),
+                (response) => console.log('avatar updated'),
                 // tslint:disable-next-line:no-shadowed-variable
-                (error) => console.log(error)
+                (error) => {}
               );
               // adding face to already existant user
-              for (const face of user.faces) {
-                  console.log('adding face');
-                  const face$ = this.faceService.addFace(user.userId, face);
-                  face$.subscribe(
-                  (response) => {
-                    console.log('Avatar updated');
-                    console.log(response);
-                  },
-                  // tslint:disable-next-line:no-shadowed-variable
-                  (error) => {
-                    console.log(error);
-                  });
+              // for (const face of user.faces) {
+              if (user.faces[0]) {
+                const face = user.faces[0];
+                console.log('adding face');
+                const face$ = this.faceService.addFace(user.userId, face);
+                face$.subscribe(
+                    () => {
+                      console.log('Face added');
+                    },
+                    // tslint:disable-next-line:no-shadowed-variable
+                    (error) => {
+                      console.log(error);
+                });
               }
+              // }
             }
         });
       }
       users = null;
     }
   );
+  } catch (e) {
+    console.log('Error : ' + e.message);
+    console.log(e);
+  } finally {
+    this.lock = false;
+  }
 }
 
   // transform dataUrl in blob
