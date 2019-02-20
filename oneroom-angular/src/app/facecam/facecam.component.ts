@@ -80,19 +80,19 @@ export class FacecamComponent implements OnInit, OnDestroy {
             await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
             const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
             await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: false });
-            const imgData = this.capture();
             /*this.rect = new FaceRectangle();
             this.rect.width = detectionsArray[0].box.width;
             this.rect.height = detectionsArray[0].box.height;
             this.rect.left = detectionsArray[0].box.left;
             this.rect.top = detectionsArray[0].box.top;*/
             if (!this.lock) {
+              const imgData = this.capture();
               this.lock = true;
               setTimeout( () => {
                 console.log('Sending to face API now');
                 this.imageCapture(imgData);
                 this.lock = false;
-              }, 5000);
+              }, 1500);
             }
         } else {
           this.rect = null;
@@ -398,7 +398,11 @@ async imageCapture(dataUrl) {
               // update avatar
               const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
               // tslint:disable-next-line:no-shadowed-variable
-              avatar$.subscribe((response) => console.log(response), (error) => console.log(error));
+              avatar$.subscribe(
+                (response) => console.log(response),
+                // tslint:disable-next-line:no-shadowed-variable
+                (error) => console.log(error)
+              );
               // adding face to already existant user
               for (const face of user.faces) {
                   console.log('adding face');

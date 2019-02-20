@@ -116,13 +116,13 @@ namespace oneroom_api.Controllers
                 }
 
                var u = _context.Users.Find(user.UserId);
-               var count = _context.Users.Count(); 
+               var count = await _context.Users.CountAsync(); 
 
                if (u != null)
                    return Conflict("user already exists");
                else
                 {
-                    user.Name = "Player " + (count + 1);
+                    user.Name = "Player " + (count++);
                     _context.Users.Add(user);
                 }
                   
