@@ -15,10 +15,12 @@ export class User {
     if (this.faces && this.faces.length) {
       this.urlAvatar = this.faces[this.faces.length - 1].isMale ?
       // tslint:disable-next-line:max-line-length
-      'https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious&options[skin][]=light' :
+      'https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious' :
       // tslint:disable-next-line:max-line-length
-      'https://avatars.dicebear.com/v2/avataaars/OneRoomFemale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious&options[skin][]=light';
-
+      'https://avatars.dicebear.com/v2/avataaars/OneRoomFemale.svg?options[facialHairChance]=100&options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious';
+      this.urlAvatar += this.faces[this.faces.length - 1].skinColor === 'caucasian' ?
+      '&options[skin][]=pale' : this.faces[this.faces.length - 1].skinColor === 'black' ?
+      '&options[skin][]=darkBrown' : '&options[skin][]=yellow';
       this.urlAvatar += this.faces[this.faces.length - 1].baldLevel > 0.5 ? '&options[topChance]=0' :
         '&options[topChance]=100';
 
