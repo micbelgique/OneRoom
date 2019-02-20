@@ -53,8 +53,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   async loadModels() {
-    await faceapi.loadSsdMobilenetv1Model('./../../assets/models/').then(
-      async () => await faceapi.loadFaceLandmarkModel('./../../assets/models/').finally(
+    await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
+      async () => await faceapi.loadFaceLandmarkModel('assets/models/').finally(
         async () => {
           this.startStream();
           this.detectId = setInterval( () => {
