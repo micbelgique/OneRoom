@@ -72,9 +72,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   public async detectFaces() {
         // small input size => near the webcam
-        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65 });
-        // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.60 });
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.video.nativeElement, options).withFaceLandmarks();
+        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks(true);
+        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+        await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
+        const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+        await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: true });
+        console.log('Detected : ' + fullFaceDescriptions.length);
         if (fullFaceDescriptions.length > 0) {
             const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
             await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
