@@ -20,9 +20,6 @@ export class SettingsComponent implements OnInit {
   subscriptionKey: string;
   endPointCognitive: string;
 
-  testResult: boolean;
-  saved = true;
-
   group = '';
   callStatus = true;
 
@@ -36,26 +33,16 @@ export class SettingsComponent implements OnInit {
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
     this.callStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
-    console.log(this.callStatus);
   }
 
-  verifyEndPoint(): boolean {
-    // Not implemented
-    return true;
-  }
-
-  verifySub(): boolean {
-    // Not implemented
-    return true;
-  }
-
-  test(): void {
-    this.testResult = this.verifyEndPoint() && this.verifySub();
-  }
-
-  save(): void {
-    this.saved = !this.saved;
+  saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
+    this.snackBar.open('Settings updated', 'Ok', {
+      duration: 2000
+    });
+  }
+
+  saveFaceSettings(): void {
     localStorage.setItem('endpointCognitive', this.endPointCognitive);
     localStorage.setItem('subscriptionKey', this.subscriptionKey);
     this.snackBar.open('Settings updated', 'Ok', {
