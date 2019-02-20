@@ -36,6 +36,7 @@ import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
 import { FilterComponent } from './filter/filter.component';
 import { FacecamComponent } from './facecam/facecam.component';
+import { TeamsComponent } from './teams/teams.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { FacecamComponent } from './facecam/facecam.component';
     LeaderBoardComponent,
     SettingsComponent,
     FilterComponent,
-    FacecamComponent
+    FacecamComponent,
+    TeamsComponent
   ],
   imports: [
     BrowserModule,
