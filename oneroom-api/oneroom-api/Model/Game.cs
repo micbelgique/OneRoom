@@ -12,5 +12,10 @@ namespace oneroom_api.Model
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public List<User> Users { get; set; } = new List<User>();
         public List<Team> Teams { get; set; } = new List<Team>();
+
+        public Game(string groupName)
+        {
+            GroupName = groupName;
+        }
     }
 }

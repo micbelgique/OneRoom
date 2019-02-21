@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { Team } from './model/team';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TeamsService {
+export class TeamService {
 
   private teamUrl = localStorage.getItem('endpoint') + '/teams';
   private headers: HttpHeaders;

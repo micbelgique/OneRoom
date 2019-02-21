@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
+import { GameService } from '../services/OnePoint/game.service';
+import { Game } from '../services/OnePoint/model/game';
 
 @Component({
   selector: 'app-settings',
@@ -24,13 +25,16 @@ export class SettingsComponent implements OnInit {
   saved = true;
 
   group: string;
+  game: number;
 
   constructor(
     private snackBar: MatSnackBar,
-    private groupService: PersonGroupService) {}
+    private groupService: PersonGroupService,
+    private gameService: GameService) {}
 
   ngOnInit() {
-    this.group = localStorage.getItem('groupid');
+    this.group = localStorage.getItem('groupName');
+    this.game = parseInt(localStorage.getItem('gameId'), 10);
     this.endPoint = localStorage.getItem('endpoint');
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
@@ -61,24 +65,39 @@ export class SettingsComponent implements OnInit {
   }
 
   create() {
-    const res$ = this.groupService.create(this.group, this.group + ' name ');
-    res$.subscribe( x => {
-      localStorage.setItem('groupid', this.group);
-      this.snackBar.open('Group ' + this.group + ' created', 'Ok', {
+    const resGame$ = this.gameService.createGame(this.group);
+    resGame$.subscribe( (game: Game) => {
+      this.game = game.gameId;
+      localStorage.setItem('gameId', this.game.toString());
+      this.snackBar.open('Game Initialized', 'Ok', {
         duration: 3000
       });
-      console.log(x);
+      const res$ = this.groupService.create(this.group, this.group + ' name ');
+      res$.subscribe( x => {
+        localStorage.setItem('groupName', this.group);
+        this.snackBar.open('Group ' + this.group + ' created', 'Ok', {
+        duration: 3000
+        });
+      });
     });
   }
 
   delete() {
     const res$ = this.groupService.delete(this.group);
     res$.subscribe( x => {
-      localStorage.removeItem('groupid');
+      this.group = '';
+      localStorage.removeItem('groupName');
       this.snackBar.open('Group ' + this.group + ' deleted', 'Ok', {
         duration: 3000
       });
-      console.log(x);
+      const resGame$ = this.gameService.deleteGame(this.game);
+      resGame$.subscribe( (game: Game) => {
+        this.game = NaN;
+        localStorage.removeItem('gameId');
+        this.snackBar.open('Game removed', 'Ok', {
+          duration: 3000
+        });
+      });
     });
   }
 }

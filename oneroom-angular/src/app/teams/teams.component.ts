@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TeamsService } from '../services/OnePoint/teams.service';
+import { TeamService } from '../services/OnePoint/team.service';
 import { MatSnackBar } from '@angular/material';
 
 @Component({
@@ -11,14 +11,14 @@ export class TeamsComponent implements OnInit {
 
   nbTeams: number;
 
-  constructor(private snackBar: MatSnackBar,private teamsService: TeamsService) { }
+  constructor(private snackBar: MatSnackBar, private teamService: TeamService) { }
 
   ngOnInit() {
     this.nbTeams = 5;
   }
 
   createTeam() {
-    const res$ = this.teamsService.createTeam(this.nbTeams);
+    const res$ = this.teamService.createTeam(this.nbTeams);
     res$.subscribe( x => {
       this.snackBar.open('Teams Created', 'Ok', {
         duration: 3000
