@@ -36,7 +36,7 @@ namespace oneroom_api.Model
             modelBuilder.Entity<User>()
                 .HasOne<Team>()
                 .WithMany(t => t.Users)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.ClientSetNull);
             modelBuilder.Entity<User>()
                 .HasOne<Game>()
                 .WithMany(g => g.Users)

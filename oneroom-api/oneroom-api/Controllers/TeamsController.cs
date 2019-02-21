@@ -73,11 +73,27 @@ namespace oneroom_api.Controllers
             return CreatedAtAction("GetTeam", teams);
         }
 
+        // DELETE: api/Teams
+        [HttpDelete]
+        public async Task<ActionResult<List<Team>>> DeleteTeams()
+        {
+            var teams = await _context.Teams.Include(t => t.Users).ToListAsync();
+            if (teams == null)
+            {
+                return NotFound();
+            }
+
+            _context.Teams.RemoveRange(teams);
+            await _context.SaveChangesAsync();
+
+            return teams;
+        }
+
         // DELETE: api/Teams/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Team>> DeleteTeam(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams.Include(t => t.Users).Where(t => t.TeamId == id).SingleOrDefaultAsync();
             if (team == null)
             {
                 return NotFound();

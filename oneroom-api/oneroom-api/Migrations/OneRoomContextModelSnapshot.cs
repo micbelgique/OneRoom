@@ -32,11 +32,13 @@ namespace oneroom_api.Migrations
 
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<string>("EmotionDominant");
+                    b.Property<string>("EmotionDominant")
+                        .IsRequired();
 
                     b.Property<int>("GlassesType");
 
-                    b.Property<string>("HairColor");
+                    b.Property<string>("HairColor")
+                        .IsRequired();
 
                     b.Property<bool>("IsMale");
 

@@ -11,6 +11,7 @@ namespace oneroom_api.Model
         [Range(0,150)]
         public double Age { get; set; }
         public bool IsMale { get; set; }
+        [Required]
         public string EmotionDominant { get; set; }
         [Range(0, 1)]
         public double SmileLevel { get; set; }
@@ -21,6 +22,7 @@ namespace oneroom_api.Model
         public GlassesType GlassesType { get; set; }
         [Range(0, 1)]
         public double BaldLevel { get; set; }
+        [Required]
         public string HairColor { get; set; }
     }
 }
