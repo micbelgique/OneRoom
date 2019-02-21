@@ -1,4 +1,4 @@
-<button *ngIf='this.refreshBtn && this.users.length > 0' mat-raised-button style="width: 100%" (click)="this.refreshData()" color="accent">Refresh</button>
+<button *ngIf='this.refreshBtn && this.users.length > 0' mat-raised-button style="width: 100%;" (click)="this.refreshData()" color="accent">Refresh</button>
 <mat-accordion class="example-headers-align" *ngFor="let item of users">
     <mat-expansion-panel [expanded]=true>
       <mat-expansion-panel-header>

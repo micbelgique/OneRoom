@@ -28,6 +28,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   @ViewChild('canvas')
   public canvas;
+  @ViewChild('canvas2')
+  public canvas2;
   @ViewChild('webcam')
   public video;
   private stream;
@@ -59,7 +61,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
           this.startStream();
           this.detectId = setInterval( () => {
             this.detectFaces();
-          }, 1500);
+          }, 1000);
         }
       )
     );
@@ -68,30 +70,32 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   public async detectFaces() {
+        const ctx = this.canvas2.nativeElement.getContext('2d');
+        ctx.clearRect(0, 0, this.canvas2.nativeElement.width, this.canvas2.nativeElement.height);
+        ctx.stroke();
         const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
-        // small input size => near the webcam
         // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.canvas.nativeElement, options).withFaceLandmarks();
+        const fullFaceDescriptions = await faceapi.detectSingleFace(this.canvas.nativeElement, options).withFaceLandmarks();
         // console.log('Detected : ' + fullFaceDescriptions.length);
-        if (fullFaceDescriptions.length > 0) {
-            // tslint:disable-next-line:no-shadowed-variable
-            const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-            await faceapi.drawDetection(this.canvas.nativeElement, detectionsArray, { withScore: false });
-            // tslint:disable-next-line:no-shadowed-variable
-            const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-            await faceapi.drawLandmarks(this.canvas.nativeElement, landmarksArray, { drawLines: false });
+        // if (fullFaceDescriptions.length > 0) {
+        if (fullFaceDescriptions) {
+        console.log(fullFaceDescriptions);
+            // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+        await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
+            // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+        // await faceapi.drawLandmarks(this.canvas2.nativeElement, fullFaceDescriptions.landmarks, { drawLines: true });
             /*this.rect = new FaceRectangle();
             this.rect.width = detectionsArray[0].box.width;
             this.rect.height = detectionsArray[0].box.height;
             this.rect.left = detectionsArray[0].box.left;
             this.rect.top = detectionsArray[0].box.top;*/
-            if (this.lock === false) {
+        if (this.lock === false) {
               console.log('Lock off');
               const imgData = this.capture();
               this.lock = true;
               setTimeout( () => {
                 console.log('Sending to face API now');
-                this.imageCapture(imgData);
+                // this.imageCapture(imgData);
               }, 5000);
             }
         }
@@ -185,6 +189,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 this.video.nativeElement.addEventListener('loadedmetadata', () => {
                   this.canvas.nativeElement.width = this.video.nativeElement.videoWidth;
                   this.canvas.nativeElement.height = this.video.nativeElement.videoHeight;
+                  // overlay
+                  this.canvas2.nativeElement.width = this.video.nativeElement.videoWidth;
+                  this.canvas2.nativeElement.height = this.video.nativeElement.videoHeight;
                 });
 
                 const loop = () => {

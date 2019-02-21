@@ -7,7 +7,7 @@ function createWindow () {
   win = new BrowserWindow({
     width: 800,
     height: 800,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
     icon: `file://${__dirname}/dist/oneroom-angular/assets/logo.png`
   })
 
@@ -15,7 +15,7 @@ function createWindow () {
   win.loadURL(`file://${__dirname}/dist/oneroom-angular/index.html`)
 
   //// uncomment below to open the DevTools.
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
 
   // Event when the window is closed.
   win.on('closed', function () {

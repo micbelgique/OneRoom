@@ -1,14 +1,13 @@
 <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
 <div style="text-align: center">
-  <br>
   <div [style.display]=this.displayStream >
     <select #devices (change)="this.startStream()" >
         <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
     </select>
-    <video style='width:100vw; height:100vh; display:none' #webcam autoplay></video>
-    <br>
-    <div>
-      <canvas  #canvas ></canvas>
+    <canvas #canvas style="display:none"></canvas>
+    <div id="overlayContainer" class="center">
+      <video id="stream" #webcam autoplay></video>
+      <canvas #canvas2 id="overlay" ></canvas>
     </div>
   </div>
 </div>

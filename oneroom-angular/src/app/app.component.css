@@ -8,7 +8,6 @@
 
 .container-sidenav {
   height: 100vh;
-  overflow-y: auto;
 }
 
 .sidenav {
@@ -16,6 +15,5 @@
 }
 
 .content {
-  height: 100vh;
-  overflow-y: auto;
+  height: 90vh;
 }
