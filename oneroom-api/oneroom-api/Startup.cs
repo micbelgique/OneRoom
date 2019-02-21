@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using oneroom_api.Model;
+using oneroom_api.SignalR;
 
 namespace oneroom_api
 {
@@ -23,6 +24,7 @@ namespace oneroom_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSignalR();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -37,6 +39,10 @@ namespace oneroom_api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSignalR(route =>
+            {
+                route.MapHub<CoordinatorHub>("/CoordinatorHub");
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -50,7 +56,7 @@ namespace oneroom_api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+           
             app.UseHttpsRedirection();
             app.UseMvc();
 
