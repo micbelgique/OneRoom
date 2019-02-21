@@ -4,7 +4,7 @@
     <mat-expansion-panel [expanded]=false>
         <mat-expansion-panel-header>
           <mat-panel-title>
-              <div mat-card-title>Coordinator</div>
+              <div mat-card-title i18n="@@settingsCoordinator">Coordinator</div>
           </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
@@ -14,7 +14,7 @@
       </mat-card-content>
       <mat-card-actions>
             <div style="text-align: center">
-                <button style="width: 80%" mat-raised-button (click)='saveCoordinatorSettings()' color="primary">Save</button>
+                <button style="width: 80%" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Save</button>
               </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -28,7 +28,7 @@
           </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-            <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()'>Cognitives calls</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
             <br><br>
             <mat-form-field style="width: 100%">
                 <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
@@ -40,7 +40,7 @@
       </mat-card-content>
       <mat-card-actions>
             <div style="text-align: center">
-              <button style="width: 80%" mat-raised-button (click)='saveFaceSettings()' color="primary">Save</button>
+              <button style="width: 80%" mat-raised-button (click)='saveFaceSettings()' color="primary" i18n="@@settingsSave">Save</button>
             </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -54,7 +54,7 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-card-content>
-              <mat-slide-toggle [(ngModel)]='callCustomVisionStatus' color="primary" (click)='this.toggleCustomVisionCalls()'>Cognitives calls</mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]='callCustomVisionStatus' color="primary" (click)='this.toggleCustomVisionCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
               <br><br>
               <mat-form-field style="width: 100%">
                   <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCustomVision" value='{{endPointCustomVision}}'>
@@ -66,7 +66,7 @@
         </mat-card-content>
         <mat-card-actions>
               <div style="text-align: center">
-                <button style="width: 80%" mat-raised-button (click)='saveCustomVisionSettings()' color="primary">Save</button>
+                <button style="width: 80%" mat-raised-button (click)='saveCustomVisionSettings()' color="primary" i18n="@@settingsSave">Save</button>
               </div>
         </mat-card-actions>
       </mat-expansion-panel>
@@ -76,7 +76,7 @@
       <mat-expansion-panel [expanded]=false>
         <mat-expansion-panel-header>
           <mat-panel-title>
-              <div mat-card-title>Group</div>
+              <div mat-card-title i18n="@@settingsGroup">Group</div>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-card-content>
@@ -86,8 +86,8 @@
         </mat-card-content>
         <mat-card-actions>
           <div style="text-align: center">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='create()' color="primary">Create</button>
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='delete()' color="accent">Delete</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='create()' color="primary" i18n="@@settingsCreate" >Create</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='delete()' color="accent" i18n="@@settingsDelete">Delete</button>
           </div>
         </mat-card-actions>
       </mat-expansion-panel>

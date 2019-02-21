@@ -12,16 +12,16 @@
     <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened">
       <mat-list>
         <mat-list-item>
-            <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >Register</a></span>
+            <span i18n="@@menuRegister" ><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >Register</a></span>
         </mat-list-item>
         <mat-list-item>
-            <span><a [routerLink]="['/leaderboard']" routerLinkActive="router-link-active" >Leaderboard</a></span>
+            <span i18n="@@menuLeaderboard"><a [routerLink]="['/leaderboard']" routerLinkActive="router-link-active" >Leaderboard</a></span>
         </mat-list-item>
         <mat-list-item>
-            <span><a [routerLink]="['/filter']" routerLinkActive="router-link-active" >Filter</a></span>
+            <span i18n="@@menuFilter"><a [routerLink]="['/filter']" routerLinkActive="router-link-active" >Filter</a></span>
         </mat-list-item>
         <mat-list-item>
-            <a [routerLink]="['/settings']" routerLinkActive="router-link-active" >Settings</a>
+            <span i18n="@@menuSettings"><a [routerLink]="['/settings']" routerLinkActive="router-link-active" >Settings</a></span>
         </mat-list-item>
       </mat-list>
     </mat-sidenav>

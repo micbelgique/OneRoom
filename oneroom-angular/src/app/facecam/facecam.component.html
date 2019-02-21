@@ -1,10 +1,13 @@
 <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
 <div style="text-align: center">
+  <div *ngIf=this.alertContainer>
+      <p>{{alertMessage}}</p>
+      <button mat-raised-button (click)="this.initStreamDetection()" color="primary" i18n="@@facecamRetry">Retry</button>
+  </div>
   <div [style.display]=this.displayStream >
     <select #devices (change)="this.startStream()" >
         <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
     </select>
-    <canvas #canvas style="display:none"></canvas>
     <div id="overlayContainer" class="center">
       <video id="stream" #webcam autoplay></video>
       <canvas #canvas2 id="overlay" ></canvas>

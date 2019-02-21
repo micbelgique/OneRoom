@@ -7,7 +7,7 @@ function createWindow () {
   win = new BrowserWindow({
     width: 800,
     height: 800,
-    backgroundColor: '#000000',
+    backgroundColor: '#FFFFFF',
     icon: `file://${__dirname}/dist/oneroom-angular/assets/logo.png`
   })
 

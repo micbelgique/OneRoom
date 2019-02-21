@@ -11,7 +11,7 @@ import { Group } from '../services/cognitive/person-group.service';
 import { FaceProcessService } from '../utilities/face-process.service';
 import { UserService } from '../services/OnePoint/user.service';
 import { FaceService } from '../services/OnePoint/face.service';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-facecam',
@@ -26,8 +26,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
   /* selector */
   public selectors;
 
-  @ViewChild('canvas')
-  public canvas;
   @ViewChild('canvas2')
   public canvas2;
   @ViewChild('webcam')
@@ -42,7 +40,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   private lock = false;
 
+  // alert
+  alertContainer = false;
+  alertMessage = '';
+
   constructor(
+    public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
@@ -50,53 +53,59 @@ export class FacecamComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    // init lock
+    this.alertContainer = false;
+    this.lock = false;
     this.opencam();
     await this.loadModels();
   }
 
-  async loadModels() {
+  private async loadModels() {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
       async () => await faceapi.loadFaceLandmarkModel('assets/models/').finally(
         async () => {
-          this.startStream();
-          this.detectId = setInterval( () => {
-            this.detectFaces();
-          }, 1000);
+            this.initStreamDetection();
         }
       )
     );
+    //
     // await faceapi.loadTinyFaceDetectorModel('../../assets/models/');
     // await faceapi.loadFaceLandmarkTinyModel('../../assets/models/');
   }
 
+  initStreamDetection() {
+    if (!this.stream) {
+      this.startStream();
+      if (!this.detectId) {
+        this.detectId = setInterval( () => {
+          this.detectFaces();
+        }, 1000);
+      }
+    }
+  }
+
   public async detectFaces() {
+        // clear overlay
         const ctx = this.canvas2.nativeElement.getContext('2d');
         ctx.clearRect(0, 0, this.canvas2.nativeElement.width, this.canvas2.nativeElement.height);
         ctx.stroke();
         const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
         // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectSingleFace(this.canvas.nativeElement, options).withFaceLandmarks();
-        // console.log('Detected : ' + fullFaceDescriptions.length);
+        const fullFaceDescriptions = await faceapi.detectSingleFace(this.video.nativeElement, options).withFaceLandmarks();
         // if (fullFaceDescriptions.length > 0) {
-        if (fullFaceDescriptions) {
-        console.log(fullFaceDescriptions);
-            // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+        if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
+        // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
         await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
-            // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+        // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
         // await faceapi.drawLandmarks(this.canvas2.nativeElement, fullFaceDescriptions.landmarks, { drawLines: true });
-            /*this.rect = new FaceRectangle();
-            this.rect.width = detectionsArray[0].box.width;
-            this.rect.height = detectionsArray[0].box.height;
-            this.rect.left = detectionsArray[0].box.left;
-            this.rect.top = detectionsArray[0].box.top;*/
         if (this.lock === false) {
-              console.log('Lock off');
-              const imgData = this.capture();
+              console.log('Preparing call and locking');
+              // const imgData = this.capture();
+              const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
               this.lock = true;
               setTimeout( () => {
-                console.log('Sending to face API now');
-                // this.imageCapture(imgData);
-              }, 5000);
+                this.imageCapture(imgData);
+              }, 6000);
             }
         }
 
@@ -116,58 +125,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
               .catch(this.handleError);
   }
 
-  /* Crop image from canvas and returns a new canvas : call capture first ! */
-  private crop(x1, y1, x2, y2) {
-    // get your canvas and a context for it
-    const ctx = this.canvas.getContext('2d');
-    // get the image data you want to keep.
-    const imageData = ctx.getImageData(x1, y1, x2, y2);
-    // create a new cavnas same as clipped size and a context
-    const newCan = document.createElement('canvas');
-    // define sizes
-    newCan.width = x2 - x1;
-    newCan.height = y2 - y1;
-    const newCtx = newCan.getContext('2d');
-    // put the clipped image on the new canvas.
-    newCtx.putImageData(imageData, 0, 0);
-    return newCan;
-  }
-
-  /* take a capture of the video stream and returns an image element : call stream first ! */
-  private capture() {
-    return this.canvas.nativeElement.toDataURL('image/png');
-  }
-
-  /* record a video from the camera and returns a video element : call stream first !*/
-  private record(btnStop, container) {
-    const ctx = canvas.getContext('2d');
-    let rafId = null;
-    const frames = [];
-    const CANVAS_WIDTH = canvas.width;
-    const CANVAS_HEIGHT = canvas.height;
-
-    function drawVideoFrame(time) {
-        rafId = requestAnimationFrame(drawVideoFrame);
-        ctx.drawImage(this.video, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        const dataVid = canvas.toDataURL('image/webp', 1);
-        const frame = dataVid.split(',');
-        frames.push(frame[1]);
-    }
-
-    rafId = requestAnimationFrame(drawVideoFrame); // Note: not using vendor prefixes!
-
-    btnStop.addEventListener('click', function stop() {
-        // Note: not using vendor prefixes!
-        cancelAnimationFrame(rafId);
-        // 2nd param: framerate for the video file.
-        const webmBlob = this.base64ToBlobVideo(frames, 'video/webm', 1000 / 60);
-        const video = document.createElement('video');
-        const url = URL.createObjectURL(webmBlob);
-        video.src = url;
-        container.appendChild(video);
-    });
-  }
-
    /* Start or restart the stream using a specific videosource and inject it in a container */
   public startStream() {
 
@@ -182,34 +139,38 @@ export class FacecamComponent implements OnInit, OnDestroy {
         })
             // permission granted:
             .then( (stream) => {
+                this.alertContainer = false;
                 // on getUserMedia
                 this.video.nativeElement.srcObject = stream;
                 this.video.nativeElement.play();
                 // set canvas size = video size when known
                 this.video.nativeElement.addEventListener('loadedmetadata', () => {
-                  this.canvas.nativeElement.width = this.video.nativeElement.videoWidth;
-                  this.canvas.nativeElement.height = this.video.nativeElement.videoHeight;
+                  // OLD
+                  // this.canvas.nativeElement.width = this.video.nativeElement.videoWidth;
+                  // this.canvas.nativeElement.height = this.video.nativeElement.videoHeight;
                   // overlay
                   this.canvas2.nativeElement.width = this.video.nativeElement.videoWidth;
                   this.canvas2.nativeElement.height = this.video.nativeElement.videoHeight;
                 });
 
+                /* NOT NEEDED ANYMORE
                 const loop = () => {
                   if (!this.video.nativeElement.paused && !this.video.nativeElement.ended) {
-                    // tslint:disable-next-line:max-line-length
-                    this.canvas.nativeElement.getContext('2d').drawImage(this.video.nativeElement, 0, 0, this.video.nativeElement.videoWidth, this.video.nativeElement.videoHeight);
+                    this.canvas.nativeElement.getContext('2d').drawImage(this.video.nativeElement,
+                      0, 0, this.video.nativeElement.videoWidth, this.video.nativeElement.videoHeight);
                   }
                   this.streamId = setTimeout(loop, 1000 / 30); // drawing at 30fps
                 };
 
                 this.video.nativeElement.addEventListener('play', () => {
-                  requestAnimationFrame(loop);
-                }, 0);
+                  // requestAnimationFrame(loop);
+                }, 0);*/
             })
             // permission denied:
             .catch( (error) => {
               console.log('Camera init failed : ' + error.name);
-              // document.body.textContent = 'Could not access the camera. Error: ' + error.name;
+              this.alertContainer = true;
+              this.alertMessage = 'Could not access the camera. Error: ' + error.name;
             });
     }
     return this.video;
@@ -279,39 +240,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
     return blob;
 }
 
-  /* convert base 64 array of string into blob video */
-  private base64ToBlobVideo(b64Data, contentType, sliceSize) {
-    contentType = contentType || '';
-    sliceSize = sliceSize || 512;
-
-    const byteArrays = [];
-    // tslint:disable-next-line:prefer-for-of
-    for (let idx = 0; idx < b64Data.length; idx++) {
-
-        const byteCharacters = atob(b64Data[idx]);
-
-        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-            const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-            const byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
-
-            const byteArray = new Uint8Array(byteNumbers);
-
-            byteArrays.push(byteArray);
-        }
-    }
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-}
-
   imageCapture(dataUrl) {
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls disabled');
     return;
   }
+  let sub$;
   try {
   console.log('starting');
   const stream = this.makeblob(dataUrl);
@@ -322,10 +256,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // traitement face API
   // return an observable;
   const res$ = this.faceProcess.byImg(stream.blob, group);
-  res$.subscribe(
+  sub$ = res$.subscribe(
     (data) => {
       console.log('detection');
       let users: User[] = [];
+      if (data.persons.length === 0) {
+        console.log('lock disabled');
+        this.lock = false;
+        return;
+      }
       data.persons.forEach(element => {
         console.log('person');
         const u = new User();
@@ -400,6 +339,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
             this.snackBar.open('User created', 'Ok', {
               duration: 2000
             });
+            sub$.unsubscribe();
+            this.lock = false;
           }
         , (error) => {
             if (error.status === 409 && error.ok === false) {
@@ -412,7 +353,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               avatar$.subscribe(
                 (response) => console.log('avatar updated'),
                 // tslint:disable-next-line:no-shadowed-variable
-                (error) => {}
+                (error) => console.log('avatar not updated')
               );
               // adding face to already existant user
               // for (const face of user.faces) {
@@ -423,10 +364,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 face$.subscribe(
                     () => {
                       console.log('Face added');
+                      sub$.unsubscribe();
+                      this.lock = false;
                     },
-                    // tslint:disable-next-line:no-shadowed-variable
-                    (error) => {
-                      console.log(error);
+                    (err) => {
+                      console.log(err);
+                      sub$.unsubscribe();
+                      this.lock = false;
                 });
               }
               // }
@@ -434,13 +378,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
         });
       }
       users = null;
+    },
+    () => {
+      console.log('Error 429');
+      this.lock = false;
     }
   );
   } catch (e) {
     console.log('Error : ' + e.message);
     console.log(e);
-  } finally {
-    this.lock = false;
   }
 }
 
