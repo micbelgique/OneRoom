@@ -258,13 +258,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
   const res$ = this.faceProcess.byImg(stream.blob, group);
   sub$ = res$.subscribe(
     (data) => {
-      console.log('detection');
-      let users: User[] = [];
-      if (data.persons.length === 0) {
+      sub$.unsubscribe();
+      if (data === null) {
         console.log('lock disabled');
         this.lock = false;
         return;
       }
+
+      console.log('detection');
+      let users: User[] = [];
       data.persons.forEach(element => {
         console.log('person');
         const u = new User();
@@ -339,7 +341,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
             this.snackBar.open('User created', 'Ok', {
               duration: 2000
             });
-            sub$.unsubscribe();
             this.lock = false;
           }
         , (error) => {
@@ -357,19 +358,17 @@ export class FacecamComponent implements OnInit, OnDestroy {
               );
               // adding face to already existant user
               // for (const face of user.faces) {
-              if (user.faces[0]) {
-                const face = user.faces[0];
+              if (user.faces[user.faces.length - 1]) {
+                const face = user.faces[user.faces.length - 1];
                 console.log('adding face');
                 const face$ = this.faceService.addFace(user.userId, face);
                 face$.subscribe(
                     () => {
                       console.log('Face added');
-                      sub$.unsubscribe();
                       this.lock = false;
                     },
                     (err) => {
                       console.log(err);
-                      sub$.unsubscribe();
                       this.lock = false;
                 });
               }
@@ -380,6 +379,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
       users = null;
     },
     () => {
+      sub$.unsubscribe();
       console.log('Error 429');
       this.lock = false;
     }
