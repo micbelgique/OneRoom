@@ -1,20 +1,94 @@
-<div class="example-container">
-    <mat-form-field>
-        <input matInput placeholder="Coordinator endPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
-    </mat-form-field>
-    <mat-form-field>
-        <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput placeholder="SubscriptionKey" type='url' [(ngModel)]="subscriptionKey" value='{{subscriptionKey}}'>
-    </mat-form-field>
-    <button mat-raised-button color='primary' (click)='test()' *ngIf="!testResult">Test</button>
-    <button mat-raised-button *ngIf="testResult" (click)='save()' disabled='{{!saved}}'>Save</button>
-    <br>
-    <mat-form-field>
-        <input matInput placeholder="Group ID" type='text' [(ngModel)]="group" value='{{group}}'>
-    </mat-form-field>
-    <button mat-raised-button (click)='create()' color="primary">Create</button>
-    <br>
-    <button mat-raised-button (click)='delete()' color="accent">Delete</button>
-  </div>
+
+
+  <mat-accordion class="example-headers-align">
+    <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title i18n="@@settingsCoordinator">Coordinator</div>
+          </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+            <mat-form-field style="width: 100%">
+                <input matInput placeholder="Coordinator endPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
+            </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+            <div style="text-align: center">
+                <button style="width: 80%" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Save</button>
+              </div>
+      </mat-card-actions>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-accordion class="example-headers-align">
+    <mat-expansion-panel [expanded]=false>
+      <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title>Face API</div>
+          </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+            <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
+            <br><br>
+            <mat-form-field style="width: 100%">
+                <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
+            </mat-form-field>
+            <br><br>
+            <mat-form-field style="width: 100%">
+              <input matInput placeholder="Subscription Key" type='url' [(ngModel)]="subscriptionKey" value='{{subscriptionKey}}'>
+            </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+            <div style="text-align: center">
+              <button style="width: 80%" mat-raised-button (click)='saveFaceSettings()' color="primary" i18n="@@settingsSave">Save</button>
+            </div>
+      </mat-card-actions>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-accordion class="example-headers-align">
+      <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <div mat-card-title>Custom VISION</div>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card-content>
+              <mat-slide-toggle [(ngModel)]='callCustomVisionStatus' color="primary" (click)='this.toggleCustomVisionCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
+              <br><br>
+              <mat-form-field style="width: 100%">
+                  <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="endPointCustomVision" value='{{endPointCustomVision}}'>
+              </mat-form-field>
+              <br><br>
+              <mat-form-field style="width: 100%">
+                <input matInput placeholder="Subscription Key" type='url' [(ngModel)]="subscriptionKeyCustomVision" value='{{subscriptionKeyCustomVision}}'>
+              </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
+              <div style="text-align: center">
+                <button style="width: 80%" mat-raised-button (click)='saveCustomVisionSettings()' color="primary" i18n="@@settingsSave">Save</button>
+              </div>
+        </mat-card-actions>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+  <mat-accordion class="example-headers-align">
+      <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title i18n="@@settingsGroup">Group</div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card-content>
+            <mat-form-field style="width: 100%">
+                <input matInput placeholder="Group ID" type='text' [(ngModel)]="group" value='{{group}}'>
+            </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
+          <div style="text-align: center">
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='create()' color="primary" i18n="@@settingsCreate" >Create</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='delete()' color="accent" i18n="@@settingsDelete">Delete</button>
+          </div>
+        </mat-card-actions>
+      </mat-expansion-panel>
+    </mat-accordion>

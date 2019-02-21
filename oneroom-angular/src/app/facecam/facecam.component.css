@@ -1,0 +1,16 @@
+#overlayContainer {
+  position: relative;
+}
+
+#overlayContainer #stream, #overlay {
+  position: absolute;
+}
+
+#stream {
+  border: 2px solid black;
+}
+
+.center {
+  margin: 0;
+  width: 50%;
+}
