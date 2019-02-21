@@ -56,21 +56,40 @@ namespace oneroom_api.Migrations
                     b.ToTable("Faces");
                 });
 
-            modelBuilder.Entity("oneroom_api.Model.Group", b =>
+            modelBuilder.Entity("oneroom_api.Model.Game", b =>
                 {
-                    b.Property<Guid>("GroupId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("GameId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("GroupName")
+                        .IsRequired();
 
-                    b.HasKey("GroupId");
+                    b.HasKey("GameId");
 
-                    b.HasIndex("GroupId")
+                    b.HasIndex("GroupName")
                         .IsUnique();
 
-                    b.ToTable("Group");
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("oneroom_api.Model.Team", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<int?>("GameId");
+
+                    b.HasKey("TeamId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("oneroom_api.Model.User", b =>
@@ -80,17 +99,21 @@ namespace oneroom_api.Migrations
 
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<Guid?>("GroupId");
+                    b.Property<int?>("GameId");
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int?>("TeamId");
 
                     b.Property<string>("UrlAvatar")
                         .IsRequired();
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("TeamId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -106,12 +129,24 @@ namespace oneroom_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("oneroom_api.Model.Team", b =>
+                {
+                    b.HasOne("oneroom_api.Model.Game")
+                        .WithMany("Teams")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
-                    b.HasOne("oneroom_api.Model.Group")
+                    b.HasOne("oneroom_api.Model.Game")
                         .WithMany("Users")
-                        .HasForeignKey("GroupId")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("oneroom_api.Model.Team")
+                        .WithMany("Users")
+                        .HasForeignKey("TeamId");
                 });
 #pragma warning restore 612, 618
         }

@@ -71,6 +71,7 @@ import { TeamsComponent } from './teams/teams.component';
       { path: 'welcome', component: FacecamComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'filter', component: FilterComponent },
+      { path: 'teams', component: TeamsComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
     MatListModule,

@@ -1,1 +1,9 @@
-<p>test</p>
+<div style="padding: 5%">
+  <form class="example-container">
+    <mat-form-field>
+      <input matInput i18n-placeholder placeholder="Number of teams" type='number' [(ngModel)]="nbTeams" min="0">
+    </mat-form-field>
+    <br/>
+    <button mat-raised-button (click)='create()' color="primary">Create</button>
+  </form>
+</div>

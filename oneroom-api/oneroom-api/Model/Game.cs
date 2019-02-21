@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace oneroom_api.Model
 {
-    public class Group
+    public class Game
     {
-        public Guid GroupId { get; set; }
-        public string Name { get; set; }
+        public int GameId { get; set; }
+        [Required]
+        public string GroupName { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public List<User> Users { get; set; } = new List<User>();
-
+        public List<Team> Teams { get; set; } = new List<Team>();
     }
 }
