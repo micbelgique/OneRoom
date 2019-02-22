@@ -150,7 +150,7 @@ export class CamcardComponent implements OnInit {
             f.emotionDominant = emotionType;
             u.faces.push(f);
           });
-          u.generateAvatar();
+          User.generateAvatar(u);
           users.push(u);
         });
 

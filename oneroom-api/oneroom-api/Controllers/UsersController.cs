@@ -35,7 +35,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var users = await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
+            var users = await _context.Users.Include(u=>u.Faces.OrderBy(f => f.CreationDate).Take(10)).OrderBy(u=>u.CreationDate).ToListAsync();
 
             for(var i=0; i<users.Count; i++)
             {
@@ -133,8 +133,6 @@ namespace oneroom_api.Controllers
                     user.Name = "Player " + (++count);
                     _context.Users.Add(user);
                 }
-
-                UsersUtilities.OptimizeResults(u);
 
                 await _context.SaveChangesAsync();
 

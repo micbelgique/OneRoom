@@ -3,6 +3,7 @@ import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
 import { timer } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
+import { Gender } from '../services/OnePoint/model/gender.enum';
 
 @Component({
   selector: 'app-leader-board',
@@ -10,7 +11,7 @@ import { MatSnackBar } from '@angular/material';
   styleUrls: ['./leader-board.component.css']
 })
 export class LeaderBoardComponent implements OnInit, OnDestroy {
-  @Input()
+
   users: User[] = [];
   errorMessage: string;
   refreshBtn = true;
@@ -28,7 +29,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   private getData(): void {
     this.userSub = this.userService.getUsers().subscribe(
-      usersList => {
+      (usersList) => {
+        usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 3000
