@@ -34,7 +34,34 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
+            var users = await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
+            // average and accurate details
+            // TODO : replace and update model
+            for(var i=0; i<users.Count; i++)
+            {
+                if(users[i].Faces.Count > 0)
+                {
+                    var faces = users[i].Faces.OrderBy(u => u.CreationDate).ToList();
+                    var face = new Face();
+                    face.Age = Math.Floor(faces.Average(f => f.Age));
+                    var male = faces.Count(f => f.IsMale);
+                    var female = faces.Count() - male;
+                    face.IsMale = male > female ? true : false;
+                    face.MoustacheLevel = faces.Average(f => f.MoustacheLevel);
+                    face.BeardLevel = faces.Average(f => f.BeardLevel);
+                    face.BaldLevel = faces.Average(f => f.BaldLevel);
+                    face.HairColor = faces.Last().HairColor;
+                    face.SkinColor = faces.Last().SkinColor;
+                    face.CreationDate = faces.Last().CreationDate;
+                    face.SmileLevel = faces.Last().SmileLevel;
+                    face.GlassesType = faces.Last().GlassesType;
+                    face.FaceId = Guid.Empty;
+                    face.EmotionDominant = faces.Last().EmotionDominant;
+                    users[i].Faces.Clear();
+                    users[i].Faces.Add(face);
+                }
+            }
+            return users;
         }
 
         // GET: api/UsersV2/5
