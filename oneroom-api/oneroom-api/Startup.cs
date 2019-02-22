@@ -61,6 +61,7 @@ namespace oneroom_api
             {
                 route.MapHub<UsersHub>("/UsersHub");
             });
+
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();
             app.UseSwaggerUi3();

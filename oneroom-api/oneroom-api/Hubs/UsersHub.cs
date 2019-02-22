@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
 {
+    public interface IUserClient
+    {
+        Task GetNewUser(User u);
+    }
+
     public class UsersHub : Hub
     {
         public Task SendNewUser(User user)
