@@ -126,7 +126,7 @@ namespace oneroom_api.Controllers
                    return Conflict("user already exists");
                else
                 {
-                    user.Name = "Player " + (count++);
+                    user.Name = "Player " + (++count);
                     _context.Users.Add(user);
                 }
                   
