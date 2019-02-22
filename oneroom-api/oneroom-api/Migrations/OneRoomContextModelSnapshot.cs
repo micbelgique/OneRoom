@@ -44,6 +44,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<double>("MoustacheLevel");
 
+                    b.Property<string>("SkinColor");
+
                     b.Property<double>("SmileLevel");
 
                     b.Property<Guid?>("UserId");

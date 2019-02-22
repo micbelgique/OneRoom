@@ -37,7 +37,7 @@ export class UserService {
   }
 
   updateAvatar(userId: string, urlAvatar: string): Observable<any> {
-    return this.http.put<any>(this.userUrl + '/' + userId, JSON.stringify({url : urlAvatar.toString()}), { headers: this.headers });
+    return this.http.put<any>(this.userUrl + '/' + userId, {url : urlAvatar.toString()}, { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

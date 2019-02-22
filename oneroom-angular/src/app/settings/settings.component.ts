@@ -10,21 +10,18 @@ import { Game } from '../services/OnePoint/model/game';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-  // tslint:disable-next-line:variable-name
-  // _endPoint = environment.Data.EndPoint;
-  // tslint:disable-next-line:variable-name
-  // _subscriptionKey = environment.faceApi.SubscriptionKey;
-  // tslint:disable-next-line:variable-name
-  // _endPointCognitive = environment.faceApi.EndPoint;
 
+  // coordinator
   endPoint: string;
+  // Face
   subscriptionKey: string;
   endPointCognitive: string;
-
-  testResult: boolean;
-  saved = true;
-
-  group: string;
+  callFaceStatus = true;
+  group = '';
+  // Custom vision
+  subscriptionKeyCustomVision: string;
+  endPointCustomVision: string;
+  callCustomVisionStatus = true;
 
   constructor(
     private snackBar: MatSnackBar,
@@ -32,29 +29,28 @@ export class SettingsComponent implements OnInit {
     private gameService: GameService) {}
 
   ngOnInit() {
+    // group face
     this.group = localStorage.getItem('groupName');
+    // coordinator
     this.endPoint = localStorage.getItem('endpoint');
+    // face
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
+    this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+    // custom vision
+    this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
+    this.endPointCustomVision = localStorage.getItem('endPointCustomVision');
+    this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
   }
 
-  verifyEndPoint(): boolean {
-    // Not implemented
-    return true;
-  }
-
-  verifySub(): boolean {
-    // Not implemented
-    return true;
-  }
-
-  test(): void {
-    this.testResult = this.verifyEndPoint() && this.verifySub();
-  }
-
-  save(): void {
-    this.saved = !this.saved;
+  saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
+    this.snackBar.open('Settings updated', 'Ok', {
+      duration: 2000
+    });
+  }
+
+  saveFaceSettings(): void {
     localStorage.setItem('endpointCognitive', this.endPointCognitive);
     localStorage.setItem('subscriptionKey', this.subscriptionKey);
     this.snackBar.open('Settings updated', 'Ok', {
@@ -70,6 +66,14 @@ export class SettingsComponent implements OnInit {
       this.snackBar.open('Game fetched', 'Ok', {
         duration: 3000
       });
+    });
+  }
+
+  saveCustomVisionSettings(): void {
+    localStorage.setItem('endPointCustomVision', this.endPointCustomVision);
+    localStorage.setItem('subscriptionKeyCustomVision', this.subscriptionKeyCustomVision);
+    this.snackBar.open('Settings updated', 'Ok', {
+      duration: 2000
     });
   }
 
@@ -106,5 +110,35 @@ export class SettingsComponent implements OnInit {
         });
       });
     });
+  }
+
+  toggleFaceCalls() {
+    const status = localStorage.getItem('cognitiveStatus');
+    if (status === 'true') {
+      localStorage.setItem('cognitiveStatus', 'false');
+      this.snackBar.open('Calls face disabled', 'Ok', {
+        duration: 2000
+      });
+    } else {
+      localStorage.setItem('cognitiveStatus', 'true');
+      this.snackBar.open('Calls face enabled', 'Ok', {
+        duration: 2000
+      });
+    }
+  }
+
+  toggleCustomVisionCalls() {
+    const status = localStorage.getItem('customVisionStatus');
+    if (status === 'true') {
+      localStorage.setItem('customVisionStatus', 'false');
+      this.snackBar.open('Calls custom vision disabled', 'Ok', {
+        duration: 2000
+      });
+    } else {
+      localStorage.setItem('customVisionStatus', 'true');
+      this.snackBar.open('Calls custom vision enabled', 'Ok', {
+        duration: 2000
+      });
+    }
   }
 }

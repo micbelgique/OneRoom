@@ -49,7 +49,9 @@ export class FaceProcessService {
         this.result.group = group;
         this.detect(stream, group);
       },
-      () => {}
+      () => {
+        this.result$.next(null);
+      }
       );
     });
 
@@ -63,6 +65,9 @@ export class FaceProcessService {
         (faces) => {
           // data
           console.log('face detected : ' + faces.length);
+          if (faces.length === 0) {
+            this.result$.next(null);
+          }
           // Simple message with an action.
           for (const face of faces) {
               this.identify(face, group, stream);
@@ -71,6 +76,7 @@ export class FaceProcessService {
         () => {
           // error
           console.log('ERROR : Detect faces');
+          this.result$.next(null);
         });
   }
 
@@ -123,6 +129,7 @@ export class FaceProcessService {
           },
           () => {
             console.log('ERROR : Adding face');
+            this.result$.next(null);
           });
   }
 
@@ -137,6 +144,7 @@ export class FaceProcessService {
           },
           () => {
               console.log('ERROR : Create person');
+              this.result$.next(null);
           });
  }
 
@@ -145,16 +153,17 @@ export class FaceProcessService {
     const train$ = this.groupService.train(groupId);
     train$.subscribe(
     () => {
-      this.list(groupId);
+      this.list();
     },
     () => {
       // 6. training status
       const trainStatus$ = this.groupService.getTrainingStatus(groupId);
       trainStatus$.subscribe();
+      this.result$.next(null);
     });
   }
 
-  private list(groupId) {
+  private list() {
     // list person with their face
     this.result$.next(this.result);
     /*
