@@ -8,7 +8,7 @@ namespace oneroom_api.Model
     {
         public Guid FaceId { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
-        [Range(0,150)]
+        [Range(0, 150)]
         public double Age { get; set; }
         public bool IsMale { get; set; }
         [Required]
@@ -25,5 +25,32 @@ namespace oneroom_api.Model
         [Required]
         public string HairColor { get; set; }
         public string SkinColor { get; set; }
+
+
+        class SkinColorEnum
+        {
+            public static string Black = "black";
+            public static string Caucasian = "caucasian";
+            public static string Azian = "azian";
+        }
+
+        class HairColorEnum
+        {
+            // TODO
+        }
+
+        class GlassesTypeEnum 
+        {
+            public static int NoGlasses = 0;
+            public static int ReadingGlasses = 1;
+            public static int Sunglasses = 2;
+            public static int SwimmingGoggles = 3;
+        }
+
+        class EmotionEnum
+        {
+            // TODO 
+        } 
+
     }
 }
