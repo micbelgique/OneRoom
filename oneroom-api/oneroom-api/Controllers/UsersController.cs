@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.ViewModels;
 
@@ -14,10 +16,12 @@ namespace oneroom_api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<LeaderBoardHub, ILeaderBoardClient> _hubClients;
 
-        public UsersController(OneRoomContext context)
+        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, ILeaderBoardClient> hubClients)
         {
             _context = context;
+            _hubClients = hubClients;
         }
 
         // GET: api/Games/1/Users
@@ -25,10 +29,6 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers( int GameId)
         {
-            // return await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
-            //                            .Include(u => u.Faces)
-            //                            .OrderBy(u => u.CreationDate)
-            //                            .ToListAsync();
             var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                             .Include(u => u.Faces)
                                             .OrderBy(u => u.CreationDate)
@@ -155,6 +155,7 @@ namespace oneroom_api.Controllers
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
                 await _context.SaveChangesAsync();
+                await _hubClients.Clients.All.UpdateUsers(user);
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
             catch (Exception)
@@ -179,6 +180,7 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+            await _hubClients.Clients.All.UpdateUsers(user);
 
             return user;
         }

@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using oneroom_api.Model;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
 {
-    public interface IUserClient
+    public interface ILeaderBoardClient
     {
-        Task GetNewUser(User u);
+        Task UpdateUsers( User u);
     }
 
-    public class UsersHub : Hub
+    public class LeaderBoardHub : Hub<ILeaderBoardClient>
     {
-        public Task SendNewUser(User user)
+        public LeaderBoardHub()
         {
-            return Clients.All.SendAsync("GetNewUser", user);
         }
 
         public override async Task OnConnectedAsync()

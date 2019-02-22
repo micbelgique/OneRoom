@@ -23,7 +23,13 @@ namespace oneroom_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            builder =>
+            {
+                builder.AllowAnyMethod().AllowAnyHeader()
+                       .WithOrigins("http://localhost:4200")
+                       .AllowCredentials();
+            }));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -43,10 +49,7 @@ namespace oneroom_api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(builder =>
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader());
+                app.UseCors("CorsPolicy");
             }
             else
             {
@@ -59,7 +62,7 @@ namespace oneroom_api
 
             app.UseSignalR(route =>
             {
-                route.MapHub<UsersHub>("/UsersHub");
+                route.MapHub<LeaderBoardHub>("/LeaderBoardHub");
             });
 
             // Register the Swagger generator and the Swagger UI middlewares

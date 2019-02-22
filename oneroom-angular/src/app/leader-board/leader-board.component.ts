@@ -3,6 +3,7 @@ import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
 import { timer } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
+import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 
 @Component({
   selector: 'app-leader-board',
@@ -20,14 +21,15 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private snackBar: MatSnackBar) { }
+    private snackBar: MatSnackBar,
+    private leaderboardService: LeaderboardService) { }
 
   ngOnInit() {
     this.getData();
   }
 
   private getData(): void {
-    this.userSub = this.userService.getUsers().subscribe(
+    this.userSub = this.leaderboardService.run().subscribe(
       usersList => {
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
@@ -67,6 +69,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
+    this.leaderboardService.close();
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
