@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace oneroom_api.SignalR
 {
-    [EnableCors]
+    [EnableCors("AllowSpecificOrigin")]
     public class CoordinatorHub : Hub
     {
         public Task SendNewUser(User user)

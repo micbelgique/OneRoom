@@ -28,10 +28,11 @@ namespace oneroom_api
                 options.AddPolicy("AllowSpecificOrigin",
                     builder => 
                     builder.WithOrigins("http://localhost:4200/")
-                        .DisallowCredentials()
-                        .AllowAnyOrigin()
+                        .AllowCredentials()
+                        //.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowedToAllowWildcardSubdomains());
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -62,13 +63,13 @@ namespace oneroom_api
             //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             //    app.UseHsts();
             //}
+
+            app.UseHttpsRedirection();
+            app.UseMvc();
             app.UseSignalR(route =>
             {
                 route.MapHub<CoordinatorHub>("/CoordinatorHub");
             });
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
 
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();
