@@ -23,23 +23,16 @@ namespace oneroom_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => 
-                    builder.WithOrigins("http://localhost:4200/")
-                        .AllowCredentials()
-                        //.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowedToAllowWildcardSubdomains());
-            });
+            services.AddCors(builder => 
+            builder.AddPolicy("AllowSpecificOrigin",options =>
+                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()
+            ));
+            services.AddSignalR();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<OneRoomContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
-            services.AddSignalR();
             // Register the Swagger services
             services.AddSwaggerDocument();
 
@@ -49,27 +42,16 @@ namespace oneroom_api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            app.UseCors("AllowSpecificOrigin");
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //    app.UseCors(builder =>
-            //        builder.AllowAnyOrigin()
-            //               .AllowAnyMethod()
-            //               .AllowAnyHeader());
-            //}
-            //else
-            //{
-            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //    app.UseHsts();
-            //}
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseSignalR(route =>
             {
                 route.MapHub<CoordinatorHub>("/CoordinatorHub");
             });
+            app.UseMvc();
 
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();
