@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using oneroom_api.Hubs;
 using oneroom_api.Model;
 
 namespace oneroom_api
@@ -28,6 +29,8 @@ namespace oneroom_api
 
             services.AddDbContext<OneRoomContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
+
+            services.AddSignalR();
 
             // Register the Swagger services
             services.AddSwaggerDocument();
@@ -54,6 +57,10 @@ namespace oneroom_api
             app.UseHttpsRedirection();
             app.UseMvc();
 
+            app.UseSignalR(route =>
+            {
+                route.MapHub<UsersHub>("/UsersHub");
+            });
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();
             app.UseSwaggerUi3();
