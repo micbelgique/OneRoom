@@ -80,12 +80,32 @@ namespace oneroom_api.Migrations
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<double>("Age");
+
+                    b.Property<double>("BaldLevel");
+
+                    b.Property<double>("BeardLevel");
+
                     b.Property<DateTime>("CreationDate");
+
+                    b.Property<string>("EmotionDominant");
+
+                    b.Property<int>("Gender");
+
+                    b.Property<int>("GlassesType");
 
                     b.Property<Guid?>("GroupId");
 
+                    b.Property<string>("HairColor");
+
+                    b.Property<double>("MoustacheLevel");
+
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<string>("SkinColor");
+
+                    b.Property<double>("SmileLevel");
 
                     b.Property<string>("UrlAvatar")
                         .IsRequired();

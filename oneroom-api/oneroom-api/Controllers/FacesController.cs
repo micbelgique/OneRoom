@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
@@ -49,7 +50,10 @@ namespace oneroom_api.Controllers
 
                 try
                 {
+                    UsersUtilities.OptimizeResults(u);
+
                     await _context.SaveChangesAsync();
+
                 } catch(DbUpdateException)
                 {
                     return Conflict("face already exists : "+ face.FaceId);
