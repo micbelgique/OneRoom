@@ -23,7 +23,16 @@ namespace oneroom_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => 
+                    builder.WithOrigins("http://localhost:4200/")
+                        .DisallowCredentials()
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -39,11 +48,7 @@ namespace oneroom_api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            app.UseCors(builder =>
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials());
+            app.UseCors("AllowSpecificOrigin");
             //if (env.IsDevelopment())
             //{
             //    app.UseDeveloperExceptionPage();
