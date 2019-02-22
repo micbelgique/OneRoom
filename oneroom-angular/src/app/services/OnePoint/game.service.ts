@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Game } from './model/game';
 import { Observable } from 'rxjs';
-import { EndPointGetter } from 'src/app/utilities/EndPointGetter';
 
 @Injectable({
   providedIn: 'root'
