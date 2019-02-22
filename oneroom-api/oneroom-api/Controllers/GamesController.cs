@@ -21,16 +21,17 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGroup()
+        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
         {
             return await _context.Games.ToListAsync();
         }
 
         // GET: api/Games/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        [HttpGet("{groupName}")]
+        public async Task<ActionResult<Game>> GetGame(String groupName)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
+                                           .SingleOrDefaultAsync();
 
             if (game == null)
             {
@@ -46,16 +47,25 @@ namespace oneroom_api.Controllers
         {
             Game game = new Game(groupName);
             _context.Games.Add(game);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("Game Already Exists");
+            }
 
             return CreatedAtAction("GetGame", new { id = game.GameId }, game);
         }
 
         // DELETE: api/Games/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Game>> DeleteGame(int id)
+        [HttpDelete("{groupName}")]
+        public async Task<ActionResult<Game>> DeleteGame(String groupName)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
+                                           .SingleOrDefaultAsync();
             if (game == null)
             {
                 return NotFound();

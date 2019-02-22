@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Face } from './model/face';
-import { environment } from 'src/environments/environment';
+import { EndPointGetter } from 'src/app/utilities/EndPointGetter';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FaceService {
 
-  private faceUrl = localStorage.getItem('endpoint') + '/faces';
+  private faceUrl = EndPointGetter.getEndPointWithGameId();
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
@@ -20,7 +20,7 @@ export class FaceService {
   }
 
   addFace(userId: string, face: Face) {
-    return this.http.post<boolean>(this.faceUrl + '/' + userId, face, { headers: this.headers });
+    return this.http.post<boolean>(this.faceUrl + '/Users/' + userId + '/Faces', face, { headers: this.headers });
   }
 
 }

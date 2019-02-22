@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Team } from './model/team';
+import { EndPointGetter } from 'src/app/utilities/EndPointGetter';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeamService {
 
-  private teamUrl = localStorage.getItem('endpoint') + '/teams';
+  private teamUrl = EndPointGetter.getEndPointWithGameId() + '/teams';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
@@ -33,9 +34,5 @@ export class TeamService {
 
   deleteTeams(): Observable<Team[]> {
     return this.http.delete<Team[]>(this.teamUrl, { headers: this.headers });
-  }
-
-  deleteTeam(userId: string): Observable<Team> {
-    return this.http.delete<Team>(this.teamUrl + '/' + userId, { headers: this.headers });
   }
 }

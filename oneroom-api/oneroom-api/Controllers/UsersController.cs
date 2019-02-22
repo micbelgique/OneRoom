@@ -9,7 +9,7 @@ using oneroom_api.ViewModels;
 
 namespace oneroom_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Games/{GameId}/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -20,30 +20,26 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
-
-        // OPTIONS: api/UsersV2
-        [HttpOptions]
-        [ProducesResponseType(200)]
-        public ActionResult OptionsUsers()
-        {
-            return Ok();
-        }
-
-        // GET: api/UsersV2
+        // GET: api/Games/1/Users
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers( int GameId)
         {
-            return await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
+            // return await _context.Users.Include(u=>u.Faces).OrderBy(u=>u.CreationDate).ToListAsync();
+            return await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                       .Include(u => u.Faces)
+                                       .OrderBy(u => u.CreationDate)
+                                       .ToListAsync();
         }
 
-        // GET: api/UsersV2/5
+        // GET: api/Games/1/Users/5
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser( int GameId, Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+                                           .SingleOrDefaultAsync();
 
             if (user == null)
             {
@@ -53,12 +49,12 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        // PUT: api/UsersV2/id
+        // PUT: api/Games/1/Users/id
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateAvatar(Guid id, Avatar model)
+        public async Task<IActionResult> UpdateAvatar( int GameId, Guid id, Avatar model)
         {
             // todo regex check uri match 
             if (model.Url == null)
@@ -66,9 +62,10 @@ namespace oneroom_api.Controllers
                 return BadRequest("avatar url is null");
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+                                           .SingleOrDefaultAsync();
 
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest("user not found");
             }
@@ -83,7 +80,7 @@ namespace oneroom_api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!UserExists( GameId, id))
                 {
                     return NotFound();
                 }
@@ -96,12 +93,12 @@ namespace oneroom_api.Controllers
             return NoContent();
         }
 
-        // POST: api/UsersV2
+        // POST: api/Games/1/Users
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser( int GameId, [FromBody] User user)
         {
             try
             {
@@ -115,35 +112,36 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-               var u = _context.Users.Find(user.UserId);
-               var count = await _context.Users.CountAsync(); 
+                var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == user.UserId)
+                                        .SingleOrDefaultAsync(); ;
+               
+                if (usr != null) return Conflict("user already exists");
 
-               if (u != null)
-                   return Conflict("user already exists");
-               else
-                {
-                    user.Name = "Player " + (count++);
-                    _context.Users.Add(user);
-                }
-                  
+                var count = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                                .CountAsync();
+
+                user.Name = "Player " + (++count);
+                _context.Users.Add(user);
+                _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("GetUser", new { id = user.UserId }, user);
+                return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
             catch (Exception)
             {
-                return BadRequest("Une erreur est survenue");
+                return Conflict("user already exists");
             }
 
         }
 
-        // DELETE: api/UsersV2/5
+        // DELETE: api/Games/1/Users/5
         [HttpDelete("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> DeleteUser(Guid id)
+        public async Task<ActionResult<User>> DeleteUser( int GameId, Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+                                           .SingleOrDefaultAsync();
             if (user == null)
             {
                 return NotFound();
@@ -155,9 +153,9 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        private bool UserExists(Guid id)
+        private bool UserExists( int GameId, Guid id)
         {
-            return _context.Users.Any(e => e.UserId.Equals(id));
+            return _context.Users.Any(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id);
         }
     }
 }

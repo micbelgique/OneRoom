@@ -25,7 +25,6 @@ export class SettingsComponent implements OnInit {
   saved = true;
 
   group: string;
-  game: number;
 
   constructor(
     private snackBar: MatSnackBar,
@@ -34,7 +33,6 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.group = localStorage.getItem('groupName');
-    this.game = parseInt(localStorage.getItem('gameId'), 10);
     this.endPoint = localStorage.getItem('endpoint');
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
@@ -64,11 +62,21 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  get() {
+    const resGame$ = this.gameService.getGame(this.group);
+    resGame$.subscribe( (game: Game) => {
+      localStorage.setItem('gameId', game.gameId.toString());
+      localStorage.setItem('groupName', game.groupName);
+      this.snackBar.open('Game fetched', 'Ok', {
+        duration: 3000
+      });
+    });
+  }
+
   create() {
     const resGame$ = this.gameService.createGame(this.group);
     resGame$.subscribe( (game: Game) => {
-      this.game = game.gameId;
-      localStorage.setItem('gameId', this.game.toString());
+      localStorage.setItem('gameId', game.gameId.toString());
       this.snackBar.open('Game Initialized', 'Ok', {
         duration: 3000
       });
@@ -85,14 +93,13 @@ export class SettingsComponent implements OnInit {
   delete() {
     const res$ = this.groupService.delete(this.group);
     res$.subscribe( x => {
-      this.group = '';
       localStorage.removeItem('groupName');
       this.snackBar.open('Group ' + this.group + ' deleted', 'Ok', {
         duration: 3000
       });
-      const resGame$ = this.gameService.deleteGame(this.game);
+      const resGame$ = this.gameService.deleteGame(this.group);
       resGame$.subscribe( (game: Game) => {
-        this.game = NaN;
+        this.group = '';
         localStorage.removeItem('gameId');
         this.snackBar.open('Game removed', 'Ok', {
           duration: 3000

@@ -12,11 +12,10 @@
     <button mat-raised-button *ngIf="testResult" (click)='save()' disabled='{{!saved}}'>Save</button>
     <br><mat-divider></mat-divider><br>
     <mat-form-field>
-      <input matInput placeholder="Game ID" type='test' [(ngModel)]="game" value='{{game}}' disabled>
-  </mat-form-field>
-    <mat-form-field>
         <input matInput placeholder="Group Name" type='text' [(ngModel)]="group" value='{{group}}'>
     </mat-form-field>
+    <button mat-raised-button (click)='get()' color="primary">Get</button>
+    <br>
     <button mat-raised-button (click)='create()' color="primary">Create</button>
     <br>
     <button mat-raised-button (click)='delete()' color="accent">Delete</button>

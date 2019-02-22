@@ -8,7 +8,7 @@ using oneroom_api.Model;
 
 namespace oneroom_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Games/{GameId}/[controller]")]
     [ApiController]
     public class TeamsController : ControllerBase
     {
@@ -19,19 +19,21 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
-        // GET: api/Teams
+        // GET: api/Games/1/Teams
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeam()
+        public async Task<ActionResult<IEnumerable<Team>>> GetTeam( int GameId)
         {
-            return await _context.Teams.Include(t => t.Users)
+            return await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+                                       .Include(t => t.Users)
                                        .ToListAsync();
         }
 
-        // GET: api/Teams/5
+        // GET: api/Games/1/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeam(int id)
+        public async Task<ActionResult<Team>> GetTeam( int GameId, int id)
         {
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId && t.TeamId == id)
+                                           .SingleOrDefaultAsync();
 
             if (team == null)
             {
@@ -41,14 +43,16 @@ namespace oneroom_api.Controllers
             return team;
         }
 
-        // POST: api/Teams
+        // POST: api/Games/1/Teams/2
         [HttpPost("{numOfTeams}")]
-        public async Task<ActionResult<Team>> CreateTeam(int numOfTeams)
+        public async Task<ActionResult<Team>> CreateTeam( int GameId, int numOfTeams)
         {
-            var count = await _context.Teams.CountAsync();
+            var count = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+                                            .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
-            List<User> users = _context.Users.ToList();
+            List<User> users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                                   .ToListAsync();
             List<Team> teams = new List<Team>();
             users.Shuffle();
             int nbUserPerTeam = (int)Math.Ceiling((double)users.Count() / numOfTeams);
@@ -66,17 +70,20 @@ namespace oneroom_api.Controllers
                     team.Users.AddRange(users);
                 }
                 _context.Teams.Add(team);
+                _context.Entry(team).Property("GameId").CurrentValue = GameId;
+
             }
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTeam", teams);
+            return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
 
-        // DELETE: api/Teams
+        // DELETE: api/Games/1/Teams
         [HttpDelete]
-        public async Task<ActionResult<List<Team>>> DeleteTeams()
+        public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
         {
-            var teams = await _context.Teams.Include(t => t.Users).ToListAsync();
+            var teams = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+                                            .Include(t => t.Users).ToListAsync();
             if (teams == null)
             {
                 return NotFound();
@@ -86,27 +93,6 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
 
             return teams;
-        }
-
-        // DELETE: api/Teams/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Team>> DeleteTeam(int id)
-        {
-            var team = await _context.Teams.Include(t => t.Users).Where(t => t.TeamId == id).SingleOrDefaultAsync();
-            if (team == null)
-            {
-                return NotFound();
-            }
-
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
-
-            return team;
-        }
-
-        private bool TeamExists(int id)
-        {
-            return _context.Teams.Any(e => e.TeamId == id);
         }
     }
 }

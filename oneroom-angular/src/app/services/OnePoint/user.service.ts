@@ -3,12 +3,13 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { User } from './model/user';
+import { EndPointGetter } from 'src/app/utilities/EndPointGetter';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private userUrl = localStorage.getItem('endpoint') + '/Users';
+  private userUrl = EndPointGetter.getEndPointWithGameId() + '/Users';
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {

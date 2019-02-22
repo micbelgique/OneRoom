@@ -7,7 +7,7 @@ using oneroom_api.Model;
 
 namespace oneroom_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Games/{GameId}/[controller]")]
     [ApiController]
     public class FacesController : ControllerBase
     {
@@ -18,44 +18,35 @@ namespace oneroom_api.Controllers
             _context = context;
         }
 
-        // OPTIONS: api/Faces
-        [HttpOptions]
-        [ProducesResponseType(200)]
-        public ActionResult OptionsFaces()
-        {
-            return Ok();
-        }
-
         // POST: api/Facesv2/2
-        [HttpPost("{id}")]
+        [HttpPost("~/api/Games/{GameId}/Users/{UserId}/Faces")]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Face>> PostFace(Guid id, Face face)
+        public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
         {
+            var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == UserId)
+                                          .SingleOrDefaultAsync();
 
-                var u = (from usr in _context.Users where usr.UserId.Equals(id) select usr)
-                    .Include(us=>us.Faces).FirstOrDefault();
-
-                if (u != null)
+            if (usr != null)
                 {
 
-                    if (u.Faces.Select(f => f.FaceId).Contains(face.FaceId))
+                    if (usr.Faces.Select(f => f.FaceId).Contains(face.FaceId))
                     {
                         return Conflict("face already exists"+ face.FaceId);
                     }
-                    u.Faces.Add(face);
-                    _context.Entry(u).State = EntityState.Modified;
+                    usr.Faces.Add(face);
+                    _context.Entry(usr).State = EntityState.Modified;
 
-                try
+                    try
                     {
                         await _context.SaveChangesAsync();
                     } catch(DbUpdateException)
                     {
-                         return Conflict("face already exists"+ face.FaceId);
+                       return Conflict("face already exists"+ face.FaceId);
                     }
 
-                    return CreatedAtAction("GetUser", "Users", new { id }, face);
+                    return CreatedAtAction("GetUser", "Users", new { GameId, id = UserId }, face);
                 }
                 else
                     return NotFound("user not found");
@@ -63,7 +54,7 @@ namespace oneroom_api.Controllers
         }
 
         // DELETE: api/Facesv2/5 
-        [HttpDelete("{id}")]
+        [HttpDelete("~/api/Games/{GameId}/Users/{UserId}/Faces/{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]
         public async Task<ActionResult<Face>> DeleteFace(Guid id)

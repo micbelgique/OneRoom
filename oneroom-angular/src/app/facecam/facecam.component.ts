@@ -306,7 +306,7 @@ async imageCapture(dataUrl) {
   console.log('capturing image');
   const stream = this.makeblob(dataUrl);
   const group = new Group();
-  group.personGroupId = localStorage.getItem('groupid');
+  group.personGroupId = localStorage.getItem('groupName');
   group.name = 'mic_stage_2019';
   group.userData = 'Group de test en developpement pour oneroom';
   // traitement face API
