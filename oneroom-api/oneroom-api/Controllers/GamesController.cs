@@ -21,6 +21,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Game>>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Game>>> GetGame()
         {
             return await _context.Games.ToListAsync();
@@ -28,6 +30,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games/5
         [HttpGet("{groupName}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> GetGame(String groupName)
         {
             var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
@@ -43,6 +47,9 @@ namespace oneroom_api.Controllers
 
         // POST: api/Games
         [HttpPost("{groupName}")]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<Game>>))]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
         public async Task<ActionResult<Game>> CreateGame(String groupName)
         {
             Game game = new Game(groupName);
@@ -62,6 +69,8 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Games/5
         [HttpDelete("{groupName}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> DeleteGame(String groupName)
         {
             var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))

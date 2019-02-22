@@ -21,6 +21,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games/1/Teams
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Team>>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeam( int GameId)
         {
             return await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
@@ -30,6 +32,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games/1/Teams/5
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Team>> GetTeam( int GameId, int id)
         {
             var team = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId && t.TeamId == id)
@@ -45,7 +49,9 @@ namespace oneroom_api.Controllers
 
         // POST: api/Games/1/Teams/2
         [HttpPost("{numOfTeams}")]
-        public async Task<ActionResult<Team>> CreateTeam( int GameId, int numOfTeams)
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<List<Team>>>))]
+        [ProducesResponseType(409)]
+        public async Task<ActionResult<List<Team>>> CreateTeam( int GameId, int numOfTeams)
         {
             var count = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
                                             .CountAsync();
@@ -80,6 +86,8 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Games/1/Teams
         [HttpDelete]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
         {
             var teams = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
