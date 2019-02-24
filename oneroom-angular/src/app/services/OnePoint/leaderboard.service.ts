@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Injectable, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 import { User } from './model/user';
 import { SignalrMethod, SignalrMethods, SignalRCoreService } from './abstracts/signalr';
 import { HttpTransportType } from '@aspnet/signalr';
@@ -14,29 +14,30 @@ interface MonitoringMethods extends SignalrMethods {
 })
 export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
+  private sub;
+
   // tslint:disable-next-line:variable-name
-  private _userListReceiver = new Subject<User>();
-  public userListReceiver = this._userListReceiver.asObservable();
+  private _refreshUserList = new EventEmitter<boolean>();
+  public refreshUserList  = this._refreshUserList.asObservable();
 
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;
   protected connectionTryDelay = 10000;
 
   protected methods: MonitoringMethods = {
-    UpdateUsers: (data) => this._userListReceiver.next(data)
+    UpdateUsers: () => this._refreshUserList.emit(true)
   };
 
   constructor() {
     super();
   }
 
-  public run(): Observable<User> {
-    return this.start().pipe(
-      switchMap(() => this.userListReceiver)
-    );
-}
-
-  public close() {
-    this.stop();
+  public run(): void {
+    this.sub = this.start().subscribe();
   }
+
+  public stop(): void {
+    this.sub.unsubscribe();
+    this.stop();
+}
 }

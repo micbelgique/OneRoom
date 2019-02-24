@@ -155,7 +155,7 @@ namespace oneroom_api.Controllers
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUsers(user);
+                await _hubClients.Clients.All.UpdateUsers();
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
             catch (Exception)
@@ -180,7 +180,7 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateUsers(user);
+            await _hubClients.Clients.All.UpdateUsers();
 
             return user;
         }

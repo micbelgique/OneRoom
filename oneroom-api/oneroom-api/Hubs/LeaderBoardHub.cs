@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using oneroom_api.Model;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
 {
     public interface ILeaderBoardClient
     {
-        Task UpdateUsers( User u);
+        Task UpdateUsers();
     }
 
     public class LeaderBoardHub : Hub<ILeaderBoardClient>

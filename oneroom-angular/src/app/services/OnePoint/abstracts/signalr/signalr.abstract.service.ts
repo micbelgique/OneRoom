@@ -1,7 +1,6 @@
 import { from, Observable, BehaviorSubject, timer } from 'rxjs';
 import { retryWhen, delayWhen } from 'rxjs/operators';
-
-import { HubConnectionBuilder, HubConnection, HttpTransportType, HttpError, HttpClient } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HttpTransportType, HttpError } from '@aspnet/signalr';
 
 export abstract class SignalRAbstractService<T extends SignalrMethods> {
 

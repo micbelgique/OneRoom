@@ -22,17 +22,17 @@ export class AppComponent implements OnInit {
 
   constructor() { }
 
-  async ngOnInit() {
-    this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(localStorage.getItem('endpoint').replace('/api', '') + '/CoordinatorHub')
-    .build();
+  // async ngOnInit() {
+  //   this.hubConnection = new signalR.HubConnectionBuilder()
+  //   .withUrl(localStorage.getItem('endpoint').replace('/api', '') + '/CoordinatorHub')
+  //   .build();
 
-    this.hubConnection.on('send', data => {
-      console.log(data);
-    });
+  //   this.hubConnection.on('send', data => {
+  //     console.log(data);
+  //   });
 
-    this.hubConnection.start({withCredentials: false}).then(() => this.hubConnection.invoke('send', 'Hello'));
-  }
+  //   this.hubConnection.start({withCredentials: false}).then(() => this.hubConnection.invoke('send', 'Hello'));
+  // }
 
   toggleMenu(): void {
     this.opened = !this.opened;

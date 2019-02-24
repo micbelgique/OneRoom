@@ -25,11 +25,15 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private leaderboardService: LeaderboardService) { }
 
   ngOnInit() {
-    this.getData();
+    this.leaderboardService.run();
+    this.userSub = this.leaderboardService.refreshUserList.subscribe(() => {
+      this.refreshUserList();
+    });
+    this.refreshUserList();
   }
 
-  private getData(): void {
-    this.userSub = this.leaderboardService.run().subscribe(
+  private refreshUserList() {
+    this.userSub = this.userService.getUsers().subscribe(
       usersList => {
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
@@ -44,7 +48,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.refreshBtn = false;
-    this.timeSubscription = this.getData();
+    this.timeSubscription = this.refreshUserList();
     // timer(2000).subscribe(val => this.getData());
   }
 
@@ -69,7 +73,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
-    this.leaderboardService.close();
+    this.leaderboardService.stop();
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
