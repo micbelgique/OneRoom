@@ -8,16 +8,16 @@ export class User {
   name: string;
   faces: Face[];
   // stats recalculated
-  Age: number;
-  Gender: Gender;
-  MoustacheLevel: number;
-  BeardLevel: number;
-  BaldLevel: number;
-  SmileLevel: number;
-  HairColor: string;
-  SkinColor: string;
-  GlassesType: GlassesType;
-  EmotionDominant: string;
+  age: number;
+  gender: Gender;
+  moustacheLevel: number;
+  beardLevel: number;
+  baldLevel: number;
+  smileLevel: number;
+  hairColor: string;
+  skinColor: string;
+  glassesType: GlassesType;
+  emotionDominant: string;
 
   constructor() {
     this.generateAvatar();

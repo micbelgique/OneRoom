@@ -7,7 +7,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-        <mat-grid-list cols="2" [rowHeight]=220>
+        <mat-grid-list cols="2" [rowHeight]=280>
           <mat-grid-tile>
               <div mat-card-avatar class="example-header-image"><img width=100% class='img-avatar' src='{{ item.urlAvatar }}'></div>
           </mat-grid-tile>
@@ -16,22 +16,21 @@
                   <mat-tab label="Person info">
                     <table>
                       <tr><td i18n="@@leaderboardName">Name</td><td>{{ item.name}}</td></tr>
-                      <tr><td i18n="@@leaderboardId">PersonId</td><td>{{ item.userId }}</td></tr>
+                      <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.age }}</td></tr>
+                      <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.smileLevel }}</td></tr>
+                      <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.moustacheLevel }}</td></tr>
+                      <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.beardLevel }}</td></tr>
+                      <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.baldLevel }}</td></tr>
+                      <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.hairColor }}</td></tr>
+                      <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.glassesType}}</td></tr>
+                      <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.skinColor}}</td></tr>
                     </table>
                   </mat-tab>
-                  <mat-tab label="Face info" *ngIf=item.faces[item.faces.length-1]>
+                  <!-- <mat-tab label="Face info" *ngIf=item.faces[item.faces.length-1]>
                     <div>
-                      <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.faces[item.faces.length-1].age}}</td></tr>
-                      <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.faces[item.faces.length-1].isMale ? 'male' : 'female' }}</td></tr>
-                      <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.faces[item.faces.length-1].smileLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.faces[item.faces.length-1].moustacheLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.faces[item.faces.length-1].beardLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.faces[item.faces.length-1].baldLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.faces[item.faces.length-1].hairColor }}</td></tr>
-                      <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.faces[item.faces.length-1].glassesType}}</td></tr>
-                      <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.faces[item.faces.length-1].skinColor}}</td></tr>
+                      <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.Gender === 0 ? 'male' : item.Gender === 1 ? 'female : 'other' }}</td></tr>
                     </div>
-                  </mat-tab>
+                  </mat-tab> -->
                 </mat-tab-group>
           </mat-grid-tile>
         </mat-grid-list>

@@ -28,7 +28,10 @@ export class VisioncomputerService {
   deleteImg(id: string){
     return this.http.delete<any>(
       // tslint:disable-next-line:max-line-length
-      'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects/aa05f819-5d11-453f-9603-88e919abb71d/predictions?id={' + id + '}'
+      'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects/aa05f819-5d11-453f-9603-88e919abb71d/predictions?ids=' + id,
+      {headers: new HttpHeaders({
+        'Training-key' : 'cc45e01b8c6f4e438411f339a78ead09'
+      })}
       );
   }
 }
