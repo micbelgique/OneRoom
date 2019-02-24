@@ -51,7 +51,7 @@ namespace oneroom_api
             {
                 route.MapHub<CoordinatorHub>("/CoordinatorHub");
             });
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
 
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();

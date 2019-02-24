@@ -140,11 +140,11 @@ namespace oneroom_api.Controllers
                     _context.Users.Add(user);
                 }
 
-                UsersUtilities.OptimizeResults(u);
+                //UsersUtilities.OptimizeResults(u);
 
                 await _context.SaveChangesAsync();
 
-                await _hubContext.Clients.All.SendAsync("GetNewUser", user);
+                //await _hubContext.Clients.All.SendAsync("GetNewUser", user);
                 return CreatedAtAction("GetUser", new { id = user.UserId }, user);
             }
             catch (Exception)

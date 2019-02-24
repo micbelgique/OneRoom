@@ -25,4 +25,10 @@ export class VisioncomputerService {
   getSkinColor(stream: Blob) {
     return this.http.post<any>(this.endPoint, stream, {headers: this.headers} );
   }
+  deleteImg(id: string){
+    return this.http.delete<any>(
+      // tslint:disable-next-line:max-line-length
+      'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects/aa05f819-5d11-453f-9603-88e919abb71d/predictions?id={' + id + '}'
+      );
+  }
 }

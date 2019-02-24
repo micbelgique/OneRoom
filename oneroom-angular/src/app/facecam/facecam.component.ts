@@ -257,6 +257,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
   this.visonComputerService.getSkinColor(stream.blob).subscribe(
     (result) => {
       skinColor = result.predictions[0].tagName;
+      this.visonComputerService.deleteImg(result.id).subscribe();
       console.log(skinColor);
     }
   );
