@@ -31,10 +31,10 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       usersList => {
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
-          duration: 3000
+          duration: 1000
         });
-        // this.refreshData();
-        timer(2500).subscribe( () => {this.refreshBtn = true; });
+        this.refreshData();
+        // timer(2500).subscribe( () => {this.refreshBtn = true; });
       },
       error => this.errorMessage = error as any
     );
@@ -42,8 +42,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.refreshBtn = false;
-    this.timeSubscription = this.getData();
-    // timer(2000).subscribe(val => this.getData());
+    // this.timeSubscription = this.getData();
+    timer(5000).subscribe(val => this.getData());
   }
 
   deletePlayer($userIdClicked) {

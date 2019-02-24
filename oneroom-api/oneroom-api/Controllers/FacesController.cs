@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class FacesController : ControllerBase
     {
         private readonly OneRoomContext _context;
@@ -48,12 +51,15 @@ namespace oneroom_api.Controllers
                     _context.Entry(u).State = EntityState.Modified;
 
                 try
-                    {
-                        await _context.SaveChangesAsync();
-                    } catch(DbUpdateException)
-                    {
-                         return Conflict("face already exists"+ face.FaceId);
-                    }
+                {
+                    UsersUtilities.OptimizeResults(u);
+
+                    await _context.SaveChangesAsync();
+
+                } catch(DbUpdateException)
+                {
+                    return Conflict("face already exists : "+ face.FaceId);
+                }
 
                     return CreatedAtAction("GetUser", "Users", new { id }, face);
                 }

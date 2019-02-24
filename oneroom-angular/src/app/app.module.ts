@@ -19,7 +19,8 @@ import {
   MatSlideToggleModule,
   MatSidenavModule,
   MatProgressBarModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatDialogModule
 } from '@angular/material';
 
 import { UsercardComponent } from './usercard/usercard.component';
@@ -36,6 +37,13 @@ import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
 import { FilterComponent } from './filter/filter.component';
 import { FacecamComponent } from './facecam/facecam.component';
+import { LOCALE_ID } from '@angular/core';
+// us locale is default
+// FR locale
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+import localeFrExtra from '@angular/common/locales/extra/fr';
+registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
   declarations: [
@@ -64,6 +72,7 @@ import { FacecamComponent } from './facecam/facecam.component';
     MatProgressBarModule,
     FormsModule,
     MatSnackBarModule,
+    MatDialogModule,
     RouterModule.forRoot([
       { path: 'leaderboard', component: LeaderBoardComponent },
       { path: 'welcome', component: FacecamComponent },
@@ -81,7 +90,8 @@ import { FacecamComponent } from './facecam/facecam.component';
     FaceService,
     PersonGroupPersonService,
     PersonGroupService,
-    FaceProcessService
+    FaceProcessService,
+    { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]
 })
