@@ -14,8 +14,6 @@ interface MonitoringMethods extends SignalrMethods {
 })
 export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
-  private sub;
-
   // tslint:disable-next-line:variable-name
   private _refreshUserList = new EventEmitter<boolean>();
   public refreshUserList  = this._refreshUserList.asObservable();
@@ -32,12 +30,11 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     super();
   }
 
-  public run(): void {
-    this.sub = this.start().subscribe();
+  public run(): Observable<any> {
+    return this.start();
   }
 
   public stop(): void {
-    this.sub.unsubscribe();
     this.stop();
 }
 }

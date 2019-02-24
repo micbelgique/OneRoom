@@ -18,6 +18,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   private timeSubscription;
   private userSub;
+  private leaderBoardServiceSub;
 
   constructor(
     private userService: UserService,
@@ -25,7 +26,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private leaderboardService: LeaderboardService) { }
 
   ngOnInit() {
-    this.leaderboardService.run();
+    this.leaderBoardServiceSub = this.leaderboardService.run().subscribe();
     this.userSub = this.leaderboardService.refreshUserList.subscribe(() => {
       this.refreshUserList();
     });
@@ -70,10 +71,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.leaderboardService.stop();
+    if (this.leaderBoardServiceSub) {
+      this.leaderBoardServiceSub.unsubscribe();
+    }
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
-    this.leaderboardService.stop();
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
