@@ -7,6 +7,10 @@ export class EndPointGetterService {
 
   constructor() { }
 
+  getEndPointUrl() {
+    return localStorage.getItem('endpoint');
+  }
+
   getEndPointUrlWithId() {
     return localStorage.getItem('endpoint') + '/Games/' + localStorage.getItem('gameId');
   }
