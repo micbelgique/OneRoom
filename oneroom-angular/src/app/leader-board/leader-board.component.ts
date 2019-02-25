@@ -71,9 +71,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.leaderboardService.stop();
     if (this.leaderBoardServiceSub) {
       this.leaderBoardServiceSub.unsubscribe();
+      this.leaderboardService.stop();
     }
     if (this.userSub) {
       this.userSub.unsubscribe();
