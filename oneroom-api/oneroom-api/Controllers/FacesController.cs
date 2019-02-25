@@ -41,7 +41,7 @@ namespace oneroom_api.Controllers
 
                 try
                 {
-                    UsersUtilities.OptimizeResults(u);
+                    UsersUtilities.OptimizeResults(usr);
 
                     await _context.SaveChangesAsync();
 

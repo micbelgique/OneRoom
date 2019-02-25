@@ -8,15 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190218085412_DateTimeAdd.cs" />
-    <Compile Remove="Migrations\20190218085412_DateTimeAdd.Designer.cs" />
-    <Compile Remove="Migrations\20190218085704_DateTimeAdd.cs" />
-    <Compile Remove="Migrations\20190218085704_DateTimeAdd.Designer.cs" />
-    <Compile Remove="Migrations\20190218102049_UrlRemoveForUser.cs" />
-    <Compile Remove="Migrations\20190218102049_UrlRemoveForUser.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />

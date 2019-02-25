@@ -1,7 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { HubConnection } from '@aspnet/signalr';
-import * as signalR from '@aspnet/signalr';
-import { HttpHeaders } from '@angular/common/http';
+import { Component } from '@angular/core';
 
 export interface Tile {
   color: string;
@@ -15,31 +12,12 @@ export interface Tile {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent /* implements OnInit*/ {
+export class AppComponent {
 
   title = 'OneRoom';
   opened = false;
-  private hubConnection;
 
-  constructor() {
-    this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': '*',
-    });
-   }
-
-  // async ngOnInit() {
-  //   this.hubConnection = new signalR.HubConnectionBuilder()
-  //   .withUrl(localStorage.getItem('endpoint').replace('/api', '') + '/CoordinatorHub')
-  //   .build();
-
-  //   this.hubConnection.on('send', data => {
-  //     console.log(data);
-  //   });
-
-  //   this.hubConnection.start({withCredentials: false}).then(() => this.hubConnection.invoke('send', 'Hello'));
-  // }
+  constructor() {}
 
   toggleMenu(): void {
     this.opened = !this.opened;

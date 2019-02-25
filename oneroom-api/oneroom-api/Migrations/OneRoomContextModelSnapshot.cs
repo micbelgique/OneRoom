@@ -109,9 +109,9 @@ namespace oneroom_api.Migrations
 
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<int?>("GameId");
-                    
                     b.Property<string>("EmotionDominant");
+
+                    b.Property<int?>("GameId");
 
                     b.Property<int>("Gender");
 
@@ -124,10 +124,11 @@ namespace oneroom_api.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("TeamId");
                     b.Property<string>("SkinColor");
 
                     b.Property<double>("SmileLevel");
+
+                    b.Property<int?>("TeamId");
 
                     b.Property<string>("UrlAvatar")
                         .IsRequired();

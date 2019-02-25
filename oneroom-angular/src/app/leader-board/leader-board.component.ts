@@ -41,7 +41,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 1000
         });
-        this.refreshData();
+        // this.refreshData();
         // timer(2500).subscribe( () => {this.refreshBtn = true; });
       },
       error => this.errorMessage = error as any
