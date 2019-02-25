@@ -56,7 +56,7 @@ namespace oneroom_api
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
-
+             
             // app.UseHttpsRedirection();
             app.UseMvc();
 
