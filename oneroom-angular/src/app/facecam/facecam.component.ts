@@ -258,9 +258,21 @@ export class FacecamComponent implements OnInit, OnDestroy {
 }
 
   imageCapture(dataUrl) {
-    if (localStorage.getItem('cognitiveStatus') === 'false') {
-      console.log('calls disabled');
-      return;
+  if (localStorage.getItem('cognitiveStatus') === 'false') {
+    console.log('calls disabled');
+    return;
+  }
+  let sub$;
+  try {
+  console.log('starting');
+  const stream = this.makeblob(dataUrl);
+  const group = new Group();
+  let skinColor = '';
+  this.visonComputerService.getSkinColor(stream.blob).subscribe(
+    (result) => {
+      skinColor = result.predictions[0].tagName;
+      this.visonComputerService.deleteImg(result.id).subscribe();
+      console.log(skinColor);
     }
     let sub$;
     try {

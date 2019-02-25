@@ -2,23 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
+using oneroom_api.SignalR;
 using oneroom_api.ViewModels;
 
 namespace oneroom_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class UsersController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<CoordinatorHub> _hubContext;
 
-        public UsersController(OneRoomContext context)
+        public UsersController(OneRoomContext context, IHubContext<CoordinatorHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
 
@@ -136,6 +142,7 @@ namespace oneroom_api.Controllers
 
                 await _context.SaveChangesAsync();
 
+                //await _hubContext.Clients.All.SendAsync("GetNewUser", user);
                 return CreatedAtAction("GetUser", new { id = user.UserId }, user);
             }
             catch (Exception)
