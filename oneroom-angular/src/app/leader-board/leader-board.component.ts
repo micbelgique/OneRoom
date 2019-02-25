@@ -3,7 +3,6 @@ import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
 import { timer } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
-import { Gender } from '../services/OnePoint/model/gender.enum';
 
 @Component({
   selector: 'app-leader-board',
