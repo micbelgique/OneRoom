@@ -1,6 +1,6 @@
 export enum GlassesType {
-  NoGlasses = 0,
-  ReadingGlasses = 1,
-  Sunglasses = 2,
-  SwimmingGoggles = 3
+  NoGlasses = 'noGlasses',
+  ReadingGlasses = 'readingGlasses',
+  Sunglasses = 'sunglasses',
+  SwimmingGoggles = 'swimmingGoggles'
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HubConnection } from '@aspnet/signalr';
 import * as signalR from '@aspnet/signalr';
+import { HttpHeaders } from '@angular/common/http';
 
 export interface Tile {
   color: string;
@@ -20,7 +21,13 @@ export class AppComponent /* implements OnInit*/ {
   opened = false;
   private hubConnection;
 
-  constructor() { }
+  constructor() {
+    this.headers = new HttpHeaders({
+      'Access-Control-Allow-Origin': 'http://localhost:4200',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': '*',
+    });
+   }
 
   // async ngOnInit() {
   //   this.hubConnection = new signalR.HubConnectionBuilder()

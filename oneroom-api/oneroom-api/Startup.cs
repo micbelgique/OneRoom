@@ -31,7 +31,7 @@ namespace oneroom_api
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
 
             services.AddSignalR();
-
+            
             // Register the Swagger services
             services.AddSwaggerDocument();
 

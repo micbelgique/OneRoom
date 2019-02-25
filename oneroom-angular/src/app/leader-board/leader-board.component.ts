@@ -11,7 +11,7 @@ import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
   styleUrls: ['./leader-board.component.css']
 })
 export class LeaderBoardComponent implements OnInit, OnDestroy {
-  @Input()
+
   users: User[] = [];
   errorMessage: string;
   refreshBtn = true;
@@ -35,13 +35,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
-      usersList => {
+      (usersList) => {
+        usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
-          duration: 3000
+          duration: 1000
         });
-        // this.refreshData();
-        timer(2500).subscribe( () => {this.refreshBtn = true; });
+        this.refreshData();
+        // timer(2500).subscribe( () => {this.refreshBtn = true; });
       },
       error => this.errorMessage = error as any
     );

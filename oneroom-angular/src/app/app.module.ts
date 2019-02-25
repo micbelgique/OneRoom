@@ -22,10 +22,6 @@ import {
   MatSnackBarModule,
   MatDialogModule
 } from '@angular/material';
-
-import { UsercardComponent } from './usercard/usercard.component';
-import { CamcardComponent } from './camcard/camcard.component';
-import {WebcamModule} from 'ngx-webcam';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LeaderBoardComponent } from './leader-board/leader-board.component';
@@ -35,7 +31,6 @@ import { RouterModule } from '@angular/router';
 import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
 import { PersonGroupService } from './services/cognitive/person-group.service';
 import { FaceProcessService } from './utilities/face-process.service';
-import { FilterComponent } from './filter/filter.component';
 import { FacecamComponent } from './facecam/facecam.component';
 import { TeamsComponent } from './teams/teams.component';
 import { LOCALE_ID } from '@angular/core';
@@ -49,13 +44,9 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 @NgModule({
   declarations: [
     AppComponent,
-    UsercardComponent,
-    CamcardComponent,
     LeaderBoardComponent,
     SettingsComponent,
-    FilterComponent,
-    FacecamComponent,
-    TeamsComponent
+    FacecamComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +58,6 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatGridListModule,
     MatIconModule,
     MatExpansionModule,
-    WebcamModule,
     HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
@@ -79,8 +69,6 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
       { path: 'leaderboard', component: LeaderBoardComponent },
       { path: 'welcome', component: FacecamComponent },
       { path: 'settings', component: SettingsComponent },
-      { path: 'filter', component: FilterComponent },
-      { path: 'teams', component: TeamsComponent },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
     MatListModule,

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
@@ -38,13 +39,16 @@ namespace oneroom_api.Controllers
                     usr.Faces.Add(face);
                     _context.Entry(usr).State = EntityState.Modified;
 
-                    try
-                    {
-                        await _context.SaveChangesAsync();
-                    } catch(DbUpdateException)
-                    {
-                       return Conflict("face already exists"+ face.FaceId);
-                    }
+                try
+                {
+                    UsersUtilities.OptimizeResults(u);
+
+                    await _context.SaveChangesAsync();
+
+                } catch(DbUpdateException)
+                {
+                    return Conflict("face already exists : "+ face.FaceId);
+                }
 
                     return CreatedAtAction("GetUser", "Users", new { GameId, id = UserId }, face);
                 }
