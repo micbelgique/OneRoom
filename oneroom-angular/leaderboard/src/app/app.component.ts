@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 export interface Tile {
   color: string;
@@ -17,7 +18,7 @@ export class AppComponent {
   title = 'OneRoom';
   opened = false;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   toggleMenu(): void {
     this.opened = !this.opened;

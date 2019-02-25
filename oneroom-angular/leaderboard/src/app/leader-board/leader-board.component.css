@@ -1,0 +1,12 @@
+.title-center {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+mat-card {
+  width: calc(100% - 70px);
+}
+
+mat-card-header {
+  position: absolute;
+}
