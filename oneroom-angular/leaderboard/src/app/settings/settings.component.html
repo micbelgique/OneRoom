@@ -22,7 +22,7 @@
       <mat-expansion-panel [expanded]=false>
         <mat-expansion-panel-header>
           <mat-panel-title>
-              <div mat-card-title i18n="@@settingsGroup">Game (Group)</div>
+              <div mat-card-title i18n="@@settingsGroup">Link to game</div>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-card-content>
@@ -32,9 +32,7 @@
         </mat-card-content>
         <mat-card-actions>
           <div style="text-align: center">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='get()' color="primary" i18n="@@settingsCreate" >Get</button>
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='create()' color="primary" i18n="@@settingsCreate" >Create</button>
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='delete()' color="accent" i18n="@@settingsDelete">Delete</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" >Connect</button>
           </div>
         </mat-card-actions>
       </mat-expansion-panel>

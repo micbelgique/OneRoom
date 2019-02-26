@@ -155,6 +155,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         })
             // permission granted:
             .then( (stream) => {
+                this.stream = stream;
                 this.alertContainer = false;
                 // on getUserMedia
                 this.video.nativeElement.srcObject = stream;
@@ -457,6 +458,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
+      // stop camera capture
+      this.stream.getTracks().forEach(
+        (track) => {
+        track.stop();
+      });
     }
 
 }

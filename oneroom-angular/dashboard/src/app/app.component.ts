@@ -14,7 +14,7 @@ export interface Tile {
 })
 export class AppComponent {
 
-  title = 'OneRoom';
+  title = 'Dashboard Admin';
   opened = false;
 
   constructor() {}

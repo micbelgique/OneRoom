@@ -46,5 +46,6 @@ namespace oneroom_api.Model
                 .WithMany(u => u.Faces)
                 .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
 }
