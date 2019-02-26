@@ -6,7 +6,3 @@
 mat-card {
   width: calc(100% - 70px);
 }
-
-mat-card-header {
-  position: absolute;
-}

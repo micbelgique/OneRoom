@@ -18,12 +18,18 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   private _refreshUserList = new EventEmitter<boolean>();
   public refreshUserList  = this._refreshUserList.asObservable();
 
+  // tslint:disable-next-line:variable-name
+  private _refreshTeamList = new EventEmitter<boolean>();
+  public refreshTeamList  = this._refreshTeamList.asObservable();
+
+
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;
   protected connectionTryDelay = 10000;
 
   protected methods: MonitoringMethods = {
-    UpdateUsers: () => this._refreshUserList.emit(true)
+    UpdateUsers: () => this._refreshUserList.emit(true),
+    UpdateTeams: () => this._refreshTeamList.emit(true)
   };
 
   constructor() {

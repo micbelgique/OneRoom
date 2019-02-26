@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.Hubs;
 using oneroom_api.Model;
 
 namespace oneroom_api.Controllers
@@ -13,10 +15,12 @@ namespace oneroom_api.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<LeaderBoardHub, ILeaderBoardClient> _hubClients;
 
-        public TeamsController(OneRoomContext context)
+        public TeamsController(OneRoomContext context, IHubContext<LeaderBoardHub, ILeaderBoardClient> hubClients)
         {
             _context = context;
+            _hubClients = hubClients;
         }
 
         // GET: api/Games/1/Teams
@@ -79,7 +83,9 @@ namespace oneroom_api.Controllers
                 _context.Entry(team).Property("GameId").CurrentValue = GameId;
 
             }
+
             await _context.SaveChangesAsync();
+            await _hubClients.Clients.All.UpdateTeams();
 
             return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
@@ -99,6 +105,7 @@ namespace oneroom_api.Controllers
 
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();
+            await _hubClients.Clients.All.UpdateTeams();
 
             return teams;
         }

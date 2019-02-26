@@ -6,6 +6,7 @@ namespace oneroom_api.Hubs
     public interface ILeaderBoardClient
     {
         Task UpdateUsers();
+        Task UpdateTeams();
     }
 
     public class LeaderBoardHub : Hub<ILeaderBoardClient>

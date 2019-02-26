@@ -1,15 +1,15 @@
-<!-- <mat-accordion class="example-headers-align" *ngFor="let item of users">
+<div *ngIf="!teams.length">
+  <mat-accordion class="example-headers-align" *ngFor="let item of users">
     <mat-expansion-panel [expanded]=true>
       <mat-expansion-panel-header>
         <mat-panel-title>
             <div mat-card-title>{{ item.name }}</div>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <img mat-card-image src="{{ item.urlAvatar }}" alt="Avataaars">
       <mat-card-content>
         <mat-grid-list cols="2" [rowHeight]=280>
           <mat-grid-tile>
-              <div mat-card-avatar class="example-header-image"><img src='{{ item.urlAvatar }}'></div>
+              <div mat-card-avatar class="example-header-image"><img width=100% class='img-avatar' src='{{ item.urlAvatar }}'></div>
           </mat-grid-tile>
           <mat-grid-tile>
                     <div *ngIf=item.faces[item.faces.length-1]>
@@ -27,15 +27,12 @@
           </mat-grid-tile>
         </mat-grid-list>
       </mat-card-content>
-      <mat-card-actions>
-          <button mat-raised-button style="width: 100%" (click)='this.deletePlayer(item.userId)' color="primary" i18n="@@settingsDelete">Delete</button>
-      </mat-card-actions>
     </mat-expansion-panel>
-  </mat-accordion> -->
-<mat-toolbar>
+  </mat-accordion>
+</div>
+<!-- <mat-toolbar>
   <span class="title-center">{{title}}</span>
 </mat-toolbar>
-
 <mat-grid-list cols="4" rows="2">
   <mat-grid-tile *ngFor="let u of users">
     <mat-card>
@@ -45,4 +42,34 @@
         <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
     </mat-card>
   </mat-grid-tile>
-</mat-grid-list>
+</mat-grid-list> -->
+<div *ngIf="teams.length">
+  <mat-toolbar>
+    <span class="title-center">{{title}}</span>
+  </mat-toolbar>
+
+  <mat-grid-list cols="2" rows="2">
+    <mat-grid-tile *ngFor="let t of teams">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Team {{t.teamId}}</mat-card-title>
+        </mat-card-header>
+        <mat-grid-list cols="2" rows="1">
+          <mat-grid-tile>
+            <mat-grid-list cols="2" rows="4">
+              <mat-grid-tile *ngFor="let u of t.users">
+                <mat-card>
+                  <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+                  <mat-card-footer>
+                    <mat-card-title class="title-center">{{u.name}}</mat-card-title>
+                  </mat-card-footer>
+                </mat-card>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-grid-tile>
+          <mat-grid-tile>Team {{t.teamId}} details</mat-grid-tile>
+        </mat-grid-list>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
