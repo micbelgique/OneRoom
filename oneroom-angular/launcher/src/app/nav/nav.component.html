@@ -1,0 +1,17 @@
+<mat-toolbar role="heading" >
+  <mat-toolbar-row style="text-align:center">
+      <span><a [routerLink]="['/']" routerLinkActive="router-link-active" >Menu</a></span>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-grid-list cols="3" rowHeight="3:1">
+  <mat-grid-tile>
+    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/scanner">Scanner</a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/">Translator</a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/">App 3</a>
+  </mat-grid-tile>
+</mat-grid-list>

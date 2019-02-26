@@ -89,6 +89,7 @@ namespace oneroom_api.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                await _hubClients.Clients.All.UpdateUsers();
             }
             catch (DbUpdateConcurrencyException)
             {
