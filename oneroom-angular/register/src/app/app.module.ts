@@ -37,13 +37,15 @@ import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/extra/fr';
+import { DetectorComponent } from './detector/detector.component';
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
   declarations: [
     AppComponent,
     SettingsComponent,
-    FacecamComponent
+    FacecamComponent,
+    DetectorComponent
   ],
   imports: [
     BrowserModule,
