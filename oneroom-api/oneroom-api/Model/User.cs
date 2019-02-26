@@ -28,6 +28,7 @@ namespace oneroom_api.Model
         [Range(0, 1)]
         public double SmileLevel { get; set; }
         public string HairColor { get; set; }
+        public string HairLength { get; set; }
         public string SkinColor { get; set; }
         public GlassesType GlassesType { get; set; }
         public string EmotionDominant { get; set; }

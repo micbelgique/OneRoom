@@ -418,6 +418,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                   }
               });
             }
+        console.log(users);
             // preview
         this.lastUsers = users;
         users = null;

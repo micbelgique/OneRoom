@@ -40,6 +40,8 @@ namespace oneroom_api.Migrations
                     b.Property<string>("HairColor")
                         .IsRequired();
 
+                    b.Property<string>("HairLength");
+
                     b.Property<bool>("IsMale");
 
                     b.Property<double>("MoustacheLevel");
@@ -70,6 +72,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("GroupName")
                         .IsRequired();
+
+                    b.Property<int>("State");
 
                     b.HasKey("GameId");
 
@@ -118,6 +122,8 @@ namespace oneroom_api.Migrations
                     b.Property<int>("GlassesType");
 
                     b.Property<string>("HairColor");
+
+                    b.Property<string>("HairLength");
 
                     b.Property<double>("MoustacheLevel");
 
