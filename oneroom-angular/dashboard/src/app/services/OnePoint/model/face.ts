@@ -9,6 +9,7 @@ export class Face {
   beardLevel: number;
   baldLevel: number;
   hairColor: string;
+  hairLength: string;
   glassesType: GlassesType;
   emotionDominant: string;
   skinColor: string;

@@ -3,6 +3,7 @@ import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
+import { GroupService } from '../services/OnePoint/group.service';
 
 @Component({
   selector: 'app-settings',
@@ -22,11 +23,12 @@ export class SettingsComponent implements OnInit {
   subscriptionKeyCustomVision: string;
   endPointCustomVision: string;
   callCustomVisionStatus = true;
-
+  listGroupSignalR: string[];
   constructor(
     private snackBar: MatSnackBar,
     private groupService: PersonGroupService,
-    private gameService: GameService) {}
+    private gameService: GameService,
+    private groupSignalRService: GroupService) {}
 
   ngOnInit() {
     // group face
@@ -41,6 +43,10 @@ export class SettingsComponent implements OnInit {
     this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
     this.endPointCustomVision = localStorage.getItem('endPointCustomVision');
     this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
+    // SignalR group
+    this.groupSignalRService.getGroups().subscribe(
+      (result) => this.listGroupSignalR = result
+    );
   }
 
   saveCoordinatorSettings(): void {
@@ -141,4 +147,6 @@ export class SettingsComponent implements OnInit {
       });
     }
   }
+
+
 }
