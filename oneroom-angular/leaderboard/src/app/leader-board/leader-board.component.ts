@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
-import { timer } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 
@@ -15,6 +14,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   users: User[] = [];
   errorMessage: string;
   refreshBtn = true;
+  title = localStorage.getItem('groupName');
 
   private timeSubscription;
   private userSub;
