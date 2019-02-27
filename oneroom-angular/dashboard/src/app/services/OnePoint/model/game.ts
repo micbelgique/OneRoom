@@ -6,7 +6,7 @@ export class Game {
   gameId: number;
   groupName: string;
   creationDate: Date;
-  users: User[];
-  teams: Team[];
-  config: Configuration;
+  users: User[] = [];
+  teams: Team[] = [];
+  config: Configuration = new Configuration();
 }

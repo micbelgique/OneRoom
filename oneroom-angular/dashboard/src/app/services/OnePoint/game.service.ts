@@ -28,8 +28,9 @@ export class GameService {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
 
-  createGame(groupName: string) {
-    return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
+  createGame(game: Game) {
+    console.log(game);
+    return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/', game, { headers: this.headers });
   }
 
   deleteGame(groupName: string) {

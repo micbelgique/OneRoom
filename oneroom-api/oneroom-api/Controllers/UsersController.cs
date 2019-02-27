@@ -137,6 +137,10 @@ namespace oneroom_api.Controllers
                 _context.Users.Add(user);
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
+                //retrieve game and add user to it
+                var game = _context.Games.Find(GameId);
+                game.Users.Add(user);
+
                 await _context.SaveChangesAsync();
                 await _hubClients.Clients.All.UpdateUsers();
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);

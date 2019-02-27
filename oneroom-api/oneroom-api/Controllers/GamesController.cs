@@ -32,7 +32,7 @@ namespace oneroom_api.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Game>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+        public ActionResult<IEnumerable<Game>> GetGames()
         {
             return _context.Games.ToList();
         }
@@ -43,8 +43,12 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> GetGame(String groupName)
         {
-            var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
-                                           .SingleOrDefaultAsync();
+            var game = await _context.Games
+                .Include(g => g.Users)
+                .Include(g => g.Teams)
+                .Include(g => g.Config)
+                .Where(g => g.GroupName.Equals(groupName))
+                .SingleOrDefaultAsync();
 
             if (game == null)
             {
@@ -89,13 +93,17 @@ namespace oneroom_api.Controllers
         }
 
         // POST: api/Games
-        [HttpPost("{groupName}")]
+        [HttpPost]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<Game>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Game>> CreateGame(string groupName)
+        public async Task<ActionResult<Game>> CreateGame(Game game)
         {
-            Game game = new Game(groupName);
+            if(game == null)
+            {
+                return BadRequest();
+            }
+            
             _context.Games.Add(game);
 
             try
@@ -107,7 +115,7 @@ namespace oneroom_api.Controllers
                 return Conflict("Game Already Exists");
             }
 
-            return CreatedAtAction("GetGame", new { groupName }, game);
+            return CreatedAtAction("GetGame", new { game.GroupName }, game);
         }
 
         // DELETE: api/Games/groupName
