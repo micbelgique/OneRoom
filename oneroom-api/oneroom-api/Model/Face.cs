@@ -24,6 +24,7 @@ namespace oneroom_api.Model
         public double BaldLevel { get; set; }
         [Required]
         public string HairColor { get; set; }
+        public string HairLength { get; set; }
         public string SkinColor { get; set; }
 
     }

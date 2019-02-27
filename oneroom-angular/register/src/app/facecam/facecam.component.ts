@@ -13,6 +13,7 @@ import { UserService } from '../services/OnePoint/user.service';
 import { FaceService } from '../services/OnePoint/face.service';
 import { VisioncomputerService } from '../services/cognitive/vision/visioncomputer.service';
 import { MatSnackBar, MatDialog } from '@angular/material';
+import { HairlengthService } from '../services/cognitive/vision/hairlength.service';
 
 @Component({
   selector: 'app-facecam',
@@ -53,7 +54,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService,
-    private visonComputerService: VisioncomputerService
+    private visonComputerService: VisioncomputerService,
+    private hairLengthService: HairlengthService
   ) {
     this.loadModels();
   }
@@ -276,10 +278,19 @@ export class FacecamComponent implements OnInit, OnDestroy {
         () => console.log('deleted'),
         (err) => console.log(err)
       );
-      console.log(skinColor);
     }
   );
-
+  let hairLength = '';
+  this.hairLengthService.detectLength(stream.blob).subscribe(
+    (result) => {
+      hairLength = result.predictions[0].tagName;
+      this.hairLengthService.deleteImg(result.id)
+      .subscribe(
+        () => console.log('deleted'),
+        (err) => console.log(err)
+      );
+    }
+  );
   group.personGroupId = localStorage.getItem('groupName');
   group.name = 'mic_stage_2019';
   group.userData = 'Group de test en developpement pour oneroom';
@@ -358,6 +369,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 }
                 f.emotionDominant = emotionType;
                 f.skinColor = skinColor;
+                f.hairLength = hairLength;
                 u.faces.push(f);
               });
         users.push(u);
@@ -407,6 +419,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                   }
               });
             }
+        console.log(users);
             // preview
         this.lastUsers = users;
         users = null;

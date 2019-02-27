@@ -16,6 +16,7 @@ export class User {
   baldLevel: number;
   smileLevel: number;
   hairColor: string;
+  hairLength: string;
   skinColor: string;
   glassesType: GlassesType;
   emotionDominant: string;

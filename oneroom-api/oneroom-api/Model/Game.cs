@@ -14,6 +14,7 @@ namespace oneroom_api.Model
         public List<User> Users { get; set; } = new List<User>();
         // Team containing users
         public List<Team> Teams { get; set; } = new List<Team>();
+        public State State { get; set; } = State.REGISTER;
 
         // (optional) required for automatic configuration of clients
         public Configuration Config { get; set; }
@@ -23,5 +24,11 @@ namespace oneroom_api.Model
         {
             GroupName = groupName;
         }
+    }
+    public enum State
+    {
+        REGISTER,
+        LAUNCH,
+        END
     }
 }
