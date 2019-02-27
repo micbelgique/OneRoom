@@ -5,4 +5,15 @@
 
 mat-card {
   width: calc(100% - 70px);
+  height: calc(100% - 70px);
+  display: flex;
+}
+
+.mat-card-image {
+  height: calc(100% + 32px);
+  width: auto;
+}
+
+.mat-card-image:first-child {
+  margin-top: -28px;
 }

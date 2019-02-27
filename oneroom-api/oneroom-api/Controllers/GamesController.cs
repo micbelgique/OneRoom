@@ -34,14 +34,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
-            return _context.Games.ToList();
+            return await _context.Games.ToListAsync();
         }
 
         // GET: api/Games/groupName
         [HttpGet("{groupName}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Game>> GetGame(String groupName)
+        public async Task<ActionResult<Game>> GetGame(string groupName)
         {
             var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
                                            .SingleOrDefaultAsync();
