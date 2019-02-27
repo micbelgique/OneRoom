@@ -19,6 +19,29 @@ namespace oneroom_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("oneroom_api.Model.Configuration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FaceEndpoint")
+                        .IsRequired();
+
+                    b.Property<string>("FaceKey")
+                        .IsRequired();
+
+                    b.Property<string>("VisionEndpoint")
+                        .IsRequired();
+
+                    b.Property<string>("VisionKey")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Configuration");
+                });
+
             modelBuilder.Entity("oneroom_api.Model.Face", b =>
                 {
                     b.Property<Guid>("FaceId")
@@ -39,6 +62,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("HairColor")
                         .IsRequired();
+
+                    b.Property<string>("HairLength");
 
                     b.Property<bool>("IsMale");
 
@@ -66,12 +91,18 @@ namespace oneroom_api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ConfigId");
+
                     b.Property<DateTime>("CreationDate");
 
                     b.Property<string>("GroupName")
                         .IsRequired();
 
+                    b.Property<int>("State");
+
                     b.HasKey("GameId");
+
+                    b.HasIndex("ConfigId");
 
                     b.HasIndex("GroupName")
                         .IsUnique();
@@ -88,6 +119,10 @@ namespace oneroom_api.Migrations
                     b.Property<DateTime>("CreationDate");
 
                     b.Property<int?>("GameId");
+
+                    b.Property<string>("TeamColor");
+
+                    b.Property<string>("TeamName");
 
                     b.HasKey("TeamId");
 
@@ -118,6 +153,8 @@ namespace oneroom_api.Migrations
                     b.Property<int>("GlassesType");
 
                     b.Property<string>("HairColor");
+
+                    b.Property<string>("HairLength");
 
                     b.Property<double>("MoustacheLevel");
 
@@ -151,6 +188,13 @@ namespace oneroom_api.Migrations
                         .WithMany("Faces")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("oneroom_api.Model.Game", b =>
+                {
+                    b.HasOne("oneroom_api.Model.Configuration", "Config")
+                        .WithMany()
+                        .HasForeignKey("ConfigId");
                 });
 
             modelBuilder.Entity("oneroom_api.Model.Team", b =>

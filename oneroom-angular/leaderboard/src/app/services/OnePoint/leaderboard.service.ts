@@ -1,9 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
-import { User } from './model/user';
 import { SignalrMethod, SignalrMethods, SignalRCoreService } from './abstracts/signalr';
 import { HttpTransportType } from '@aspnet/signalr';
-import { switchMap } from 'rxjs/operators';
 
 interface MonitoringMethods extends SignalrMethods {
   UpdateUsers: SignalrMethod;
@@ -42,5 +40,5 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
   public stop(): void {
     this.stop();
-}
+  }
 }

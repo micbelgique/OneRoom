@@ -7,9 +7,9 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-        <mat-grid-list cols="2" [rowHeight]=280>
+        <mat-grid-list cols="2" [rowHeight]=220>
           <mat-grid-tile>
-              <div mat-card-avatar class="example-header-image"><img width=100% class='img-avatar' src='{{ item.urlAvatar }}'></div>
+              <img mat-card-avatar class="example-header-image" src='{{ item.urlAvatar }}'>
           </mat-grid-tile>
           <mat-grid-tile>
                     <div *ngIf=item.faces[item.faces.length-1]>
@@ -34,12 +34,26 @@
   <span class="title-center">{{title}}</span>
 </mat-toolbar>
 <mat-grid-list cols="4" rows="2">
-  <mat-grid-tile *ngFor="let u of users">
+  <mat-grid-tile *ngFor="let item of users">
     <mat-card>
         <mat-card-header>
-          <mat-card-title>{{u.name}}</mat-card-title>
+          <mat-card-title>{{item.name}}</mat-card-title>
+          <img mat-card-image src="{{ item.urlAvatar }}" alt="Avataaars">
         </mat-card-header>
-        <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+        <mat-card-content>
+            <table *ngIf=item.faces[item.faces.length-1]>
+                <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.age}}</td></tr>
+                <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.gender === 0 ? 'male' : 'female' }}</td></tr>
+                <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.smileLevel }}</td></tr>
+                <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.moustacheLevel }}</td></tr>
+                <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.beardLevel }}</td></tr>
+                <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.baldLevel }}</td></tr>
+                <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.hairColor }}</td></tr>
+                <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.glassesType}}</td></tr>
+                <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.skinColor}}</td></tr>
+                <tr><td i18n="@@leaderboardRecognized">Recognized</td><td>{{ item.faces.length}}</td></tr>
+            </table>
+        </mat-card-content>
     </mat-card>
   </mat-grid-tile>
 </mat-grid-list> -->

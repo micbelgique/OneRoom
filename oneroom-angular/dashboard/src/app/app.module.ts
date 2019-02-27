@@ -20,7 +20,8 @@ import {
   MatSidenavModule,
   MatProgressBarModule,
   MatSnackBarModule,
-  MatDialogModule
+  MatDialogModule,
+  MatTableModule
 } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -33,13 +34,15 @@ import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/extra/fr';
 import { TeamsComponent } from './teams/teams.component';
 import { SettingsComponent } from './settings/settings.component';
+import { GamesComponent } from './games/games.component';
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
   declarations: [
     AppComponent,
     TeamsComponent,
-    SettingsComponent
+    SettingsComponent,
+    GamesComponent
   ],
   imports: [
     BrowserModule,
@@ -60,14 +63,16 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatDialogModule,
     RouterModule.forRoot([
       { path: 'settings', component: SettingsComponent },
-      { path: 'team', component: TeamsComponent },
-      { path: '**', redirectTo: 'team', pathMatch: 'full' }
+      { path: 'teams', component: TeamsComponent },
+      { path: 'games', component: GamesComponent },
+      { path: '**', redirectTo: 'settings', pathMatch: 'full' }
     ]),
     MatListModule,
     MatTabsModule,
     MatMenuModule,
     MatSlideToggleModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatTableModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'fr' }

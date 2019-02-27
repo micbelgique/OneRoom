@@ -3,7 +3,10 @@
     <mat-form-field>
       <input matInput i18n-placeholder="@@TeamsNumber" placeholder="Number of teams" type='number' [(ngModel)]="nbTeams" min="0" name="nbTeams">
     </mat-form-field>
-    <br/>
+    <mat-form-field>
+        <input matInput i18n-placeholder="@@TeamsPlayer" placeholder="Number of players per team" type='number'  min="0" name="nbTeams">
+    </mat-form-field>
+    <br>
     <button mat-raised-button (click)='createTeam()' color="primary">Create</button>
   </form>
 </div>

@@ -20,6 +20,10 @@ export class GameService {
     });
   }
 
+  getGames(): Observable<Game[]>  {
+    return this.http.get<Game[]>(this.EPGetter.getEndPointUrl() + '/Games/', { headers: this.headers });
+  }
+
   getGame(groupName: string): Observable<Game>  {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }

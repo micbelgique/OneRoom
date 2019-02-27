@@ -15,10 +15,12 @@ export interface Tile {
 })
 export class AppComponent {
 
-  title = 'OneRoom';
+  title = 'Leaderboard';
   opened = false;
 
-  constructor(private router: Router) {}
+  constructor( router: Router) {
+
+  }
 
   toggleMenu(): void {
     this.opened = !this.opened;

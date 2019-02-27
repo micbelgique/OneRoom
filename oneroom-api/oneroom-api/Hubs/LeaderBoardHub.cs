@@ -3,13 +3,24 @@ using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
 {
-    public interface ILeaderBoardClient
+    public interface IActionClient
     {
+        // leaderboard & dashboard
         Task UpdateUsers();
         Task UpdateTeams();
+        // All clients receive automatic configuration
+        Task UpdateConfigurations();
     }
 
-    public class LeaderBoardHub : Hub<ILeaderBoardClient>
+    // possible clients
+    public enum ClientType
+    {
+        Leaderboard,
+        Dashboard,
+        Register
+    }
+
+    public class LeaderBoardHub : Hub<IActionClient>
     {
         public LeaderBoardHub()
         {

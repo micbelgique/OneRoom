@@ -17,9 +17,9 @@ namespace oneroom_api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly OneRoomContext _context;
-        private readonly IHubContext<LeaderBoardHub, ILeaderBoardClient> _hubClients;
+        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
 
-        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, ILeaderBoardClient> hubClients)
+        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
         {
             _context = context;
             _hubClients = hubClients;
