@@ -44,7 +44,6 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     AppComponent,
     SettingsComponent,
     FacecamComponent,
-    DetectorComponent
   ],
   imports: [
     BrowserModule,
