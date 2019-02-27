@@ -20,12 +20,17 @@ export class GameService {
     });
   }
 
+  getGames(): Observable<Game[]>  {
+    return this.http.get<Game[]>(this.EPGetter.getEndPointUrl() + '/Games/', { headers: this.headers });
+  }
+
   getGame(groupName: string): Observable<Game>  {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
 
-  createGame(groupName: string) {
-    return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
+  createGame(game: Game) {
+    console.log(game);
+    return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/', game, { headers: this.headers });
   }
 
   deleteGame(groupName: string) {

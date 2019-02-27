@@ -30,6 +30,7 @@ namespace oneroom_api
             services.AddDbContext<OneRoomContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
 
+            // Enable signalR
             services.AddSignalR();
             
             // Register the Swagger services
@@ -52,7 +53,7 @@ namespace oneroom_api
 
             // global cors policy
             app.UseCors(x => x
-                .WithOrigins("http://localhost:4200")
+                .WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
@@ -60,6 +61,7 @@ namespace oneroom_api
             // app.UseHttpsRedirection();
             app.UseMvc();
 
+            // use signalR with routes
             app.UseSignalR(route =>
             {
                 route.MapHub<LeaderBoardHub>("/LeaderBoardHub");

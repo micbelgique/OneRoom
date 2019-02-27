@@ -4,7 +4,7 @@
           <mat-icon>menu</mat-icon>
         </button>
         <span class="example-spacer"></span>
-        <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >{{ title }}</a></span>
+        <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" > {{ title }}</a></span>
     </mat-toolbar-row>
   </mat-toolbar>
 
@@ -12,7 +12,10 @@
     <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened">
       <mat-list>
         <mat-list-item>
-            <span i18n="@@menuTeam"><a [routerLink]="['/team']" routerLinkActive="router-link-active" >Team</a></span>
+              <span i18n="@@menuSettings"><a [routerLink]="['/games']" routerLinkActive="router-link-active" >Games</a></span>
+        </mat-list-item>
+        <mat-list-item>
+            <span i18n="@@menuTeam"><a [routerLink]="['/teams']" routerLinkActive="router-link-active" >Team</a></span>
         </mat-list-item>
         <mat-list-item>
             <span i18n="@@menuSettings"><a [routerLink]="['/settings']" routerLinkActive="router-link-active" >Settings</a></span>

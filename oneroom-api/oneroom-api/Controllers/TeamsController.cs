@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace oneroom_api.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Team>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeam( int GameId)
+        public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int GameId)
         {
             return await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
                                        .Include(t => t.Users)
@@ -34,7 +35,7 @@ namespace oneroom_api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Team>> GetTeam( int GameId, int id)
+        public async Task<ActionResult<Team>> GetTeam(int GameId, int id)
         {
             var team = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId && t.TeamId == id)
                                            .SingleOrDefaultAsync();
@@ -51,7 +52,7 @@ namespace oneroom_api.Controllers
         [HttpPost("{numOfTeams}")]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<List<Team>>>))]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<List<Team>>> CreateTeam( int GameId, int numOfTeams)
+        public async Task<ActionResult<List<Team>>> CreateTeam(int GameId, int numOfTeams)
         {
             var count = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
                                             .CountAsync();
@@ -66,6 +67,21 @@ namespace oneroom_api.Controllers
             for (int i = 0; i<numOfTeams; i++)
             {
                 Team team = new Team();
+                // pick random team name
+                string name;
+                do
+                {
+                    name = Team.RandomName();
+                } while (teams.Select(t => t.TeamName).Contains(name));
+                team.TeamName = name;
+                // pick random team color
+                string color;
+                do
+                {
+                    color = Team.RandomColor().ToString();
+                } while (teams.Select(t => t.TeamColor).Contains(color));
+                team.TeamColor = color;
+
                 teams.Add(team);
                 try
                 {

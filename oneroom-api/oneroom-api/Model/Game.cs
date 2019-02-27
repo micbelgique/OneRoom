@@ -10,13 +10,19 @@ namespace oneroom_api.Model
         [Required]
         public string GroupName { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
+        // All users for the game
         public List<User> Users { get; set; } = new List<User>();
+        // Team containing users
         public List<Team> Teams { get; set; } = new List<Team>();
         public State State { get; set; } = State.REGISTER;
 
-        public Game(string groupName)
+        // (optional) required for automatic configuration of clients
+        public Configuration Config { get; set; } = new Configuration();
+
+
+        public Game()
         {
-            GroupName = groupName;
+
         }
     }
     public enum State

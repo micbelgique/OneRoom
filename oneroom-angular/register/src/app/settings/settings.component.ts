@@ -3,7 +3,6 @@ import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
-import { GroupService } from '../services/OnePoint/group.service';
 
 @Component({
   selector: 'app-settings',
@@ -14,25 +13,29 @@ export class SettingsComponent implements OnInit {
 
   // coordinator
   endPoint: string;
+
+  // game
+  game: Game = new Game();
   // Face
   subscriptionKey: string;
   endPointCognitive: string;
   callFaceStatus = true;
-  group = '';
   // Custom vision
   subscriptionKeyCustomVision: string;
   endPointCustomVision: string;
   callCustomVisionStatus = true;
-  listGroupSignalR: string[];
+
   constructor(
     private snackBar: MatSnackBar,
     private groupService: PersonGroupService,
-    private gameService: GameService,
-    private groupSignalRService: GroupService) {}
+    private gameService: GameService) {}
 
   ngOnInit() {
-    // group face
-    this.group = localStorage.getItem('groupName');
+    // game
+    this.game.groupName = '';
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+    }
     // coordinator
     this.endPoint = localStorage.getItem('endpoint');
     // face
@@ -43,10 +46,6 @@ export class SettingsComponent implements OnInit {
     this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
     this.endPointCustomVision = localStorage.getItem('endPointCustomVision');
     this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
-    // SignalR group
-    this.groupSignalRService.getGroups().subscribe(
-      (result) => this.listGroupSignalR = result
-    );
   }
 
   saveCoordinatorSettings(): void {
@@ -64,14 +63,26 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  get() {
-    const resGame$ = this.gameService.getGame(this.group);
+  getGame() {
+    const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
-      localStorage.setItem('groupName', game.groupName);
+      this.game = game;
+      localStorage.setItem('gameData', JSON.stringify(game));
       this.snackBar.open('Game fetched', 'Ok', {
-        duration: 3000
+        duration: 2000
       });
+      if (game.config) {
+        console.log('auto Config');
+        console.log(game.config);
+        // face
+        this.endPointCognitive = game.config.faceEndpoint;
+        this.subscriptionKey = game.config.faceKey;
+        this.saveFaceSettings();
+        // custom vision
+        this.endPointCustomVision  = game.config.visionEndpoint;
+        this.subscriptionKeyCustomVision = game.config.visionKey;
+        this.saveCustomVisionSettings();
+      }
     });
   }
 
@@ -80,41 +91,6 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('subscriptionKeyCustomVision', this.subscriptionKeyCustomVision);
     this.snackBar.open('Settings updated', 'Ok', {
       duration: 2000
-    });
-  }
-
-  create() {
-    const resGame$ = this.gameService.createGame(this.group);
-    resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
-      this.snackBar.open('Game Initialized', 'Ok', {
-        duration: 3000
-      });
-      const res$ = this.groupService.create(this.group, this.group + ' name ');
-      res$.subscribe( x => {
-        localStorage.setItem('groupName', this.group);
-        this.snackBar.open('Group ' + this.group + ' created', 'Ok', {
-        duration: 3000
-        });
-      });
-    });
-  }
-
-  delete() {
-    const res$ = this.groupService.delete(this.group);
-    res$.subscribe( x => {
-      localStorage.removeItem('groupName');
-      this.snackBar.open('Group ' + this.group + ' deleted', 'Ok', {
-        duration: 3000
-      });
-      const resGame$ = this.gameService.deleteGame(this.group);
-      resGame$.subscribe( (game: Game) => {
-        this.group = '';
-        localStorage.removeItem('gameId');
-        this.snackBar.open('Game removed', 'Ok', {
-          duration: 3000
-        });
-      });
     });
   }
 

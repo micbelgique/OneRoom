@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.Hubs;
 using oneroom_api.Model;
+
+
+// TODO : add put and send signal to update config if changed
+
 
 namespace oneroom_api.Controllers
 {
@@ -13,11 +19,14 @@ namespace oneroom_api.Controllers
     public class GamesController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
 
-        public GamesController(OneRoomContext context)
+        public GamesController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
         {
             _context = context;
+            _hubClients = hubClients;
         }
+
 
         // GET: api/Games
         [HttpGet]
@@ -34,13 +43,20 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> GetGame(String groupName)
         {
-            var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
-                                           .SingleOrDefaultAsync();
+            var game = await _context.Games
+                .Include(g => g.Users)
+                .Include(g => g.Teams)
+                .Include(g => g.Config)
+                .Where(g => g.GroupName.Equals(groupName))
+                .SingleOrDefaultAsync();
 
             if (game == null)
             {
                 return NotFound();
             }
+
+            // add client to group hub
+            await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
 
             return game;
         }
@@ -77,13 +93,17 @@ namespace oneroom_api.Controllers
         }
 
         // POST: api/Games
-        [HttpPost("{groupName}")]
+        [HttpPost]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<Game>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Game>> CreateGame(String groupName)
+        public async Task<ActionResult<Game>> CreateGame(Game game)
         {
-            Game game = new Game(groupName);
+            if(game == null)
+            {
+                return BadRequest();
+            }
+            
             _context.Games.Add(game);
 
             try
@@ -95,7 +115,7 @@ namespace oneroom_api.Controllers
                 return Conflict("Game Already Exists");
             }
 
-            return CreatedAtAction("GetGame", new { groupName }, game);
+            return CreatedAtAction("GetGame", new { game.GroupName }, game);
         }
 
         // DELETE: api/Games/groupName

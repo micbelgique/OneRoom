@@ -17,9 +17,9 @@ namespace oneroom_api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly OneRoomContext _context;
-        private readonly IHubContext<LeaderBoardHub, ILeaderBoardClient> _hubClients;
+        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
 
-        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, ILeaderBoardClient> hubClients)
+        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
         {
             _context = context;
             _hubClients = hubClients;
@@ -136,6 +136,10 @@ namespace oneroom_api.Controllers
                 user.Name = "Player " + (++count);
                 _context.Users.Add(user);
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
+
+                //retrieve game and add user to it
+                var game = _context.Games.Find(GameId);
+                game.Users.Add(user);
 
                 await _context.SaveChangesAsync();
                 await _hubClients.Clients.All.UpdateUsers();
