@@ -19,9 +19,9 @@ namespace oneroom_api.Controllers
     public class GamesController : ControllerBase
     {
         private readonly OneRoomContext _context;
-        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public GamesController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
+        public GamesController(OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             _context = context;
             _hubClients = hubClients;
@@ -41,7 +41,7 @@ namespace oneroom_api.Controllers
         [HttpGet("{groupName}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Game>> GetGame(String groupName)
+        public async Task<ActionResult<Game>> GetGame(string groupName)
         {
             var game = await _context.Games
                 .Include(g => g.Users)
@@ -56,7 +56,7 @@ namespace oneroom_api.Controllers
             }
 
             // add client to group hub
-            await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
+            // await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
 
             return game;
         }
@@ -86,6 +86,8 @@ namespace oneroom_api.Controllers
                 game.State = game.State == State.REGISTER ? State.LAUNCH : game.State == State.LAUNCH ? State.END : State.END;
                 _context.Entry(game).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                // update state clients
+                await _hubClients.Clients.All.UpdateGameState();
                 return game.State;
             }
             else
@@ -122,7 +124,7 @@ namespace oneroom_api.Controllers
         [HttpDelete("{groupName}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Game>> DeleteGame(String groupName)
+        public async Task<ActionResult<Game>> DeleteGame(string groupName)
         {
             var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
                                            .SingleOrDefaultAsync();
@@ -133,6 +135,9 @@ namespace oneroom_api.Controllers
 
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
+            // update clients
+            // await _hubClients.Clients.Group(groupName).UpdateGame();
+            await _hubClients.Clients.All.UpdateGame();
 
             return game;
         }

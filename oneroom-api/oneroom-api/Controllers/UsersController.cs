@@ -17,9 +17,9 @@ namespace oneroom_api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly OneRoomContext _context;
-        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public UsersController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
+        public UsersController(OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             _context = context;
             _hubClients = hubClients;
@@ -28,14 +28,13 @@ namespace oneroom_api.Controllers
         // GET: api/Games/1/Users
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers( int GameId)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(int GameId)
         {
             var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                             .Include(u => u.Faces)
                                             .OrderBy(u => u.CreationDate)
                                             .ToListAsync();
             // average and accurate details
-            // TODO : replace and update model
             for(var i=0; i<users.Count; i++)
             {
                 UsersUtilities.OptimizeResults(users[i]);
@@ -111,7 +110,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<User>> PostUser( int GameId, [FromBody] User user)
+        public async Task<ActionResult<User>> PostUser( int GameId, User user)
         {
             try
             {

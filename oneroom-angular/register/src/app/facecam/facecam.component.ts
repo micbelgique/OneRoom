@@ -1,8 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
-// implements nodejs wrappers for HTMLCanvasElement, HTMLImageElement, ImageData
-import * as canvas from 'canvas';
-
 import * as faceapi from 'face-api.js';
 import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
 import { Face } from '../services/OnePoint/model/face';
@@ -14,6 +11,21 @@ import { FaceService } from '../services/OnePoint/face.service';
 import { VisioncomputerService } from '../services/cognitive/vision/visioncomputer.service';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { HairlengthService } from '../services/cognitive/vision/hairlength.service';
+import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
+import { GameService } from '../services/OnePoint/game.service';
+import { Game } from '../services/OnePoint/model/game';
+import { GameState } from '../services/OnePoint/model/game-state.enum';
+
+// patch electron
+faceapi.env.monkeyPatch({
+  Canvas: HTMLCanvasElement,
+  Image: HTMLImageElement,
+  // tslint:disable-next-line:object-literal-shorthand
+  ImageData: ImageData,
+  Video: HTMLVideoElement,
+  createCanvasElement: () => document.createElement('canvas'),
+  createImageElement: () => document.createElement('img')
+});
 
 @Component({
   selector: 'app-facecam',
@@ -48,6 +60,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
   alertContainer = false;
   alertMessage = '';
 
+  // signalR
+  private hubServiceSub;
+  private gameSub;
+
   constructor(
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -55,10 +71,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private faceService: FaceService,
     private visonComputerService: VisioncomputerService,
-    private hairLengthService: HairlengthService
-  ) {
-    this.loadModels();
-  }
+    private hairLengthService: HairlengthService,
+    private hubService: LeaderboardService,
+    private gameService: GameService) { this.loadModels(); }
 
   async ngOnInit() {
     // init lock
@@ -68,6 +83,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     this.opencam();
     this.initStreamDetection();
+
+    this.hubServiceSub = this.hubService.run().subscribe();
+    this.gameSub = this.hubService.refreshGameState.subscribe(
+    () => {
+      this.refreshGameState();
+    });
+    this.refreshGameState();
   }
 
   private async loadModels() {
@@ -468,6 +490,31 @@ export class FacecamComponent implements OnInit, OnDestroy {
     };
     }
 
+    /* Update the game state and stop registering candidates when done */
+    refreshGameState() {
+      // game
+      console.log('refreshing state');
+      let game: Game = new Game();
+      game.groupName = '';
+      if (localStorage.getItem('gameData')) {
+        game = JSON.parse(localStorage.getItem('gameData'));
+      } else {
+        return;
+      }
+      const res$ = this.gameService.getStateGame(game.groupName);
+      res$.subscribe(
+        (state) => {
+          console.log(state);
+          if (state !== GameState.REGISTER) {
+            console.log('REGISTERING IS NOW CLOSED');
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+
     ngOnDestroy(): void {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
@@ -476,6 +523,14 @@ export class FacecamComponent implements OnInit, OnDestroy {
         (track) => {
         track.stop();
       });
+      // stop game state signal
+      if (this.hubServiceSub) {
+        this.hubServiceSub.unsubscribe();
+        // this.leaderboardService.stop();
+      }
+      if (this.gameSub) {
+        this.gameSub.unsubscribe();
+      }
     }
 
 }

@@ -3,6 +3,7 @@ import { Game } from '../services/OnePoint/model/game';
 import { GameService } from '../services/OnePoint/game.service';
 import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
+import { GameState } from '../services/OnePoint/model/game-state.enum';
 
 @Component({
   selector: 'app-games',
@@ -14,7 +15,7 @@ export class GamesComponent implements OnInit {
   // list of launched games
   games: Game[] = [];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'ucount', 'tcount', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'date', 'state', 'delete', 'update'];
   // game to add
   game: Game;
 
@@ -91,6 +92,34 @@ export class GamesComponent implements OnInit {
         });
       });
 
+  }
+
+  changeStateGame(gameName = null) {
+    if (gameName === null) {
+      return;
+    }
+    const res$ = this.gameService.nextState(gameName);
+    res$.subscribe(
+      (res) => {
+        this.snackBar.open('State updated', 'Ok', {
+          duration: 3000
+        });
+        console.log('new state: ' + this.resolveGameState(res));
+        this.refreshGames();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  resolveGameState(stateId: number) {
+    switch (stateId) {
+      case(GameState.REGISTER) : return 'Registering';
+      case(GameState.LAUNCH) : return 'Launched';
+      case(GameState.END): return 'Ended';
+    }
+    return '/';
   }
 
 }

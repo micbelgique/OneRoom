@@ -5,10 +5,14 @@ namespace oneroom_api.Hubs
 {
     public interface IActionClient
     {
-        // leaderboard & dashboard
+        // When user added or deleted
         Task UpdateUsers();
-        // All clients receive automatic configuration
+        // when configuration changed
         Task UpdateConfigurations();
+        // When game state changed
+        Task UpdateGameState();
+        // when game deleted or updated
+        Task UpdateGame();
     }
 
     // possible clients
@@ -19,9 +23,9 @@ namespace oneroom_api.Hubs
         Register
     }
 
-    public class LeaderBoardHub : Hub<IActionClient>
+    public class OneHub : Hub<IActionClient>
     {
-        public LeaderBoardHub()
+        public OneHub()
         {
         }
 
@@ -29,5 +33,9 @@ namespace oneroom_api.Hubs
         {
             await base.OnConnectedAsync();
         }
+
+
+
+        // todo : groups 
     }
 }
