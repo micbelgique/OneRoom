@@ -17,12 +17,12 @@ namespace oneroom_api.Model
         public State State { get; set; } = State.REGISTER;
 
         // (optional) required for automatic configuration of clients
-        public Configuration Config { get; set; }
+        public Configuration Config { get; set; } = new Configuration();
 
 
-        public Game(string groupName)
+        public Game()
         {
-            GroupName = groupName;
+
         }
     }
     public enum State

@@ -25,17 +25,13 @@ namespace oneroom_api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("FaceEndpoint")
-                        .IsRequired();
+                    b.Property<string>("FaceEndpoint");
 
-                    b.Property<string>("FaceKey")
-                        .IsRequired();
+                    b.Property<string>("FaceKey");
 
-                    b.Property<string>("VisionEndpoint")
-                        .IsRequired();
+                    b.Property<string>("VisionEndpoint");
 
-                    b.Property<string>("VisionKey")
-                        .IsRequired();
+                    b.Property<string>("VisionKey");
 
                     b.HasKey("Id");
 

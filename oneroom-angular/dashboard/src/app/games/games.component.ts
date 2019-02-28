@@ -3,6 +3,7 @@ import { Game } from '../services/OnePoint/model/game';
 import { GameService } from '../services/OnePoint/game.service';
 import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
+import { GameState } from '../services/OnePoint/model/game-state.enum';
 
 @Component({
   selector: 'app-games',
@@ -11,10 +12,12 @@ import { MatSnackBar } from '@angular/material';
 })
 export class GamesComponent implements OnInit {
 
+  // list of launched games
   games: Game[] = [];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'ucount', 'tcount', 'delete'];
-  group: string;
+  displayedColumns: string[] = ['id', 'name', 'date', 'state', 'delete', 'update'];
+  // game to add
+  game: Game;
 
   constructor(
     private gameService: GameService,
@@ -22,6 +25,7 @@ export class GamesComponent implements OnInit {
     private snackBar: MatSnackBar) { }
 
   ngOnInit() {
+    this.game = new Game();
     this.refreshGames();
   }
 
@@ -50,46 +54,72 @@ export class GamesComponent implements OnInit {
 
   createGame() {
     // creating game coordinator
-    const resGame$ = this.gameService.createGame(this.group);
+    const resGame$ = this.gameService.createGame(this.game);
     resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
       this.refreshGames();
-      this.snackBar.open('Game Initialized', 'Ok', {
-        duration: 3000
-      });
       // creating group face
-      const res$ = this.groupService.create(this.group, this.group + ' name ');
+      const res$ = this.groupService.create(this.game.groupName, this.game.groupName + '_name');
       res$.subscribe( x => {
-        localStorage.setItem('groupName', this.group);
-        this.snackBar.open('Group ' + this.group + ' created', 'Ok', {
+        this.snackBar.open('Group ' + this.game.groupName + ' created', 'Ok', {
         duration: 3000
         });
       });
+      this.snackBar.open('Game Initialized', 'Ok', {
+        duration: 3000
+      });
+
     });
   }
 
   deleteGame(gameName = null) {
     if (gameName === null) {
-      gameName = this.group;
+      gameName = this.game.groupName;
     }
     // deleting game
     const resGame$ = this.gameService.deleteGame(gameName);
     resGame$.subscribe( (game: Game) => {
-        this.group = '';
+        this.game.groupName = '';
         this.refreshGames();
-        localStorage.removeItem('gameId');
+        // deleting face game
+        const res$ = this.groupService.delete(gameName);
+        res$.subscribe( x => {
+        this.snackBar.open('Group ' + gameName + ' deleted', 'Ok', {
+            duration: 3000
+          });
+        });
         this.snackBar.open('Game removed', 'Ok', {
           duration: 3000
         });
       });
-    // deleting face game
-    const res$ = this.groupService.delete(gameName);
-    res$.subscribe( x => {
-      localStorage.removeItem('groupName');
-      this.snackBar.open('Group ' + gameName + ' deleted', 'Ok', {
-        duration: 3000
-      });
-    });
+
+  }
+
+  changeStateGame(gameName = null) {
+    if (gameName === null) {
+      return;
+    }
+    const res$ = this.gameService.nextState(gameName);
+    res$.subscribe(
+      (res) => {
+        this.snackBar.open('State updated', 'Ok', {
+          duration: 3000
+        });
+        console.log('new state: ' + this.resolveGameState(res));
+        this.refreshGames();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  resolveGameState(stateId: number) {
+    switch (stateId) {
+      case(GameState.REGISTER) : return 'Registering';
+      case(GameState.LAUNCH) : return 'Launched';
+      case(GameState.END): return 'Ended';
+    }
+    return '/';
   }
 
 }

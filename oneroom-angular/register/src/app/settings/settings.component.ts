@@ -14,11 +14,12 @@ export class SettingsComponent implements OnInit {
   // coordinator
   endPoint: string;
 
+  // game
+  game: Game = new Game();
   // Face
   subscriptionKey: string;
   endPointCognitive: string;
   callFaceStatus = true;
-  group = '';
   // Custom vision
   subscriptionKeyCustomVision: string;
   endPointCustomVision: string;
@@ -30,8 +31,11 @@ export class SettingsComponent implements OnInit {
     private gameService: GameService) {}
 
   ngOnInit() {
-    // group face
-    this.group = localStorage.getItem('groupName');
+    // game
+    this.game.groupName = '';
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+    }
     // coordinator
     this.endPoint = localStorage.getItem('endpoint');
     // face
@@ -60,13 +64,25 @@ export class SettingsComponent implements OnInit {
   }
 
   getGame() {
-    const resGame$ = this.gameService.getGame(this.group);
+    const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
-      localStorage.setItem('groupName', game.groupName);
+      this.game = game;
+      localStorage.setItem('gameData', JSON.stringify(game));
       this.snackBar.open('Game fetched', 'Ok', {
-        duration: 3000
+        duration: 2000
       });
+      if (game.config) {
+        console.log('auto Config');
+        console.log(game.config);
+        // face
+        this.endPointCognitive = game.config.faceEndpoint;
+        this.subscriptionKey = game.config.faceKey;
+        this.saveFaceSettings();
+        // custom vision
+        this.endPointCustomVision  = game.config.visionEndpoint;
+        this.subscriptionKeyCustomVision = game.config.visionKey;
+        this.saveCustomVisionSettings();
+      }
     });
   }
 

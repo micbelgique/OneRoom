@@ -23,6 +23,7 @@ export class HairlengthService {
       'Prediction-Key' : this.subscriptionKeyPrediction,
       'Content-Type' : 'application/octet-stream'
     });
+    // delete image after processing
     this.endPointTraining = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/';
     this.projectId = '7e0f5d3c-58cd-45ba-bd1e-e53e26e0e72b';
     this.subscriptionKeyTraining = 'cc45e01b8c6f4e438411f339a78ead09';

@@ -64,7 +64,7 @@ namespace oneroom_api
             // use signalR with routes
             app.UseSignalR(route =>
             {
-                route.MapHub<LeaderBoardHub>("/LeaderBoardHub");
+                route.MapHub<OneHub>("/LeaderBoardHub");
             });
 
             // Register the Swagger generator and the Swagger UI middlewares
