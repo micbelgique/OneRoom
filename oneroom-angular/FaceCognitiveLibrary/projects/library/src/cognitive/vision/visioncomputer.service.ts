@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EndPointGetterService } from '../../utilities/end-point-getter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,11 @@ export class VisioncomputerService {
   private endPoint: string;
   private subscriptionKey: string;
   private headers: HttpHeaders;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private endPointGetter: EndPointGetterService) {
     // tslint:disable-next-line:max-line-length
-    this.endPoint = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/aa05f819-5d11-453f-9603-88e919abb71d/image';
-    this.subscriptionKey = 'f011cedabc6749a6bebd8cede806948d';
+    this.endPoint = endPointGetter.getVisionPredictionEndPoint();
+    this.subscriptionKey = endPointGetter.getVisionPredictionKey();
     this.headers = new HttpHeaders({
       'Access-Control-Allow-Origin': 'http://localhost:4200',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
@@ -29,9 +31,9 @@ export class VisioncomputerService {
   deleteImg(id: string) {
     return this.http.delete<any>(
       // tslint:disable-next-line:max-line-length
-      'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects/aa05f819-5d11-453f-9603-88e919abb71d/predictions?ids=' + id,
+      this.endPointGetter.getVisionTrainingEndPoint + '?ids=' + id,
       {headers: new HttpHeaders({
-        'Training-key' : 'cc45e01b8c6f4e438411f339a78ead09'
+        'Training-key' : this.endPointGetter.getVisionTrainingKey()
       })}
       );
   }
