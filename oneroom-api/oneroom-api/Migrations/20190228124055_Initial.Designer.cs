@@ -10,8 +10,8 @@ using oneroom_api.Model;
 namespace oneroom_api.Migrations
 {
     [DbContext(typeof(OneRoomContext))]
-    [Migration("20190227100243_config-update")]
-    partial class configupdate
+    [Migration("20190228124055_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

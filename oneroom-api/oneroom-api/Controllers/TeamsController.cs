@@ -15,9 +15,9 @@ namespace oneroom_api.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly OneRoomContext _context;
-        private readonly IHubContext<LeaderBoardHub, IActionClient> _hubClients;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public TeamsController(OneRoomContext context, IHubContext<LeaderBoardHub, IActionClient> hubClients)
+        public TeamsController(OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             _context = context;
             _hubClients = hubClients;

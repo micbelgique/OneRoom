@@ -32,7 +32,7 @@ namespace oneroom_api.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Game>>>))]
         [ProducesResponseType(404)]
-        public ActionResult<IEnumerable<Game>> GetGames()
+        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
             return await _context.Games.ToListAsync();
         }
