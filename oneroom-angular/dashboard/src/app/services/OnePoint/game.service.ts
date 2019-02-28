@@ -28,6 +28,10 @@ export class GameService {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
 
+  nextState(groupName: string): Observable<number> {
+    return this.http.post<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/NextState', null);
+  }
+
   createGame(game: Game) {
     console.log(game);
     return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/', game, { headers: this.headers });

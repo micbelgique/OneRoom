@@ -20,6 +20,10 @@ export class GameService {
     });
   }
 
+  getStateGame(groupName: string): Observable<number> {
+    return this.http.get<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/State', { headers: this.headers });
+  }
+
   getGame(groupName: string): Observable<Game>  {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
