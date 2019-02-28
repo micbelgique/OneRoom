@@ -22,7 +22,7 @@ export class UserService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers })
+      return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 
