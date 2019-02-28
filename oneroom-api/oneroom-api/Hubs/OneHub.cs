@@ -7,7 +7,8 @@ namespace oneroom_api.Hubs
     {
         // When user added or deleted
         Task UpdateUsers();
-        // when configuration changed
+        Task UpdateTeams();
+        // All clients receive automatic configuration
         Task UpdateConfigurations();
         // When game state changed
         Task UpdateGameState();
