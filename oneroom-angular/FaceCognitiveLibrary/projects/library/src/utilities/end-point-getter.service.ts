@@ -26,4 +26,19 @@ export class EndPointGetterService {
   getVisionTrainingKey() {
     return localStorage.getItem('keyVisionTraining');
   }
+  getHairLenghtPredictionEndPoint() {
+    return localStorage.getItem('endpointHairLengthPrediction');
+  }
+  getHairLengthTrainingEndPoint() {
+    return localStorage.getItem('endpointHairLengthTraining');
+  }
+  getHairLengthPredictionKey() {
+    return localStorage.getItem('keyHairLengthPrediction');
+  }
+  getHairLengthTrainingKey() {
+    return localStorage.getItem('keyHairLengthTraining');
+  }
+  getHairLengthProjectID() {
+    return localStorage.getItem('projectIdHairLength');
+  }
 }

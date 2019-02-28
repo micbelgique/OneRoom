@@ -28,3 +28,5 @@ export { Group };
 export * from './cognitive/person-group.service';
 export * from './utilities/end-point-getter.service';
 export * from './utilities/end-point-getter.service';
+export * from './cognitive/vision/hairlength.service';
+export * from './cognitive/vision/visioncomputer.service';
