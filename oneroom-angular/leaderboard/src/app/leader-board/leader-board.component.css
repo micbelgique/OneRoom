@@ -4,16 +4,21 @@
 }
 
 mat-card {
-  width: calc(100% - 70px);
-  height: calc(100% - 70px);
+  width: calc(100% - 50px);
+  height: calc(100% - 50px);
+  padding: 10px;
   display: flex;
 }
 
+mat-card div {
+  width: calc(100%);
+  height: calc(100%);
+}
+
 .mat-card-image {
-  height: calc(100% + 32px);
-  width: auto;
+  height: calc(100%);
 }
 
 .mat-card-image:first-child {
-  margin-top: -20px;
+  margin-top: -5px;
 }
