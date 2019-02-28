@@ -29,7 +29,7 @@
       </mat-card-content>
     </mat-expansion-panel>
   </mat-accordion> -->
-  <mat-grid-list cols="2" rowHeight="2:1">
+  <mat-grid-list cols="4" rowHeight="2:1">
     <mat-grid-tile *ngFor="let u of users">
       <mat-card>
         <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
@@ -38,14 +38,6 @@
           <mat-card-content>
             <div *ngIf=u.faces[u.faces.length-1]>
               <tr><td i18n="@@leaderboardAge">Age</td><td>{{ u.age}}</td></tr>
-              <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ u.gender === 0 ? 'male' : 'female' }}</td></tr>
-              <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ u.smileLevel }}</td></tr>
-              <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ u.moustacheLevel }}</td></tr>
-              <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ u.beardLevel }}</td></tr>
-              <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ u.baldLevel }}</td></tr>
-              <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ u.hairColor }}</td></tr>
-              <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ u.glassesType}}</td></tr>
-              <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ u.skinColor}}</td></tr>
               <tr><td i18n="@@leaderboardRecognized">Recognized</td><td>{{ u.faces.length}}</td></tr>
             </div>
           </mat-card-content>
