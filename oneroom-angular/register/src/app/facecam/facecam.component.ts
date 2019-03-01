@@ -15,6 +15,7 @@ import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
 import { GameState } from '../services/OnePoint/model/game-state.enum';
+import { Subject } from 'rxjs';
 
 // patch electron
 faceapi.env.monkeyPatch({
@@ -299,34 +300,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
   try {
   console.log('starting');
   const stream = this.makeblob(dataUrl);
+  // set du groupe
   const group = new Group();
-  let skinColor = '';
-  this.visonComputerService.getSkinColor(stream.blob).subscribe(
-      (result) => {
-      skinColor = result.predictions[0].tagName;
-      this.visonComputerService.deleteImg(result.id)
-      .subscribe(
-        () => console.log('deleted'),
-        (err) => console.log(err)
-      );
-    }
-  );
-  let hairLength = '';
-  this.hairLengthService.detectLength(stream.blob).subscribe(
-    (result) => {
-      hairLength = result.predictions[0].tagName;
-      this.hairLengthService.deleteImg(result.id)
-      .subscribe(
-        () => console.log('deleted'),
-        (err) => console.log(err)
-      );
-    }
-  );
   group.personGroupId = localStorage.getItem('groupName');
   group.name = 'mic_stage_2019';
   group.userData = 'Group de test en developpement pour oneroom';
-        // traitement face API
-        // return an observable;
+  // traitement face API
+  // return an observable;
   const res$ = this.faceProcess.byImg(stream.blob, group);
   sub$ = res$.subscribe(
       (data) => {
@@ -337,8 +317,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               this.lock = false;
               return;
         }
-        console.log('detection');
-        let users: User[] = [];
+        const users: User[] = [];
         data.persons.forEach(element => {
         console.log('person');
         const u = new User();
@@ -399,65 +378,35 @@ export class FacecamComponent implements OnInit, OnDestroy {
                   emotionType = 'surprise';
                 }
                 f.emotionDominant = emotionType;
-                f.skinColor = skinColor;
-                f.hairLength = hairLength;
-                u.faces.push(f);
-              });
-        users.push(u);
-        User.generateAvatar(u);
-        });
-
-            // adding users
-        for (const user of users) {
-              const user$ = this.userService.addUser(user);
-              user$.subscribe(
-                (response) => {
-                  this.snackBar.open('User created', 'Ok', {
-                    duration: 2000
-                  });
-                  this.lock = false;
-                }
-              , (error) => {
-                  if (error.status === 409 && error.ok === false) {
-                    this.snackBar.open('User recognized', 'Ok', {
-                      duration: 2000
-                    });
-                    // update avatar
-                    const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
-                    // tslint:disable-next-line:no-shadowed-variable
-                    avatar$.subscribe(
-                      (response) => console.log('avatar updated'),
-                      // tslint:disable-next-line:no-shadowed-variable
-                      (error) => console.log('avatar not updated')
+                // call to custom vision
+                this.getSkinColor(stream.blob).subscribe(
+                  (sc) => {
+                    f.skinColor = sc;
+                    console.log(f.skinColor);
+                    this.getHairLength(stream.blob).subscribe(
+                      (hl) => {
+                        f.hairLength = hl;
+                        console.log(f.hairLength);
+                        u.faces.push(f);
+                        users.push(u);
+                        User.generateAvatar(u);
+                        // save user
+                        this.saveUsers(u);
+                      }
                     );
-                    // adding face to already existant user
-                    // for (const face of user.faces) {
-                    if (user.faces[user.faces.length - 1]) {
-                      const face = user.faces[user.faces.length - 1];
-                      console.log('adding face');
-                      const face$ = this.faceService.addFace(user.userId, face);
-                      face$.subscribe(
-                          () => {
-                            console.log('Face added');
-                            this.lock = false;
-                          },
-                          (err) => {
-                            console.log(err);
-                            this.lock = false;
-                      });
-                    }
-                    // }
                   }
+                );
               });
-            }
+        });
         console.log(users);
-            // preview
+
+        // preview
         this.lastUsers = users;
-        users = null;
         },
         () => {
             sub$.unsubscribe();
             console.log('Error 429');
+            // unlock capture
             this.lock = false;
         }
         );
@@ -465,6 +414,92 @@ export class FacecamComponent implements OnInit, OnDestroy {
       console.log('Error : ' + e.message);
       console.log(e);
     }
+}
+
+
+// detection hair length with custom vision
+private getHairLength(stream) {
+  const sub = new Subject<string>();
+  this.hairLengthService.detectLength(stream).subscribe(
+    (result) => {
+      this.deleteHairLength(result.id);
+      sub.next(result.predictions[0].tagName);
+    }
+  );
+  return sub;
+}
+
+private deleteHairLength(id) {
+  this.hairLengthService.deleteImg(id)
+  .subscribe(
+    () => console.log('deleted'),
+    (err) => console.log(err)
+  );
+}
+
+// detection skin color with custom vision
+private getSkinColor(stream) {
+  const sub = new Subject<string>();
+  this.visonComputerService.getSkinColor(stream).subscribe(
+      (result) => {
+      this.deleteSkinColor(result.id);
+      sub.next(result.predictions[0].tagName);
+    }
+  );
+  return sub;
+}
+
+// delete detection
+private deleteSkinColor(id) {
+  this.visonComputerService.deleteImg(id)
+  .subscribe(
+    () => console.log('deleted'),
+    (err) => console.log(err)
+  );
+}
+
+private saveUsers(user: User) {
+  // adding user
+    const user$ = this.userService.addUser(user);
+    user$.subscribe(
+      (response) => {
+        this.snackBar.open('User created', 'Ok', {
+          duration: 2000
+        });
+        this.lock = false;
+      }
+    , (error) => {
+        if (error.status === 409 && error.ok === false) {
+          this.snackBar.open('User recognized', 'Ok', {
+            duration: 2000
+          });
+          // update avatar
+          const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
+          // tslint:disable-next-line:no-shadowed-variable
+          avatar$.subscribe(
+            (response) => console.log('avatar updated'),
+            // tslint:disable-next-line:no-shadowed-variable
+            (error) => console.log('avatar not updated')
+          );
+          // adding face to already existant user
+          // for (const face of user.faces) {
+          if (user.faces[user.faces.length - 1]) {
+            const face = user.faces[user.faces.length - 1];
+            console.log('adding face');
+            const face$ = this.faceService.addFace(user.userId, face);
+            face$.subscribe(
+                () => {
+                  console.log('Face added');
+                  this.lock = false;
+                },
+                (err) => {
+                  console.log(err);
+                  this.lock = false;
+            });
+          }
+          // }
+        }
+    });
 }
 
   // transform dataUrl in blob
@@ -528,10 +563,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
       // stop camera capture
-      this.stream.getTracks().forEach(
-        (track) => {
-        track.stop();
-      });
+      if (this.stream) {
+        this.stream.getTracks().forEach(
+          (track) => {
+          track.stop();
+        });
+      }
       // stop game state signal
       if (this.hubServiceSub) {
         this.hubServiceSub.unsubscribe();

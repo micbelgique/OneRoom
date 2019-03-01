@@ -24,7 +24,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private userNotifySub;
   private teamSub;
   private teamNotifySub;
-  private leaderBoardServiceSub;
+  private hubServiceSub;
 
   constructor(
     private userService: UserService,
@@ -33,7 +33,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private hubService: LeaderboardService) { }
 
   ngOnInit() {
-    this.leaderBoardServiceSub = this.hubService.run().subscribe();
+    // attach to event from hub
+    this.hubServiceSub = this.hubService.run().subscribe();
     this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
       this.refreshUserList();
     });
@@ -70,8 +71,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.leaderBoardServiceSub) {
-      this.leaderBoardServiceSub.unsubscribe();
+    if (this.hubServiceSub) {
+      this.hubServiceSub.unsubscribe();
     }
     if (this.userNotifySub) {
       this.userNotifySub.unsubscribe();
@@ -89,7 +90,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.timeSubscription.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
-      this.hubService.stop();
+      this.hubService.stopService();
     }
   }
 }
