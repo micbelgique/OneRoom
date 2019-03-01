@@ -83,8 +83,8 @@ namespace oneroom_api.Controllers
                 {
                     var colorAll = Team.RandomColor();
                     color += colorAll.R;
-                    color += ',' + colorAll.G;
-                    color += ',' + colorAll.B;
+                    color += "," + colorAll.G;
+                    color += "," + colorAll.B;
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
 

@@ -75,4 +75,10 @@ export class TeamsComponent implements OnInit {
       this.teams = [];
     });
   }
+
+  getTeamColor(color: string) {
+    if (color) {
+      return 'rgb(' + color + ')';
+    }
+  }
 }
