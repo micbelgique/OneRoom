@@ -27,8 +27,8 @@ export class TeamService {
     return this.http.get<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams/' + teamId, { headers: this.headers });
   }
 
-  createTeam(numOfTeam: number) {
-    return this.http.post(this.EPGetter.getEndPointUrlWithId() + '/teams/' + numOfTeam, { headers: this.headers });
+  createTeam(numOfTeam: number): Observable<Team[]> {
+    return this.http.post<Team[]>(this.EPGetter.getEndPointUrlWithId() + '/teams/' + numOfTeam, { headers: this.headers });
   }
 
   deleteTeams(): Observable<Team[]> {
