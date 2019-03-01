@@ -56,6 +56,9 @@ export class User {
     // tslint:disable-next-line:max-line-length
     'https://avatars.dicebear.com/v2/avataaars/HairLongFemale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious' );
 
+    u.urlAvatar += u.hairLength.toLowerCase() === 'long' ?
+     '&options[top][]=longHair' : '&options[top][]=shortHair';
+
     u.urlAvatar += u.skinColor.toLowerCase() === 'caucasian' ?
     '&options[skin][]=pale' : u.skinColor.toLowerCase() === 'black' ?
     '&options[skin][]=darkBrown' : u.skinColor.toLowerCase() === 'azian' ?

@@ -4,23 +4,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace oneroom_api.Migrations
 {
-    public partial class initclient : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Client",
+                name: "Configuration",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Type = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Group = table.Column<string>(nullable: true)
+                    FaceEndpoint = table.Column<string>(nullable: true),
+                    FaceKey = table.Column<string>(nullable: true),
+                    VisionEndpoint = table.Column<string>(nullable: true),
+                    VisionKey = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Client", x => x.Id);
+                    table.PrimaryKey("PK_Configuration", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -30,11 +31,19 @@ namespace oneroom_api.Migrations
                     GameId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GroupName = table.Column<string>(nullable: false),
-                    CreationDate = table.Column<DateTime>(nullable: false)
+                    CreationDate = table.Column<DateTime>(nullable: false),
+                    State = table.Column<int>(nullable: false),
+                    ConfigId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Games", x => x.GameId);
+                    table.ForeignKey(
+                        name: "FK_Games_Configuration_ConfigId",
+                        column: x => x.ConfigId,
+                        principalTable: "Configuration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,6 +52,8 @@ namespace oneroom_api.Migrations
                 {
                     TeamId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TeamName = table.Column<string>(nullable: true),
+                    TeamColor = table.Column<string>(nullable: true),
                     CreationDate = table.Column<DateTime>(nullable: false),
                     GameId = table.Column<int>(nullable: true)
                 },
@@ -72,6 +83,7 @@ namespace oneroom_api.Migrations
                     BaldLevel = table.Column<double>(nullable: false),
                     SmileLevel = table.Column<double>(nullable: false),
                     HairColor = table.Column<string>(nullable: true),
+                    HairLength = table.Column<string>(nullable: true),
                     SkinColor = table.Column<string>(nullable: true),
                     GlassesType = table.Column<int>(nullable: false),
                     EmotionDominant = table.Column<string>(nullable: true),
@@ -110,6 +122,7 @@ namespace oneroom_api.Migrations
                     GlassesType = table.Column<int>(nullable: false),
                     BaldLevel = table.Column<double>(nullable: false),
                     HairColor = table.Column<string>(nullable: false),
+                    HairLength = table.Column<string>(nullable: true),
                     SkinColor = table.Column<string>(nullable: true),
                     UserId = table.Column<Guid>(nullable: true)
                 },
@@ -134,6 +147,11 @@ namespace oneroom_api.Migrations
                 name: "IX_Faces_UserId",
                 table: "Faces",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_ConfigId",
+                table: "Games",
+                column: "ConfigId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_GroupName",
@@ -166,9 +184,6 @@ namespace oneroom_api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Client");
-
-            migrationBuilder.DropTable(
                 name: "Faces");
 
             migrationBuilder.DropTable(
@@ -179,6 +194,9 @@ namespace oneroom_api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Configuration");
         }
     }
 }

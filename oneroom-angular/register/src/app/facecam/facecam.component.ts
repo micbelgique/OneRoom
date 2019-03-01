@@ -64,6 +64,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
   private hubServiceSub;
   private gameSub;
 
+  // refresh rate
+  refreshRate: number;
+
   constructor(
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -75,11 +78,17 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private hubService: LeaderboardService,
     private gameService: GameService) { this.loadModels(); }
 
-  async ngOnInit() {
+  ngOnInit() {
     // init lock
     this.lastUsers = [];
     this.alertContainer = false;
     this.lock = false;
+    // refreshRate
+    this.refreshRate = 3000;
+    if (localStorage.getItem('refreshRate')) {
+      console.log('refresh Rate : ' + this.refreshRate);
+      this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    }
 
     this.opencam();
     this.initStreamDetection();
@@ -106,9 +115,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
     if (!this.stream) {
       this.startStream();
       if (!this.detectId) {
+        // detection interval: default 3000
+        console.log(this.refreshRate);
         this.detectId = setInterval( () => {
           this.detectFaces();
-        }, 1000);
+        }, this.refreshRate);
       }
     }
   }
@@ -134,9 +145,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               // const imgData = this.capture();
               const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
               this.lock = true;
-              setTimeout( () => {
-                this.imageCapture(imgData);
-              }, 6000);
+              this.imageCapture(imgData);
             }
         }
 

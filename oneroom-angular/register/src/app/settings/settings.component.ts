@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
@@ -13,7 +12,7 @@ export class SettingsComponent implements OnInit {
 
   // coordinator
   endPoint: string;
-
+  refreshRate: number;
   // game
   game: Game = new Game();
   // Face
@@ -27,7 +26,6 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private snackBar: MatSnackBar,
-    private groupService: PersonGroupService,
     private gameService: GameService) {}
 
   ngOnInit() {
@@ -38,6 +36,11 @@ export class SettingsComponent implements OnInit {
     }
     // coordinator
     this.endPoint = localStorage.getItem('endpoint');
+    // refreshRate
+    this.refreshRate = 3000;
+    if (localStorage.getItem('refreshRate')) {
+      this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    }
     // face
     this.endPointCognitive = localStorage.getItem('endpointCognitive');
     this.subscriptionKey = localStorage.getItem('subscriptionKey');
@@ -63,6 +66,16 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  saveRefreshRate() {
+    if (this.refreshRate >= 1000) {
+      localStorage.setItem('refreshRate', '' + this.refreshRate);
+      this.snackBar.open('Refresh Rate updated', 'Ok', {
+        duration: 2000
+      });
+    }
+  }
+
+
   getGame() {
     const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
@@ -82,6 +95,9 @@ export class SettingsComponent implements OnInit {
         this.endPointCustomVision  = game.config.visionEndpoint;
         this.subscriptionKeyCustomVision = game.config.visionKey;
         this.saveCustomVisionSettings();
+        // refreshRate
+        this.refreshRate = game.config.refreshRate;
+        this.saveRefreshRate();
       }
     });
   }

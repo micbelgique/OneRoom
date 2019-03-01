@@ -23,8 +23,8 @@ export class FaceListService {
 
   constructor(private http: HttpClient,
               private endPointGetter: EndPointGetterService) {
-    this.endPoint = endPointGetter.getEndPointUrl();
-    this.subscriptionKey = endPointGetter.getSubscriptionKey();
+    this.endPoint = endPointGetter.getFaceEndPointUrl();
+    this.subscriptionKey = endPointGetter.getFaceSubscriptionKey();
     this.headers = new HttpHeaders({
       'Access-Control-Allow-Origin': 'http://localhost:4200',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',

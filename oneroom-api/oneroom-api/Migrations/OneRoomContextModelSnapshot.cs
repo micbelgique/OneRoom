@@ -29,6 +29,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("FaceKey");
 
+                    b.Property<double>("RefreshRate");
+
                     b.Property<string>("VisionEndpoint");
 
                     b.Property<string>("VisionKey");

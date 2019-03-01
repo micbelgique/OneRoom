@@ -65,6 +65,9 @@ export class User {
       u.urlAvatar += '&options[skin][]=light';
     }
 
+    u.urlAvatar += u.faces[u.faces.length - 1].hairLength.toLowerCase() === 'long' ?
+     '&options[top][]=longHair' : '&options[top][]=shortHair';
+
     u.urlAvatar += u.baldLevel > 0.65 ? '&options[topChance]=0' : '&options[topChance]=100';
 
     u.urlAvatar += u.glassesType === GlassesType.ReadingGlasses ?
