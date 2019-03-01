@@ -1,108 +1,34 @@
-<div *ngIf="!teams.length">
-  <!-- <mat-accordion class="example-headers-align" *ngFor="let item of users">
-    <mat-expansion-panel [expanded]=true>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-            <div mat-card-title>{{ item.name }}</div>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <mat-card-content>
-        <mat-grid-list cols="2" [rowHeight]=220>
-          <mat-grid-tile>
-              <img mat-card-avatar class="example-header-image" src='{{ item.urlAvatar }}'>
-          </mat-grid-tile>
-          <mat-grid-tile>
-                    <div *ngIf=item.faces[item.faces.length-1]>
-                      <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.age}}</td></tr>
-                      <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.gender === 0 ? 'male' : 'female' }}</td></tr>
-                      <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.smileLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.moustacheLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.beardLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.baldLevel }}</td></tr>
-                      <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.hairColor }}</td></tr>
-                      <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.glassesType}}</td></tr>
-                      <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.skinColor}}</td></tr>
-                      <tr><td i18n="@@leaderboardRecognized">Recognized</td><td>{{ item.faces.length}}</td></tr>
-                    </div>
-          </mat-grid-tile>
-        </mat-grid-list>
-      </mat-card-content>
-    </mat-expansion-panel>
-  </mat-accordion> -->
+<div>
   <mat-grid-list cols="4" rowHeight="2:1">
-    <mat-grid-tile *ngFor="let u of users" >
-      <mat-card [style.box-shadow]="isHighLighted(u.userId)">
 
-        <div style="width: calc(40%);">
-          <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
-        </div>
-        <div style="width: calc(60%); padding: 10px;">
-          <mat-card-title>{{u.name}}</mat-card-title>
-          <mat-card-content>
-            <div *ngIf=u.faces[u.faces.length-1]>
-              <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge">{{ u.age}} ans</span></div>
-              <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardRecognized">aperçu {{ u.faces.length}} fois</span></div>
-            </div>
-          </mat-card-content>
-      </div>
-      </mat-card>
-    </mat-grid-tile>
+    <ng-container *ngTemplateOutlet="teams.length ? TeamsHandle : UserCard; context: {$implicit: this}"></ng-container>
+
+    <ng-template #TeamsHandle let-TeamsContainer>
+      <ng-container *ngFor="let tc of TeamsContainer.teams">
+        <ng-container *ngTemplateOutlet="UserCard; context: {$implicit: tc}"></ng-container>
+      </ng-container>
+    </ng-template>
+
+    <ng-template #UserCard let-UsersContainer>
+      <mat-grid-tile *ngFor="let u of UsersContainer.users">
+        <mat-card [style.background-color]='getTeamColor(UsersContainer?.teamColor)'>
+          <div style="width: calc(40%);">
+            <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+          </div>
+          <div style="width: calc(60%); padding: 10px;">
+            <mat-card-title>{{u.name}}</mat-card-title>
+            <mat-card-content>
+              <div>
+                <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge">{{ u.age}} ans</span></div>
+                <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardRecognized">aperçu {{ u.faces.length}} fois</span></div>
+              </div>
+            </mat-card-content>
+          </div>
+        </mat-card>
+      </mat-grid-tile>
+    </ng-template>
+
   </mat-grid-list>
 </div>
-<!-- <mat-toolbar>
-  <span class="title-center">{{title}}</span>
-</mat-toolbar>
-<mat-grid-list cols="4" rows="2">
-  <mat-grid-tile *ngFor="let item of users">
-    <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{item.name}}</mat-card-title>
-          <img mat-card-image src="{{ item.urlAvatar }}" alt="Avataaars">
-        </mat-card-header>
-        <mat-card-content>
-            <table *ngIf=item.faces[item.faces.length-1]>
-                <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.age}}</td></tr>
-                <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.gender === 0 ? 'male' : 'female' }}</td></tr>
-                <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.smileLevel }}</td></tr>
-                <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.moustacheLevel }}</td></tr>
-                <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.beardLevel }}</td></tr>
-                <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.baldLevel }}</td></tr>
-                <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.hairColor }}</td></tr>
-                <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.glassesType}}</td></tr>
-                <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.skinColor}}</td></tr>
-                <tr><td i18n="@@leaderboardRecognized">Recognized</td><td>{{ item.faces.length}}</td></tr>
-            </table>
-        </mat-card-content>
-    </mat-card>
-  </mat-grid-tile>
-</mat-grid-list> -->
-<div *ngIf="teams.length">
-  <mat-toolbar>
-    <span class="title-center">{{title}}</span>
-  </mat-toolbar>
 
-  <mat-grid-list cols="2" rows="2">
-    <mat-grid-tile *ngFor="let t of teams">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>Team {{t.teamId}}</mat-card-title>
-        </mat-card-header>
-        <mat-grid-list cols="2" rows="1">
-          <mat-grid-tile>
-            <mat-grid-list cols="2" rows="4">
-              <mat-grid-tile *ngFor="let u of t.users">
-                <mat-card>
-                  <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
-                  <mat-card-footer>
-                    <mat-card-title class="title-center">{{u.name}}</mat-card-title>
-                  </mat-card-footer>
-                </mat-card>
-              </mat-grid-tile>
-            </mat-grid-list>
-          </mat-grid-tile>
-          <mat-grid-tile>Team {{t.teamId}} details</mat-grid-tile>
-        </mat-grid-list>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
-</div>
+

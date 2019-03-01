@@ -1,4 +1,4 @@
-<mat-toolbar role="heading">
+<mat-toolbar *ngIf="this.router.url !== '/leaderboard'" role="heading">
   <mat-toolbar-row>
       <button mat-icon-button (click)="toggleMenu()">
         <mat-icon>menu</mat-icon>
