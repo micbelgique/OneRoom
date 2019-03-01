@@ -30,14 +30,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private teamService: TeamService,
     private snackBar: MatSnackBar,
-    private leaderboardService: LeaderboardService) { }
+    private hubService: LeaderboardService) { }
 
   ngOnInit() {
-    this.leaderBoardServiceSub = this.leaderboardService.run().subscribe();
-    this.userNotifySub = this.leaderboardService.refreshUserList.subscribe(() => {
+    this.leaderBoardServiceSub = this.hubService.run().subscribe();
+    this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
       this.refreshUserList();
     });
-    this.teamNotifySub = this.leaderboardService.refreshTeamList.subscribe(() => {
+    this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
     });
     this.refreshUserList();
@@ -47,7 +47,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
-        usersList.forEach( u => { User.generateAvatar(u); });
+        // usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 1000
@@ -88,6 +88,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
-    this.leaderboardService.stop();
+    if (!this.hubService.connected.isStopped) {
+      this.hubService.stop();
+    }
   }
 }

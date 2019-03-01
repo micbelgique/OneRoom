@@ -20,7 +20,6 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   private _refreshTeamList = new EventEmitter<boolean>();
   public refreshTeamList  = this._refreshTeamList.asObservable();
 
-
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;
   protected connectionTryDelay = 10000;
