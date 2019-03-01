@@ -20,12 +20,22 @@
             <mat-card-content>
               <div>
                 <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge">{{ u.age}} ans</span></div>
-                <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardRecognized">aperçu {{ u.faces.length}} fois</span></div>
+                <div style="margin: 10px 10px 10px 0px;">
+                  <ng-container *ngTemplateOutlet="UsersContainer.teamName ? TeamsName : RecognizedDetails; context: {container: UsersContainer, user: u}"></ng-container>
+                </div>
               </div>
             </mat-card-content>
           </div>
         </mat-card>
       </mat-grid-tile>
+    </ng-template>
+
+    <ng-template #TeamsName let-container='container'>
+      <span i18n="@@leaderboardRecognized">{{ container.teamName.toUpperCase()}}</span>
+    </ng-template>
+
+    <ng-template #RecognizedDetails let-user='user'>
+      <span i18n="@@leaderboardRecognized">aperçu {{ user.faces.length}} fois</span>
     </ng-template>
 
   </mat-grid-list>
