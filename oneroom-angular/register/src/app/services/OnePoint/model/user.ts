@@ -34,6 +34,7 @@ export class User {
       u.baldLevel = u.faces[u.faces.length - 1].baldLevel;
       u.smileLevel = u.faces[u.faces.length - 1].smileLevel;
       u.hairColor = u.faces[u.faces.length - 1].hairColor;
+      u.hairLength = u.faces[u.faces.length - 1].hairLength;
       u.skinColor = u.faces[u.faces.length - 1].skinColor;
       u.glassesType = u.faces[u.faces.length - 1].glassesType;
       u.emotionDominant = u.faces[u.faces.length - 1].emotionDominant;
@@ -65,6 +66,7 @@ export class User {
       u.urlAvatar += '&options[skin][]=light';
     }
 
+    console.log(u.hairLength);
     u.urlAvatar += u.faces[u.faces.length - 1].hairLength.toLowerCase() === 'long' ?
      '&options[top][]=longHair' : '&options[top][]=shortHair';
 
