@@ -10,6 +10,8 @@ namespace oneroom_api.Model
     {
         public Guid UserId { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
+        // last time the user was recognized
+        public DateTime RecognizedDate { get; set; } = DateTime.Now;
         [Required]
         public string Name { get; set; }
         [Required]

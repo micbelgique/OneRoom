@@ -187,7 +187,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
             audio : false,
             video: {
                 // selfie mode
-                facingMode: 'user',
+                // facingMode: 'user',
                 deviceId: videoSource ? { exact: videoSource } : undefined
             }
         })
@@ -291,9 +291,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
     const stream = this.makeblob(dataUrl);
     // set du groupe
     const group = new Group();
-    group.personGroupId = localStorage.getItem('groupName');
+    if (localStorage.getItem('gameData')) {
+      group.personGroupId = JSON.parse(localStorage.getItem('gameData')).groupName;
+    }
+    console.log('group : ' + group.personGroupId);
     group.name = 'mic_stage_2019';
     group.userData = 'Group de test en developpement pour oneroom';
+    // timeout to unlock detection
+    setTimeout(() => {
+      this.lock = false;
+    }, 2500);
     // traitement face API
     // return an observable;
     const res$ = this.faceProcess.byImg(stream.blob, group);
@@ -381,6 +388,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                           this.lastUsers = users;
                           // save user
                           this.saveUsers(u);
+                          this.lock = false;
                         }
                       );
                     }
