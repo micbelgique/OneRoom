@@ -32,13 +32,15 @@
   <mat-grid-list cols="4" rowHeight="2:1">
     <mat-grid-tile *ngFor="let u of users">
       <mat-card>
-        <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
-        <div>
+        <div style="width: calc(40%);">
+          <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+        </div>
+        <div style="width: calc(60%); padding: 10px;">
           <mat-card-title>{{u.name}}</mat-card-title>
           <mat-card-content>
             <div *ngIf=u.faces[u.faces.length-1]>
-              <tr><td i18n="@@leaderboardAge">Age</td><td>{{ u.age}}</td></tr>
-              <tr><td i18n="@@leaderboardRecognized">Recognized</td><td>{{ u.faces.length}}</td></tr>
+              <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge">{{ u.age}} ans</span></div>
+              <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardRecognized">aperçu {{ u.faces.length}} fois</span></div>
             </div>
           </mat-card-content>
       </div>
