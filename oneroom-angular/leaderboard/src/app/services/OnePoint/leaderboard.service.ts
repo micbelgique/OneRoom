@@ -37,7 +37,7 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     return this.start();
   }
 
-  public stop(): void {
+  public stopService() {
     this.stop();
   }
 }
