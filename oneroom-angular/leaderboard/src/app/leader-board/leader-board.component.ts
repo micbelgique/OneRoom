@@ -70,6 +70,12 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     );
   }
 
+  getTeamColor(color: string) {
+    if (color) {
+      return 'rgb(' + color + ')';
+    }
+  }
+
   ngOnDestroy() {
     if (this.hubServiceSub) {
       this.hubServiceSub.unsubscribe();
