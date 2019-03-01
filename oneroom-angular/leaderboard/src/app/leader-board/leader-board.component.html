@@ -30,8 +30,9 @@
     </mat-expansion-panel>
   </mat-accordion> -->
   <mat-grid-list cols="4" rowHeight="2:1">
-    <mat-grid-tile *ngFor="let u of users">
-      <mat-card>
+    <mat-grid-tile *ngFor="let u of users" >
+      <mat-card [style.box-shadow]="isHighLighted(u.userId)">
+
         <div style="width: calc(40%);">
           <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
         </div>

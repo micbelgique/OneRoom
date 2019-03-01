@@ -26,6 +26,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private teamNotifySub;
   private hubServiceSub;
 
+  private hightlightUserSub;
+  private detectedUserId;
+
   constructor(
     private userService: UserService,
     private teamService: TeamService,
@@ -33,6 +36,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private hubService: LeaderboardService) { }
 
   ngOnInit() {
+    this.detectedUserId = '';
     // attach to event from hub
     this.hubServiceSub = this.hubService.run().subscribe();
     this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
@@ -41,6 +45,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
     });
+    this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
+      this.detectedUserId = userId;
+      setTimeout( () => {
+        this.detectedUserId = '';
+      }, 3000);
+    });
+
     this.refreshUserList();
     this.refreshTeamList();
   }
@@ -68,6 +79,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       },
       error => this.errorMessage = error as any
     );
+  }
+
+  isHighLighted(userId: number): string {
+    if (userId === this.detectedUserId) {
+      return '10px 10px 5px grey';
+    } else {
+      return '';
+    }
   }
 
   ngOnDestroy() {

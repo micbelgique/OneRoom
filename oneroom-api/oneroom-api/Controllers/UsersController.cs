@@ -126,8 +126,14 @@ namespace oneroom_api.Controllers
 
                 var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == user.UserId)
                                         .SingleOrDefaultAsync(); ;
-               
-                if (usr != null) return Conflict("user already exists");
+
+                if (usr != null)
+                {
+
+                    // warn dashboard user is in front of the camera
+                    await _hubClients.Clients.All.HighlightUser(user.UserId);
+                    return Conflict("user already exists");
+                }
 
                 var count = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                                 .CountAsync();
@@ -141,7 +147,13 @@ namespace oneroom_api.Controllers
                 game.Users.Add(user);
 
                 await _context.SaveChangesAsync();
+
+                // update users dashboard and leaderboard
                 await _hubClients.Clients.All.UpdateUsers();
+
+                // warn dashboard user is in front of the camera
+                await _hubClients.Clients.All.HighlightUser(user.UserId);
+
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
             catch (Exception)

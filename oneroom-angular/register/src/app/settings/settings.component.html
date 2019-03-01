@@ -2,7 +2,7 @@
     <mat-expansion-panel [expanded]=false>
         <mat-expansion-panel-header>
           <mat-panel-title>
-              <div mat-card-title i18n="@@settingsCoordinator">Coordinator</div>
+              <div mat-card-title i18n="@@settingsCoordinator">Coordinateur</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
       <mat-card-content>
@@ -12,7 +12,7 @@
       </mat-card-content>
       <mat-card-actions>
             <div style="text-align: center">
-                <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Save</button>
+                <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
             </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -22,7 +22,7 @@
     <mat-expansion-panel [expanded]=false>
       <mat-expansion-panel-header>
         <mat-panel-title>
-            <div mat-card-title i18n="@@settingsGroup">Link to Game</div>
+            <div mat-card-title i18n="@@settingsGroup">Lier une partie</div>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
@@ -32,7 +32,7 @@
       </mat-card-content>
       <mat-card-actions>
         <div style="text-align: center">
-          <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" >Connect</button>
+          <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" >Connecter</button>
         </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -42,17 +42,17 @@
       <mat-expansion-panel [expanded]=false>
         <mat-expansion-panel-header>
           <mat-panel-title>
-              <div mat-card-title i18n="@@settingsRefreshRate">Refresh Rate</div>
+              <div mat-card-title i18n="@@settingsRefreshRate">Taux de rafraichissement</div>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-card-content>
             <mat-form-field style="width: 100%">
-              <input matInput placeholder="Refresh rate" type='number' [disabled]='this.game.config.refreshRate > 0' [(ngModel)]="this.game.config.refreshRate" value='{{refreshRate}}'>
+              <input matInput placeholder="Refresh rate (ms)" type='number' [disabled]='this.game.config.refreshRate > 0' [(ngModel)]="this.game.config.refreshRate" value='{{refreshRate}}'>
             </mat-form-field>
         </mat-card-content>
         <mat-card-actions>
           <div style="text-align: center">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='saveRefreshRate()' color="primary" i18n="@@settingsConfigure" >Set</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='saveRefreshRate()' color="primary" i18n="@@settingsConfigure" >Sauver</button>
           </div>
         </mat-card-actions>
       </mat-expansion-panel>
@@ -66,7 +66,7 @@
           </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-            <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Appels API</mat-slide-toggle>
             <br><br>
             <mat-form-field style="width: 100%">
                 <input matInput placeholder="Cognitive endPoint" type='url' [disabled]='this.game.config.faceEndpoint !== null' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
@@ -78,7 +78,7 @@
       </mat-card-content>
       <mat-card-actions>
             <div style="text-align: center">
-              <button style="width: 40%; margin:5px" mat-raised-button (click)='saveFaceSettings()' color="primary" i18n="@@settingsSave">Save</button>
+              <button style="width: 40%; margin:5px" mat-raised-button (click)='saveFaceSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
             </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -92,7 +92,7 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-card-content>
-              <mat-slide-toggle [(ngModel)]='callCustomVisionStatus' color="primary" (click)='this.toggleCustomVisionCalls()' i18n="@@settingsCognitives">Cognitives calls</mat-slide-toggle>
+              <mat-slide-toggle [(ngModel)]='callCustomVisionStatus' color="primary" (click)='this.toggleCustomVisionCalls()' i18n="@@settingsCognitives">Appels API</mat-slide-toggle>
               <br><br>
               <mat-form-field style="width: 100%">
                   <input matInput placeholder="Cognitive endPoint" type='url' [disabled]='this.game.config.visionEndpoint !== null' [(ngModel)]="endPointCustomVision" value='{{endPointCustomVision}}'>
@@ -104,7 +104,7 @@
         </mat-card-content>
         <mat-card-actions>
               <div style="text-align: center">
-                <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCustomVisionSettings()' color="primary" i18n="@@settingsSave">Save</button>
+                <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCustomVisionSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
               </div>
         </mat-card-actions>
       </mat-expansion-panel>
