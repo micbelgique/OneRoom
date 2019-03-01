@@ -83,7 +83,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   isHighLighted(userId: number): string {
     if (userId === this.detectedUserId) {
-      return '10px 10px 5px grey';
+      return '15px 15px 5px grey';
     } else {
       return '';
     }
@@ -113,6 +113,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
+    }
+    if (this.hightlightUserSub) {
+      this.hightlightUserSub.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
       this.hubService.stopService();

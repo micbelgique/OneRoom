@@ -20,6 +20,7 @@ namespace oneroom_api.Utilities
                 u.MoustacheLevel = Math.Round(faces.Average(f => f.MoustacheLevel));
                 u.BeardLevel = Math.Round(faces.Average(f => f.BeardLevel));
                 u.BaldLevel = Math.Round(faces.Average(f => f.BaldLevel));
+                u.HairLength = faces.Last().HairLength;
                 u.HairColor = faces.Last().HairColor;
                 u.SkinColor = faces.Last().SkinColor;
                 u.CreationDate = faces.Last().CreationDate;

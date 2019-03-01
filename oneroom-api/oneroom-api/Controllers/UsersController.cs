@@ -32,7 +32,7 @@ namespace oneroom_api.Controllers
         {
             var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                             .Include(u => u.Faces)
-                                            .OrderBy(u => u.CreationDate)
+                                            .OrderBy(u => u.RecognizedDate)
                                             .ToListAsync();
             // average and accurate details
             for(var i=0; i<users.Count; i++)
@@ -83,6 +83,8 @@ namespace oneroom_api.Controllers
 
             if (user.UrlAvatar == model.Url) return NoContent();
             user.UrlAvatar = model.Url;
+ 
+            user.RecognizedDate = DateTime.Now;
             _context.Entry(user).State = EntityState.Modified;
 
             try
