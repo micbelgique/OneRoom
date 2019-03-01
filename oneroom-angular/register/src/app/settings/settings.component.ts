@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PersonGroupService } from '../services/cognitive/person-group.service';
+import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar } from '@angular/material';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
