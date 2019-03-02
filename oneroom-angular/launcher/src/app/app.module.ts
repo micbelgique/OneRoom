@@ -16,12 +16,14 @@ import {
 } from '@angular/material';
 import { NavComponent } from './nav/nav.component';
 import { LockscreenComponent } from './lockscreen/lockscreen.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
-    LockscreenComponent
+    LockscreenComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
