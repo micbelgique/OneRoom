@@ -44,11 +44,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // containers
   @ViewChild('canvas2')
   public canvas2;
+  // canvas 2D context
+  private ctx;
   @ViewChild('webcam')
   public video;
 
   // stream video
   private stream;
+  // face detections options
+  private options;
 
   // loading models and stream not available
   displayStream = 'none';
@@ -93,7 +97,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.refreshRate = 3000;
     if (localStorage.getItem('refreshRate')) {
       this.refreshRate = Number(localStorage.getItem('refreshRate'));
+      if (this.refreshRate < 250) {
+        this.refreshRate = 3000;
+      }
     }
+    // save canvas context
+    this.ctx = this.canvas2.nativeElement.getContext('2d');
 
     this.opencam();
     this.initStreamDetection();
@@ -107,6 +116,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   private async loadModels() {
+    this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
+
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
 
@@ -130,25 +141,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   public async detectFaces() {
         this.clearOverlay();
-        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.75});
         // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
-        const fullFaceDescriptions = await faceapi.detectSingleFace(this.video.nativeElement, options)
+        const fullFaceDescriptions = await faceapi.detectAllFaces(this.video.nativeElement, this.options)
                                     // .withFaceExpressions();
                                     .withFaceLandmarks();
                                     // .withFaceDescriptor();
-        // if (fullFaceDescriptions.length > 0) {
-        if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
-        // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
+        if (fullFaceDescriptions.length > 0) {
+        // if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
+        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+        await faceapi.drawDetection(this.canvas2.nativeElement, detectionsArray, { withScore: false });
         // tslint:disable-next-line:max-line-length
         // await faceapi.drawFaceExpressions(this.canvas2.nativeElement, ({ position: fullFaceDescriptions.detection.box, expressions: fullFaceDescriptions.expressions }));
         // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        // await faceapi.drawLandmarks(this.canvas2.nativeElement, fullFaceDescriptions.landmarks, { drawLines: true });
+        // await faceapi.drawLandmarks(this.canvas2.nativeElement, landmarksArray, { drawLines: true });
         if (this.lock === false) {
-              console.log('Preparing call and locking');
+              this.lock = true;
               // const imgData = this.capture();
               const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
-              this.lock = true;
               this.imageCapture(imgData);
             }
         }
@@ -159,15 +168,14 @@ export class FacecamComponent implements OnInit, OnDestroy {
         }
   }
 
+  // clear canvas overlay
   private clearOverlay() {
-    // clear overlay
-    const ctx = this.canvas2.nativeElement.getContext('2d');
-    ctx.clearRect(0, 0, this.canvas2.nativeElement.width, this.canvas2.nativeElement.height);
-    ctx.stroke();
+    this.ctx.clearRect(0, 0, this.canvas2.nativeElement.width, this.canvas2.nativeElement.height);
+    this.ctx.stroke();
   }
 
+  /* initialize capture webcam */
   private opencam() {
-    /* initialize lib */
     navigator.mediaDevices
               .enumerateDevices()
               .then((d) => {

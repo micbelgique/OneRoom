@@ -49,7 +49,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.detectedUserId = userId;
       setTimeout( () => {
         this.detectedUserId = '';
-      }, 3000);
+      }, 5000);
     });
 
     this.refreshUserList();

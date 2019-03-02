@@ -14,9 +14,9 @@
     </ng-container>
   </div>
   <ng-template #CreateTeam>
-    <form class="example-container" style='text-align: left;'>
+    <form class="example-container" style='text-align: center;'>
       <mat-form-field style='margin: 2%;'>
-        <input matInput i18n-placeholder="@@TeamsNumber" placeholder="Number of teams" type='number' [(ngModel)]="nbTeams" min="0" name="nbTeams">
+        <input matInput i18n-placeholder="@@TeamsNumber" min="1" placeholder="Number of teams" type='number' [(ngModel)]="nbTeams" name="nbTeams">
       </mat-form-field>
       <button mat-raised-button (click)='createTeam()' color="primary">Create</button>
     </form>

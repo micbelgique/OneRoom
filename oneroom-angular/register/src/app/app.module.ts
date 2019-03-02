@@ -20,7 +20,8 @@ import {
   MatSidenavModule,
   MatProgressBarModule,
   MatSnackBarModule,
-  MatDialogModule
+  MatDialogModule,
+  MatSelectModule
 } from '@angular/material';
 import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -62,6 +63,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     FormsModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatSelectModule,
     RouterModule.forRoot([
       { path: 'welcome', component: FacecamComponent },
       { path: 'settings', component: SettingsComponent },
