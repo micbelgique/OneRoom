@@ -78,10 +78,13 @@ namespace oneroom_api.Controllers
                 } while (teams.Select(t => t.TeamName).Contains(name));
                 team.TeamName = name;
                 // pick random team color
-                string color;
+                string color = "";
                 do
                 {
-                    color = Team.RandomColor().ToString();
+                    var colorAll = Team.RandomColor();
+                    color += colorAll.R;
+                    color += "," + colorAll.G;
+                    color += "," + colorAll.B;
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
 

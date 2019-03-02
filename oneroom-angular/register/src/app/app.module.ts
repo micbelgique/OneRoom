@@ -43,7 +43,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
   declarations: [
     AppComponent,
     SettingsComponent,
-    FacecamComponent,
+    FacecamComponent
   ],
   imports: [
     BrowserModule,

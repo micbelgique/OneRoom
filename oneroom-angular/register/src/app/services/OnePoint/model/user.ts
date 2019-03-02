@@ -34,6 +34,7 @@ export class User {
       u.baldLevel = u.faces[u.faces.length - 1].baldLevel;
       u.smileLevel = u.faces[u.faces.length - 1].smileLevel;
       u.hairColor = u.faces[u.faces.length - 1].hairColor;
+      u.hairLength = u.faces[u.faces.length - 1].hairLength;
       u.skinColor = u.faces[u.faces.length - 1].skinColor;
       u.glassesType = u.faces[u.faces.length - 1].glassesType;
       u.emotionDominant = u.faces[u.faces.length - 1].emotionDominant;
@@ -43,13 +44,12 @@ export class User {
   }
 
 
-  static generateAvatarUrl(u: User) {
+  private static generateAvatarUrl(u: User) {
 
   /* SEEDS FEMALE
     hair : long hair
 
   */
-
     u.urlAvatar = ( u.gender === Gender.MALE ?
     // tslint:disable-next-line:max-line-length
     'https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious' :
@@ -65,7 +65,8 @@ export class User {
       u.urlAvatar += '&options[skin][]=light';
     }
 
-    u.urlAvatar += u.faces[u.faces.length - 1].hairLength.toLowerCase() === 'long' ?
+    console.log(u.hairLength);
+    u.urlAvatar += u.hairLength.toLowerCase() === 'long' ?
      '&options[top][]=longHair' : '&options[top][]=shortHair';
 
     u.urlAvatar += u.baldLevel > 0.65 ? '&options[topChance]=0' : '&options[topChance]=100';

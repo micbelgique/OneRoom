@@ -21,7 +21,8 @@ import {
   MatProgressBarModule,
   MatSnackBarModule,
   MatDialogModule,
-  MatTableModule
+  MatTableModule,
+  MatSelectModule
 } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +36,7 @@ import localeFrExtra from '@angular/common/locales/extra/fr';
 import { TeamsComponent } from './teams/teams.component';
 import { SettingsComponent } from './settings/settings.component';
 import { GamesComponent } from './games/games.component';
+import { UsersComponent } from './users/users.component';
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
@@ -42,7 +44,8 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     AppComponent,
     TeamsComponent,
     SettingsComponent,
-    GamesComponent
+    GamesComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -61,10 +64,12 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     FormsModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatSelectModule,
     RouterModule.forRoot([
       { path: 'settings', component: SettingsComponent },
       { path: 'teams', component: TeamsComponent },
       { path: 'games', component: GamesComponent },
+      { path: 'users', component: UsersComponent },
       { path: '**', redirectTo: 'settings', pathMatch: 'full' }
     ]),
     MatListModule,

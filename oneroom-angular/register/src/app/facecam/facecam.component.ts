@@ -15,6 +15,7 @@ import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 import { GameService } from '../services/OnePoint/game.service';
 import { Game } from '../services/OnePoint/model/game';
 import { GameState } from '../services/OnePoint/model/game-state.enum';
+import { Subject } from 'rxjs';
 
 // patch electron
 faceapi.env.monkeyPatch({
@@ -37,15 +38,19 @@ export class FacecamComponent implements OnInit, OnDestroy {
   /* input stream devices */
   @ViewChild('devices')
   public videoSelect;
-  /* selector */
+  /* selector devices */
   public selectors;
 
+  // containers
   @ViewChild('canvas2')
   public canvas2;
   @ViewChild('webcam')
   public video;
+
+  // stream video
   private stream;
 
+  // loading models and stream not available
   displayStream = 'none';
   isLoading = true;
 
@@ -54,6 +59,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   private lock = false;
 
+  // preview
   lastUsers: User[];
 
   // alert
@@ -63,6 +69,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // signalR
   private hubServiceSub;
   private gameSub;
+
+  // refresh rate
+  refreshRate: number;
 
   constructor(
     public dialog: MatDialog,
@@ -75,11 +84,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private hubService: LeaderboardService,
     private gameService: GameService) { this.loadModels(); }
 
-  async ngOnInit() {
+  ngOnInit() {
     // init lock
     this.lastUsers = [];
     this.alertContainer = false;
     this.lock = false;
+    // refreshRate
+    this.refreshRate = 3000;
+    if (localStorage.getItem('refreshRate')) {
+      this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    }
 
     this.opencam();
     this.initStreamDetection();
@@ -106,9 +120,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
     if (!this.stream) {
       this.startStream();
       if (!this.detectId) {
+        // detection interval: default 3000
         this.detectId = setInterval( () => {
           this.detectFaces();
-        }, 1000);
+        }, this.refreshRate);
       }
     }
   }
@@ -134,9 +149,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               // const imgData = this.capture();
               const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
               this.lock = true;
-              setTimeout( () => {
-                this.imageCapture(imgData);
-              }, 6000);
+              this.imageCapture(imgData);
             }
         }
 
@@ -173,7 +186,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
         navigator.mediaDevices.getUserMedia({
             audio : false,
             video: {
-                facingMode: 'user',
+                // selfie mode
+                // facingMode: 'user',
                 deviceId: videoSource ? { exact: videoSource } : undefined
             }
         })
@@ -186,26 +200,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 this.video.nativeElement.play();
                 // set canvas size = video size when known
                 this.video.nativeElement.addEventListener('loadedmetadata', () => {
-                  // OLD
-                  // this.canvas.nativeElement.width = this.video.nativeElement.videoWidth;
-                  // this.canvas.nativeElement.height = this.video.nativeElement.videoHeight;
                   // overlay
                   this.canvas2.nativeElement.width = this.video.nativeElement.videoWidth;
                   this.canvas2.nativeElement.height = this.video.nativeElement.videoHeight;
                 });
-
-                /* NOT NEEDED ANYMORE
-                const loop = () => {
-                  if (!this.video.nativeElement.paused && !this.video.nativeElement.ended) {
-                    this.canvas.nativeElement.getContext('2d').drawImage(this.video.nativeElement,
-                      0, 0, this.video.nativeElement.videoWidth, this.video.nativeElement.videoHeight);
-                  }
-                  this.streamId = setTimeout(loop, 1000 / 30); // drawing at 30fps
-                };
-
-                this.video.nativeElement.addEventListener('play', () => {
-                  // requestAnimationFrame(loop);
-                }, 0);*/
             })
             // permission denied:
             .catch( (error) => {
@@ -282,180 +280,221 @@ export class FacecamComponent implements OnInit, OnDestroy {
 }
 
   imageCapture(dataUrl) {
+  // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls disabled');
     return;
   }
+  // TODO :  vision api calls enabled ?
   let sub$;
   try {
-  console.log('starting');
-  const stream = this.makeblob(dataUrl);
-  const group = new Group();
-  let skinColor = '';
-  this.visonComputerService.getSkinColor(stream.blob).subscribe(
-      (result) => {
-      skinColor = result.predictions[0].tagName;
-      this.visonComputerService.deleteImg(result.id)
-      .subscribe(
-        () => console.log('deleted'),
-        (err) => console.log(err)
-      );
+    const stream = this.makeblob(dataUrl);
+    // set du groupe
+    const group = new Group();
+    if (localStorage.getItem('gameData')) {
+      group.personGroupId = JSON.parse(localStorage.getItem('gameData')).groupName;
     }
-  );
-  let hairLength = '';
-  this.hairLengthService.detectLength(stream.blob).subscribe(
-    (result) => {
-      hairLength = result.predictions[0].tagName;
-      this.hairLengthService.deleteImg(result.id)
-      .subscribe(
-        () => console.log('deleted'),
-        (err) => console.log(err)
-      );
-    }
-  );
-  group.personGroupId = localStorage.getItem('groupName');
-  group.name = 'mic_stage_2019';
-  group.userData = 'Group de test en developpement pour oneroom';
-        // traitement face API
-        // return an observable;
-  const res$ = this.faceProcess.byImg(stream.blob, group);
-  sub$ = res$.subscribe(
-      (data) => {
-        sub$.unsubscribe();
-        if (data === null) {
-              // nothing detected
-              console.log('lock disabled');
-              this.lock = false;
-              return;
-        }
-        console.log('detection');
-        let users: User[] = [];
-        data.persons.forEach(element => {
-        console.log('person');
-        const u = new User();
-        u.name = 'user_' + Math.random();
-        u.userId = element.person.personId;
-        u.faces = [];
-        element.faces.forEach(face => {
-                console.log('face');
-                const f = new Face();
-                f.faceId = face.faceId;
-                f.age = face.faceAttributes.age;
-                f.baldLevel = face.faceAttributes.hair.bald;
-                f.beardLevel = face.faceAttributes.facialHair.beard;
-                f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
-                GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
-                GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
-                GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
-                // check haircolor
-                if (face.faceAttributes.hair.hairColor.length > 0) {
-                  f.hairColor = face.faceAttributes.hair.hairColor[0].color;
-                } else {
-                  f.hairColor = '';
-                }
-                f.isMale = face.faceAttributes.gender === 'male';
-                f.moustacheLevel = face.faceAttributes.facialHair.moustache;
-                f.smileLevel = face.faceAttributes.smile;
-                let emotion = 0;
-                let emotionType = '';
-                if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
-                  emotion = face.faceAttributes.emotion.anger;
-                  emotionType = 'anger';
-                } else {
-                  emotion = face.faceAttributes.emotion.contempt;
-                  emotionType = 'contempt';
-                }
-                if (emotion > face.faceAttributes.emotion.disgust) {
-                  emotion =  face.faceAttributes.emotion.disgust;
-                  emotionType = 'disgust';
-                }
-                if (emotion > face.faceAttributes.emotion.fear) {
-                  emotion = face.faceAttributes.emotion.fear;
-                  emotionType = 'fear';
-                }
-                if (emotion > face.faceAttributes.emotion.happinness) {
-                  emotion = face.faceAttributes.emotion.happinness;
-                  emotionType = 'happinness';
-                }
-                if (emotion > face.faceAttributes.emotion.neutral) {
-                  emotion = face.faceAttributes.emotion.neutral;
-                  emotionType = 'neutral';
-                }
-                if (emotion > face.faceAttributes.emotion.sadness) {
-                  emotion = face.faceAttributes.emotion.sadness;
-                  emotionType = 'sadness';
-                }
-                if (emotion > face.faceAttributes.emotion.surprise) {
-                  emotion = face.faceAttributes.emotion.surprise;
-                  emotionType = 'surprise';
-                }
-                f.emotionDominant = emotionType;
-                f.skinColor = skinColor;
-                f.hairLength = hairLength;
-                u.faces.push(f);
-              });
-        users.push(u);
-        User.generateAvatar(u);
-        });
-
-            // adding users
-        for (const user of users) {
-              const user$ = this.userService.addUser(user);
-              user$.subscribe(
-                (response) => {
-                  this.snackBar.open('User created', 'Ok', {
-                    duration: 2000
-                  });
-                  this.lock = false;
-                }
-              , (error) => {
-                  if (error.status === 409 && error.ok === false) {
-                    this.snackBar.open('User recognized', 'Ok', {
-                      duration: 2000
-                    });
-                    // update avatar
-                    const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
-                    // tslint:disable-next-line:no-shadowed-variable
-                    avatar$.subscribe(
-                      (response) => console.log('avatar updated'),
-                      // tslint:disable-next-line:no-shadowed-variable
-                      (error) => console.log('avatar not updated')
-                    );
-                    // adding face to already existant user
-                    // for (const face of user.faces) {
-                    if (user.faces[user.faces.length - 1]) {
-                      const face = user.faces[user.faces.length - 1];
-                      console.log('adding face');
-                      const face$ = this.faceService.addFace(user.userId, face);
-                      face$.subscribe(
-                          () => {
-                            console.log('Face added');
-                            this.lock = false;
-                          },
-                          (err) => {
-                            console.log(err);
-                            this.lock = false;
-                      });
-                    }
-                    // }
+    console.log('group : ' + group.personGroupId);
+    group.name = 'mic_stage_2019';
+    group.userData = 'Group de test en developpement pour oneroom';
+    // timeout to unlock detection
+    setTimeout(() => {
+      this.lock = false;
+    }, 2500);
+    // traitement face API
+    // return an observable;
+    const res$ = this.faceProcess.byImg(stream.blob, group);
+    sub$ = res$.subscribe(
+        (data) => {
+          sub$.unsubscribe();
+          if (data === null) {
+                // nothing detected
+                console.log('lock disabled');
+                this.lock = false;
+                return;
+          }
+          const users: User[] = [];
+          data.persons.forEach(element => {
+          const u = new User();
+          u.name = 'user_' + Math.random();
+          u.userId = element.person.personId;
+          u.faces = [];
+          element.faces.forEach(face => {
+                  const f = new Face();
+                  f.faceId = face.faceId;
+                  f.age = face.faceAttributes.age;
+                  f.baldLevel = face.faceAttributes.hair.bald;
+                  f.beardLevel = face.faceAttributes.facialHair.beard;
+                  f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
+                  GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
+                  GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
+                  GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
+                  // check haircolor
+                  if (face.faceAttributes.hair.hairColor.length > 0) {
+                    f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+                  } else {
+                    f.hairColor = '';
                   }
-              });
-            }
-        console.log(users);
-            // preview
-        this.lastUsers = users;
-        users = null;
+                  f.isMale = face.faceAttributes.gender === 'male';
+                  f.moustacheLevel = face.faceAttributes.facialHair.moustache;
+                  f.smileLevel = face.faceAttributes.smile;
+                  let emotion = 0;
+                  let emotionType = '';
+                  if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
+                    emotion = face.faceAttributes.emotion.anger;
+                    emotionType = 'anger';
+                  } else {
+                    emotion = face.faceAttributes.emotion.contempt;
+                    emotionType = 'contempt';
+                  }
+                  if (emotion > face.faceAttributes.emotion.disgust) {
+                    emotion =  face.faceAttributes.emotion.disgust;
+                    emotionType = 'disgust';
+                  }
+                  if (emotion > face.faceAttributes.emotion.fear) {
+                    emotion = face.faceAttributes.emotion.fear;
+                    emotionType = 'fear';
+                  }
+                  if (emotion > face.faceAttributes.emotion.happinness) {
+                    emotion = face.faceAttributes.emotion.happinness;
+                    emotionType = 'happinness';
+                  }
+                  if (emotion > face.faceAttributes.emotion.neutral) {
+                    emotion = face.faceAttributes.emotion.neutral;
+                    emotionType = 'neutral';
+                  }
+                  if (emotion > face.faceAttributes.emotion.sadness) {
+                    emotion = face.faceAttributes.emotion.sadness;
+                    emotionType = 'sadness';
+                  }
+                  if (emotion > face.faceAttributes.emotion.surprise) {
+                    emotion = face.faceAttributes.emotion.surprise;
+                    emotionType = 'surprise';
+                  }
+                  f.emotionDominant = emotionType;
+                  // call to custom vision
+                  this.getSkinColor(stream.blob).subscribe(
+                    (sc) => {
+                      f.skinColor = sc;
+                      console.log(f.skinColor);
+                      this.getHairLength(stream.blob).subscribe(
+                        (hl) => {
+                          f.hairLength = hl;
+                          console.log(f.hairLength);
+                          u.faces.push(f);
+                          users.push(u);
+                          User.generateAvatar(u);
+                          // preview
+                          this.lastUsers = users;
+                          // save user
+                          this.saveUsers(u);
+                          this.lock = false;
+                        }
+                      );
+                    }
+                  );
+                });
+          });
         },
         () => {
             sub$.unsubscribe();
             console.log('Error 429');
+            // unlock capture
             this.lock = false;
         }
-        );
+      );
     } catch (e) {
       console.log('Error : ' + e.message);
       console.log(e);
+      // unlock capture
+      this.lock = false;
     }
+}
+
+
+// detection hair length with custom vision
+private getHairLength(stream) {
+  const sub = new Subject<string>();
+  this.hairLengthService.detectLength(stream).subscribe(
+    (result) => {
+      this.deleteHairLength(result.id);
+      sub.next(result.predictions[0].tagName);
+    }
+  );
+  return sub;
+}
+
+private deleteHairLength(id) {
+  this.hairLengthService.deleteImg(id)
+  .subscribe(
+    () => console.log('deleted'),
+    (err) => console.log(err)
+  );
+}
+
+// detection skin color with custom vision
+private getSkinColor(stream) {
+  const sub = new Subject<string>();
+  this.visonComputerService.getSkinColor(stream).subscribe(
+      (result) => {
+      this.deleteSkinColor(result.id);
+      sub.next(result.predictions[0].tagName);
+    }
+  );
+  return sub;
+}
+
+// delete detection
+private deleteSkinColor(id) {
+  this.visonComputerService.deleteImg(id)
+  .subscribe(
+    () => console.log('deleted'),
+    (err) => console.log(err)
+  );
+}
+
+private saveUsers(user: User) {
+  // adding user
+    const user$ = this.userService.addUser(user);
+    user$.subscribe(
+      (response) => {
+        this.snackBar.open('User created', 'Ok', {
+          duration: 2000
+        });
+        this.lock = false;
+      }
+    , (error) => {
+        if (error.status === 409 && error.ok === false) {
+          this.snackBar.open('User recognized', 'Ok', {
+            duration: 2000
+          });
+          // update avatar
+          const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
+          // tslint:disable-next-line:no-shadowed-variable
+          avatar$.subscribe(
+            (response) => console.log('avatar updated'),
+            // tslint:disable-next-line:no-shadowed-variable
+            (error) => console.log('avatar not updated')
+          );
+          // adding face to already existant user
+          // for (const face of user.faces) {
+          if (user.faces[user.faces.length - 1]) {
+            const face = user.faces[user.faces.length - 1];
+            console.log('adding face');
+            const face$ = this.faceService.addFace(user.userId, face);
+            face$.subscribe(
+                () => {
+                  console.log('Face added');
+                  this.lock = false;
+                },
+                (err) => {
+                  console.log(err);
+                  this.lock = false;
+            });
+          }
+          // }
+        }
+    });
 }
 
   // transform dataUrl in blob
@@ -519,17 +558,21 @@ export class FacecamComponent implements OnInit, OnDestroy {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
       // stop camera capture
-      this.stream.getTracks().forEach(
-        (track) => {
-        track.stop();
-      });
+      if (this.stream) {
+        this.stream.getTracks().forEach(
+          (track) => {
+          track.stop();
+        });
+      }
       // stop game state signal
       if (this.hubServiceSub) {
         this.hubServiceSub.unsubscribe();
-        // this.leaderboardService.stop();
       }
       if (this.gameSub) {
         this.gameSub.unsubscribe();
+      }
+      if (this.hubService.connected.isStopped) {
+        this.hubService.stop();
       }
     }
 

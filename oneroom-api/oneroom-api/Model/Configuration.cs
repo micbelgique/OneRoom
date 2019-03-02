@@ -11,5 +11,7 @@ namespace oneroom_api.Model
         [Url]
         public string VisionEndpoint { get; set; }
         public string VisionKey { get; set; }
+        // in millisec
+        public double RefreshRate { get; set; }
     }
 }

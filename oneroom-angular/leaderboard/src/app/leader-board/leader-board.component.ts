@@ -24,22 +24,34 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private userNotifySub;
   private teamSub;
   private teamNotifySub;
-  private leaderBoardServiceSub;
+  private hubServiceSub;
+
+  private hightlightUserSub;
+  private detectedUserId;
 
   constructor(
     private userService: UserService,
     private teamService: TeamService,
     private snackBar: MatSnackBar,
-    private leaderboardService: LeaderboardService) { }
+    private hubService: LeaderboardService) { }
 
   ngOnInit() {
-    this.leaderBoardServiceSub = this.leaderboardService.run().subscribe();
-    this.userNotifySub = this.leaderboardService.refreshUserList.subscribe(() => {
+    this.detectedUserId = '';
+    // attach to event from hub
+    this.hubServiceSub = this.hubService.run().subscribe();
+    this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
       this.refreshUserList();
     });
-    this.teamNotifySub = this.leaderboardService.refreshTeamList.subscribe(() => {
+    this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
     });
+    this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
+      this.detectedUserId = userId;
+      setTimeout( () => {
+        this.detectedUserId = '';
+      }, 3000);
+    });
+
     this.refreshUserList();
     this.refreshTeamList();
   }
@@ -47,7 +59,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
-        usersList.forEach( u => { User.generateAvatar(u); });
+        // usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 1000
@@ -69,9 +81,23 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     );
   }
 
+  isHighLighted(userId: number): string {
+    if (userId === this.detectedUserId) {
+      return '15px 15px 5px grey';
+    } else {
+      return '';
+    }
+  }
+
+  getTeamColor(color: string) {
+    if (color) {
+      return 'rgb(' + color + ')';
+    }
+  }
+
   ngOnDestroy() {
-    if (this.leaderBoardServiceSub) {
-      this.leaderBoardServiceSub.unsubscribe();
+    if (this.hubServiceSub) {
+      this.hubServiceSub.unsubscribe();
     }
     if (this.userNotifySub) {
       this.userNotifySub.unsubscribe();
@@ -88,6 +114,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
-    this.leaderboardService.stop();
+    if (this.hightlightUserSub) {
+      this.hightlightUserSub.unsubscribe();
+    }
+    if (!this.hubService.connected.isStopped) {
+      this.hubService.stopService();
+    }
   }
 }

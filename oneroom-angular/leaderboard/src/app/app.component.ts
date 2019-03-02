@@ -18,7 +18,7 @@ export class AppComponent {
   title = 'Leaderboard';
   opened = false;
 
-  constructor( router: Router) {
+  constructor( private router: Router) {
 
   }
 

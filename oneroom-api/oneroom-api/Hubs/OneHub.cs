@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using oneroom_api.Model;
+using System;
 using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
 {
     public interface IActionClient
     {
+        // User is in front of the cameras
+        Task HighlightUser(Guid userId);
         // When user added or deleted
         Task UpdateUsers();
         Task UpdateTeams();

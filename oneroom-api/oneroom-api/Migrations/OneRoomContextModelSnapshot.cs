@@ -29,6 +29,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("FaceKey");
 
+                    b.Property<double>("RefreshRate");
+
                     b.Property<string>("VisionEndpoint");
 
                     b.Property<string>("VisionKey");
@@ -156,6 +158,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<DateTime>("RecognizedDate");
 
                     b.Property<string>("SkinColor");
 
