@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GroupService } from './group.service';
+import { FaceProcessService } from './face-process.service';
 
-describe('GroupService', () => {
+describe('FaceProcessService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GroupService = TestBed.get(GroupService);
+    const service: FaceProcessService = TestBed.get(FaceProcessService);
     expect(service).toBeTruthy();
   });
 });
