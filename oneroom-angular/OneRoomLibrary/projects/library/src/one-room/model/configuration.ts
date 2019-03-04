@@ -4,4 +4,5 @@ export class Configuration {
   faceKey: string;
   visionEndpoint: string;
   visionKey: string;
+  refreshRate = 0.0;
 }

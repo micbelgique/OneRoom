@@ -5,6 +5,6 @@ import { LibraryComponent } from './library.component';
   declarations: [LibraryComponent],
   imports: [
   ],
-  exports: [LibraryComponent]
+  exports: [LibraryComponent],
 })
 export class LibraryModule { }
