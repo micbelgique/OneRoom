@@ -2,7 +2,6 @@ import { Face } from './face';
 import { GlassesType } from './glasses-type.enum';
 import { Gender } from './gender.enum';
 
-
 export class User {
   userId: string;
   urlAvatar: string;
@@ -20,6 +19,7 @@ export class User {
   skinColor: string;
   glassesType: GlassesType;
   emotionDominant: string;
+  recognized: number;
 
   constructor() {
     this.faces = [];
@@ -34,7 +34,6 @@ export class User {
       u.baldLevel = u.faces[u.faces.length - 1].baldLevel;
       u.smileLevel = u.faces[u.faces.length - 1].smileLevel;
       u.hairColor = u.faces[u.faces.length - 1].hairColor;
-      u.hairLength = u.faces[u.faces.length - 1].hairLength;
       u.skinColor = u.faces[u.faces.length - 1].skinColor;
       u.glassesType = u.faces[u.faces.length - 1].glassesType;
       u.emotionDominant = u.faces[u.faces.length - 1].emotionDominant;
@@ -44,31 +43,23 @@ export class User {
   }
 
 
-  private static generateAvatarUrl(u: User) {
+  static generateAvatarUrl(u: User) {
 
   /* SEEDS FEMALE
     hair : long hair
 
   */
+
     u.urlAvatar = ( u.gender === Gender.MALE ?
     // tslint:disable-next-line:max-line-length
-    'https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious' :
+    'https://avatars.dicebear.com/v2/avataaars/OneRoomMale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue' :
     // tslint:disable-next-line:max-line-length
-    'https://avatars.dicebear.com/v2/avataaars/HairLongFemale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue&options[mouth][]=serious' );
+    'https://avatars.dicebear.com/v2/avataaars/HairLongFemale.svg?options[clothes][]=blazer&options[eyes][]=defaultValue&options[eyebrow][]=defaultValue' );
 
-    if (u.skinColor) {
-      u.urlAvatar += u.skinColor.toLowerCase() === 'caucasian' ?
-      '&options[skin][]=pale' : u.skinColor.toLowerCase() === 'black' ?
-      '&options[skin][]=darkBrown' : u.skinColor.toLowerCase() === 'azian' ?
-      '&options[skin][]=yellow' : '&options[skin][]=light';
-    } else {
-      u.urlAvatar += '&options[skin][]=light';
-    }
-
-    console.log(u.hairLength);
-    u.urlAvatar += u.hairLength.toLowerCase() === 'long' ?
-     '&options[top][]=longHair' : '&options[top][]=shortHair';
-
+    u.urlAvatar += u.skinColor.toLowerCase() === 'caucasian' ?
+    '&options[skin][]=pale' : u.skinColor.toLowerCase() === 'black' ?
+    '&options[skin][]=darkBrown' : u.skinColor.toLowerCase() === 'azian' ?
+    '&options[skin][]=yellow' : '&options[skin][]=light';
     u.urlAvatar += u.baldLevel > 0.65 ? '&options[topChance]=0' : '&options[topChance]=100';
 
     u.urlAvatar += u.glassesType === GlassesType.ReadingGlasses ?
@@ -85,28 +76,60 @@ export class User {
     } else {
       u.urlAvatar += '&options[facialHairChance]=0';
     }
-
-    if (u.hairColor) {
-  // hair color
+      // hair color
     u.urlAvatar += '&options[hairColor][]=';
     u.urlAvatar += u.hairColor.toLowerCase() === 'other' ?
-     'black' : u.hairColor.toLowerCase() === 'unknown' ?
-     'black' : u.hairColor.toLowerCase() === 'blond' ?
-     'blonde' : u.hairColor.toLowerCase() === 'red' ?
-     'auburn' : u.hairColor.toLowerCase() === 'white' ?
-     'gray' : u.hairColor.toLowerCase() ;
-     // beard color
+       'black' : u.hairColor.toLowerCase() === 'unknown' ?
+       'black' : u.hairColor.toLowerCase() === 'blond' ?
+       'blonde' : u.hairColor.toLowerCase() === 'red' ?
+       'auburn' : u.hairColor.toLowerCase() === 'white' ?
+       'gray' : u.hairColor.toLowerCase() ;
+       // beard color
     if (u.gender === Gender.MALE) {
-    u.urlAvatar += '&options[facialHairColor][]=';
-    u.urlAvatar += u.hairColor.toLowerCase() === 'other' ?
-      'black' : u.hairColor.toLowerCase() === 'unknown' ?
-      'black' : u.hairColor.toLowerCase() === 'blond' ?
-      'blonde' : u.hairColor.toLowerCase() === 'red' ?
-      'auburn' : u.hairColor.toLowerCase() === 'white' ?
-      'gray' : u.hairColor.toLowerCase() ;
+      u.urlAvatar += '&options[facialHairColor][]=';
+      u.urlAvatar += u.hairColor.toLowerCase() === 'other' ?
+         'black' : u.hairColor.toLowerCase() === 'unknown' ?
+         'black' : u.hairColor.toLowerCase() === 'blond' ?
+         'blonde' : u.hairColor.toLowerCase() === 'red' ?
+         'auburn' : u.hairColor.toLowerCase() === 'white' ?
+         'gray' : u.hairColor.toLowerCase() ;
     }
-  }
+    switch (u.emotionDominant) {
+      case 'anger': {
+        u.urlAvatar += '&options[eyebrow][]=angry&options[mouth][]=concerned';
+        break;
+      }
+      case 'contempt': {
+        u.urlAvatar += '&options[eyebrow][]=up&options[mouth][]=disbelief';
+        break;
+      }
+      case 'disgust': {
+        u.urlAvatar += '&options[eyes][]=dizzy&options[mouth][]=vomit';
+        break;
+      }
+      case 'fear': {
+        u.urlAvatar += '&options[eyes][]=squint&options[mouth][]=scream';
+        break;
+      }
+      case 'happiness': {
+        u.urlAvatar += '&options[eyes][]=squint&options[mouth][]=twinkle';
+        break;
+      }
+      case 'neutral': {
+        u.urlAvatar += '&options[mouth][]=serious';
+        break;
+      }
+      case 'sadness': {
+        u.urlAvatar += '&options[eyes][]=squint&options[eyebrow][]=sad&options[mouth][]=sad';
+        break;
+      }
+      case 'surprise': {
+        u.urlAvatar += '&options[eyes][]=surprised&options[eyebrow][]=up&options[mouth][]=disbelief';
+        break;
+      }
+    }
 
-
+    u.urlAvatar += u.smileLevel === 1 ? '&options[mouth][]=grimace' :
+            u.smileLevel > 0.6 ? '&options[mouth][]=smile' : '';
   }
 }

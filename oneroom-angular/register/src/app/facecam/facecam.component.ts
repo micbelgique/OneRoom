@@ -340,34 +340,34 @@ export class FacecamComponent implements OnInit, OnDestroy {
                   f.smileLevel = face.faceAttributes.smile;
                   let emotion = 0;
                   let emotionType = '';
-                  if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
-                    emotion = face.faceAttributes.emotion.anger;
-                    emotionType = 'anger';
-                  } else {
+                  if (face.faceAttributes.emotion.anger < face.faceAttributes.emotion.contempt) {
                     emotion = face.faceAttributes.emotion.contempt;
                     emotionType = 'contempt';
+                  } else {
+                    emotion = face.faceAttributes.emotion.anger;
+                    emotionType = 'anger';
                   }
-                  if (emotion > face.faceAttributes.emotion.disgust) {
+                  if (emotion < face.faceAttributes.emotion.disgust) {
                     emotion =  face.faceAttributes.emotion.disgust;
                     emotionType = 'disgust';
                   }
-                  if (emotion > face.faceAttributes.emotion.fear) {
+                  if (emotion < face.faceAttributes.emotion.fear) {
                     emotion = face.faceAttributes.emotion.fear;
                     emotionType = 'fear';
                   }
-                  if (emotion > face.faceAttributes.emotion.happinness) {
-                    emotion = face.faceAttributes.emotion.happinness;
+                  if (emotion < face.faceAttributes.emotion.happiness) {
+                    emotion = face.faceAttributes.emotion.happiness;
                     emotionType = 'happinness';
                   }
-                  if (emotion > face.faceAttributes.emotion.neutral) {
+                  if (emotion < face.faceAttributes.emotion.neutral) {
                     emotion = face.faceAttributes.emotion.neutral;
                     emotionType = 'neutral';
                   }
-                  if (emotion > face.faceAttributes.emotion.sadness) {
+                  if (emotion < face.faceAttributes.emotion.sadness) {
                     emotion = face.faceAttributes.emotion.sadness;
                     emotionType = 'sadness';
                   }
-                  if (emotion > face.faceAttributes.emotion.surprise) {
+                  if (emotion < face.faceAttributes.emotion.surprise) {
                     emotion = face.faceAttributes.emotion.surprise;
                     emotionType = 'surprise';
                   }
