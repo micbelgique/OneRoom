@@ -63,14 +63,7 @@ export class UsersComponent implements OnInit {
   deleteUser(idUser) {
     this.userService.deleteUser(idUser).subscribe(
       () => {
-        let idx = -1;
-        this.users.forEach( (u, index)  => {
-          if ( u.userId === idUser) {
-             idx = index;
-          }
-        });
-        // delete from array
-        this.users = this.users.splice(idx, 1);
+        this.loadUsers();
         this.toast.open('Player deleted', 'Ok', {
           duration: 1000
         });

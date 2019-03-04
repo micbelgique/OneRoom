@@ -89,7 +89,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private visonComputerService: VisioncomputerService,
     private hairLengthService: HairlengthService,
     private hubService: LeaderboardService,
-    private gameService: GameService) { this.loadModels(); }
+    private gameService: GameService) { }
 
   ngOnInit() {
     // init lock
@@ -106,9 +106,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.refreshRate = 3000;
       }
     }
-    // init stream
-    this.opencam();
-    this.initStreamDetection();
+    this.loadModels();
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
@@ -129,7 +127,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
-        async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
+        async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
+          () => {
+            // init stream
+            this.opencam();
+            this.initStreamDetection();
+          }
+        );
 
     /* FACE RECOGNITION
                 // async () => faceapi.loadFaceExpressionModel('assets/models/').then(
@@ -318,7 +322,11 @@ private crop(canvas, x1, y1, width, height) {
 imageCapture(canvas) {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
-    console.log('calls disabled');
+    console.log('calls FACE disabled');
+    return;
+  }
+  if (localStorage.getItem('cognitivcustomVisionStatuseStatus') === 'false') {
+    console.log('calls VISION disabled');
     return;
   }
   // TODO :  vision api calls enabled ?
