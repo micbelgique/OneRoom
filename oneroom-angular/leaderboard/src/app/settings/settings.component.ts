@@ -15,8 +15,10 @@ export class SettingsComponent implements OnInit {
   endPoint: string;
   group: string;
 
+  games: Game[];
+
   constructor(
-    private snackBar: MatSnackBar,
+    private toast: MatSnackBar,
     private gameService: GameService) {}
 
   ngOnInit() {
@@ -24,11 +26,29 @@ export class SettingsComponent implements OnInit {
     this.group = localStorage.getItem('groupName');
     // coordinator
     this.endPoint = localStorage.getItem('endpoint');
+    // load available games from coordinator
+    this.games = [];
+    this.loadGames();
   }
+
+  loadGames() {
+    this.gameService.getGames().subscribe(
+        (games) => {
+          this.toast.open(games.length + ' games found', 'Ok', {
+            duration: 1000
+          });
+          this.games = games;
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+  }
+
 
   saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
-    this.snackBar.open('Settings updated', 'Ok', {
+    this.toast.open('Settings updated', 'Ok', {
       duration: 2000
     });
   }
@@ -38,7 +58,7 @@ export class SettingsComponent implements OnInit {
     resGame$.subscribe( (game: Game) => {
       localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);
-      this.snackBar.open('Game fetched', 'Ok', {
+      this.toast.open('Game fetched', 'Ok', {
         duration: 3000
       });
     });

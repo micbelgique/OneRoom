@@ -106,7 +106,6 @@ export class FaceProcessService {
   private addFace(group: Group, personId: string, stream: Blob, face: Face) {
           // person identified matching the face
           // 4. Add Face to person
-          // tslint:disable-next-line:max-line-length
           const face$ = this.personService.addFace(group.personGroupId, personId, stream, face.faceRectangle);
           face$.subscribe(
           (data) => {
