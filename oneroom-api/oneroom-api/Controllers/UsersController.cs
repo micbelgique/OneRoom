@@ -32,7 +32,7 @@ namespace oneroom_api.Controllers
         {
             var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                             .Include(u => u.Faces)
-                                            .OrderBy(u => u.RecognizedDate)
+                                            .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             // average and accurate details
             for(var i=0; i<users.Count; i++)

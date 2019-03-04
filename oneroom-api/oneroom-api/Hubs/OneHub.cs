@@ -9,15 +9,18 @@ namespace oneroom_api.Hubs
     {
         // User is in front of the cameras
         Task HighlightUser(Guid userId);
-        // When user added or deleted
+        // When users added or deleted
         Task UpdateUsers();
+        //
+        Task UpdateUser(User u);
+        // 
         Task UpdateTeams();
-        // All clients receive automatic configuration
+        // All clients receive automatic configuration when changed
         Task UpdateConfigurations();
         // When game state changed
-        Task UpdateGameState();
+        Task UpdateGameState(int gameId);
         // when game deleted or updated
-        Task UpdateGame();
+        Task UpdateGame(int gameId);
     }
 
     // possible clients
@@ -39,7 +42,15 @@ namespace oneroom_api.Hubs
             await base.OnConnectedAsync();
         }
 
+        public async Task JoinGroupAsync(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
 
+        public async Task LeaveGroupAsync(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        }
 
         // todo : groups 
     }

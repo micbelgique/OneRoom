@@ -19,7 +19,7 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   public refreshUserList  = this._refreshUserList.asObservable();
 
   // tslint:disable-next-line:variable-name
-  private _refreshGameState = new EventEmitter<boolean>();
+  private _refreshGameState = new EventEmitter<number>();
   public refreshGameState  = this._refreshGameState.asObservable();
 
   protected url = '/LeaderBoardHub';
@@ -28,7 +28,7 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
   protected methods: MonitoringMethods = {
     UpdateUsers: () => this._refreshUserList.emit(true),
-    UpdateGameState: () => this._refreshGameState.emit(true)
+    UpdateGameState: (gameId) => this._refreshGameState.emit(gameId)
   };
 
   constructor() {
@@ -39,7 +39,7 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     return this.start();
   }
 
-  public stop(): void {
+  public stopService(): void {
     this.stop();
   }
 }

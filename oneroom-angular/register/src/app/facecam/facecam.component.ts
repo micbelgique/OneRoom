@@ -43,7 +43,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   // containers
   @ViewChild('canvas2')
-  public canvas2;
+  public overlay;
   // canvas 2D context
   private ctx;
   @ViewChild('webcam')
@@ -58,7 +58,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
   displayStream = 'none';
   isLoading = true;
 
-  private streamId;
   private detectId;
 
   private lock = false;
@@ -69,6 +68,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // alert
   alertContainer = false;
   alertMessage = '';
+
+  // state game
+  stateContainer = false;
+  stateMessage = '';
 
   // signalR
   private hubServiceSub;
@@ -93,6 +96,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.lastUsers = [];
     this.alertContainer = false;
     this.lock = false;
+    // save canvas context
+    this.ctx = this.overlay.nativeElement.getContext('2d');
     // refreshRate
     this.refreshRate = 3000;
     if (localStorage.getItem('refreshRate')) {
@@ -101,18 +106,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.refreshRate = 3000;
       }
     }
-    // save canvas context
-    this.ctx = this.canvas2.nativeElement.getContext('2d');
-
+    // init stream
     this.opencam();
     this.initStreamDetection();
+    // game context
+    if (localStorage.getItem('gameData')) {
+      const game: Game = JSON.parse(localStorage.getItem('gameData'));
+      this.hubServiceSub = this.hubService.run().subscribe();
+      this.gameSub = this.hubService.refreshGameState.subscribe(
+      (gameId) => {
+        if (gameId === game.gameId) {
+          console.log('Updating state ...');
+          this.refreshGameState(game);
+        }
+      });
 
-    this.hubServiceSub = this.hubService.run().subscribe();
-    this.gameSub = this.hubService.refreshGameState.subscribe(
-    () => {
-      this.refreshGameState();
-    });
-    this.refreshGameState();
+      this.refreshGameState(game);
+    }
   }
 
   private async loadModels() {
@@ -133,7 +143,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
       if (!this.detectId) {
         // detection interval: default 3000
         this.detectId = setInterval( () => {
-          this.detectFaces();
+          // state still registering
+          if (!this.stateContainer) {
+            this.detectFaces();
+          }
         }, this.refreshRate);
       }
     }
@@ -147,19 +160,18 @@ export class FacecamComponent implements OnInit, OnDestroy {
                                     .withFaceLandmarks();
                                     // .withFaceDescriptor();
         if (fullFaceDescriptions.length > 0) {
-        // if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
-        const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas2.nativeElement, detectionsArray, { withScore: false });
-        // tslint:disable-next-line:max-line-length
-        // await faceapi.drawFaceExpressions(this.canvas2.nativeElement, ({ position: fullFaceDescriptions.detection.box, expressions: fullFaceDescriptions.expressions }));
-        // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        // await faceapi.drawLandmarks(this.canvas2.nativeElement, landmarksArray, { drawLines: true });
-        if (this.lock === false) {
+          // if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
+          const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
+          await faceapi.drawDetection(this.overlay.nativeElement, detectionsArray, { withScore: false });
+          // tslint:disable-next-line:max-line-length
+          // await faceapi.drawFaceExpressions(this.canvas2.nativeElement, ({ position: fullFaceDescriptions.detection.box, expressions: fullFaceDescriptions.expressions }));
+          // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
+          // await faceapi.drawLandmarks(this.canvas2.nativeElement, landmarksArray, { drawLines: true });
+          if (this.lock === false) {
               this.lock = true;
-              // const imgData = this.capture();
-              const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
+              const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement);
               this.imageCapture(imgData);
-            }
+          }
         }
 
         if (this.displayStream === 'none') {
@@ -170,7 +182,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   // clear canvas overlay
   private clearOverlay() {
-    this.ctx.clearRect(0, 0, this.canvas2.nativeElement.width, this.canvas2.nativeElement.height);
+    this.ctx.clearRect(0, 0, this.overlay.nativeElement.width, this.overlay.nativeElement.height);
     this.ctx.stroke();
   }
 
@@ -209,8 +221,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 // set canvas size = video size when known
                 this.video.nativeElement.addEventListener('loadedmetadata', () => {
                   // overlay
-                  this.canvas2.nativeElement.width = this.video.nativeElement.videoWidth;
-                  this.canvas2.nativeElement.height = this.video.nativeElement.videoHeight;
+                  this.overlay.nativeElement.width = this.video.nativeElement.videoWidth;
+                  this.overlay.nativeElement.height = this.video.nativeElement.videoHeight;
                 });
             })
             // permission denied:
@@ -287,7 +299,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
     return blob;
 }
 
-  imageCapture(dataUrl) {
+private crop(canvas, x1, y1, width, height) {
+  // get your canvas and a context for it
+  const ctx = canvas.getContext('2d');
+  // get the image data you want to keep.
+  const imageData = ctx.getImageData(x1, y1 - (y1 / 1.5), width, height + (y1 / 1.5));
+  // create a new cavnas same as clipped size and a context
+  const newCan = document.createElement('canvas');
+  // define sizes
+  newCan.width = width;
+  newCan.height = height;
+  const newCtx = newCan.getContext('2d');
+  // put the clipped image on the new canvas.
+  newCtx.putImageData(imageData, 0, 0);
+  return newCan;
+}
+
+imageCapture(canvas) {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls disabled');
@@ -296,7 +324,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // TODO :  vision api calls enabled ?
   let sub$;
   try {
-    const stream = this.makeblob(dataUrl);
+    const stream = this.makeblob(canvas.toDataURL('image/png'));
     // set du groupe
     const group = new Group();
     if (localStorage.getItem('gameData')) {
@@ -355,37 +383,43 @@ export class FacecamComponent implements OnInit, OnDestroy {
                     emotion = face.faceAttributes.emotion.contempt;
                     emotionType = 'contempt';
                   }
-                  if (emotion > face.faceAttributes.emotion.disgust) {
+                  if (emotion < face.faceAttributes.emotion.disgust) {
                     emotion =  face.faceAttributes.emotion.disgust;
                     emotionType = 'disgust';
                   }
-                  if (emotion > face.faceAttributes.emotion.fear) {
+                  if (emotion < face.faceAttributes.emotion.fear) {
                     emotion = face.faceAttributes.emotion.fear;
                     emotionType = 'fear';
                   }
-                  if (emotion > face.faceAttributes.emotion.happinness) {
+                  if (emotion < face.faceAttributes.emotion.happinness) {
                     emotion = face.faceAttributes.emotion.happinness;
                     emotionType = 'happinness';
                   }
-                  if (emotion > face.faceAttributes.emotion.neutral) {
+                  if (emotion < face.faceAttributes.emotion.neutral) {
                     emotion = face.faceAttributes.emotion.neutral;
                     emotionType = 'neutral';
                   }
-                  if (emotion > face.faceAttributes.emotion.sadness) {
+                  if (emotion < face.faceAttributes.emotion.sadness) {
                     emotion = face.faceAttributes.emotion.sadness;
                     emotionType = 'sadness';
                   }
-                  if (emotion > face.faceAttributes.emotion.surprise) {
+                  if (emotion < face.faceAttributes.emotion.surprise) {
                     emotion = face.faceAttributes.emotion.surprise;
                     emotionType = 'surprise';
                   }
                   f.emotionDominant = emotionType;
+
+                  // crop face for skin and hairlength
+                  // tslint:disable-next-line:max-line-length
+                  const faceCanvas = this.crop(canvas, face.faceRectangle.left, face.faceRectangle.top, face.faceRectangle.width, face.faceRectangle.height);
+                  // console.log(faceCanvas.toDataURL('image/jpeg'));
+                  const faceBlob = this.makeblob(faceCanvas.toDataURL('image/png'));
                   // call to custom vision
-                  this.getSkinColor(stream.blob).subscribe(
+                  this.getSkinColor(faceBlob.blob).subscribe(
                     (sc) => {
                       f.skinColor = sc;
                       console.log(f.skinColor);
-                      this.getHairLength(stream.blob).subscribe(
+                      this.getHairLength(faceBlob.blob).subscribe(
                         (hl) => {
                           f.hairLength = hl;
                           console.log(f.hairLength);
@@ -538,22 +572,19 @@ private saveUsers(user: User) {
     }
 
     /* Update the game state and stop registering candidates when done */
-    refreshGameState() {
-      // game
-      console.log('refreshing state');
-      let game: Game = new Game();
-      game.groupName = '';
-      if (localStorage.getItem('gameData')) {
-        game = JSON.parse(localStorage.getItem('gameData'));
-      } else {
-        return;
-      }
+    refreshGameState(game: Game) {
       const res$ = this.gameService.getStateGame(game.groupName);
       res$.subscribe(
         (state) => {
           console.log(state);
           if (state !== GameState.REGISTER) {
-            console.log('REGISTERING IS NOW CLOSED');
+            this.stopCaptureStream();
+            this.stateMessage = 'Enregistrement des participants désormais cloturé !';
+            this.stateContainer = true;
+            this.displayStream = 'none';
+          } else {
+            this.stateMessage = '';
+            this.stateContainer = false;
           }
         },
         (err) => {
@@ -562,9 +593,8 @@ private saveUsers(user: User) {
       );
     }
 
-    ngOnDestroy(): void {
+    private stopCaptureStream() {
       clearInterval(this.detectId);
-      clearTimeout(this.streamId);
       // stop camera capture
       if (this.stream) {
         this.stream.getTracks().forEach(
@@ -572,15 +602,21 @@ private saveUsers(user: User) {
           track.stop();
         });
       }
-      // stop game state signal
-      if (this.hubServiceSub) {
-        this.hubServiceSub.unsubscribe();
-      }
-      if (this.gameSub) {
-        this.gameSub.unsubscribe();
-      }
-      if (this.hubService.connected.isStopped) {
-        this.hubService.stop();
+    }
+
+    ngOnDestroy(): void {
+      this.stopCaptureStream();
+      // stop game context signal
+      if (localStorage.getItem('gameData')) {
+        if (this.hubServiceSub) {
+          this.hubServiceSub.unsubscribe();
+        }
+        if (this.gameSub) {
+          this.gameSub.unsubscribe();
+        }
+        if (this.hubService.connected.isStopped) {
+          this.hubService.stopService();
+        }
       }
     }
 
