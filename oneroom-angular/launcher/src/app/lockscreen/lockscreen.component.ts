@@ -3,8 +3,9 @@ import * as faceapi from 'face-api.js';
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
-import { FaceProcessService, FaceService, VisioncomputerService, HairlengthService, Group } from '@oneroomic/facecognitivelibrary';
-import { UserService, LeaderboardService, GameService } from '@oneroomic/oneroomlibrary';
+import { FaceProcessService, Group } from '@oneroomic/facecognitivelibrary';
+import { UserService } from '@oneroomic/oneroomlibrary';
+import {Router} from '@angular/router';
 
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -55,20 +56,25 @@ export class LockscreenComponent implements OnInit {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
-     ) { this.loadModels(); }
+    private userService: UserService,
+    private route: Router
+    ) { this.loadModels(); }
 
   ngOnInit() {
-    // init lock
-    this.lock = false;
-    // refreshRate
-    this.refreshRate = 3000;
-    if (localStorage.getItem('refreshRate')) {
-      this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    if (localStorage.getItem('user') != null) {
+      this.route.navigate(['/nav']);
+    } else {
+      // init lock
+      this.lock = false;
+      // refreshRate
+      this.refreshRate = 3000;
+      if (localStorage.getItem('refreshRate')) {
+        this.refreshRate = Number(localStorage.getItem('refreshRate'));
+      }
+
+      this.opencam();
+      this.initStreamDetection();
     }
-
-    this.opencam();
-    this.initStreamDetection();
-
   }
 
   private async loadModels() {
@@ -275,7 +281,13 @@ export class LockscreenComponent implements OnInit {
                 this.lock = false;
                 return;
           } else {
-
+            this.userService.getUser(data.persons[0].person.personId).subscribe(
+              (result) => {
+                console.log(result);
+                this.snackBar.open('Hello ' + result.name, 'Ok', {duration: 5000});
+                localStorage.setItem('user', JSON.stringify(result));
+                this.route.navigate(['/nav']);
+              });
           }
         },
         () => {
