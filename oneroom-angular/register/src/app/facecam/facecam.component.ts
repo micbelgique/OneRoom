@@ -384,12 +384,12 @@ imageCapture(canvas) {
                   f.smileLevel = face.faceAttributes.smile;
                   let emotion = 0;
                   let emotionType = '';
-                  if (face.faceAttributes.emotion.anger > face.faceAttributes.emotion.contempt) {
-                    emotion = face.faceAttributes.emotion.anger;
-                    emotionType = 'anger';
-                  } else {
+                  if (face.faceAttributes.emotion.anger < face.faceAttributes.emotion.contempt) {
                     emotion = face.faceAttributes.emotion.contempt;
                     emotionType = 'contempt';
+                  } else {
+                    emotion = face.faceAttributes.emotion.anger;
+                    emotionType = 'anger';
                   }
                   if (emotion < face.faceAttributes.emotion.disgust) {
                     emotion =  face.faceAttributes.emotion.disgust;
@@ -399,9 +399,9 @@ imageCapture(canvas) {
                     emotion = face.faceAttributes.emotion.fear;
                     emotionType = 'fear';
                   }
-                  if (emotion < face.faceAttributes.emotion.happinness) {
-                    emotion = face.faceAttributes.emotion.happinness;
-                    emotionType = 'happinness';
+                  if (emotion < face.faceAttributes.emotion.happiness) {
+                    emotion = face.faceAttributes.emotion.happiness;
+                    emotionType = 'happiness';
                   }
                   if (emotion < face.faceAttributes.emotion.neutral) {
                     emotion = face.faceAttributes.emotion.neutral;

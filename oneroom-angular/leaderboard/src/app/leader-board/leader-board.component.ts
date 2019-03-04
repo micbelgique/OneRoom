@@ -59,7 +59,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
-        // usersList.forEach( u => { User.generateAvatar(u); });
+        usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 1000
@@ -73,6 +73,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamSub = this.teamService.getTeams().subscribe(
       (teamList) => {
         this.teams = teamList;
+        this.teams.forEach( t => t.users.forEach( u => { User.generateAvatar(u); }));
         this.snackBar.open(this.teams.length + ' teams retrieved', 'Ok', {
           duration: 1000
         });

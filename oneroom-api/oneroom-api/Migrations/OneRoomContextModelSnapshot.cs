@@ -157,6 +157,8 @@ namespace oneroom_api.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int>("Recognized");
+
                     b.Property<DateTime>("RecognizedDate");
 
                     b.Property<string>("SkinColor");
