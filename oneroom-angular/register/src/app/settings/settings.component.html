@@ -46,9 +46,18 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
-          <mat-form-field style="width: 100%">
-            <input matInput placeholder="Refresh rate (ms)" type='number' [disabled]='this.game.config.refreshRate > 0' [(ngModel)]="this.game.config.refreshRate" value='{{refreshRate}}'>
-          </mat-form-field>
+          <div style='text-align: center'>
+              <mat-form-field>
+                <mat-select placeholder="Game" [(ngModel)]="this.game.groupName" >
+                  <mat-option *ngFor="let game of games" [value]="game.groupName">
+                    {{game.groupName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          <!--<mat-form-field style="width: 100%">
+            <input matInput placeholder="Group Name" type='text' [(ngModel)]="this.game.groupName" value='{{this.game.groupName}}'>
+          </mat-form-field>-->
       </mat-card-content>
       <mat-card-actions>
         <div style="text-align: center">

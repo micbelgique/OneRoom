@@ -31,15 +31,8 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(int GameId)
         {
             var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
-                                            .Include(u => u.Faces)
-                                            .OrderBy(u => u.RecognizedDate)
+                                            .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
-            // average and accurate details
-            for(var i=0; i<users.Count; i++)
-            {
-                UsersUtilities.OptimizeResults(users[i]);
-            }
-
             return users;
         }
 
@@ -142,13 +135,12 @@ namespace oneroom_api.Controllers
 
                 user.Name = "Player " + (++count);
                 _context.Users.Add(user);
+                // Link user to game
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
-                //retrieve game and add user to it
-                var game = _context.Games.Find(GameId);
-                game.Users.Add(user);
+                UsersUtilities.OptimizeResults(user);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
                 await _hubClients.Clients.All.UpdateUsers();

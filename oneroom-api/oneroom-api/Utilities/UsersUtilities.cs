@@ -11,7 +11,7 @@ namespace oneroom_api.Utilities
         {
             if(u.Faces.Count > 0)
             {
-                var faces = u.Faces.OrderBy(f => f.CreationDate).Take(10).ToList();
+                var faces = u.Faces.OrderByDescending(f => f.CreationDate).Take(10).ToList();
 
                 u.Age = Math.Floor(faces.Average(f => f.Age));
                 var male = faces.Count(f => f.IsMale);
@@ -20,13 +20,15 @@ namespace oneroom_api.Utilities
                 u.MoustacheLevel = Math.Round(faces.Average(f => f.MoustacheLevel));
                 u.BeardLevel = Math.Round(faces.Average(f => f.BeardLevel));
                 u.BaldLevel = Math.Round(faces.Average(f => f.BaldLevel));
-                u.HairLength = faces.Last().HairLength;
-                u.HairColor = faces.Last().HairColor;
-                u.SkinColor = faces.Last().SkinColor;
-                u.CreationDate = faces.Last().CreationDate;
-                u.SmileLevel = faces.Last().SmileLevel;
-                u.GlassesType = faces.Last().GlassesType;
-                u.EmotionDominant = faces.Last().EmotionDominant;
+                u.HairLength = faces.First().HairLength;
+                u.HairColor = faces.First().HairColor;
+                u.SkinColor = faces.First().SkinColor;
+                u.RecognizedDate = faces.First().CreationDate;
+                u.SmileLevel = faces.First().SmileLevel;
+                u.GlassesType = faces.First().GlassesType;
+                u.EmotionDominant = faces.First().EmotionDominant;
+
+                u.Recognized = u.Faces.Count();
             }
         }
     }

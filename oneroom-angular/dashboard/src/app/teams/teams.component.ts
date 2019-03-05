@@ -21,6 +21,8 @@ export class TeamsComponent implements OnInit {
   constructor(private snackBar: MatSnackBar, private gameService: GameService, private teamService: TeamService) { }
 
   ngOnInit() {
+    this.teams = [];
+    this.games = [];
     this.nbTeams = 4;
     this.loadGames();
   }

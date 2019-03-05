@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
 
@@ -13,10 +15,12 @@ namespace oneroom_api.Controllers
     public class FacesController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public FacesController(OneRoomContext context)
+        public FacesController(OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             _context = context;
+            _hubClients = hubClients;
         }
 
         // POST: api/Facesv2/2
@@ -27,7 +31,9 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
         {
             var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == UserId)
-                                          .SingleOrDefaultAsync();
+                                            .Include(u => u.Faces)
+                                            .OrderByDescending(u => u.RecognizedDate)
+                                            .SingleOrDefaultAsync();
 
             if (usr != null)
                 {
@@ -44,6 +50,9 @@ namespace oneroom_api.Controllers
                     UsersUtilities.OptimizeResults(usr);
 
                     await _context.SaveChangesAsync();
+
+                    // update users dashboard and leaderboard
+                    await _hubClients.Clients.All.UpdateUsers();
 
                 } catch(DbUpdateException)
                 {

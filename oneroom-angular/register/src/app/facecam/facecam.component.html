@@ -1,5 +1,5 @@
-<mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
-<div style="text-align: center;">
+<mat-progress-bar *ngIf="this.isLoading && !this.stateContainer" mode="indeterminate"></mat-progress-bar>
+<div [style.display]="!this.stateContainer ? 'block' : 'none'" style="text-align: center;">
     <div *ngIf=this.alertContainer>
         <p>{{alertMessage}}</p>
         <button mat-raised-button (click)="this.initStreamDetection()" color="primary" i18n="@@facecamRetry">Retry</button>
@@ -15,7 +15,10 @@
     </div>
 </div>
 <div class="preview-card">
-    <mat-accordion class="example-headers-align" >
+    <div *ngIf=this.stateContainer>
+        <h1>{{stateMessage}}</h1>
+    </div>
+    <mat-accordion *ngIf=!this.stateContainer class="example-headers-align" >
         <mat-expansion-panel [expanded]='lastUsers.length > 0'>
           <mat-expansion-panel-header>
             <mat-panel-title>

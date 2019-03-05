@@ -3,7 +3,7 @@ export class Emotion {
   contempt: number;
   disgust: number;
   fear: number;
-  happinness: number;
+  happiness: number;
   neutral: number;
   sadness: number;
   surprise: number;
