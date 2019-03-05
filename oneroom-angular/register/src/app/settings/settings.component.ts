@@ -71,6 +71,7 @@ export class SettingsComponent implements OnInit {
 
   saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
+    this.loadGames();
     this.toast.open('Settings updated', 'Ok', {
       duration: 2000
     });

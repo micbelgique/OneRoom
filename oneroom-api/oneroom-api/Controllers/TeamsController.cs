@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -81,10 +82,16 @@ namespace oneroom_api.Controllers
                 string color = "";
                 do
                 {
-                    var colorAll = Team.RandomColor();
-                    color += colorAll.R;
-                    color += "," + colorAll.G;
-                    color += "," + colorAll.B;
+                    Color colorAll;
+                    // pick only light color
+                    do
+                    {
+                        colorAll = Team.RandomColor();
+                        color = "" + colorAll.R;
+                        color += "," + colorAll.G;
+                        color += "," + colorAll.B;
+                    } while (colorAll.R < 100 || colorAll.G < 100 || colorAll.B < 100);
+                    
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
 
