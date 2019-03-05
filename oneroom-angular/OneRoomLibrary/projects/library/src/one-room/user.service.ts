@@ -25,7 +25,10 @@ export class UserService {
     return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
-
+  getUser(userID: string) {
+    return this.http.get<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userID, { headers: this.headers })
+      .pipe(catchError(this.handleError));
+  }
   addUser(user: User): Observable<boolean> {
     // tslint:disable-next-line:object-literal-shorthand
     return this.http.post<boolean>(this.EPGetter.getEndPointUrlWithId() + '/Users', user, { headers: this.headers });

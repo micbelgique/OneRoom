@@ -2,7 +2,7 @@
 <mat-toolbar role="heading">
     <mat-toolbar-row>
         <span class="example-fill-remaining-space"></span>
-        <button mat-fab color="white">
+        <button mat-fab color="white" (click)=unLock()>
             <mat-icon>remove_red_eye</mat-icon>
           </button>
         <span class="example-fill-remaining-space"></span>
@@ -12,4 +12,16 @@
 <mat-card class="example-card">
     <img mat-card-image src="assets/wallpaperlockscreen.png" alt="lockscreen">
 </mat-card>
+</div>
+<mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
+<div style="text-align: center;display: none">
+    <div [style.display]=this.displayStream >
+      <select #devices (change)="this.startStream()" >
+          <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
+      </select>
+      <div id="overlayContainer" class="center">
+        <video id="stream" #webcam autoplay></video>
+        <canvas #canvas2 id="overlay" ></canvas>
+      </div>
+    </div>
 </div>

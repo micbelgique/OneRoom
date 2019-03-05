@@ -74,10 +74,10 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatSidenavModule
   ],
   providers: [
-    FaceService,
-    PersonGroupPersonService,
-    PersonGroupService,
-    FaceProcessService,
+    // FaceService,
+    // PersonGroupPersonService,
+    // PersonGroupService,
+    // FaceProcessService,
     { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]

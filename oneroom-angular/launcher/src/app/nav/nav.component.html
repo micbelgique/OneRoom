@@ -1,7 +1,9 @@
 <mat-toolbar role="heading" >
   <mat-toolbar-row style="text-align:center">
       <span><a [routerLink]="['/']" routerLinkActive="router-link-active" >Menu</a></span>
-  </mat-toolbar-row>
+      <span class="example-spacer"></span>
+      <span><img src='{{ user.urlAvatar }}' (click)=logOut() class="imgProf"></span>
+    </mat-toolbar-row>
 </mat-toolbar>
 
 <mat-grid-list cols="3" rowHeight="3:1">
