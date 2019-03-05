@@ -34,6 +34,7 @@ namespace oneroom_api.Model
         public string SkinColor { get; set; }
         public GlassesType GlassesType { get; set; }
         public string EmotionDominant { get; set; }
+
         public int Recognized { get; set; }
 
     }

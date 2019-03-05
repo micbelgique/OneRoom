@@ -291,7 +291,7 @@ export class LockscreenComponent implements OnInit {
                 console.log('lock disabled');
                 this.lock = false;
                 return;
-          } else {
+          } else if (data.persons.length > 0) {
             this.userService.getUser(data.persons[0].person.personId).subscribe(
               (result) => {
                 console.log(result);

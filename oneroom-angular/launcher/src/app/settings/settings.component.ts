@@ -1,7 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { Game, GameService, LeaderboardService, TeamService } from '@oneroomic/oneroomlibrary';
-import { FaceService } from '@oneroomic/facecognitivelibrary';
+import { Router } from '@angular/router';
+
+export enum KEY_CODE {
+  UP_ARROW = 38,
+  DOWN_ARROW = 40,
+  RIGHT_ARROW = 39,
+  LEFT_ARROW = 37,
+  SPACE = 32
+}
+
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
@@ -23,9 +32,16 @@ export class SettingsComponent implements OnInit {
     endPointCustomVision: string;
     callCustomVisionStatus = true;
 
+    @HostListener('window:keyup', ['$event'])
+    keyEvent(event: KeyboardEvent) {
+    if ( event.keyCode === KEY_CODE.UP_ARROW) {
+      this.router.navigateByUrl('/lock');
+    }
+  }
     constructor(
       private snackBar: MatSnackBar,
-      private gameService: GameService
+      private gameService: GameService,
+      private router: Router
       ) {}
 
     ngOnInit() {
@@ -75,6 +91,7 @@ export class SettingsComponent implements OnInit {
     getGame() {
       const resGame$ = this.gameService.getGame(this.game.groupName);
       resGame$.subscribe( (game: Game) => {
+        localStorage.setItem('gameId', '' + game.gameId);
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
         this.snackBar.open('Game fetched', 'Ok', {

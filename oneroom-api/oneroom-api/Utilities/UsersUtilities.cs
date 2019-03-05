@@ -31,5 +31,11 @@ namespace oneroom_api.Utilities
                 u.Recognized = u.Faces.Count();
             }
         }
+
+        // TODO : generate avatar here and remove code from register and leaderboard
+        public static void GenerateAvatar(User u)
+        {
+
+        }
     }
 }

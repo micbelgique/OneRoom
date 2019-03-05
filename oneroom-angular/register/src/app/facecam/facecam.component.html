@@ -2,7 +2,7 @@
 <div [style.display]="!this.stateContainer ? 'block' : 'none'" style="text-align: center;">
     <div *ngIf=this.alertContainer>
         <p>{{alertMessage}}</p>
-        <button mat-raised-button (click)="this.initStreamDetection()" color="primary" i18n="@@facecamRetry">Retry</button>
+        <button mat-raised-button (click)="this.initStreamDetection()" color="primary" i18n="@@facecamRetry">Réessayer</button>
     </div>
     <div [style.display]=this.displayStream >
       <select #devices (change)="this.startStream()" >
@@ -22,7 +22,7 @@
         <mat-expansion-panel [expanded]='lastUsers.length > 0'>
           <mat-expansion-panel-header>
             <mat-panel-title>
-                <div mat-card-title>Preview results: {{lastUsers.length}}</div>
+                <div mat-card-title>Preview résultat: {{lastUsers.length}}</div>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <mat-card-content>
@@ -34,15 +34,15 @@
                   <mat-grid-tile>
                           <div *ngIf=item.faces[item.faces.length-1]>
                             <tr><td i18n="@@leaderboardAge">Age</td><td>{{ item.age}}</td></tr>
-                            <tr><td i18n="@@leaderboardGender">Gender</td><td>{{ item.gender === 0 ? 'male' : 'female' }}</td></tr>
-                            <tr><td i18n="@@leaderboardSmile">smileLevel</td><td>{{ item.smileLevel }}</td></tr>
-                            <tr><td i18n="@@leaderboardMoustache">moustacheLevel</td><td>{{ item.moustacheLevel }}</td></tr>
-                            <tr><td i18n="@@leaderboardBeard">beardLevel</td><td>{{ item.beardLevel }}</td></tr>
-                            <tr><td i18n="@@leaderboardBald">baldLevel</td><td>{{ item.baldLevel }}</td></tr>
-                            <tr><td i18n="@@leaderboardHair">HairColor</td><td>{{ item.hairColor }}</td></tr>
-                            <tr><td i18n="@@leaderboardHair">HairLength</td><td>{{ item.hairLength }}</td></tr>
-                            <tr><td i18n="@@leaderboardGlasses">glassesType</td><td>{{ item.glassesType}}</td></tr>
-                            <tr><td i18n="@@leaderboardSkin">SkinColor</td><td>{{ item.skinColor}}</td></tr>
+                            <tr><td i18n="@@leaderboardGender">Genre</td><td>{{ item.gender === 0 ? 'male' : 'female' }}</td></tr>
+                            <tr><td i18n="@@leaderboardSmile">Sourire</td><td>{{ item.smileLevel }}</td></tr>
+                            <tr><td i18n="@@leaderboardMoustache">Moustache</td><td>{{ item.moustacheLevel }}</td></tr>
+                            <tr><td i18n="@@leaderboardBeard">Barbe</td><td>{{ item.beardLevel }}</td></tr>
+                            <tr><td i18n="@@leaderboardBald">Calvitie</td><td>{{ item.baldLevel }}</td></tr>
+                            <tr><td i18n="@@leaderboardHair">Couleur de cheveux</td><td>{{ item.hairColor }}</td></tr>
+                            <tr><td i18n="@@leaderboardHair">Longueur de cheveux</td><td>{{ item.hairLength }}</td></tr>
+                            <tr><td i18n="@@leaderboardGlasses">Lunettes</td><td>{{ item.glassesType}}</td></tr>
+                            <tr><td i18n="@@leaderboardSkin">Couleur de peau</td><td>{{ item.skinColor}}</td></tr>
                           </div>
                   </mat-grid-tile>
                 </mat-grid-list>

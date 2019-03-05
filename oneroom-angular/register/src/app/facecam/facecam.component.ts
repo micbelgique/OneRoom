@@ -95,6 +95,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     // init lock
     this.lastUsers = [];
     this.alertContainer = false;
+    this.stateContainer = false;
     this.lock = false;
     // save canvas context
     this.ctx = this.overlay.nativeElement.getContext('2d');
@@ -124,7 +125,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   private async loadModels() {
-    this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.65});
+    this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.60});
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
@@ -329,7 +330,6 @@ imageCapture(canvas) {
     console.log('calls VISION disabled');
     return;
   }
-  // TODO :  vision api calls enabled ?
   let sub$;
   try {
     const stream = this.makeblob(canvas.toDataURL('image/png'));

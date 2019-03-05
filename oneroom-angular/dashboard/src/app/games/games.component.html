@@ -7,13 +7,13 @@
         </mat-expansion-panel-header>
         <mat-card-content>
             <mat-form-field style="width: 100%">
-              <input matInput placeholder="Game name" type='text' [(ngModel)]="game.groupName" value='{{game.groupName}}'>
+              <input matInput placeholder="Nom Game" type='text' [(ngModel)]="game.groupName" value='{{game.groupName}}'>
             </mat-form-field>
             <mat-accordion class="example-headers-align">
               <mat-expansion-panel [expanded]=false>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                      Configuration (optional)
+                      Configuration (facultatif)
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <mat-card-content>
@@ -21,16 +21,16 @@
                         <input matInput placeholder="Face endpoint" type='url' [(ngModel)]="game.config.faceEndpoint" value='{{game.config.faceEndpoint}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Face Key" type='text' [(ngModel)]="game.config.faceKey" value='{{game.config.faceKey}}'>
+                        <input matInput placeholder="Face clé" type='text' [(ngModel)]="game.config.faceKey" value='{{game.config.faceKey}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
                         <input matInput placeholder="Vision endpoint" type='url' [(ngModel)]="game.config.visionEndpoint" value='{{game.config.visionEndpoint}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Vision key" type='text' [(ngModel)]="game.config.visionKey" value='{{game.config.visionKey}}'>
+                        <input matInput placeholder="Vision clé" type='text' [(ngModel)]="game.config.visionKey" value='{{game.config.visionKey}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Refresh rate (ms)" type='text' [(ngModel)]="game.config.refreshRate" value='{{game.config.refreshRate}}'>
+                        <input matInput placeholder="Taux de rafraichissement (ms)" type='text' [(ngModel)]="game.config.refreshRate" value='{{game.config.refreshRate}}'>
                     </mat-form-field>
                 </mat-card-content>
               </mat-expansion-panel>
@@ -44,7 +44,7 @@
       </mat-expansion-panel>
 </mat-accordion>
 <br>
-<h1 style='text-align: center'>Games List</h1>
+<h1 style='text-align: center'>Liste de Games</h1>
 <br>
   <table mat-table [dataSource]="games" class="mat-elevation-z8">
 

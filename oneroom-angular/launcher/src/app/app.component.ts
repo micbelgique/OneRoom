@@ -1,4 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+
+
+export enum KEY_CODE {
+  UP_ARROW = 38,
+  DOWN_ARROW = 40,
+  RIGHT_ARROW = 39,
+  LEFT_ARROW = 37,
+  SPACE = 32
+}
 
 @Component({
   selector: 'app-root',
@@ -7,4 +17,15 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'launcher';
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if ( event.keyCode === KEY_CODE.UP_ARROW) {
+      this.router.navigateByUrl('/settings');
+    }
+  }
+
+  constructor(public router: Router) {
+
+  }
 }
