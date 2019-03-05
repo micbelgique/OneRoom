@@ -325,7 +325,7 @@ imageCapture(canvas) {
     console.log('calls FACE disabled');
     return;
   }
-  if (localStorage.getItem('cognitivcustomVisionStatuseStatus') === 'false') {
+  if (localStorage.getItem('customVisionStatus') === 'false') {
     console.log('calls VISION disabled');
     return;
   }

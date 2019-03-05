@@ -34,8 +34,8 @@ export class User {
       u.baldLevel = u.faces[u.faces.length - 1].baldLevel;
       u.smileLevel = u.faces[u.faces.length - 1].smileLevel;
       u.hairColor = u.faces[u.faces.length - 1].hairColor;
-      u.hairLength = u.faces[u.faces.length - 1].hairLength;
       u.skinColor = u.faces[u.faces.length - 1].skinColor;
+      u.hairLength = u.faces[u.faces.length - 1].hairLength;
       u.glassesType = u.faces[u.faces.length - 1].glassesType;
       u.emotionDominant = u.faces[u.faces.length - 1].emotionDominant;
       console.log('data set');
