@@ -72,7 +72,6 @@ export class LockscreenComponent implements OnInit {
       if (localStorage.getItem('refreshRate')) {
         this.refreshRate = Number(localStorage.getItem('refreshRate'));
       }
-
       this.opencam();
       this.initStreamDetection();
     }
