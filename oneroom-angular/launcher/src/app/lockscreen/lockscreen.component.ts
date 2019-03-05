@@ -48,6 +48,7 @@ export class LockscreenComponent implements OnInit {
   private detectId;
 
   private lock = false;
+  private buttonLock = false;
 
   // refresh rate
   refreshRate: number;
@@ -97,6 +98,10 @@ export class LockscreenComponent implements OnInit {
         }, this.refreshRate);
       }
     }
+  }
+  public unLock() {
+    this.buttonLock = !this.buttonLock;
+    console.log('unlocking');
   }
 
   public async detectFaces() {
@@ -251,6 +256,12 @@ export class LockscreenComponent implements OnInit {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls disabled');
+    return;
+  }
+  // button not pressed
+  if (!this.buttonLock) {
+    console.log('locked');
+    this.lock = false;
     return;
   }
   // TODO :  vision api calls enabled ?
