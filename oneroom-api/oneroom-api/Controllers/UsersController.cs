@@ -143,7 +143,7 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUser(user);
+                await _hubClients.Clients.All.CreateUser(user);
 
                 // warn dashboard user is in front of the camera
                 await _hubClients.Clients.All.HighlightUser(user.UserId);
