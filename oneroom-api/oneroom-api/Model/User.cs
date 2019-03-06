@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace oneroom_api.Model
 {
@@ -20,7 +19,7 @@ namespace oneroom_api.Model
 
         // recalculated details
         public double Age { get; set; }
-        public GenderEnum Gender { get; set; }
+        public Gender Gender { get; set; }
         [Range(0, 1)]
         public double MoustacheLevel { get; set; }
         [Range(0, 1)]
@@ -29,20 +28,16 @@ namespace oneroom_api.Model
         public double BaldLevel { get; set; }
         [Range(0, 1)]
         public double SmileLevel { get; set; }
+        // TODO CHANGE TO HairColorType
         public string HairColor { get; set; }
         public string HairLength { get; set; }
+        // TODO CHANGE TO SkinColorEnum
         public string SkinColor { get; set; }
         public GlassesType GlassesType { get; set; }
+        // TODO CHANGE TO EmotionEnum
         public string EmotionDominant { get; set; }
 
         public int Recognized { get; set; }
 
-    }
-
-    public enum GenderEnum
-    {
-        MALE,
-        FEMALE,
-        OTHER
     }
 }

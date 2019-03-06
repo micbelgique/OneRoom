@@ -48,6 +48,7 @@ namespace oneroom_api.Controllers
                 try
                 {
                     UsersUtilities.OptimizeResults(usr);
+                    UsersUtilities.GenerateAvatar(usr);
 
                     await _context.SaveChangesAsync();
 
