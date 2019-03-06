@@ -38,8 +38,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.detectedUserId = '';
     // attach to event from hub
     this.hubServiceSub = this.hubService.run().subscribe();
-    this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
-      this.refreshUserList();
+    // this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
+    //   this.refreshUserList();
+    // });
+    this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
+      this.updateUser(result);
     });
     this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
@@ -51,11 +54,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       }, 5000);
     });
 
-    this.refreshUserList();
+    this.getUserList();
     this.refreshTeamList();
   }
 
-  private refreshUserList() {
+  private getUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
         usersList.forEach( u => { User.generateAvatar(u); });
@@ -63,6 +66,10 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       },
       error => this.errorMessage = error as any
     );
+  }
+  private updateUser(user: User) {
+    const u = this.users.findIndex(e => e.userId === user.userId);
+    this.users[u] = user;
   }
 
   private refreshTeamList() {

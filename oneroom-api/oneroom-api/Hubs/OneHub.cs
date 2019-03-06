@@ -14,6 +14,8 @@ namespace oneroom_api.Hubs
         //
         Task UpdateUser(User u);
         // 
+        Task DeleteUser(User u);
+        //
         Task UpdateTeams();
         // All clients receive automatic configuration when changed
         Task UpdateConfigurations();
