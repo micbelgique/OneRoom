@@ -83,7 +83,7 @@ namespace oneroom_api.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUsers();
+                await _hubClients.Clients.All.UpdateUser(user);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -174,7 +174,7 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUsers();
+                await _hubClients.Clients.All.CreateUser(user);
 
                 // warn dashboard user is in front of the camera
                 await _hubClients.Clients.All.HighlightUser(user.UserId);
@@ -203,7 +203,7 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateUsers();
+            await _hubClients.Clients.All.DeleteUser(user);
 
             return user;
         }

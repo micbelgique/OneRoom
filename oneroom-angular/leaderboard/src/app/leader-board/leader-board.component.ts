@@ -22,6 +22,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private timeSubscription;
   private userSub;
   private userNotifySub;
+  private userCreateSub;
+  private userDeleteSub;
   private teamSub;
   private teamNotifySub;
   private hubServiceSub;
@@ -32,15 +34,23 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private teamService: TeamService,
-    private snackBar: MatSnackBar,
     private hubService: LeaderboardService) { }
 
   ngOnInit() {
     this.detectedUserId = '';
     // attach to event from hub
     this.hubServiceSub = this.hubService.run().subscribe();
-    this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
-      this.refreshUserList();
+    // this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
+    //   this.refreshUserList();
+    // });
+    this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
+      this.updateUser(result);
+    });
+    this.userCreateSub = this.hubService.createUser.subscribe( (result) => {
+      this.createUser(result);
+    });
+    this.userDeleteSub = this.hubService.deleteUser.subscribe( (result) => {
+      this.deleteUser(result);
     });
     this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
@@ -52,29 +62,35 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       }, 5000);
     });
 
-    this.refreshUserList();
+    this.getUserList();
     this.refreshTeamList();
   }
 
-  private refreshUserList() {
+  private getUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
         this.users = usersList;
-        this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
-          duration: 1000
-        });
       },
       error => this.errorMessage = error as any
     );
+  }
+  private updateUser(user: User) {
+    const u = this.users.findIndex(e => e.userId === user.userId);
+    this.users[u] = user;
+  }
+
+  private createUser(user: User) {
+    this.users.push(user);
+  }
+  private deleteUser(user: User) {
+    const u = this.users.findIndex(e => e.userId === user.userId);
+    this.users.splice(u, 1);
   }
 
   private refreshTeamList() {
     this.teamSub = this.teamService.getTeams().subscribe(
       (teamList) => {
         this.teams = teamList;
-        this.snackBar.open(this.teams.length + ' teams retrieved', 'Ok', {
-          duration: 1000
-        });
       },
       error => this.errorMessage = error as any
     );
@@ -103,6 +119,12 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
     if (this.userSub) {
       this.userSub.unsubscribe();
+    }
+    if (this.userCreateSub) {
+      this.userCreateSub.unsubscribe();
+    }
+    if (this.userDeleteSub) {
+      this.userDeleteSub.unsubscribe();
     }
     if (this.teamSub) {
       this.teamSub.unsubscribe();
