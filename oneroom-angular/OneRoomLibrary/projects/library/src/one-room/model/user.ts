@@ -20,6 +20,7 @@ export class User {
   glassesType: GlassesType;
   emotionDominant: string;
   recognized: number;
+  isFirstConnected: boolean;
 
   constructor() {
     this.faces = [];

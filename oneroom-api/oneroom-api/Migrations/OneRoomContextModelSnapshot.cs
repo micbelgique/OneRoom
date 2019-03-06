@@ -152,6 +152,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("HairLength");
 
+                    b.Property<bool>("IsFirstConnected");
+
                     b.Property<double>("MoustacheLevel");
 
                     b.Property<string>("Name")
