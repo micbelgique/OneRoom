@@ -91,7 +91,6 @@ export class SettingsComponent implements OnInit {
     getGame() {
       const resGame$ = this.gameService.getGame(this.game.groupName);
       resGame$.subscribe( (game: Game) => {
-        localStorage.setItem('gameId', '' + game.gameId);
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
         this.snackBar.open('Game fetched', 'Ok', {

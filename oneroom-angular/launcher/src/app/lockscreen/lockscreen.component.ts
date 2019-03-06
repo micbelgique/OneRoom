@@ -286,6 +286,7 @@ export class LockscreenComponent implements OnInit {
         (data) => {
           sub$.unsubscribe();
           if (data === null) {
+                console.log(data);
                 // nothing detected
                 console.log('lock disabled');
                 this.lock = false;
