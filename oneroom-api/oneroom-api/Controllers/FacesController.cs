@@ -53,7 +53,7 @@ namespace oneroom_api.Controllers
                     await _context.SaveChangesAsync();
 
                     // update users dashboard and leaderboard
-                    await _hubClients.Clients.All.UpdateUsers();
+                    await _hubClients.Clients.All.UpdateUser(usr);
 
                 } catch(DbUpdateException)
                 {
