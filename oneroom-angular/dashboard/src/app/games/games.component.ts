@@ -4,6 +4,7 @@ import { GameService } from '../services/OnePoint/game.service';
 import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { GameState } from '../services/OnePoint/model/game-state.enum';
+import { Configuration } from '../services/OnePoint/model/configuration';
 
 @Component({
   selector: 'app-games',
@@ -18,6 +19,7 @@ export class GamesComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
   // game to add
   game: Game;
+  configs: Configuration[];
 
   gameStates: string[];
 
@@ -38,6 +40,12 @@ export class GamesComponent implements OnInit {
     res$.subscribe(
       (games) => {
         this.games = games;
+        // pick availables configs to choose from
+        this.configs = games.map( (g) => {
+          if (g.config.faceEndpoint && g.config.faceKey) {
+            return g.config;
+          }
+        });
       },
       (err) => {
         console.log(err);
@@ -57,43 +65,45 @@ export class GamesComponent implements OnInit {
   }*/
 
   createGame() {
+    // set correct endpoint and key
+    this.groupService.set(this.game.config.faceEndpoint, this.game.config.faceKey);
     // creating game coordinator
     const resGame$ = this.gameService.createGame(this.game);
     resGame$.subscribe( (game: Game) => {
-      this.refreshGames();
+      this.snackBar.open('Game Initialized', 'Ok', {
+        duration: 3000
+      });
       // creating group face
       const res$ = this.groupService.create(this.game.groupName, this.game.groupName + '_name');
       res$.subscribe( x => {
+        this.game = new Game();
         this.snackBar.open('Group ' + this.game.groupName + ' created', 'Ok', {
         duration: 3000
         });
       });
-      this.snackBar.open('Game Initialized', 'Ok', {
-        duration: 3000
-      });
-
+      this.refreshGames();
     });
   }
 
-  deleteGame(gameName = null) {
-    if (gameName === null) {
-      gameName = this.game.groupName;
-    }
+  deleteGame(game: Game) {
+    // set correct endpoint and key
+    this.groupService.set(game.config.faceEndpoint, game.config.faceKey);
     // deleting game
-    const resGame$ = this.gameService.deleteGame(gameName);
-    resGame$.subscribe( (game: Game) => {
-        this.game.groupName = '';
-        this.refreshGames();
+    const resGame$ = this.gameService.deleteGame(game.groupName);
+    resGame$.subscribe( (g: Game) => {
+        this.snackBar.open('Game removed', 'Ok', {
+          duration: 1000
+        });
         // deleting face game
-        const res$ = this.groupService.delete(gameName);
+        const res$ = this.groupService.delete(game.groupName);
         res$.subscribe( x => {
-        this.snackBar.open('Group ' + gameName + ' deleted', 'Ok', {
-            duration: 3000
+          console.log(x);
+          this.snackBar.open('Group ' + game.groupName + ' deleted', 'Ok', {
+            duration: 1000
           });
         });
-        this.snackBar.open('Game removed', 'Ok', {
-          duration: 3000
-        });
+        this.refreshGames();
+        this.game.groupName = '';
       });
 
   }
@@ -115,6 +125,37 @@ export class GamesComponent implements OnInit {
         console.log(err);
       }
     );
+  }
+
+  recreateGroup(game: Game) {
+    // set correct endpoint and key
+    this.groupService.set(game.config.faceEndpoint, game.config.faceKey);
+    // deleting face group
+    const res$ = this.groupService.delete(game.groupName);
+    res$.subscribe( x => {
+      this.snackBar.open('Group ' + game.groupName + ' deleted', 'Ok', {
+        duration: 1000
+      });
+      // recreating group face
+      const res2$ = this.groupService.create(game.groupName, game.groupName + '_name');
+      res2$.subscribe( () => {
+        this.snackBar.open('Group ' + game.groupName + ' recreated', 'Ok', {
+          duration: 1000
+        });
+      });
+    });
+  }
+
+  fillConfig(existingConfig: Configuration) {
+    this.game.config = new Configuration();
+    this.game.config.faceEndpoint = existingConfig.faceEndpoint;
+    this.game.config.faceKey = existingConfig.faceKey;
+    this.game.config.minimumRecognized = existingConfig.minimumRecognized;
+    this.game.config.refreshRate = existingConfig.refreshRate;
+    this.game.config.visionEndpoint = existingConfig.visionEndpoint;
+    this.game.config.visionKey = existingConfig.visionKey;
+    this.game.config.id = 0;
+    console.log(this.game.config);
   }
 
   resolveGameState(stateId: number) {

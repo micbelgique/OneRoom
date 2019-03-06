@@ -31,15 +31,19 @@ export class PersonGroupPersonService {
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient) {
-    this.endPoint = environment.faceApi.EndPoint;
-    this.subscriptionKey = environment.faceApi.SubscriptionKey;
+    this.set(environment.faceApi.EndPoint, environment.faceApi.SubscriptionKey);
+  }
+
+  set(endPoint: string, key: string) {
+    this.endPoint = endPoint;
+    this.subscriptionKey = key;
     this.headers = new HttpHeaders({
       'Access-Control-Allow-Origin': 'http://localhost:4200',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       'Access-Control-Allow-Headers': '*',
       'Ocp-Apim-Subscription-Key' : this.subscriptionKey
     });
-   }
+  }
 
   /*
   Add a face image to a person into a person group for face identification or verification.

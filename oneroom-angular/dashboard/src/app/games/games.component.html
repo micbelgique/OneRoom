@@ -13,10 +13,21 @@
               <mat-expansion-panel [expanded]=false>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                      Configuration (facultatif)
+                      Configuration
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <mat-card-content>
+                  <h3>Choisir existante: </h3>
+                  <div style="text-align: center">
+                    <mat-form-field>
+                        <mat-select i18n="@@settingsConfiguration" placeholder="Config" >
+                          <mat-option *ngFor="let config of this.configs; let i = index" [value]="i" (click)=fillConfig(config)>
+                            N'{{config.id}}
+                          </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <br>
                     <mat-form-field style="width: 100%">
                         <input matInput placeholder="Face endpoint" type='url' [(ngModel)]="game.config.faceEndpoint" value='{{game.config.faceEndpoint}}'>
                     </mat-form-field>
@@ -68,24 +79,22 @@
 
       <ng-container matColumnDef="update">
         <th mat-header-cell *matHeaderCellDef> Modifier état </th>
-        <!--<td mat-cell *matCellDef="let element">
-          <button style="width: 40%; margin:5px" mat-raised-button (click)='changeStateGame(element.groupName)' color="primary" i18n="@@settingsState">State</button>
-        </td>-->
         <td mat-cell *matCellDef="let element">
-          <mat-form-field>
-            <mat-select i18n="@@settingsState" placeholder="Etat" [(ngModel)]="element.state" >
+            <mat-form-field>
+              <mat-select i18n="@@settingsState" placeholder="Etat" [(ngModel)]="element.state" >
                 <mat-option *ngFor="let state of this.gameStates; let i = index" [value]="i" (click)=changeStateGame(element.groupName,element.state)>
               {{state}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </td>
   </ng-container>
 
       <ng-container matColumnDef="delete">
-          <th mat-header-cell *matHeaderCellDef> Supprimer </th>
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let element">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteGame(element.groupName)' color="accent" i18n="@@settingsDelete">Delete</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteGame(element)' color="accent" i18n="@@settingsDelete">Delete</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='recreateGroup(element)' color="accent" i18n="@@settingsDelete">Regenerer</button>
           </td>
       </ng-container>
 

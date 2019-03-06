@@ -21,10 +21,15 @@ export class FaceListService {
   private subscriptionKey: string;
   private headers: HttpHeaders;
 
-  constructor(private http: HttpClient,
-              private endPointGetter: EndPointGetterService) {
-    this.endPoint = endPointGetter.getFaceEndPointUrl();
-    this.subscriptionKey = endPointGetter.getFaceSubscriptionKey();
+  constructor(
+    private http: HttpClient,
+    private endPointGetter: EndPointGetterService) {
+    this.set(endPointGetter.getFaceEndPointUrl(), endPointGetter.getFaceSubscriptionKey());
+  }
+
+  set(endPoint: string, key: string) {
+    this.endPoint = endPoint;
+    this.subscriptionKey = key;
     this.headers = new HttpHeaders({
       'Access-Control-Allow-Origin': 'http://localhost:4200',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
@@ -32,7 +37,6 @@ export class FaceListService {
       'Ocp-Apim-Subscription-Key' : this.subscriptionKey
     });
   }
-
   /*
   Add a face to a specified face list, up to 1,000 faces.
   */

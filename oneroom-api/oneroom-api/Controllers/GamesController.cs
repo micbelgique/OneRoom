@@ -34,7 +34,8 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
-            return await _context.Games.ToListAsync();
+            // return config to select it
+            return await _context.Games.Include(g => g.Config).ToListAsync();
         }
 
         // GET: api/Games/groupName

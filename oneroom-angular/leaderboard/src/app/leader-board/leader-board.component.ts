@@ -71,6 +71,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
+        this.users = [];
         console.log(usersList);
         usersList.forEach( u => {
           User.generateAvatar(u);
