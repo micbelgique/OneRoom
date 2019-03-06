@@ -23,6 +23,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private userSub;
   private userNotifySub;
   private userCreateSub;
+  private userDeleteSub;
   private teamSub;
   private teamNotifySub;
   private hubServiceSub;
@@ -47,6 +48,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     });
     this.userCreateSub = this.hubService.createUser.subscribe( (result) => {
       this.createUser(result);
+    });
+    this.userDeleteSub = this.hubService.deleteUser.subscribe( (result) => {
+      this.deleteUser(result);
     });
     this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
       this.refreshTeamList();
@@ -78,6 +82,10 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   private createUser(user: User) {
     this.users.push(user);
+  }
+  private deleteUser(user: User) {
+    const u = this.users.findIndex(e => e.userId === user.userId);
+    this.users.splice(u, 1);
   }
 
   private refreshTeamList() {
@@ -114,6 +122,12 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
+    if (this.userCreateSub) {
+      this.userCreateSub.unsubscribe();
+    }
+    if (this.userDeleteSub) {
+      this.userDeleteSub.unsubscribe();
+    }
     if (this.teamSub) {
       this.teamSub.unsubscribe();
     }
@@ -128,9 +142,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
     if (!this.hubService.connected.isStopped) {
       this.hubService.stopService();
-    }
-    if (this.userCreateSub) {
-      this.userCreateSub.unsubscribe();
     }
   }
 }
