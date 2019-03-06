@@ -2,6 +2,11 @@
   "name": "register",
   "version": "0.0.0",
   "main": "main.js",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
@@ -28,6 +33,7 @@
     "@oneroomic/facecognitivelibrary": "^0.1.0",
     "@tensorflow/tfjs-node": "^0.3.1",
     "avataaars": "^1.2.1",
+    "babel-polyfill": "^6.26.0",
     "canvas": "^2.3.1",
     "core-js": "^2.6.5",
     "face-api.js": "^0.18.0",

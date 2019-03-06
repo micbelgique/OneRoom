@@ -32,7 +32,6 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     UpdateUsers: () => this._refreshUserList.emit(true),
     UpdateTeams: () => this._refreshTeamList.emit(true),
     HighlightUser: (userId) => {
-      console.log(userId);
       this._highlightUser.emit(userId);
     }
   };

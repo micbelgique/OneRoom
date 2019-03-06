@@ -5,4 +5,5 @@ export class Configuration {
   visionEndpoint: string;
   visionKey: string;
   refreshRate = 0.0;
+  minimumRecognized = 3;
 }

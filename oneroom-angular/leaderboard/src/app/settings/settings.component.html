@@ -46,3 +46,22 @@
         </mat-card-actions>
       </mat-expansion-panel>
     </mat-accordion>
+
+    <mat-accordion class="example-headers-align">
+      <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title i18n="@@settingsGroup">Reconnaissance minimale</div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card-content>
+            <div style='text-align: center'>
+              <mat-form-field style="width: 100%">
+                <input matInput placeholder="Minimum" type='number' readonly value='{{minimumRecognized}}'>
+              </mat-form-field>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+        </mat-card-actions>
+      </mat-expansion-panel>
+    </mat-accordion>

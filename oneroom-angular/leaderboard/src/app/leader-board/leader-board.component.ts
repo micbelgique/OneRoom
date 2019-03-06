@@ -13,11 +13,12 @@ import { Team } from '../services/OnePoint/model/team';
 })
 export class LeaderBoardComponent implements OnInit, OnDestroy {
 
-  users: User[] = [];
-  teams: Team[] = [];
+  users: User[];
+  teams: Team[];
   errorMessage: string;
   refreshBtn = true;
-  title = localStorage.getItem('groupName');
+  title: string;
+  minimumRecognized: number;
 
   private timeSubscription;
   private userSub;
@@ -36,6 +37,17 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private hubService: LeaderboardService) { }
 
   ngOnInit() {
+    this.users = [];
+    this.teams = [];
+    this.title = localStorage.getItem('groupName');
+
+    // minimum face
+    if (localStorage.getItem('minimumRecognized')) {
+      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
+    } else {
+      this.minimumRecognized = 3;
+    }
+
     this.detectedUserId = '';
     // attach to event from hub
     this.hubServiceSub = this.hubService.run().subscribe();
@@ -59,8 +71,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private refreshUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
-        usersList.forEach( u => { User.generateAvatar(u); });
-        this.users = usersList;
+        console.log(usersList);
+        usersList.forEach( u => {
+          User.generateAvatar(u);
+          if (u.recognized >= this.minimumRecognized) {
+            this.users.push(u);
+          }
+        });
         this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
           duration: 1000
         });

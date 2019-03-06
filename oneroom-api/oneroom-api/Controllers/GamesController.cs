@@ -75,15 +75,15 @@ namespace oneroom_api.Controllers
         }
 
         // POST api/Games/groupName/NextState
-        [HttpPost("{groupName}/NextState")]
+        [HttpPost("{groupName}/SwitchState/{newState}")]
         [ProducesResponseType(200, Type =typeof(Task<State>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<State>> NextState(string groupName)
+        public async Task<ActionResult<State>> SwitchState(string groupName, State newState)
         {
             var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
             if (game != null)
             {
-                game.State = game.State == State.REGISTER ? State.LAUNCH : game.State == State.LAUNCH ? State.END : State.END;
+                game.State = newState;
                 _context.Entry(game).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 // update state clients

@@ -15,14 +15,18 @@ export class GamesComponent implements OnInit {
   // list of launched games
   games: Game[] = [];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'state', 'delete', 'update'];
+  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
   // game to add
   game: Game;
+
+  gameStates: string[];
 
   constructor(
     private gameService: GameService,
     private groupService: PersonGroupService,
-    private snackBar: MatSnackBar) { }
+    private snackBar: MatSnackBar) {
+      this.gameStates = Object.keys(GameState).filter(key => !isNaN(Number(GameState[key])));
+    }
 
   ngOnInit() {
     this.game = new Game();
@@ -94,11 +98,11 @@ export class GamesComponent implements OnInit {
 
   }
 
-  changeStateGame(gameName = null) {
+  changeStateGame(gameName = null, newState) {
     if (gameName === null) {
       return;
     }
-    const res$ = this.gameService.nextState(gameName);
+    const res$ = this.gameService.switchState(gameName, newState);
     res$.subscribe(
       (res) => {
         this.snackBar.open('State updated', 'Ok', {

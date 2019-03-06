@@ -14,6 +14,7 @@ export class SettingsComponent implements OnInit {
   // coordinator
   endPoint: string;
   group: string;
+  minimumRecognized: number;
 
   games: Game[];
 
@@ -22,6 +23,11 @@ export class SettingsComponent implements OnInit {
     private gameService: GameService) {}
 
   ngOnInit() {
+    if (localStorage.getItem('minimumRecognized')) {
+      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
+    } else {
+      this.minimumRecognized = 3;
+    }
     // group face
     this.group = localStorage.getItem('groupName');
     // coordinator
@@ -59,6 +65,8 @@ export class SettingsComponent implements OnInit {
     resGame$.subscribe( (game: Game) => {
       localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);
+      localStorage.setItem('minimumRecognized', '' + game.config.minimumRecognized);
+      this.minimumRecognized = game.config.minimumRecognized;
       this.toast.open('Game fetched', 'Ok', {
         duration: 3000
       });

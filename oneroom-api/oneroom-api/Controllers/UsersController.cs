@@ -28,9 +28,9 @@ namespace oneroom_api.Controllers
         // GET: api/Games/1/Users
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers(int GameId)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(int gameId)
         {
-            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == gameId)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             return users;

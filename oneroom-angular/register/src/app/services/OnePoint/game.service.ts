@@ -3,6 +3,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Game } from './model/game';
 import { Observable } from 'rxjs';
 import { EndPointGetterService } from 'src/app/utilities/end-point-getter.service';
+import { GameState } from './model/game-state.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,10 @@ export class GameService {
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       'Access-Control-Allow-Headers': '*',
     });
+  }
+
+  switchState(groupName: string, newState: GameState): Observable<number> {
+    return this.http.post<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/SwitchState/' + newState, null);
   }
 
   getStateGame(groupName: string): Observable<number> {
