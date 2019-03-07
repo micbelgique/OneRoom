@@ -14,7 +14,7 @@ interface MonitoringMethods extends SignalrMethods {
 export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
   // tslint:disable-next-line:variable-name
-  private _refreshUserList = new EventEmitter<boolean>();
+  private _refreshUserList = new EventEmitter<User[]>();
   public refreshUserList  = this._refreshUserList.asObservable();
 
   // tslint:disable-next-line:variable-name
@@ -42,7 +42,7 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   protected connectionTryDelay = 10000;
 
   protected methods: MonitoringMethods = {
-    UpdateUsers: () => this._refreshUserList.emit(true),
+    UpdateUsers: (Users) => this._refreshUserList.emit(Users),
     UpdateTeams: () => this._refreshTeamList.emit(true),
     UpdateUser: (result) => this._refreshUser.emit(result),
     CreateUser: (result) => this._createUser.emit(result),

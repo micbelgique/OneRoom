@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -65,6 +66,17 @@ namespace oneroom_api
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        public static string UppercaseFirst(this string s)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+            // Return char and concat substring.
+            return s.First().ToString().ToUpper() + s.Substring(1);
         }
 
     }

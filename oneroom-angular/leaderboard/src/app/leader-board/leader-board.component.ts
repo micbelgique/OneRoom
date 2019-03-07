@@ -22,6 +22,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private timeSubscription;
   private userSub;
   private userNotifySub;
+  private usersNotifySub;
   private userCreateSub;
   private userDeleteSub;
   private teamSub;
@@ -40,11 +41,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.detectedUserId = '';
     // attach to event from hub
     this.hubServiceSub = this.hubService.run().subscribe();
-    // this.userNotifySub = this.hubService.refreshUserList.subscribe(() => {
-    //   this.refreshUserList();
-    // });
     this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
       this.updateUser(result);
+    });
+    this.usersNotifySub = this.hubService.refreshUserList.subscribe( (result) => {
+      this.updateUsers(result);
     });
     this.userCreateSub = this.hubService.createUser.subscribe( (result) => {
       this.createUser(result);
@@ -69,15 +70,21 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private getUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
-        usersList.forEach( u => { User.generateAvatar(u); });
         this.users = usersList;
       },
       error => this.errorMessage = error as any
     );
   }
+
   private updateUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
+  }
+
+  private updateUsers(users: User[]) {
+    for (const user of users) {
+      this.updateUser(user);
+    }
   }
 
   private createUser(user: User) {
@@ -92,7 +99,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamSub = this.teamService.getTeams().subscribe(
       (teamList) => {
         this.teams = teamList;
-        this.teams.forEach( t => t.users.forEach( u => { User.generateAvatar(u); }));
       },
       error => this.errorMessage = error as any
     );
@@ -118,6 +124,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
     if (this.userNotifySub) {
       this.userNotifySub.unsubscribe();
+    }
+    if (this.usersNotifySub) {
+      this.usersNotifySub.unsubscribe();
     }
     if (this.userSub) {
       this.userSub.unsubscribe();

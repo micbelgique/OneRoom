@@ -133,6 +133,36 @@ namespace oneroom_api.Controllers
             }
         }
 
+        // POST: api/Games/1/Users/Optimize
+        [HttpPost("~/api/Games/{GameId}/Users/Optimize")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        public async Task<ActionResult<IEnumerable<User>>> Optimize(int GameId)
+        {
+            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                            .Include(u => u.Faces)
+                                            .OrderByDescending(u => u.RecognizedDate)
+                                            .ToListAsync();
+            foreach( User u in users)
+            {
+                UsersUtilities.OptimizeResults(u);
+                UsersUtilities.GenerateAvatar(u);
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                // update users dashboard and leaderboard
+                await _hubClients.Clients.All.UpdateUsers(users);
+
+            }
+            catch (Exception) { }
+
+            return users;
+        }
+
         // POST: api/Games/1/Users
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
@@ -172,6 +202,7 @@ namespace oneroom_api.Controllers
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
                 UsersUtilities.OptimizeResults(user);
+                UsersUtilities.GenerateAvatar(user);
 
                 await _context.SaveChangesAsync();               
 
