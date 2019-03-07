@@ -12,6 +12,6 @@ export class EndPointGetterService {
   }
 
   getEndPointUrlWithId() {
-    return localStorage.getItem('endpoint') + '/Games/' + localStorage.getItem('gameId');
+    return localStorage.getItem('endpoint') + '/Games/' + JSON.parse(localStorage.getItem('gameData')).gameId;
   }
 }

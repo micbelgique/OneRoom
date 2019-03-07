@@ -11,6 +11,7 @@ namespace oneroom_api.Model
         [Range(0, 150)]
         public double Age { get; set; }
         public bool IsMale { get; set; }
+        // TODO CHANGE TO EmotionEnum
         public string EmotionDominant { get; set; }
         [Range(0, 1)]
         public double SmileLevel { get; set; }
@@ -21,8 +22,10 @@ namespace oneroom_api.Model
         public GlassesType GlassesType { get; set; }
         [Range(0, 1)]
         public double BaldLevel { get; set; }
+        // TODO CHANGE TO HairColorType
         public string HairColor { get; set; }
         public string HairLength { get; set; }
+        // TODO CHANGE TO SkinColorEnum
         public string SkinColor { get; set; }
 
     }
@@ -32,23 +35,6 @@ namespace oneroom_api.Model
         public static string Black = "black";
         public static string Caucasian = "caucasian";
         public static string Azian = "azian";
-    }
-
-    public class HairColorEnum
-    {
-        public static string Other = "other";
-        public static string Unknown = "unknown";
-        public static string Blond = "blond";
-        public static string Red = "red";
-        public static string White = "white";
-    }
-
-    public class GlassesTypeEnum
-    {
-        public static int NoGlasses = 0;
-        public static int ReadingGlasses = 1;
-        public static int Sunglasses = 2;
-        public static int SwimmingGoggles = 3;
     }
 
     public class EmotionEnum

@@ -94,19 +94,19 @@ namespace oneroom_api.Controllers
                     
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
-
                 teams.Add(team);
-                try
-                {
-                    team.Users.AddRange(users.GetRange(0, nbUserPerTeam));
-                    users.RemoveRange(0, nbUserPerTeam);
-                } catch (ArgumentException)
-                {
-                    team.Users.AddRange(users);
-                }
+
                 _context.Teams.Add(team);
                 _context.Entry(team).Property("GameId").CurrentValue = GameId;
 
+            }
+
+            int nbTeams = teams.Count();
+            int j = 0;
+            foreach( User u in users)
+            {
+                teams[j++].Users.Add(u);
+                if (j == nbTeams) j = 0;
             }
 
             await _context.SaveChangesAsync();

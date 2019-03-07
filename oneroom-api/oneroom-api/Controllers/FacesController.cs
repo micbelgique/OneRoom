@@ -48,11 +48,12 @@ namespace oneroom_api.Controllers
                 try
                 {
                     UsersUtilities.OptimizeResults(usr);
+                    UsersUtilities.GenerateAvatar(usr);
 
                     await _context.SaveChangesAsync();
 
                     // update users dashboard and leaderboard
-                    await _hubClients.Clients.All.UpdateUsers();
+                    await _hubClients.Clients.All.UpdateUser(usr);
 
                 } catch(DbUpdateException)
                 {

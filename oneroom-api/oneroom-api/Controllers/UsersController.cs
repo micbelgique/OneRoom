@@ -83,7 +83,7 @@ namespace oneroom_api.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUsers();
+                await _hubClients.Clients.All.UpdateUser(user);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -98,6 +98,69 @@ namespace oneroom_api.Controllers
             }
 
             return NoContent();
+        }
+        [Route("updateNameUser")]
+        [HttpPost]
+        [ProducesResponseType(200,Type=typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<User>> UpdateNameUser(User user)
+        {
+            try
+            {
+                if (user != null)
+                {
+                    var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
+                    if (u != null)
+                    {
+                        if(!u.IsFirstConnected)
+                        {
+                            u.Name = user.Name;
+                            u.IsFirstConnected = true;
+                            _context.Entry(u).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
+                        }
+                        return u;
+                    }
+                    else
+                        throw new Exception("user not found");
+                }
+                else
+                    throw new Exception("the parameter user not found");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        // POST: api/Games/1/Users/Optimize
+        [HttpPost("~/api/Games/{GameId}/Users/Optimize")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        public async Task<ActionResult<IEnumerable<User>>> Optimize(int GameId)
+        {
+            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                            .Include(u => u.Faces)
+                                            .OrderByDescending(u => u.RecognizedDate)
+                                            .ToListAsync();
+            foreach( User u in users)
+            {
+                UsersUtilities.OptimizeResults(u);
+                UsersUtilities.GenerateAvatar(u);
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                // update users dashboard and leaderboard
+                await _hubClients.Clients.All.UpdateUsers(users);
+
+            }
+            catch (Exception) { }
+
+            return users;
         }
 
         // POST: api/Games/1/Users
@@ -139,11 +202,12 @@ namespace oneroom_api.Controllers
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
 
                 UsersUtilities.OptimizeResults(user);
+                UsersUtilities.GenerateAvatar(user);
 
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUsers();
+                await _hubClients.Clients.All.CreateUser(user);
 
                 // warn dashboard user is in front of the camera
                 await _hubClients.Clients.All.HighlightUser(user.UserId);
@@ -172,7 +236,7 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateUsers();
+            await _hubClients.Clients.All.DeleteUser(user);
 
             return user;
         }

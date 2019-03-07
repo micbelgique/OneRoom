@@ -23,20 +23,22 @@ import {
   MatSidenavModule,
   MatProgressBarModule,
   MatSnackBarModule,
-  MatDialogModule
+  MatDialogModule,
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { NavComponent } from './nav/nav.component';
 import { LockscreenComponent } from './lockscreen/lockscreen.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
     LockscreenComponent,
-    SettingsComponent
+    SettingsComponent,
+    ModalChangeNameComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +71,9 @@ import { SettingsComponent } from './settings/settings.component';
     MatSnackBarModule,
     MatDialogModule,
     HttpClientModule,
+  ],
+  entryComponents: [
+    ModalChangeNameComponent
   ],
   providers: [
   ],

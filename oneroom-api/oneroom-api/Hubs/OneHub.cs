@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using oneroom_api.Model;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace oneroom_api.Hubs
@@ -10,10 +11,14 @@ namespace oneroom_api.Hubs
         // User is in front of the cameras
         Task HighlightUser(Guid userId);
         // When users added or deleted
-        Task UpdateUsers();
+        Task UpdateUsers(List<User> users);
+        //
+        Task CreateUser(User u);
         //
         Task UpdateUser(User u);
         // 
+        Task DeleteUser(User u);
+        //
         Task UpdateTeams();
         // All clients receive automatic configuration when changed
         Task UpdateConfigurations();
