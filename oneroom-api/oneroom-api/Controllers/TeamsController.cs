@@ -62,8 +62,17 @@ namespace oneroom_api.Controllers
                                             .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
+            var game = await _context.Games
+                .Include(g => g.Config)
+                .Where(g => g.GameId == GameId)
+                .SingleOrDefaultAsync();
+
             List<User> users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                                                   .Where(u => u.Recognized >= game.Config.MinimumRecognized)
                                                    .ToListAsync();
+
+            if (users.Count() < numOfTeams) return BadRequest("There isn't enough players to create "+ numOfTeams + " teams");
+
             List<Team> teams = new List<Team>();
             users.Shuffle();
             int nbUserPerTeam = (int)Math.Ceiling((double)users.Count() / numOfTeams);

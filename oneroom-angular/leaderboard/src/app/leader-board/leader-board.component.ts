@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
-import { MatSnackBar } from '@angular/material';
 import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 import { TeamService } from '../services/OnePoint/team.service';
 import { Team } from '../services/OnePoint/model/team';
@@ -85,13 +84,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
         this.users = [];
         console.log(usersList);
         usersList.forEach( u => {
-          User.generateAvatar(u);
           if (u.recognized >= this.minimumRecognized) {
             this.users.push(u);
           }
-        });
-        this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
-          duration: 1000
         });
       },
       error => this.errorMessage = error as any
