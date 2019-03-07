@@ -22,6 +22,7 @@ export class NavComponent implements OnInit {
       this.route.navigate(['/lock']);
     } else {
       this.user = JSON.parse(localStorage.getItem('user'));
+      console.log(this.user);
       if (!this.user.isFirstConnected) {
         this.openModal();
       }
@@ -37,7 +38,10 @@ export class NavComponent implements OnInit {
     });
     mod.afterClosed().subscribe((result) => {
       this.user.name = result;
-      this.userService.updateNameUser(this.user);
+      this.userService.updateNameUser(this.user).subscribe((userRes) => {
+        this.user = userRes;
+      }
+      );
       console.log(this.user);
     });
   }

@@ -264,7 +264,6 @@ export class LockscreenComponent implements OnInit {
     return;
   }
   // TODO :  vision api calls enabled ?
-  let sub$;
   try {
     const stream = this.makeblob(dataUrl);
     // set du groupe
@@ -281,39 +280,27 @@ export class LockscreenComponent implements OnInit {
     }, 2500);
     // traitement face API
     // return an observable;
-    const res$ = this.faceProcess.byImg(stream.blob, group);
-    sub$ = res$.subscribe(
-        (data) => {
-          sub$.unsubscribe();
-          if (data === null) {
-                console.log(data);
-                // nothing detected
-                console.log('lock disabled');
-                this.lock = false;
-                return;
-          } else if (data.persons.length > 0) {
-            this.userService.getUser(data.persons[0].person.personId).subscribe(
-              (result) => {
-                console.log(result);
-                this.snackBar.open('Hello ' + result.name, 'Ok', {duration: 5000});
-                localStorage.setItem('user', JSON.stringify(result));
-                this.route.navigate(['/nav']);
-              });
-          }
-        },
-        () => {
-            sub$.unsubscribe();
-            console.log('Error 429');
-            // unlock capture
-            this.lock = false;
-        }
-      );
-    } catch (e) {
-      console.log('Error : ' + e.message);
-      console.log(e);
-      // unlock capture
-      this.lock = false;
-    }
+    this.faceProcess.detectOnly(stream.blob, group).subscribe((result) => {
+      if (result === null) {
+        console.log(result);
+        this.lock = false;
+        return;
+      } else {
+        this.userService.getUser(result).subscribe(
+          (result1) => {
+            console.log(result1);
+            this.snackBar.open('Hello ' + result1.name, 'Ok', {duration: 5000});
+            localStorage.setItem('user', JSON.stringify(result1));
+            this.route.navigate(['/nav']);
+          });
+      }
+    });
+  } catch (e) {
+    console.log('Error : ' + e.message);
+    console.log(e);
+    // unlock capture
+    this.lock = false;
+  }
 }
 
 

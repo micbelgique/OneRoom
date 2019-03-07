@@ -112,9 +112,10 @@ namespace oneroom_api.Controllers
                     var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
                     if (u != null)
                     {
-                        if(u.IsFirstConnected)
+                        if(!u.IsFirstConnected)
                         {
                             u.Name = user.Name;
+                            u.IsFirstConnected = true;
                             _context.Entry(u).State = EntityState.Modified;
                             await _context.SaveChangesAsync();
                         }

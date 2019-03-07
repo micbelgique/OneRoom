@@ -399,8 +399,8 @@ imageCapture(canvas) {
                     emotion = face.faceAttributes.emotion.fear;
                     emotionType = 'fear';
                   }
-                  if (emotion < face.faceAttributes.emotion.happinness) {
-                    emotion = face.faceAttributes.emotion.happinness;
+                  if (emotion < face.faceAttributes.emotion.happiness) {
+                    emotion = face.faceAttributes.emotion.happiness;
                     emotionType = 'happiness';
                   }
                   if (emotion < face.faceAttributes.emotion.neutral) {
