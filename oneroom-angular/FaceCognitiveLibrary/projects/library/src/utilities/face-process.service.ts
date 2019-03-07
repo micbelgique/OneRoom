@@ -23,6 +23,8 @@ export class FaceProcessService {
 
   result$: Subject<PersonGroup> = new Subject<PersonGroup>();
   private result: PersonGroup = new PersonGroup();
+  resForDetect$: Subject<string> = new Subject<string>();
+  private resultForDetect: string;
 
   constructor(
     private faceService: FaceService,
@@ -56,6 +58,38 @@ export class FaceProcessService {
     });
 
     return this.result$;
+  }
+  detectOnly(stream: Blob, group: Group): Subject<string> {
+    const detect$ = this.faceService.detect(stream);
+    detect$.subscribe(
+      (faces) => {
+        // data
+        console.log('face detected : ' + faces.length);
+        if (faces.length === 0) {
+          this.result$.next(null);
+        }
+        this.identifyOnly(faces[0], group);
+      },
+      () => {
+        // error
+        console.log('ERROR : Detect faces');
+        this.result$.next(null);
+      });
+    return this.resForDetect$;
+  }
+  private identifyOnly(face: Face, group: Group) {
+    console.log(face);
+    const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
+    identify$.subscribe(
+    (faceCandidates) => {
+      console.log('identified candidates : ' + faceCandidates.length);
+      console.log(faceCandidates);
+      this.resultForDetect = faceCandidates[0].candidates[0].personId;
+      this.getString();
+    });
+  }
+  private getString() {
+    this.resForDetect$.next(this.resultForDetect);
   }
 
   private detect(stream: Blob, group: Group) {

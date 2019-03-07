@@ -37,6 +37,8 @@ namespace oneroom_api.Model
 
         public int Recognized { get; set; }
 
+        public bool IsFirstConnected { get; set; }
+
     }
 
     public enum GenderEnum

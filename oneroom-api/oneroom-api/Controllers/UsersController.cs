@@ -99,6 +99,39 @@ namespace oneroom_api.Controllers
 
             return NoContent();
         }
+        [Route("updateNameUser")]
+        [HttpPost]
+        [ProducesResponseType(200,Type=typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<User>> UpdateNameUser(User user)
+        {
+            try
+            {
+                if (user != null)
+                {
+                    var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
+                    if (u != null)
+                    {
+                        if(!u.IsFirstConnected)
+                        {
+                            u.Name = user.Name;
+                            u.IsFirstConnected = true;
+                            _context.Entry(u).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
+                        }
+                        return u;
+                    }
+                    else
+                        throw new Exception("user not found");
+                }
+                else
+                    throw new Exception("the parameter user not found");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
         // POST: api/Games/1/Users
         [HttpPost]
