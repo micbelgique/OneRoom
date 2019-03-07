@@ -548,7 +548,7 @@ namespace oneroom_api.Utilities
                         urlAvatar.Append("&facialHairColor=SilverGray");
                         break;
                     default:
-                        urlAvatar.Append("&facialHairColor="+ u.HairColor);
+                        urlAvatar.Append("&facialHairColor="+ u.HairColor.UppercaseFirst());
                         break;
                 }
             }
