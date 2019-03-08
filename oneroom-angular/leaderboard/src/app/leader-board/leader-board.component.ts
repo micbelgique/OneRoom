@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserService } from '../services/OnePoint/user.service';
-import { User } from '../services/OnePoint/model/user';
+// import { UserService } from '../services/OnePoint/user.service';
+// import { User } from '../services/OnePoint/model/user';
 import { MatSnackBar } from '@angular/material';
-import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-import { TeamService } from '../services/OnePoint/team.service';
-import { Team } from '../services/OnePoint/model/team';
+import {User, Team, UserService, TeamService, LeaderboardService} from '@oneroomic/oneroomlibrary';
+// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
+// import { TeamService } from '../services/OnePoint/team.service';
+// import { Team } from '../services/OnePoint/model/team';
 
 @Component({
   selector: 'app-leader-board',
@@ -36,7 +37,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private teamService: TeamService,
-    private hubService: LeaderboardService) { }
+    private hubService: LeaderboardService,
+    private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.users = [];
@@ -85,7 +87,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
         this.users = [];
         console.log(usersList);
         usersList.forEach( u => {
-          User.generateAvatar(u);
+          // User.generateAvatar(u);
           if (u.recognized >= this.minimumRecognized) {
             this.users.push(u);
           }

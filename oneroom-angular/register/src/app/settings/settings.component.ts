@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { GameService } from '../services/OnePoint/game.service';
-import { Game } from '../services/OnePoint/model/game';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { Game } from '../services/OnePoint/model/game';
+import { Game, GameService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-settings',

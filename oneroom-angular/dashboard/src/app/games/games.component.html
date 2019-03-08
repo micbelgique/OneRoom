@@ -22,7 +22,7 @@
                     <mat-form-field>
                         <mat-select i18n="@@settingsConfiguration" placeholder="Config" >
                           <mat-option *ngFor="let config of this.configs; let i = index" [value]="i" (click)=fillConfig(config)>
-                            N'{{config.id}}
+                            N' {{config.id}}
                           </mat-option>
                       </mat-select>
                     </mat-form-field>

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { PersonGroupService } from '../services/cognitive/person-group.service';
+// import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
-import { GameService } from '../services/OnePoint/game.service';
-import { Game } from '../services/OnePoint/model/game';
+import { GameService, Game } from '@oneroomic/oneroomlibrary';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { Game } from '../services/OnePoint/model/game';
 
 @Component({
   selector: 'app-settings',
@@ -16,7 +17,11 @@ export class SettingsComponent implements OnInit {
   group: string;
   minimumRecognized: number;
 
+  // available games
   games: Game[];
+
+  // current game
+  private game: Game;
 
   constructor(
     private toast: MatSnackBar,
@@ -28,10 +33,17 @@ export class SettingsComponent implements OnInit {
     } else {
       this.minimumRecognized = 3;
     }
+
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+    }
+
+    if (localStorage.getItem('endpoint')) {
+      this.endPoint = localStorage.getItem('endpoint');
+    }
     // group face
-    this.group = localStorage.getItem('groupName');
-    // coordinator
-    this.endPoint = localStorage.getItem('endpoint');
+    // this.group = localStorage.getItem('groupName');
+
     // load available games from coordinator
     this.games = [];
     this.loadGames();
@@ -63,7 +75,8 @@ export class SettingsComponent implements OnInit {
   getGame() {
     const resGame$ = this.gameService.getGame(this.group);
     resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
+      localStorage.setItem('gameData', JSON.stringify(game));
+      // localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);
       localStorage.setItem('minimumRecognized', '' + game.config.minimumRecognized);
       this.minimumRecognized = game.config.minimumRecognized;

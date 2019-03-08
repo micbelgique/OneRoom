@@ -23,14 +23,11 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
-import { FaceService } from './services/cognitive/face.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LeaderBoardComponent } from './leader-board/leader-board.component';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
-import { PersonGroupService } from './services/cognitive/person-group.service';
 import { LOCALE_ID } from '@angular/core';
 // us locale is default
 // FR locale
@@ -75,9 +72,6 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatSidenavModule
   ],
   providers: [
-    FaceService,
-    PersonGroupPersonService,
-    PersonGroupService,
     { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]

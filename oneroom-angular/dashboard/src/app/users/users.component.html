@@ -2,7 +2,7 @@
   <div style='text-align: center'>
     <mat-form-field>
       <mat-select placeholder="Game" >
-        <mat-option *ngFor="let game of games" [value]="game.gameId" (click)="loadUsers(game.gameId)">
+        <mat-option *ngFor="let game of games" [value]="game.gameId" (click)="loadUsers(game)">
           {{game.groupName}}
         </mat-option>
       </mat-select>

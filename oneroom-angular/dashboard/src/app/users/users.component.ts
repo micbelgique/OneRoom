@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../services/OnePoint/model/user';
-import { UserService } from '../services/OnePoint/user.service';
-import { GameService } from '../services/OnePoint/game.service';
-import { Game } from '../services/OnePoint/model/game';
+// import { User } from '../services/OnePoint/model/user';
+// import { UserService } from '../services/OnePoint/user.service';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { Game } from '../services/OnePoint/model/game';
 import { MatSnackBar } from '@angular/material';
+import { User } from '@oneroomic/oneroomlibrary/one-room/model/user';
+import { Game } from '@oneroomic/oneroomlibrary/one-room/model/game';
+import { UserService, GameService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-users',
@@ -43,9 +46,9 @@ export class UsersComponent implements OnInit {
       );
   }
 
-  loadUsers(idGame: number = null) {
-    if (idGame !== null) {
-      localStorage.setItem('gameId', '' + idGame);
+  loadUsers(game: Game = null) {
+    if (game !== null) {
+      localStorage.setItem('gameData', JSON.stringify(game));
     }
     this.userService.getUsers().subscribe(
         (users) => {

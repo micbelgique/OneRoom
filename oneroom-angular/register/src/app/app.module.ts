@@ -23,14 +23,11 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
-import { FaceService } from './services/cognitive/face.service';
+import { FaceService, PersonGroupService, FaceProcessService, PersonGroupPersonService } from '@oneroomic/facecognitivelibrary';
 import { HttpClientModule } from '@angular/common/http';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PersonGroupPersonService } from './services/cognitive/person-group-person.service';
-import { PersonGroupService } from './services/cognitive/person-group.service';
-import { FaceProcessService } from './utilities/face-process.service';
 import { FacecamComponent } from './facecam/facecam.component';
 import { LOCALE_ID } from '@angular/core';
 // us locale is default

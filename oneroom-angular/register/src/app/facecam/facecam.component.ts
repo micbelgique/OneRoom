@@ -1,21 +1,25 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 
 import * as faceapi from 'face-api.js';
-import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
-import { Face } from '../services/OnePoint/model/face';
-import { User } from '../services/OnePoint/model/user';
+// import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
+// import { Face } from '../services/OnePoint/model/face';
+// import { User } from '../services/OnePoint/model/user';
 import { Group } from '@oneroomic/facecognitivelibrary';
 import { FaceProcessService } from '@oneroomic/facecognitivelibrary';
-import { UserService } from '../services/OnePoint/user.service';
-import { FaceService } from '../services/OnePoint/face.service';
+// import { UserService } from '../services/OnePoint/user.service';
+// import { FaceService } from '../services/OnePoint/face.service';
 import { VisioncomputerService } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { HairlengthService } from '@oneroomic/facecognitivelibrary';
-import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-import { GameService } from '../services/OnePoint/game.service';
-import { Game } from '../services/OnePoint/model/game';
-import { GameState } from '../services/OnePoint/model/game-state.enum';
+// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { Game } from '../services/OnePoint/model/game';
+// import { GameState } from '../services/OnePoint/model/game-state.enum';
 import { Subject } from 'rxjs';
+// tslint:disable-next-line:max-line-length
+import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
+import { PredictionHairLength } from '../utilities/prediction-hairlength';
+// tslint:disable-next-line:max-line-length
 
 // patch electron
 faceapi.env.monkeyPatch({
@@ -89,7 +93,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private visonComputerService: VisioncomputerService,
     private hairLengthService: HairlengthService,
     private hubService: LeaderboardService,
-    private gameService: GameService) { }
+    private gameService: GameService) {}
 
   ngOnInit() {
     // init lock
@@ -129,7 +133,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
-          () => {
+          async () => {
             // init stream
             this.opencam();
             this.initStreamDetection();
@@ -308,7 +312,7 @@ private crop(canvas, x1, y1, width, height) {
   // get your canvas and a context for it
   const ctx = canvas.getContext('2d');
   // get the image data you want to keep.
-  const imageData = ctx.getImageData(x1, y1 - (y1 / 1.5), width, height + (y1 / 1.5));
+  const imageData = ctx.getImageData(x1, y1, width, height);
   // create a new cavnas same as clipped size and a context
   const newCan = document.createElement('canvas');
   // define sizes
@@ -321,6 +325,11 @@ private crop(canvas, x1, y1, width, height) {
 }
 
 imageCapture(canvas) {
+  // local model
+  // const prediction = new PredictionHairLength();
+  // console.log(canvas.toDataURL('image/png'));
+  // const s = this.makeblob(canvas.toDataURL('image/png'));
+  // prediction.predict(s.blob);
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls FACE disabled');
@@ -432,10 +441,6 @@ imageCapture(canvas) {
                           f.hairLength = hl;
                           console.log(f.hairLength);
                           u.faces.push(f);
-                          users.push(u);
-                          User.generateAvatar(u);
-                          // preview
-                          this.lastUsers = users;
                           // save user
                           this.saveUsers(u);
                           this.lock = false;
@@ -519,13 +524,13 @@ private saveUsers(user: User) {
             duration: 2000
           });
           // update avatar
-          const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
+          // const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
           // tslint:disable-next-line:no-shadowed-variable
-          avatar$.subscribe(
+          /*avatar$.subscribe(
             (response) => console.log('avatar updated'),
             // tslint:disable-next-line:no-shadowed-variable
             (error) => console.log('avatar not updated')
-          );
+          );*/
           // adding face to already existant user
           // for (const face of user.faces) {
           if (user.faces[user.faces.length - 1]) {
@@ -593,6 +598,9 @@ private saveUsers(user: User) {
           } else {
             this.stateMessage = '';
             this.stateContainer = false;
+            this.detectId = null;
+            this.stream = null;
+            this.initStreamDetection();
           }
         },
         (err) => {

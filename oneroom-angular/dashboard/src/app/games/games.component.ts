@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Game } from '../services/OnePoint/model/game';
-import { GameService } from '../services/OnePoint/game.service';
-import { PersonGroupService } from '../services/cognitive/person-group.service';
+// import { Game } from '../services/OnePoint/model/game';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
-import { GameState } from '../services/OnePoint/model/game-state.enum';
-import { Configuration } from '../services/OnePoint/model/configuration';
+import { Game, Configuration, GameService, GameState } from '@oneroomic/oneroomlibrary';
+import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
+// import { GameState } from '../services/OnePoint/model/game-state.enum';
+// import { Configuration } from '../services/OnePoint/model/configuration';
 
 @Component({
   selector: 'app-games',
@@ -14,7 +16,7 @@ import { Configuration } from '../services/OnePoint/model/configuration';
 export class GamesComponent implements OnInit {
 
   // list of launched games
-  games: Game[] = [];
+  games: Game[];
   // column order
   displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
   // game to add
@@ -31,6 +33,8 @@ export class GamesComponent implements OnInit {
     }
 
   ngOnInit() {
+    this.games = [];
+    this.configs = [];
     this.game = new Game();
     this.refreshGames();
   }
@@ -41,9 +45,11 @@ export class GamesComponent implements OnInit {
       (games) => {
         this.games = games;
         // pick availables configs to choose from
-        this.configs = games.map( (g) => {
+        games.forEach( (g) => {
           if (g.config.faceEndpoint && g.config.faceKey) {
-            return g.config;
+            if (this.configs.map(c => c.id).indexOf(g.config.id) === -1) {
+              this.configs.push(g.config);
+            }
           }
         });
       },
