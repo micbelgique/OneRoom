@@ -24,6 +24,7 @@ import {
   MatProgressBarModule,
   MatSnackBarModule,
   MatDialogModule,
+  MatSelectModule
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -71,6 +72,7 @@ import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.
     MatSnackBarModule,
     MatDialogModule,
     HttpClientModule,
+    MatSelectModule
   ],
   entryComponents: [
     ModalChangeNameComponent

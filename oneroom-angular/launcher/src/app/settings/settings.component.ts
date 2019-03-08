@@ -23,6 +23,7 @@ export class SettingsComponent implements OnInit {
     refreshRate: number;
     // game
     game: Game = new Game();
+    games: Game[];
     // Face
     subscriptionKey: string;
     endPointCognitive: string;
@@ -63,11 +64,26 @@ export class SettingsComponent implements OnInit {
       this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
     }
 
+    loadGames() {
+      this.gameService.getGames().subscribe(
+          (games) => {
+            this.snackBar.open(games.length + ' games found', 'Ok', {
+              duration: 1000
+            });
+            this.games = games;
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+    }
+
     saveCoordinatorSettings(): void {
       localStorage.setItem('endpoint', this.endPoint);
       this.snackBar.open('Settings updated', 'Ok', {
         duration: 2000
       });
+      this.loadGames();
     }
 
     saveFaceSettings(): void {
