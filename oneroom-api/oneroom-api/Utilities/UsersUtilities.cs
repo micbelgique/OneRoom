@@ -22,7 +22,7 @@ namespace oneroom_api.Utilities
                 // pick greater occurence gender
                 var male = faces.Count(f => f.IsMale);
                 var female = faces.Count() - male;
-                u.Gender = male > female ? GenderEnum.MALE : GenderEnum.FEMALE;
+                u.Gender = male > female ? Gender.Male : Gender.Female;
 
                 // average beard / moustache / bald level
                 u.MoustacheLevel = Math.Round(faces.Average(f => f.MoustacheLevel));

@@ -85,13 +85,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
         this.users = [];
         console.log(usersList);
         usersList.forEach( u => {
-          User.generateAvatar(u);
           if (u.recognized >= this.minimumRecognized) {
             this.users.push(u);
           }
-        });
-        this.snackBar.open(this.users.length + ' players retrieved', 'Ok', {
-          duration: 1000
         });
       },
       error => this.errorMessage = error as any
@@ -110,7 +106,10 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private createUser(user: User) {
-    this.users.push(user);
+    if (user.recognized >= this.minimumRecognized) {
+      this.users.push(user);
+    }
+    console.log(user.recognized);
   }
   private deleteUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
