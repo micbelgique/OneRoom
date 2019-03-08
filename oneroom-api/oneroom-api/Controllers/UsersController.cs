@@ -119,6 +119,7 @@ namespace oneroom_api.Controllers
                             u.IsFirstConnected = true;
                             _context.Entry(u).State = EntityState.Modified;
                             await _context.SaveChangesAsync();
+                            await _hubClients.Clients.All.UpdateUser(u);
                         }
                         return u;
                     }
