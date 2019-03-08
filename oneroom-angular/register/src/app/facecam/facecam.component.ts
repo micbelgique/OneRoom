@@ -18,7 +18,7 @@ import { HairlengthService } from '@oneroomic/facecognitivelibrary';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
-import { PredictionHairLength } from '../utilities/prediction-hairlength';
+// import { PredictionHairLength } from '../utilities/prediction-hairlength';
 // tslint:disable-next-line:max-line-length
 
 // patch electron
