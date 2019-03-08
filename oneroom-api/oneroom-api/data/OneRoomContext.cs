@@ -9,6 +9,7 @@ namespace oneroom_api.Model
         public DbSet<User> Users { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<Challenge> Challenges { get; set; }
 
         public OneRoomContext(DbContextOptions<OneRoomContext> options)
             : base(options)
