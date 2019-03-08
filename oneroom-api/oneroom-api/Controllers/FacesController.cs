@@ -34,7 +34,6 @@ namespace oneroom_api.Controllers
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .SingleOrDefaultAsync();
-
             if (usr != null)
                 {
 
@@ -44,7 +43,6 @@ namespace oneroom_api.Controllers
                     }
                     usr.Faces.Add(face);
                     _context.Entry(usr).State = EntityState.Modified;
-
                 try
                 {
                     UsersUtilities.OptimizeResults(usr);
@@ -64,7 +62,6 @@ namespace oneroom_api.Controllers
                 }
                 else
                     return NotFound("user not found");
-            
         }
 
         // DELETE: api/Facesv2/5 
