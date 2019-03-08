@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../services/OnePoint/user.service';
 import { User } from '../services/OnePoint/model/user';
-import { MatSnackBar } from '@angular/material';
 import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 import { TeamService } from '../services/OnePoint/team.service';
 import { Team } from '../services/OnePoint/model/team';

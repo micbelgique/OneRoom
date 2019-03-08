@@ -99,6 +99,7 @@ namespace oneroom_api.Controllers
 
             return NoContent();
         }
+
         [Route("updateNameUser")]
         [HttpPost]
         [ProducesResponseType(200,Type=typeof(Task<ActionResult<User>>))]
