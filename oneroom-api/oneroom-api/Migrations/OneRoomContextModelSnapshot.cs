@@ -27,6 +27,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<string>("Titre");
+
                     b.Property<string>("URLDocumentation");
 
                     b.HasKey("ChallengeId");
