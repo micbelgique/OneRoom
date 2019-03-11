@@ -9,7 +9,7 @@ namespace oneroom_api.Utilities
             return new ChallengeDTO()
             {
                 ChallengeId = challenge.ChallengeId,
-                Titre = challenge.Titre,
+                Title = challenge.Title,
                 Description = challenge.Description,
                 URLDocumentation = challenge.URLDocumentation
             };

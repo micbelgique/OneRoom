@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Challenge } from '@oneroomic/oneroomlibrary';
+import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-challenge',
@@ -15,10 +16,25 @@ export class ChallengeComponent implements OnInit {
   // column order
   displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
 
-
-  constructor() { }
+  constructor(private challengeService: ChallengeService,
+              private snackBar: MatSnackBar) { }
 
   ngOnInit() {
+    this.challenges = [];
+    this.challenge = new Challenge();
+    this.refreshChallenges();
+  }
+
+  refreshChallenges() {
+    const res$ = this.challengeService.getChallenges();
+    res$.subscribe(
+      (challenges) => {
+        this.challenges = challenges;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
 }

@@ -1,6 +1,6 @@
 export class Challenge {
   challengeId: number;
-  titre: string;
+  title: string;
   description: string;
   uRLDocumentation: string;
 }
