@@ -148,6 +148,7 @@ namespace oneroom_api.Controllers
                                             .ToListAsync();
             foreach( User u in users)
             {
+                u.Name = u.Name.Replace("Player", "Person");
                 UsersUtilities.OptimizeResults(u);
                 UsersUtilities.GenerateAvatar(u);
             }
@@ -198,7 +199,7 @@ namespace oneroom_api.Controllers
                 var count = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
                                                 .CountAsync();
 
-                user.Name = "Player " + (++count);
+                user.Name = "Person " + (++count);
                 _context.Users.Add(user);
                 // Link user to game
                 _context.Entry(user).Property("GameId").CurrentValue = GameId;
