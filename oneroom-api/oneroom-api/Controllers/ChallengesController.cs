@@ -151,9 +151,9 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Games/5/Challenges
         [HttpDelete("~/api/Games/{GameId}/Challenges")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Challenge>>))]
+        [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Challenge>> DeleteChallengeInGame(int GameId, [FromBody] int[] ChallengesId)
+        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] int[] ChallengesId)
         {
             Game game = await _context.Games.Include(c => c.GameChallenges)
                                 .Where(g => g.GameId == GameId)
