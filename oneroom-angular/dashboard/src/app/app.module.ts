@@ -25,7 +25,7 @@ import {
   MatSelectModule
 } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LOCALE_ID } from '@angular/core';
 // us locale is default
@@ -64,6 +64,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatInputModule,
     MatProgressBarModule,
     FormsModule,
+    ReactiveFormsModule,
     MatSnackBarModule,
     MatDialogModule,
     MatSelectModule,

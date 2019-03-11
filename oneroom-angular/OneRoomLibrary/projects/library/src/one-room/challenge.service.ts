@@ -29,7 +29,7 @@ export class ChallengeService {
   }
 
   deleteChallenge(challengeId: number): Observable<Challenge> {
-    return this.http.delete<Challenge>(this.EPGetter.getEndPointUrl() + '/Challenges' + challengeId);
+    return this.http.delete<Challenge>(this.EPGetter.getEndPointUrl() + '/Challenges/' + challengeId);
   }
 
   // Challenges in Game

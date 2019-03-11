@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { MatSnackBar } from '@angular/material';
 
@@ -26,9 +26,7 @@ export class ChallengeComponent implements OnInit {
   }
 
   refreshChallenges() {
-    const res$ = this.challengeService.getChallenges();
-    res$.subscribe(
-      (challenges) => {
+    this.challengeService.getChallenges().subscribe((challenges) => {
         this.challenges = challenges;
       },
       (err) => {
@@ -37,4 +35,22 @@ export class ChallengeComponent implements OnInit {
     );
   }
 
+  createChallenge() {
+    this.challengeService.createChallenge(this.challenge).subscribe( () => {
+      this.snackBar.open('Challenge created', 'Ok', {
+        duration: 3000
+      });
+      this.challenge = new Challenge();
+      this.refreshChallenges();
+    });
+  }
+
+  public deleteChallenge(challenge: Challenge) {
+    this.challengeService.deleteChallenge(challenge.challengeId).subscribe( (c: Challenge) => {
+        this.snackBar.open('Game removed', 'Ok', {
+          duration: 1000
+        });
+        this.refreshChallenges();
+      });
+  }
 }

@@ -88,7 +88,24 @@
             </mat-select>
           </mat-form-field>
         </td>
-  </ng-container>
+      </ng-container>
+
+      <ng-container matColumnDef="challenge">
+        <th mat-header-cell *matHeaderCellDef> Challenges </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-form-field>
+            <mat-select placeholder="Challenges" [formControl]="challengesSelected" (openedChange)="addChallenges($event, element)" multiple>
+              <mat-select-trigger>
+                {{challengesSelected.value ? challengesSelected.value[0]?.title : ''}}
+                <span *ngIf="challengesSelected.value?.length > 1" class="additional-selection">
+                  (+{{challengesSelected.value.length - 1}} {{challengesSelected.value?.length === 2 ? 'other' : 'others'}})
+                </span>
+              </mat-select-trigger>
+              <mat-option *ngFor="let challenge of challenges" [value]="challenge">{{challenge.title}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
 
       <ng-container matColumnDef="delete">
           <th mat-header-cell *matHeaderCellDef> Actions </th>
