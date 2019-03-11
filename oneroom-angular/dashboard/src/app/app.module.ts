@@ -37,6 +37,7 @@ import { TeamsComponent } from './teams/teams.component';
 import { SettingsComponent } from './settings/settings.component';
 import { GamesComponent } from './games/games.component';
 import { UsersComponent } from './users/users.component';
+import { ChallengeComponent } from './challenge/challenge.component';
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
@@ -45,7 +46,8 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     TeamsComponent,
     SettingsComponent,
     GamesComponent,
-    UsersComponent
+    UsersComponent,
+    ChallengeComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +71,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
       { path: 'settings', component: SettingsComponent },
       { path: 'teams', component: TeamsComponent },
       { path: 'games', component: GamesComponent },
+      { path: 'challenges', component: ChallengeComponent },
       { path: 'users', component: UsersComponent },
       { path: '**', redirectTo: 'settings', pathMatch: 'full' }
     ]),
