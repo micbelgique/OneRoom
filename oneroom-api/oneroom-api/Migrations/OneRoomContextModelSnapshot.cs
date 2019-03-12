@@ -19,6 +19,23 @@ namespace oneroom_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("oneroom_api.Model.Challenge", b =>
+                {
+                    b.Property<int>("ChallengeId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Titre");
+
+                    b.Property<string>("URLDocumentation");
+
+                    b.HasKey("ChallengeId");
+
+                    b.ToTable("Challenges");
+                });
+
             modelBuilder.Entity("oneroom_api.Model.Configuration", b =>
                 {
                     b.Property<int>("Id")
@@ -108,6 +125,19 @@ namespace oneroom_api.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("oneroom_api.Model.GameChallenge", b =>
+                {
+                    b.Property<int>("GameId");
+
+                    b.Property<int>("ChallengeId");
+
+                    b.HasKey("GameId", "ChallengeId");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.ToTable("GameChallenge");
+                });
+
             modelBuilder.Entity("oneroom_api.Model.Team", b =>
                 {
                     b.Property<int>("TeamId")
@@ -171,8 +201,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<int?>("TeamId");
 
-                    b.Property<string>("UrlAvatar")
-                        .IsRequired();
+                    b.Property<string>("UrlAvatar");
 
                     b.HasKey("UserId");
 
@@ -199,6 +228,19 @@ namespace oneroom_api.Migrations
                     b.HasOne("oneroom_api.Model.Configuration", "Config")
                         .WithMany()
                         .HasForeignKey("ConfigId");
+                });
+
+            modelBuilder.Entity("oneroom_api.Model.GameChallenge", b =>
+                {
+                    b.HasOne("oneroom_api.Model.Challenge", "Challenge")
+                        .WithMany("GameChallenges")
+                        .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("oneroom_api.Model.Game", "Game")
+                        .WithMany("GameChallenges")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("oneroom_api.Model.Team", b =>

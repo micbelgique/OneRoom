@@ -23,6 +23,7 @@ export class SettingsComponent implements OnInit {
     refreshRate: number;
     // game
     game: Game = new Game();
+    games: Game[];
     // Face
     subscriptionKey: string;
     endPointCognitive: string;
@@ -76,6 +77,20 @@ export class SettingsComponent implements OnInit {
       this.gameService.getGames().subscribe(
           (games) => {
             this.toast.open(games.length + ' games found', 'Ok', {
+              duration: 1000
+            });
+            this.games = games;
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+    }
+
+    loadGames() {
+      this.gameService.getGames().subscribe(
+          (games) => {
+            this.snackBar.open(games.length + ' games found', 'Ok', {
               duration: 1000
             });
             this.games = games;

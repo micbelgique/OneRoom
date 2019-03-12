@@ -100,6 +100,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private updateUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
+    console.log(u);
   }
 
   private updateUsers(users: User[]) {
@@ -109,10 +110,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private createUser(user: User) {
-    if (user.recognized >= this.minimumRecognized) {
       this.users.push(user);
-    }
-    console.log(user.recognized);
   }
   private deleteUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);

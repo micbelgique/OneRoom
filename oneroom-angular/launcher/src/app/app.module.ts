@@ -76,6 +76,7 @@ import {
     MatDialogModule,
     MatSelectModule,
     HttpClientModule,
+    MatSelectModule
   ],
   entryComponents: [
     ModalChangeNameComponent

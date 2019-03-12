@@ -4,6 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace oneroom_api.Model
 {
+    /*
+     * GameChallenge class to handle the many to many relation ship 
+     * between Game and Challenge is in Challenge.cs
+     */
     public class Game
     {
         public int GameId { get; set; }
@@ -18,6 +22,9 @@ namespace oneroom_api.Model
 
         // (optional) required for automatic configuration of clients
         public Configuration Config { get; set; } = new Configuration();
+
+        // Challenges of the Game
+        public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
 
 
         public Game()
