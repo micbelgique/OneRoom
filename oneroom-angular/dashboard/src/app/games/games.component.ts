@@ -58,6 +58,7 @@ export class GamesComponent implements OnInit {
               this.configs.push(g.config);
             }
           }
+          g.challenges = this.getChallengesByGame(g);
         });
       },
       (err) => {
@@ -92,7 +93,7 @@ export class GamesComponent implements OnInit {
     }
   }
 
-  getChallengesByGame(game: Game): number[] {
+  getChallengesByGame(game: Game): Challenge[] {
     localStorage.setItem('gameData', JSON.stringify(game));
     this.challengeService.getChallengesByGame().subscribe(
       (challenges) => {

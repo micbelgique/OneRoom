@@ -94,7 +94,7 @@
         <th mat-header-cell *matHeaderCellDef> Challenges </th>
         <td mat-cell *matCellDef="let element">
           <mat-form-field>
-            <mat-select placeholder="Challenges" [formControl]="challengesSelected" (openedChange)="addChallenges($event, element)" multiple>
+            <mat-select placeholder="Challenges" [(ngModel)]="element.challenges" [formControl]="challengesSelected" (openedChange)="addChallenges($event, element)" multiple>
               <mat-select-trigger>
                 {{challengesSelected.value ? challengesSelected.value[0]?.title : ''}}
                 <span *ngIf="challengesSelected.value?.length > 1" class="additional-selection">
