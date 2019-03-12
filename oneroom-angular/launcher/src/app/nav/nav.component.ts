@@ -11,6 +11,7 @@ import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name
 export class NavComponent implements OnInit {
 
   user: User;
+
   constructor(
     private route: Router,
     private modal: MatDialog,

@@ -4,13 +4,10 @@ import * as faceapi from 'face-api.js';
 // import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
 // import { Face } from '../services/OnePoint/model/face';
 // import { User } from '../services/OnePoint/model/user';
-import { Group } from '@oneroomic/facecognitivelibrary';
-import { FaceProcessService } from '@oneroomic/facecognitivelibrary';
 // import { UserService } from '../services/OnePoint/user.service';
 // import { FaceService } from '../services/OnePoint/face.service';
-import { VisioncomputerService } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService, VisioncomputerService, HairlengthService } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
-import { HairlengthService } from '@oneroomic/facecognitivelibrary';
 // import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 // import { GameService } from '../services/OnePoint/game.service';
 // import { Game } from '../services/OnePoint/model/game';
@@ -312,12 +309,12 @@ private crop(canvas, x1, y1, width, height) {
   // get your canvas and a context for it
   const ctx = canvas.getContext('2d');
   // get the image data you want to keep.
-  const imageData = ctx.getImageData(x1, y1, width, height);
+  const imageData = ctx.getImageData(x1 / 1.5, y1 / 1.5, width * 1.5, height * 1.5);
   // create a new cavnas same as clipped size and a context
   const newCan = document.createElement('canvas');
   // define sizes
-  newCan.width = width;
-  newCan.height = height;
+  newCan.width = width * 1.5;
+  newCan.height = height * 1.5;
   const newCtx = newCan.getContext('2d');
   // put the clipped image on the new canvas.
   newCtx.putImageData(imageData, 0, 0);
@@ -325,11 +322,6 @@ private crop(canvas, x1, y1, width, height) {
 }
 
 imageCapture(canvas) {
-  // local model
-  // const prediction = new PredictionHairLength();
-  // console.log(canvas.toDataURL('image/png'));
-  // const s = this.makeblob(canvas.toDataURL('image/png'));
-  // prediction.predict(s.blob);
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls FACE disabled');
@@ -367,6 +359,7 @@ imageCapture(canvas) {
                 return;
           }
           const users: User[] = [];
+          console.log(data.persons);
           data.persons.forEach(element => {
           const u = new User();
           u.name = 'user_' + Math.random();
@@ -429,7 +422,6 @@ imageCapture(canvas) {
                   // crop face for skin and hairlength
                   // tslint:disable-next-line:max-line-length
                   const faceCanvas = this.crop(canvas, face.faceRectangle.left, face.faceRectangle.top, face.faceRectangle.width, face.faceRectangle.height);
-                  // console.log(faceCanvas.toDataURL('image/jpeg'));
                   const faceBlob = this.makeblob(faceCanvas.toDataURL('image/png'));
                   // call to custom vision
                   this.getSkinColor(faceBlob.blob).subscribe(

@@ -25,10 +25,12 @@ export class UserService {
     return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
+
   getUser(userID: string) {
     return this.http.get<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userID, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
+
   addUser(user: User): Observable<boolean> {
     // tslint:disable-next-line:object-literal-shorthand
     return this.http.post<boolean>(this.EPGetter.getEndPointUrlWithId() + '/Users', user, { headers: this.headers });
@@ -37,13 +39,13 @@ export class UserService {
   deleteUser(userId: string): Observable<User> {
     return this.http.delete<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userId, { headers: this.headers });
   }
+
   updateNameUser(user: User): Observable<User> {
     return this.http.post<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/updateNameUser', user, { headers: this.headers });
   }
 
-  updateAvatar(userId: string, urlAvatar: string): Observable<any> {
-    return this.http.put<any>(this.EPGetter.getEndPointUrlWithId() + '/Users/'
-        + userId, {url : urlAvatar.toString()}, { headers: this.headers });
+  updateUser(user: User): Observable<any> {
+    return this.http.put<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + user.userId, user, { headers: this.headers });
   }
 
   private handleError(err: HttpErrorResponse) {

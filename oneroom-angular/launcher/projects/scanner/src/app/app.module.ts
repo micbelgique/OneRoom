@@ -7,7 +7,8 @@ import { DetectorComponent } from './detector/detector.component';
 
 const arrProviders = [];
 
-@NgModule({  declarations: [DetectorComponent]
+@NgModule({
+  declarations: [DetectorComponent]
 })
 export class ScannerAppSharedModule {
   static forRoot(): ModuleWithProviders {

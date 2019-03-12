@@ -132,7 +132,7 @@ namespace oneroom_api.Controllers
         {
             var teams = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
                                             .Include(t => t.Users).ToListAsync();
-            if (teams == null)
+            if (teams.Count() == 0)
             {
                 return NotFound();
             }

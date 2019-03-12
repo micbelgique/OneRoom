@@ -1,0 +1,88 @@
+<div class='content'>
+<div class="example-container">
+
+  <div style="text-align: center">
+    <img class='img-profil' src='{{user.urlAvatar}}' alt='profil image'>
+  </div>
+
+  <mat-form-field>
+    <input matInput type="text" placeholder="Nom" [(ngModel)]=user.name>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput type="number" placeholder="Age" [(ngModel)]=user.age>
+  </mat-form-field>
+
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Genre" [(ngModel)]=user.gender>
+        <mat-option *ngFor="let gen of this.genders" [value]="gen.toLowerCase()">
+          {{gen | lowercase}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <label>Moustache</label>
+  <mat-slider
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.moustacheLevel"
+        [vertical]="false">
+    </mat-slider>
+
+  <label>Barbe</label>
+  <mat-slider
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.beardLevel"
+        [vertical]="false">
+    </mat-slider>
+
+  <label>Calvitie</label>
+  <mat-slider
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.baldLevel"
+        [vertical]="false">
+    </mat-slider>
+
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Lunettes" [(ngModel)]=user.glassesType>
+        <mat-option *ngFor="let gla of this.glasses" [value]="gla">
+          {{gla}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+      <input matInput type="text" readonly disabled placeholder="Couleur de cheveux" value='{{user.hairColor}}'>
+  </mat-form-field>
+
+  <mat-form-field>
+      <input matInput type="text" readonly disabled placeholder="Longueur de cheveux" value='{{user.hairLength}}'>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput type="text" readonly disabled placeholder="Couleur de peau" value='{{user.skinColor}}'>
+  </mat-form-field>
+
+</div>
+<div style='text-align: center'>
+  <button mat-raised-button style='width:80%;margin-right:10%;margin-left:10%; margin-bottom: 10%;' color="primary" (click)=saveProfile()>Sauver</button>
+</div>
+
+</div>

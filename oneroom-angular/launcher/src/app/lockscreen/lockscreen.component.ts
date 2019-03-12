@@ -162,7 +162,7 @@ export class LockscreenComponent implements OnInit {
             audio : false,
             video: {
                 // selfie mode
-                // facingMode: 'user',
+                facingMode: 'user',
                 deviceId: videoSource ? { exact: videoSource } : undefined
             }
         })
@@ -263,7 +263,6 @@ export class LockscreenComponent implements OnInit {
     this.lock = false;
     return;
   }
-  // TODO :  vision api calls enabled ?
   try {
     const stream = this.makeblob(dataUrl);
     // set du groupe
@@ -340,11 +339,11 @@ export class LockscreenComponent implements OnInit {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
       // stop camera capture
-      if (this.stream) {
+      if (this.stream !== undefined && this.stream !== null) {
         this.stream.getTracks().forEach(
           (track) => {
           track.stop();
-        });
+      });
       }
     }
 }

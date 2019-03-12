@@ -88,6 +88,7 @@ export class PersonGroupPersonService {
       userData : userData + ''
     };
 
+    // tslint:disable-next-line:max-line-length
     return this.http.post<PersistedPerson>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons', body, httpOptions);
   }
 
@@ -100,7 +101,7 @@ export class PersonGroupPersonService {
       headers: this.headers
     };
 
-    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId, httpOptions);
+    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId, httpOptions);
   }
 
   /*
@@ -113,7 +114,7 @@ export class PersonGroupPersonService {
     };
 
     // tslint:disable-next-line:max-line-length
-    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, httpOptions);
+    return this.http.delete(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId + '/persistedFaces/' + persistedFaceId, httpOptions);
   }
 
   /*
@@ -125,7 +126,7 @@ export class PersonGroupPersonService {
       headers: this.headers
     };
 
-    return this.http.get<Person>(this.endPoint + '/persongroups/' + personGroupId + '/persons/' + personId, httpOptions);
+    return this.http.get<Person>(this.endPoint + '/persongroups/' + personGroupId.toLowerCase() + '/persons/' + personId, httpOptions);
   }
 
   /*
