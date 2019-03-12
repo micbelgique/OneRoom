@@ -28,10 +28,15 @@ mat-grid-tile:active {
   width: 100%;
 }
 
-.material-icons {
-  font-size: 100px;
-  height: 100px;
-  width: 100px;
+.material-icons, .img-profil {
+  font-size: 200px;
+  height: 200px;
+  width: 200px;
+}
+
+.app-icon {
+  text-align: center;
+  display: block;
 }
 
 
