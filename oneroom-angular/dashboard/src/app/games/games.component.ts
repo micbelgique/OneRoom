@@ -78,11 +78,7 @@ export class GamesComponent implements OnInit {
 
   addChallenges(bool: boolean, game: Game) {
     if (!bool) {
-      const int: number[] = [];
-      for ( const c of this.challengesSelected.value) {
-        int.push(c.challengeId);
-      }
-      this.challengeService.addChallengeToGame(int).subscribe((challenges) => {
+      this.challengeService.addChallengeToGame(this.challengesSelected.value).subscribe(() => {
         this.snackBar.open('Challenges added', 'Ok', {
           duration: 1000
         });
@@ -94,6 +90,19 @@ export class GamesComponent implements OnInit {
     } else {
       localStorage.setItem('gameData', JSON.stringify(game));
     }
+  }
+
+  getChallengesByGame(game: Game): number[] {
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.challengeService.getChallengesByGame().subscribe(
+      (challenges) => {
+        return challenges;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    return null;
   }
 
   /*getGame() {

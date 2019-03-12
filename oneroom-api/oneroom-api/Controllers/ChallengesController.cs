@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
@@ -108,17 +107,17 @@ namespace oneroom_api.Controllers
         [HttpPost("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] IEnumerable<Challenge> challenges)
+        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
-                                .Where(g => g.GameId == GameId)
-                                .SingleOrDefaultAsync();
+            Game game = await _context.Games.Where(g => g.GameId == GameId)
+                                            .Include(c => c.GameChallenges)
+                                            .SingleOrDefaultAsync();
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
             foreach( Challenge challenge in challenges)
             {
-                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = challenge });
+                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -153,11 +152,12 @@ namespace oneroom_api.Controllers
         [HttpDelete("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] IEnumerable<Challenge> challenges)
+        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
-                                .Where(g => g.GameId == GameId)
-                                .SingleOrDefaultAsync();
+            Game game = await _context.Games.Where(g => g.GameId == GameId)
+                                            .Include(c => c.GameChallenges)
+                                                .ThenInclude(gc => gc.Challenge)
+                                            .SingleOrDefaultAsync();
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
