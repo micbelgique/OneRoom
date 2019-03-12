@@ -33,9 +33,6 @@ export class SettingsComponent implements OnInit {
     endPointCustomVision: string;
     callCustomVisionStatus = true;
 
-    // available games
-    games: Game[];
-
 
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
@@ -77,20 +74,6 @@ export class SettingsComponent implements OnInit {
       this.gameService.getGames().subscribe(
           (games) => {
             this.toast.open(games.length + ' games found', 'Ok', {
-              duration: 1000
-            });
-            this.games = games;
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
-    }
-
-    loadGames() {
-      this.gameService.getGames().subscribe(
-          (games) => {
-            this.snackBar.open(games.length + ' games found', 'Ok', {
               duration: 1000
             });
             this.games = games;

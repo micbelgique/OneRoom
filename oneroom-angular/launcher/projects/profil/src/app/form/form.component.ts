@@ -27,17 +27,17 @@ export class FormComponent implements OnInit {
     if (localStorage.getItem('user') && this.user.userId) {
       console.log('updating');
       console.log(this.user);
-      /*update$ = this.userService.updateUser(this.user);
+      const update$ = this.userService.updateUser(this.user);
       update$.subscribe(
         (user: User) => {
           console.log('updated');
           this.user = user;
           localStorage.setItem('user', JSON.stringify(user));
         },
-        () => {
-          console.log('error');
+        (err) => {
+          console.log(err);
         }
-      )*/
+      )
     }
   }
 
