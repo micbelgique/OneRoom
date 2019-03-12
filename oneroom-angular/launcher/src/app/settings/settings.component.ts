@@ -32,6 +32,10 @@ export class SettingsComponent implements OnInit {
     endPointCustomVision: string;
     callCustomVisionStatus = true;
 
+    // available games
+    games: Game[];
+
+
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
     if ( event.keyCode === KEY_CODE.UP_ARROW) {
@@ -39,7 +43,7 @@ export class SettingsComponent implements OnInit {
     }
   }
     constructor(
-      private snackBar: MatSnackBar,
+      private toast: MatSnackBar,
       private gameService: GameService,
       private router: Router
       ) {}
@@ -51,7 +55,9 @@ export class SettingsComponent implements OnInit {
         this.game = JSON.parse(localStorage.getItem('gameData'));
       }
       // coordinator
-      this.endPoint = localStorage.getItem('endpoint');
+      if (localStorage.getItem('endpoint')) {
+        this.endPoint = localStorage.getItem('endpoint');
+      }
       // refreshRate
       this.refreshRate = 3000;
       if (localStorage.getItem('refreshRate')) {
@@ -61,19 +67,37 @@ export class SettingsComponent implements OnInit {
       this.endPointCognitive = localStorage.getItem('endpointCognitive');
       this.subscriptionKey = localStorage.getItem('subscriptionKey');
       this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+
+      this.games = [];
+      this.loadGames();
+    }
+
+    loadGames() {
+      this.gameService.getGames().subscribe(
+          (games) => {
+            this.toast.open(games.length + ' games found', 'Ok', {
+              duration: 1000
+            });
+            this.games = games;
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
     }
 
     saveCoordinatorSettings(): void {
       localStorage.setItem('endpoint', this.endPoint);
-      this.snackBar.open('Settings updated', 'Ok', {
+      this.toast.open('Settings updated', 'Ok', {
         duration: 2000
       });
+      this.loadGames();
     }
 
     saveFaceSettings(): void {
       localStorage.setItem('endpointCognitive', this.endPointCognitive);
       localStorage.setItem('subscriptionKey', this.subscriptionKey);
-      this.snackBar.open('Settings updated', 'Ok', {
+      this.toast.open('Settings updated', 'Ok', {
         duration: 2000
       });
     }
@@ -81,7 +105,7 @@ export class SettingsComponent implements OnInit {
     saveRefreshRate() {
       if (this.refreshRate >= 1000) {
         localStorage.setItem('refreshRate', '' + this.refreshRate);
-        this.snackBar.open('Refresh Rate updated', 'Ok', {
+        this.toast.open('Refresh Rate updated', 'Ok', {
           duration: 2000
         });
       }
@@ -93,7 +117,7 @@ export class SettingsComponent implements OnInit {
       resGame$.subscribe( (game: Game) => {
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
-        this.snackBar.open('Game fetched', 'Ok', {
+        this.toast.open('Game fetched', 'Ok', {
           duration: 2000
         });
         if (game.config) {
@@ -114,12 +138,12 @@ export class SettingsComponent implements OnInit {
       const status = localStorage.getItem('cognitiveStatus');
       if (status === 'true') {
         localStorage.setItem('cognitiveStatus', 'false');
-        this.snackBar.open('Calls face disabled', 'Ok', {
+        this.toast.open('Calls face disabled', 'Ok', {
           duration: 2000
         });
       } else {
         localStorage.setItem('cognitiveStatus', 'true');
-        this.snackBar.open('Calls face enabled', 'Ok', {
+        this.toast.open('Calls face enabled', 'Ok', {
           duration: 2000
         });
       }

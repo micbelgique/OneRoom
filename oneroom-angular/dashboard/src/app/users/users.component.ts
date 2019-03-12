@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-// import { User } from '../services/OnePoint/model/user';
-// import { UserService } from '../services/OnePoint/user.service';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
 import { MatSnackBar } from '@angular/material';
 import { User } from '@oneroomic/oneroomlibrary/one-room/model/user';
 import { Game } from '@oneroomic/oneroomlibrary/one-room/model/game';
-import { UserService, GameService } from '@oneroomic/oneroomlibrary';
+import { UserService, GameService, TeamService } from '@oneroomic/oneroomlibrary';
+import { PersonGroupPersonService } from '@oneroomic/facecognitivelibrary';
 
 @Component({
   selector: 'app-users',
@@ -23,7 +20,9 @@ export class UsersComponent implements OnInit {
   constructor(
     private userService: UserService,
     private gameService: GameService,
-    private toast: MatSnackBar
+    private toast: MatSnackBar,
+    private personService: PersonGroupPersonService,
+    private teamService: TeamService
   ) { }
 
   ngOnInit() {
@@ -64,17 +63,44 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(idUser) {
-    this.userService.deleteUser(idUser).subscribe(
+    if (localStorage.getItem('gameData')) {
+      const game: Game = JSON.parse(localStorage.getItem('gameData'));
+      this.personService.set(game.config.faceEndpoint, game.config.faceKey);
+
+      // delete face
+      const faceUser$ = this.personService.delete(game.groupName, idUser);
+      faceUser$.subscribe(
+            (suc) => {
+              this.toast.open('Player deleted', 'Ok', {
+                duration: 1000
+              });
+              console.log(suc);
+            },
+            () => {
+              console.log('error');
+            }
+      );
+
+      // delete oneroom
+      this.userService.deleteUser(idUser).subscribe(
       () => {
-        this.loadUsers();
-        this.toast.open('Player deleted', 'Ok', {
-          duration: 1000
-        });
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+          this.loadUsers();
+          const res$ = this.teamService.deleteTeams();
+          res$.subscribe( x => {
+            this.toast.open('Teams deleted', 'Ok', {
+              duration: 1000
+            });
+            // recreating teams
+          },
+          (err) => {
+            // teams don't exist
+          });
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
   }
 
 }

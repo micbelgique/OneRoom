@@ -22,13 +22,19 @@
   <mat-expansion-panel [expanded]=false>
     <mat-expansion-panel-header>
       <mat-panel-title>
-          <div mat-card-title i18n="@@settingsGroup">Lier une partie</div>
+          <div mat-card-title i18n="@@settingsGroup">Lier une game</div>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-card-content>
-        <mat-form-field style="width: 100%">
-          <input matInput placeholder="Group Name" type='text' [(ngModel)]="this.game.groupName" value='{{this.game.groupName}}'>
-        </mat-form-field>
+        <div style='text-align: center'>
+            <mat-form-field>
+                <mat-select placeholder="Game" [(ngModel)]="game.groupName" >
+                    <mat-option *ngFor="let game of games" [value]="game.groupName">
+                  {{game.groupName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
     </mat-card-content>
     <mat-card-actions>
       <div style="text-align: center">

@@ -32,33 +32,37 @@ export class FaceProcessService {
     private groupService: PersonGroupService) {}
 
 
-  byImg(stream: Blob, group: Group): Observable<PersonGroup> {
+  byImg(stream: Blob, group: Group, createGroupIfNotExists = false ): Observable<PersonGroup> {
     this.result = new PersonGroup();
     // 0. Create group or not if exists
     const getGroup$ = this.groupService.get(group.personGroupId);
     getGroup$.subscribe(
     (g) => {
       // saving group
+      console.log('group exists');
       this.result.group = g;
       this.detect(stream, g);
     },
     (error) => {
-      console.log('CREATING GROUP');
-      const group$ = this.groupService.create(group.personGroupId, group.name, group.userData);
-      group$.subscribe(
-      () => {
-        // saving group
-        this.result.group = group;
-        this.detect(stream, group);
-      },
-      () => {
-        this.result$.next(null);
+      if (createGroupIfNotExists === true) {
+        console.log('CREATING GROUP');
+        const group$ = this.groupService.create(group.personGroupId, group.name, group.userData);
+        group$.subscribe(
+        () => {
+          // saving group
+          this.result.group = group;
+          this.detect(stream, group);
+        },
+        () => {
+          this.result$.next(null);
+        }
+        );
       }
-      );
     });
 
     return this.result$;
   }
+
   detectOnly(stream: Blob, group: Group): Subject<string> {
     const detect$ = this.faceService.detect(stream);
     detect$.subscribe(
@@ -77,6 +81,7 @@ export class FaceProcessService {
       });
     return this.resForDetect$;
   }
+
   private identifyOnly(face: Face, group: Group) {
     console.log(face);
     const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
@@ -88,6 +93,7 @@ export class FaceProcessService {
       this.getString();
     });
   }
+
   private getString() {
     this.resForDetect$.next(this.resultForDetect);
   }
@@ -116,7 +122,7 @@ export class FaceProcessService {
 
   private identify(face: Face, group: Group, stream: Blob) {
             // 2. Identify person
-            console.log(face);
+            console.log(group.personGroupId);
             const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
             identify$.subscribe(
             (faceCandidates) => {

@@ -109,7 +109,7 @@ export class FaceService {
   /*
   1-to-many identification to find the closest matches of the specific query person face from a person group or large person group.
   */
-  identify(facesIds: string[], personGroupId: string, maxReturn = 1, confidence = 0.5): Observable<FaceCandidate[]> {
+  identify(facesIds: string[], personGroupId: string = '', maxReturn = 1, confidence = 0.5): Observable<FaceCandidate[]> {
 
     const httpOptions = {
       headers: this.headers
@@ -128,7 +128,7 @@ export class FaceService {
   /*
   Verify whether two faces belong to a same person or whether one face belongs to a person.
   */
-  verify(faceId: string, personId: string, personGroupId: string): Observable<FaceConfidence> {
+  verify(faceId: string, personId: string, personGroupId: string = ''): Observable<FaceConfidence> {
 
     const httpOptions = {
       headers: this.headers
@@ -137,7 +137,7 @@ export class FaceService {
     const body = {
       faceId: faceId + '',
       personId: personId + '',
-      personGroupId: personGroupId + ''
+      personGroupId: personGroupId.toLowerCase()
     };
 
     return this.http.post<FaceConfidence>(this.endPoint + '/verify', body, httpOptions);

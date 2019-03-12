@@ -258,6 +258,136 @@
           }
         }
       }
+    },
+    "profil": {
+      "root": "projects/profil/",
+      "sourceRoot": "projects/profil/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/profil",
+            "index": "projects/profil/src/index.html",
+            "main": "projects/profil/src/main.ts",
+            "polyfills": "projects/profil/src/polyfills.ts",
+            "tsConfig": "projects/profil/tsconfig.app.json",
+            "assets": [
+              "projects/profil/src/favicon.ico",
+              "projects/profil/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/profil/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/profil/src/environments/environment.ts",
+                  "with": "projects/profil/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "profil:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "profil:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "profil:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/profil/src/test.ts",
+            "polyfills": "projects/profil/src/polyfills.ts",
+            "tsConfig": "projects/profil/tsconfig.spec.json",
+            "karmaConfig": "projects/profil/karma.conf.js",
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/profil/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/profil/src/favicon.ico",
+              "projects/profil/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/profil/tsconfig.app.json",
+              "projects/profil/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "profil-e2e": {
+      "root": "projects/profil-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/profil-e2e/protractor.conf.js",
+            "devServerTarget": "profil:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "profil:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/profil-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "launcher"

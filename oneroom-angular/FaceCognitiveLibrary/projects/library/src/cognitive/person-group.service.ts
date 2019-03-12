@@ -131,7 +131,7 @@ export class PersonGroupService {
       headers : this.headers
     };
 
-    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId, {name: name + ''}, httpOptions);
+    return this.http.patch(this.endPoint + '/persongroups/' + personGroupId.toLowerCase(), {name: name + ''}, httpOptions);
 
   }
 }

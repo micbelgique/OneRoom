@@ -8,10 +8,14 @@ export class EndPointGetterService {
   constructor() { }
 
   getEndPointUrl() {
-    return localStorage.getItem('endpoint');
+    if (localStorage.getItem('endpoint')) {
+      return localStorage.getItem('endpoint');
+    }
   }
 
   getEndPointUrlWithId() {
-    return localStorage.getItem('endpoint') + '/Games/' + JSON.parse(localStorage.getItem('gameData')).gameId;
+    if (localStorage.getItem('gameData')) {
+      return localStorage.getItem('endpoint') + '/Games/' + JSON.parse(localStorage.getItem('gameData')).gameId;
+    }
   }
 }

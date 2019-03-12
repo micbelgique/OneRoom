@@ -58,15 +58,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateAvatar( int GameId, Guid id, Avatar model)
-        {
-            // todo regex check uri match 
-            if (model.Url == null)
+        public async Task<ActionResult<User>> UpdateUser(int GameId, User usr)
+        { 
+            if (usr == null)
             {
-                return BadRequest("avatar url is null");
+                return BadRequest("user is null");
             }
 
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == usr.UserId)
                                            .SingleOrDefaultAsync();
 
             if (user == null)
@@ -74,10 +73,11 @@ namespace oneroom_api.Controllers
                 return BadRequest("user not found");
             }
 
-            if (user.UrlAvatar == model.Url) return NoContent();
-            user.UrlAvatar = model.Url;
- 
+            user = usr;
             user.RecognizedDate = DateTime.Now;
+
+            UsersUtilities.GenerateAvatar(user);
+
             _context.Entry(user).State = EntityState.Modified;
 
             try
@@ -87,7 +87,7 @@ namespace oneroom_api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists( GameId, id))
+                if (!UserExists( GameId, usr.UserId))
                 {
                     return NotFound();
                 }
@@ -97,7 +97,7 @@ namespace oneroom_api.Controllers
                 }
             }
 
-            return NoContent();
+            return user;
         }
 
         [Route("updateNameUser")]

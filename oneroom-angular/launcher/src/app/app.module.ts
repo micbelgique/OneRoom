@@ -1,10 +1,17 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { NavComponent } from './nav/nav.component';
+import { LockscreenComponent } from './lockscreen/lockscreen.component';
+import { SettingsComponent } from './settings/settings.component';
+import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+// Sub Module for apps
+import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
+import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 
 import {
   MatButtonModule,
@@ -24,13 +31,8 @@ import {
   MatProgressBarModule,
   MatSnackBarModule,
   MatDialogModule,
+  MatSelectModule
 } from '@angular/material';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { NavComponent } from './nav/nav.component';
-import { LockscreenComponent } from './lockscreen/lockscreen.component';
-import { SettingsComponent } from './settings/settings.component';
-import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,9 @@ import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.
   imports: [
     BrowserModule,
     AppRoutingModule,
+    // Sub module for apps
     ScannerAppSharedModule,
+    ProfilAppSharedModule,
     BrowserAnimationsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -70,6 +74,7 @@ import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.
     FormsModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatSelectModule,
     HttpClientModule,
   ],
   entryComponents: [

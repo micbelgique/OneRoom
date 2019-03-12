@@ -1,19 +1,38 @@
-<mat-toolbar role="heading" >
+<div class="launcher">
+<mat-toolbar  role="heading" [style.background-color]="" >
   <mat-toolbar-row style="text-align:center">
-      <span><a [routerLink]="['/']" routerLinkActive="router-link-active" >Menu</a></span>
+      <span><a [routerLink]="['/']" routerLinkActive="router-link-active" >Hello {{user.name}},</a></span>
       <span class="example-spacer"></span>
-      <span><img src='{{ user.urlAvatar }}' (click)=logOut() class="imgProf"></span>
+      <span><img src='{{ user.urlAvatar }}' (click)=logOut() style="height: 60px" class="imgProf"></span>
     </mat-toolbar-row>
 </mat-toolbar>
 
-<mat-grid-list cols="3" rowHeight="3:1">
+<mat-grid-list cols="4" rowHeight="3:3">
   <mat-grid-tile>
-    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/scanner">Scanner</a>
+      <a class='launcher-app' mat-raised-button routerLink="/scanner">
+        <h3>Scanner</h3>
+        <div><mat-icon aria-label="Scanner">control_camera</mat-icon></div>
+      </a>
   </mat-grid-tile>
   <mat-grid-tile>
-    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/">Traducteur</a>
+      <a class='launcher-app' mat-raised-button routerLink="/scanner">
+        <h3>Traducteur</h3>
+        <div><mat-icon aria-label="translate">translate</mat-icon></div>
+      </a>
   </mat-grid-tile>
   <mat-grid-tile>
-    <a mat-raised-button color='primary' style='margin-top:100px;' routerLink="/">App 3</a>
+      <a class='launcher-app' mat-raised-button routerLink="/profil">
+        <h3>Profile</h3>
+        <img src='{{ user.urlAvatar }}' style="height: 100px" class="imgProf">
+      </a>
   </mat-grid-tile>
+
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/settings">
+        <h3>Settings</h3>
+        <div><mat-icon aria-label="settings">settings</mat-icon></div>
+      </a>
+  </mat-grid-tile>
+
 </mat-grid-list>
+</div>
