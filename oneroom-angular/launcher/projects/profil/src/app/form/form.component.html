@@ -69,15 +69,27 @@
   </mat-form-field>
 
   <mat-form-field>
-      <input matInput type="text" readonly disabled placeholder="Couleur de cheveux" value='{{user.hairColor}}'>
+      <mat-select i18n="@@profilGender" placeholder="Couleur de cheveux" [(ngModel)]=user.hairColor>
+        <mat-option *ngFor="let gla of this.hairColors" [value]="gla">
+          {{gla}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 
   <mat-form-field>
-      <input matInput type="text" readonly disabled placeholder="Longueur de cheveux" value='{{user.hairLength}}'>
+      <mat-select i18n="@@profilGender" placeholder="Longueur de cheveux" [(ngModel)]=user.hairLength>
+        <mat-option *ngFor="let gla of this.hairLengths" [value]="gla">
+          {{gla}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 
   <mat-form-field>
-    <input matInput type="text" readonly disabled placeholder="Couleur de peau" value='{{user.skinColor}}'>
+      <mat-select i18n="@@profilGender" placeholder="Couleur de peau" [(ngModel)]=user.skinColor>
+        <mat-option *ngFor="let gla of this.skinColors" [value]="gla">
+          {{gla}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 
 </div>
