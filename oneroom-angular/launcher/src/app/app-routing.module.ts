@@ -20,9 +20,9 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
+    RouterModule.forRoot(routes),
     ProfilAppSharedModule.forRoot(),
-    ScannerAppSharedModule.forRoot(),
-    RouterModule.forRoot(routes)
+    ScannerAppSharedModule.forRoot()
   ],
   exports: [RouterModule]
 })

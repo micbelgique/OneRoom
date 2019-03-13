@@ -11,7 +11,8 @@ function createWindow () {
     icon: `file://${__dirname}/dist/launcher/assets/logo.png`
   })
 
-
+  win.setFullScreenable(true);
+  win.setFullScreen(true);
   win.loadURL(`file://${__dirname}/dist/launcher/index.html`)
 
   //// uncomment below to open the DevTools.

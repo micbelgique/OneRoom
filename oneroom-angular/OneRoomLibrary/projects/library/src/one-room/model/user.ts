@@ -1,6 +1,9 @@
 import { Face } from './face';
 import { GlassesType } from './glass-type.enum';
 import { Gender } from './gender.enum';
+import { SkinColorType } from './skin-color-type.enum';
+import { HairlengthType } from './hair-length-type.enum';
+import { HairColorType } from './hair-color-type.enum';
 
 export class User {
   userId: string;
@@ -14,9 +17,9 @@ export class User {
   beardLevel: number;
   baldLevel: number;
   smileLevel: number;
-  hairColor: string;
-  hairLength: string;
-  skinColor: string;
+  hairColor: HairColorType;
+  hairLength: HairlengthType;
+  skinColor: SkinColorType;
   glassesType: GlassesType;
   emotionDominant: string;
   recognized: number;

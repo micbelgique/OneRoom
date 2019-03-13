@@ -25,6 +25,9 @@ faceapi.env.monkeyPatch({
 export class LockscreenComponent implements OnInit {
 
 
+  // preferred camera
+  private videoSource;
+
   /* input stream devices */
   @ViewChild('devices')
   public videoSelect;
@@ -55,25 +58,28 @@ export class LockscreenComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private toast: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private route: Router
     ) { this.loadModels(); }
 
   ngOnInit() {
+    if (localStorage.getItem('camId')) {
+      this.videoSource = localStorage.getItem('camId');
+      console.log(this.videoSource);
+    }
     if (localStorage.getItem('user') != null) {
       this.route.navigate(['/nav']);
     } else {
       // init lock
       this.lock = false;
       // refreshRate
-      this.refreshRate = 3000;
+      this.refreshRate = 1500;
       if (localStorage.getItem('refreshRate')) {
         this.refreshRate = Number(localStorage.getItem('refreshRate'));
       }
       this.opencam();
-      this.initStreamDetection();
     }
   }
 
@@ -87,20 +93,25 @@ export class LockscreenComponent implements OnInit {
     */
   }
 
-  initStreamDetection() {
-    if (!this.stream) {
-      this.startStream();
+  initStreamDetection(videoSource = null) {
+      this.startStream(videoSource);
       if (!this.detectId) {
         // detection interval: default 3000
         this.detectId = setInterval( () => {
           this.detectFaces();
         }, this.refreshRate);
       }
-    }
   }
-  public unLock() {
+
+  public unLock(videoSource = null) {
+    if (this.buttonLock === false) {
+      this.toast.open('Scan en cours', 'Ok');
+      this.initStreamDetection(videoSource);
+    } else {
+      this.toast.open('Scan interrompu', 'Ok');
+      this.stopCapture();
+    }
     this.buttonLock = !this.buttonLock;
-    console.log('unlocking');
   }
 
   public async detectFaces() {
@@ -152,18 +163,23 @@ export class LockscreenComponent implements OnInit {
   }
 
    /* Start or restart the stream using a specific videosource and inject it in a container */
-  public startStream() {
+  public startStream(videoSource = null) {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
-        const videoSource = this.videoSelect.nativeElement.value;
+        this.videoSource = videoSource === null ?
+        ( this.videoSource ? this.videoSource : this.videoSelect.nativeElement.value) : videoSource;
+
+        // save prefered cam
+        localStorage.setItem('camId', this.videoSource);
+
         // access the web cam
         navigator.mediaDevices.getUserMedia({
             audio : false,
             video: {
                 // selfie mode
-                facingMode: 'user',
-                deviceId: videoSource ? { exact: videoSource } : undefined
+                // facingMode: 'user',
+                deviceId: this.videoSource ? { exact: this.videoSource } : undefined
             }
         })
             // permission granted:
@@ -287,8 +303,6 @@ export class LockscreenComponent implements OnInit {
       } else {
         this.userService.getUser(result).subscribe(
           (result1) => {
-            console.log(result1);
-            this.snackBar.open('Hello ' + result1.name, 'Ok', {duration: 5000});
             localStorage.setItem('user', JSON.stringify(result1));
             this.route.navigate(['/nav']);
           });
@@ -338,6 +352,10 @@ export class LockscreenComponent implements OnInit {
     ngOnDestroy(): void {
       clearInterval(this.detectId);
       clearTimeout(this.streamId);
+      this.stopCapture();
+    }
+
+    private stopCapture() {
       // stop camera capture
       if (this.stream !== undefined && this.stream !== null) {
         this.stream.getTracks().forEach(

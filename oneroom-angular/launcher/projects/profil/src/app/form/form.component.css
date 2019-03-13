@@ -16,7 +16,9 @@
 }
 
 .content {
-  height: 100vh;
+  height: 95vh;
+  padding-right: 10%;
+  padding-left: 10%;
   overflow-y: auto;
 }
 

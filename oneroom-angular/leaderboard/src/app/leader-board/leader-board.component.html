@@ -10,24 +10,26 @@
     </ng-template>
 
     <ng-template #UserCard let-UsersContainer>
-      <mat-grid-tile *ngFor="let u of UsersContainer.users" >
-        <mat-card *ngIf="u.recognized >= this.minimumRecognized" [style.background-color]='getTeamColor(UsersContainer?.teamColor)' [style.box-shadow]='isHighLighted(u.userId)'>
-          <div style="width: calc(40%);">
-            <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
-          </div>
-          <div style="width: calc(60%); padding: 10px;">
-            <mat-card-title style="font-size:2vw;">{{u.name}}</mat-card-title>
-            <mat-card-content>
-              <div>
-                <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge" style="font-size:1vw;">{{ u.age}} ans</span></div>
-                <div style="margin: 10px 10px 10px 0px;">
-                  <ng-container *ngTemplateOutlet="UsersContainer.teamName ? TeamsName : RecognizedDetails; context: {container: UsersContainer, user: u}"></ng-container>
-                </div>
-              </div>
-            </mat-card-content>
-          </div>
-        </mat-card>
-      </mat-grid-tile>
+      <div *ngFor="let u of UsersContainer.users" >
+          <mat-grid-tile *ngIf="u.recognized >= this.minimumRecognized">
+              <mat-card [style.background-color]='getTeamColor(UsersContainer?.teamColor)' [style.box-shadow]='isHighLighted(u.userId)'>
+                  <div style="width: calc(40%);">
+                    <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+                  </div>
+                  <div style="width: calc(60%); padding: 10px;">
+                    <mat-card-title style="font-size:2vw;">{{u.name}}</mat-card-title>
+                    <mat-card-content>
+                      <div>
+                        <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge" style="font-size:1vw;">{{ u.age}} ans</span></div>
+                        <div style="margin: 10px 10px 10px 0px;">
+                          <ng-container *ngTemplateOutlet="UsersContainer.teamName ? TeamsName : RecognizedDetails; context: {container: UsersContainer, user: u}"></ng-container>
+                        </div>
+                      </div>
+                    </mat-card-content>
+                  </div>
+                </mat-card>
+        </mat-grid-tile>
+      </div>
     </ng-template>
 
     <ng-template #TeamsName let-container='container'>

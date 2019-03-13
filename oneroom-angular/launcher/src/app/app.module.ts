@@ -33,6 +33,7 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
+import { ControlComponent } from './control/control.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import {
     NavComponent,
     LockscreenComponent,
     SettingsComponent,
-    ModalChangeNameComponent
+    ModalChangeNameComponent,
+    ControlComponent
   ],
   imports: [
     BrowserModule,
