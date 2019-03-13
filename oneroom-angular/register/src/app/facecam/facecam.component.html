@@ -5,10 +5,19 @@
         <p>{{alertMessage}}</p>
         <button mat-raised-button (click)="this.initStreamDetection()" color="primary" i18n="@@facecamRetry">Réessayer</button>
     </div>
+    <br>
+    <mat-form-field>
+        <mat-select placeholder="Video capture" >
+          <mat-option *ngFor="let cam of this.selectors" (click)="this.startStream(cam.id)" [value]="cam.id">
+              Camera {{cam.label}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <br>
     <div [style.display]=this.displayStream >
-      <select #devices (change)="this.startStream()" >
+      <!--<select #devices (change)="this.startStream()" >
           <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
-      </select>
+      </select>-->
       <div id="overlayContainer" class="center">
         <video id="stream" #webcam autoplay></video>
         <canvas #canvas2 id="overlay" ></canvas>

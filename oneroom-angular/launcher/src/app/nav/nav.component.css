@@ -3,40 +3,36 @@
   flex: 1 1 auto;
 }
 
-mat-grid-tile {
-  background: white;
-  box-shadow: 3px 3px 5px black;
-}
-
-mat-grid-tile:hover {
-  background: lemonchiffon;
-  box-shadow: 1px 1px 5px black;
-}
-
-mat-grid-tile:active {
-  background: wheat;
-  box-shadow: -1px -1px 3px black;
-}
-
 .launcher {
-  height: 100vh;
+  height: 90vh;
   overflow-y: auto;
 }
 
 .launcher-app {
-  height: 100%;
-  width: 100%;
+  height: 80%;
+  width: 80%;
+  border-radius: 5%;
+  margin: 10%;
+  padding: 10%
 }
 
-.material-icons, .img-profil {
-  font-size: 200px;
-  height: 200px;
-  width: 200px;
+.launcher-app:hover {
+  background: lightgray;
+  box-shadow: 1px 1px 5px black;
+}
+
+.launcher-app:active {
+  background: darkgray;
+  box-shadow: -1px -1px 3px black;
+}
+
+.app-mat-icon, .img-profil {
+  font-size: 150px;
+  height: 150px;
+  width: 150px;
 }
 
 .app-icon {
   text-align: center;
   display: block;
 }
-
-

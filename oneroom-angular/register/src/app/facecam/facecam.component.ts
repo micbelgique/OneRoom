@@ -37,8 +37,6 @@ faceapi.env.monkeyPatch({
 export class FacecamComponent implements OnInit, OnDestroy {
 
   /* input stream devices */
-  @ViewChild('devices')
-  public videoSelect;
   /* selector devices */
   public selectors;
 
@@ -133,7 +131,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
           async () => {
             // init stream
             this.opencam();
-            this.initStreamDetection();
           }
         );
 
@@ -198,22 +195,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
               .enumerateDevices()
               .then((d) => {
                 this.selectors = this.getCaptureDevices(d);
+                this.initStreamDetection();
               })
               .catch(this.handleError);
   }
 
    /* Start or restart the stream using a specific videosource and inject it in a container */
-  public startStream() {
+  public startStream(videoSource = null) {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
-        const videoSource = this.videoSelect.nativeElement.value;
+        videoSource = videoSource ? videoSource : this.selectors[0];
         // access the web cam
         navigator.mediaDevices.getUserMedia({
             audio : false,
             video: {
                 // selfie mode
-                // facingMode: 'user',
+                // facingMode: {exact: 'user' },
                 deviceId: videoSource ? { exact: videoSource } : undefined
             }
         })
@@ -592,7 +590,7 @@ private saveUsers(user: User) {
             this.stateContainer = false;
             this.detectId = null;
             this.stream = null;
-            this.initStreamDetection();
+            this.opencam();
           }
         },
         (err) => {

@@ -115,6 +115,8 @@ export class SettingsComponent implements OnInit {
       resGame$.subscribe( (game: Game) => {
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
+        localStorage.setItem('gameId', game.gameId.toString());
+        localStorage.setItem('groupName', game.groupName);
         this.toast.open('Game fetched', 'Ok', {
           duration: 2000
         });

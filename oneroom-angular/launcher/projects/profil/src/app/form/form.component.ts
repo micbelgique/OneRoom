@@ -40,6 +40,12 @@ export class FormComponent implements OnInit {
   ngOnInit() {
     if (localStorage.getItem('user')) {
       this.user = JSON.parse(localStorage.getItem('user'));
+      // updated data
+      this.userService.getUser(this.user.userId).subscribe(
+        (u: User) => {
+          this.user = u;
+        }
+      );
     }
   }
 

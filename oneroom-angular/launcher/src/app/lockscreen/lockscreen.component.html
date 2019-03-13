@@ -1,29 +1,43 @@
-<div class="lock">
-  <mat-toolbar role="heading">
-      <mat-toolbar-row>
-          <span class="example-fill-remaining-space"></span>
-          <button mat-fab color="white" (click)=unLock()>
-              <mat-icon>remove_red_eye</mat-icon>
-            </button>
-          <span class="example-fill-remaining-space"></span>
-      </mat-toolbar-row>
-  </mat-toolbar>
-  <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
-  <mat-card class="example-card">
-      <img mat-card-image src="assets/wallpaperlockscreen.png" alt="lockscreen">
-  </mat-card>
-</div>
+<div id="mainLock">
+  <div class="lock">
 
-<div class='content'>
-  <div style="text-align: center;display: none">
-        <div [style.display]=this.displayStream >
-          <select #devices (change)="this.startStream()" >
-              <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
-          </select>
-          <div id="overlayContainer" class="center">
-            <video id="stream" #webcam autoplay></video>
-            <canvas #canvas2 id="overlay" ></canvas>
+    <mat-card class="example-card" style="height: 85vh">
+        <img mat-card-image src="assets/wallpaperlockscreen.png" alt="lockscreen">
+    </mat-card>
+
+    <mat-toolbar role="heading">
+        <mat-toolbar-row>
+            <span class="example-fill-remaining-space"></span>
+            <button mat-stroked-button color="white" (click)=unLock()>
+              <mat-icon style="color:white">remove_red_eye</mat-icon>
+            </button>
+            <span class="example-fill-remaining-space"></span>
+            <button [matMenuTriggerFor]="settings" mat-stroked-button >
+              <mat-icon style="color:white">settings</mat-icon>
+            </button>
+            <mat-menu #settings="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="camera">Cameras</button>
+                <button mat-menu-item [routerLink]="['/settings']" routerLinkActive="router-link-active" >Paramètres</button>
+            </mat-menu>
+            <mat-menu #camera="matMenu">
+                <button mat-menu-item *ngFor="let cam of this.selectors" (click)=this.unLock(cam.id) >Camera {{cam.label}}</button>
+            </mat-menu>
+        </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+
+  <div class='content' style='display: none'>
+    <div [style.display]=this.displayStream style="text-align: center;">
+        <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
+          <div>
+            <select #devices (change)="this.startStream()" >
+                <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
+            </select>
+            <div id="overlayContainer" class="center">
+              <video id="stream" #webcam autoplay></video>
+              <canvas #canvas2 id="overlay" ></canvas>
+            </div>
           </div>
-        </div>
+    </div>
   </div>
 </div>
