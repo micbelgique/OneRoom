@@ -94,7 +94,6 @@ export class LockscreenComponent implements OnInit {
   }
 
   initStreamDetection(videoSource = null) {
-    if (!this.stream) {
       this.startStream(videoSource);
       if (!this.detectId) {
         // detection interval: default 3000
@@ -102,7 +101,6 @@ export class LockscreenComponent implements OnInit {
           this.detectFaces();
         }, this.refreshRate);
       }
-    }
   }
 
   public unLock(videoSource = null) {
@@ -180,7 +178,7 @@ export class LockscreenComponent implements OnInit {
             audio : false,
             video: {
                 // selfie mode
-                facingMode: 'user',
+                // facingMode: 'user',
                 deviceId: this.videoSource ? { exact: this.videoSource } : undefined
             }
         })
@@ -305,8 +303,6 @@ export class LockscreenComponent implements OnInit {
       } else {
         this.userService.getUser(result).subscribe(
           (result1) => {
-            console.log(result1);
-            this.toast.open('Hello ' + result1.name, 'Ok', {duration: 5000});
             localStorage.setItem('user', JSON.stringify(result1));
             this.route.navigate(['/nav']);
           });
