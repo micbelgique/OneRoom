@@ -6,6 +6,11 @@
 
 .example-card {
   height: 90vh;
+  border-radius: 0px;
 }
 
 
+#mainLock {
+  height: 100vh;
+  overflow: hidden;
+}

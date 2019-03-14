@@ -58,32 +58,26 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> UpdateUser(int GameId, User usr)
-        { 
+        public async Task<ActionResult<User>> UpdateUser(int GameId, Guid id, User usr)
+        {
             if (usr == null)
             {
                 return BadRequest("user is null");
             }
 
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == usr.UserId)
-                                           .SingleOrDefaultAsync();
-
-            if (user == null)
+            if (id != usr.UserId)
             {
-                return BadRequest("user not found");
+                return BadRequest();
             }
 
-            user = usr;
-            user.RecognizedDate = DateTime.Now;
+            _context.Entry(usr).State = EntityState.Modified;
 
-            UsersUtilities.GenerateAvatar(user);
-
-            _context.Entry(user).State = EntityState.Modified;
+            UsersUtilities.GenerateAvatar(usr);
 
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUser(user);
+                await _hubClients.Clients.All.UpdateUser(usr);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -97,7 +91,7 @@ namespace oneroom_api.Controllers
                 }
             }
 
-            return user;
+            return usr;
         }
 
         [Route("updateNameUser")]

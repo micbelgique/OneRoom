@@ -1,9 +1,11 @@
 <div class="launcher">
 <mat-toolbar  role="heading" [style.background-color]="" >
   <mat-toolbar-row style="text-align:center">
-      <span><a [routerLink]="['/']" routerLinkActive="router-link-active" >Hello {{user.name}},</a></span>
+      <h3>Hello {{user.name}},</h3>
       <span class="example-spacer"></span>
-      <span><img src='{{ user.urlAvatar }}' (click)=logOut() style="height: 60px" class="imgProf"></span>
+      <button (click)=logOut() mat-stroked-button >
+          <mat-icon>logout</mat-icon>
+      </button>
     </mat-toolbar-row>
 </mat-toolbar>
 
@@ -11,26 +13,26 @@
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/scanner">
         <h3>Scanner</h3>
-        <div><mat-icon aria-label="Scanner">control_camera</mat-icon></div>
+        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon></div>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
-      <a class='launcher-app' mat-raised-button routerLink="/scanner">
+      <a class='launcher-app' mat-raised-button >
         <h3>Traducteur</h3>
-        <div><mat-icon aria-label="translate">translate</mat-icon></div>
+        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon></div>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/profil">
-        <h3>Profile</h3>
-        <img src='{{ user.urlAvatar }}' style="height: 100px" class="imgProf">
+        <h3>Profil</h3>
+        <img src='{{ user.urlAvatar }}' class="img-profil">
       </a>
   </mat-grid-tile>
 
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/settings">
-        <h3>Settings</h3>
-        <div><mat-icon aria-label="settings">settings</mat-icon></div>
+        <h3>Paramètres</h3>
+        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon></div>
       </a>
   </mat-grid-tile>
 

@@ -33,9 +33,6 @@ export class SettingsComponent implements OnInit {
     endPointCustomVision: string;
     callCustomVisionStatus = true;
 
-    // available games
-    games: Game[];
-
 
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
@@ -87,20 +84,6 @@ export class SettingsComponent implements OnInit {
         );
     }
 
-    loadGames() {
-      this.gameService.getGames().subscribe(
-          (games) => {
-            this.snackBar.open(games.length + ' games found', 'Ok', {
-              duration: 1000
-            });
-            this.games = games;
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
-    }
-
     saveCoordinatorSettings(): void {
       localStorage.setItem('endpoint', this.endPoint);
       this.toast.open('Settings updated', 'Ok', {
@@ -132,6 +115,8 @@ export class SettingsComponent implements OnInit {
       resGame$.subscribe( (game: Game) => {
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
+        localStorage.setItem('gameId', game.gameId.toString());
+        localStorage.setItem('groupName', game.groupName);
         this.toast.open('Game fetched', 'Ok', {
           duration: 2000
         });
