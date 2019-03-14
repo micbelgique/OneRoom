@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 // import { User } from '../services/OnePoint/model/user';
 import { MatSnackBar } from '@angular/material';
 import {User, Team, UserService, TeamService, LeaderboardService} from '@oneroomic/oneroomlibrary';
+import { EndPointGetterService } from '@oneroomic/oneroomlibrary/utilities/end-point-getter.service';
 // import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
 // import { TeamService } from '../services/OnePoint/team.service';
 // import { Team } from '../services/OnePoint/model/team';
@@ -28,7 +29,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private userCreateSub;
   private userDeleteSub;
   private teamSub;
-  private teamNotifySub;
+  private teamCreateSub;
+  private teamDeleteSub;
   private hubServiceSub;
 
   private hightlightUserSub;
@@ -38,7 +40,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private teamService: TeamService,
     private hubService: LeaderboardService,
-    private snackBar: MatSnackBar) { }
+    ) { }
 
   ngOnInit() {
     this.users = [];
@@ -67,8 +69,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.userDeleteSub = this.hubService.deleteUser.subscribe( (result) => {
       this.deleteUser(result);
     });
-    this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
-      this.refreshTeamList();
+    this.teamCreateSub = this.hubService.refreshTeamList.subscribe((result) => {
+      this.refreshTeamList(result);
+    });
+    this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
+      this.deleteTeamList(result);
     });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
@@ -78,14 +83,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     });
 
     this.getUserList();
-    this.refreshTeamList();
+    this.getTeams();
   }
 
   private getUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
         this.users = [];
-        console.log(usersList);
         usersList.forEach( u => {
           // User.generateAvatar(u);
           if (u.recognized >= this.minimumRecognized) {
@@ -100,7 +104,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private updateUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
-    console.log(u);
   }
 
   private updateUsers(users: User[]) {
@@ -116,14 +119,19 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users.splice(u, 1);
   }
+  private getTeams() {
+    this.teamService.getTeams().subscribe((result) => {
+      this.teams = result;
+    });
+  }
 
-  private refreshTeamList() {
-    this.teamSub = this.teamService.getTeams().subscribe(
-      (teamList) => {
-        this.teams = teamList;
-      },
-      error => this.errorMessage = error as any
-    );
+  private refreshTeamList(teams: Team[]) {
+    this.teams = teams;
+  }
+  private deleteTeamList(idGame: number) {
+    if (idGame === JSON.parse(localStorage.getItem('gameData')).gameId) {
+    this.teams = [];
+    }
   }
 
   isHighLighted(userId: number): string {
@@ -162,8 +170,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.teamSub) {
       this.teamSub.unsubscribe();
     }
-    if (this.teamNotifySub) {
-      this.teamNotifySub.unsubscribe();
+    if (this.teamCreateSub) {
+      this.teamCreateSub.unsubscribe();
+    }
+    if (this.teamDeleteSub) {
+      this.teamDeleteSub.unsubscribe();
     }
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();

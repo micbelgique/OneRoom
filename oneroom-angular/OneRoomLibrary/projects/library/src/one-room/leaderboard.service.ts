@@ -4,6 +4,7 @@ import { HttpTransportType } from '@aspnet/signalr';
 import { SignalRCoreService } from './abstracts/signalr/signalr.core.service';
 import { SignalrMethod, SignalrMethods } from './abstracts/signalr/signalr.abstract.service';
 import { User } from './model/user';
+import { Team } from './model/team';
 
 interface MonitoringMethods extends SignalrMethods {
   UpdateUsers: SignalrMethod;
@@ -23,8 +24,12 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   public refreshUserList  = this._refreshUserList.asObservable();
 
   // tslint:disable-next-line:variable-name
-  private _refreshTeamList = new EventEmitter<boolean>();
+  private _refreshTeamList = new EventEmitter<Team[]>();
   public refreshTeamList  = this._refreshTeamList.asObservable();
+
+  // tslint:disable-next-line:variable-name
+  private _deleteTeamList = new EventEmitter<number>();
+  public deleteTeamList = this._deleteTeamList.asObservable();
 
   // tslint:disable-next-line:variable-name
   private _highlightUser = new EventEmitter<any>();
@@ -49,7 +54,8 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   protected methods: MonitoringMethods = {
     UpdateGameState: (gameId) => this._refreshGameState.emit(gameId),
     UpdateUsers: (Users) => this._refreshUserList.emit(Users),
-    UpdateTeams: () => this._refreshTeamList.emit(true),
+    UpdateTeams: (result) => this._refreshTeamList.emit(result),
+    DeleteTeams: (result) => this._deleteTeamList.emit(result),
     UpdateUser: (result) => this._refreshUser.emit(result),
     CreateUser: (result) => this._createUser.emit(result),
     DeleteUser: (result) => this._deleteUser.emit(result),
