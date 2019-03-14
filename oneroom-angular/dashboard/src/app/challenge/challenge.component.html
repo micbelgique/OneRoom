@@ -1,0 +1,63 @@
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=true>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          <div mat-card-title i18n="@@settingsChallenge">Challenge</div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+      <mat-form-field style="width: 100%">
+        <input matInput placeholder="Titre" type='text' [(ngModel)]="challenge.title" value='{{challenge.title}}'>
+      </mat-form-field>
+
+      <mat-form-field style="width: 100%">
+        <textarea matInput placeholder="Description" type='text' [(ngModel)]="challenge.description" value='{{challenge.description}}'></textarea>
+      </mat-form-field>
+
+      <mat-form-field style="width: 100%">
+        <input matInput placeholder="URL de la documentation" type='text' [(ngModel)]="challenge.urlDocumentation" value='{{challenge.urlDocumentation}}'>
+      </mat-form-field>
+
+    </mat-card-content>
+    <mat-card-actions>
+      <div style="text-align: center">
+        <button style="width: 40%; margin:5px" mat-raised-button (click)='createChallenge()' color="primary" i18n="@@settingsCreate" >Create</button>
+      </div>
+    </mat-card-actions>
+  </mat-expansion-panel>
+</mat-accordion>
+<br>
+<h1 style='text-align: center'>Liste de Challenges</h1>
+<br>
+<table mat-table [dataSource]="challenges" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.challengeId}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef> Titre </th>
+    <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef> Description </th>
+    <td mat-cell *matCellDef="let element">{{element.description}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="urlDocumentation">
+    <th mat-header-cell *matHeaderCellDef> URL de la Documentation </th>
+    <td mat-cell *matCellDef="let element">{{element.urlDocumentation}}</td>
+</ng-container>
+
+  <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element">
+        <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteChallenge(element)' color="accent" i18n="@@settingsDelete">Delete</button>
+      </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

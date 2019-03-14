@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 // import { GameService } from '../services/OnePoint/game.service';
 // import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
-import { Game, Configuration, GameService, GameState } from '@oneroomic/oneroomlibrary';
+import { Game, Configuration, GameService, GameState, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
+import { FormControl } from '@angular/forms';
 // import { GameState } from '../services/OnePoint/model/game-state.enum';
 // import { Configuration } from '../services/OnePoint/model/configuration';
 
@@ -18,14 +19,18 @@ export class GamesComponent implements OnInit {
   // list of launched games
   games: Game[];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'challenge', 'delete'];
   // game to add
   game: Game;
   configs: Configuration[];
 
   gameStates: string[];
 
+  challengesSelected = new FormControl();
+  challenges: Challenge[];
+
   constructor(
+    private challengeService: ChallengeService,
     private gameService: GameService,
     private groupService: PersonGroupService,
     private snackBar: MatSnackBar) {
@@ -36,7 +41,9 @@ export class GamesComponent implements OnInit {
     this.games = [];
     this.configs = [];
     this.game = new Game();
+    this.challenges = [];
     this.refreshGames();
+    this.refreshChallenges();
   }
 
   refreshGames() {
@@ -51,12 +58,52 @@ export class GamesComponent implements OnInit {
               this.configs.push(g.config);
             }
           }
+          g.challenges = this.getChallengesByGame(g);
         });
       },
       (err) => {
         console.log(err);
       }
     );
+  }
+
+  refreshChallenges() {
+    this.challengeService.getChallenges().subscribe((challenges) => {
+        this.challenges = challenges;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  addChallenges(bool: boolean, game: Game) {
+    if (!bool) {
+      this.challengeService.addChallengeToGame(this.challengesSelected.value).subscribe(() => {
+        this.snackBar.open('Challenges added', 'Ok', {
+          duration: 1000
+        });
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    } else {
+      localStorage.setItem('gameData', JSON.stringify(game));
+    }
+  }
+
+  getChallengesByGame(game: Game): Challenge[] {
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.challengeService.getChallengesByGame().subscribe(
+      (challenges) => {
+        return challenges;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    return null;
   }
 
   /*getGame() {
