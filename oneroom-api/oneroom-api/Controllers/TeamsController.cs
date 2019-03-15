@@ -119,7 +119,7 @@ namespace oneroom_api.Controllers
             }
 
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams();
+            await _hubClients.Clients.All.UpdateTeams(teams);
 
             return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
@@ -136,11 +136,9 @@ namespace oneroom_api.Controllers
             {
                 return NotFound();
             }
-
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams();
-
+            await _hubClients.Clients.All.DeleteTeams(GameId);
             return teams;
         }
     }

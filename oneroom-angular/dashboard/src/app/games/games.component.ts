@@ -58,7 +58,7 @@ export class GamesComponent implements OnInit {
               this.configs.push(g.config);
             }
           }
-          g.challenges = this.getChallengesByGame(g);
+          // g.challenges = this.getChallengesByGame(g);
         });
       },
       (err) => {
@@ -106,16 +106,16 @@ export class GamesComponent implements OnInit {
     return null;
   }
 
-  /*getGame() {
-    const resGame$ = this.gameService.getGame(this.group);
-    resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
-      localStorage.setItem('groupName', game.groupName);
-      this.snackBar.open('Game fetched', 'Ok', {
-        duration: 3000
-      });
-    });
-  }*/
+  // getGame() {
+  //   const resGame$ = this.gameService.getGame(this.group);
+  //   resGame$.subscribe( (game: Game) => {
+  //     localStorage.setItem('gameId', game.gameId.toString());
+  //     localStorage.setItem('groupName', game.groupName);
+  //     this.snackBar.open('Game fetched', 'Ok', {
+  //       duration: 3000
+  //     });
+  //   });
+  // }
 
   createGame() {
     // set correct endpoint and key
@@ -126,6 +126,7 @@ export class GamesComponent implements OnInit {
       this.snackBar.open('Game Initialized', 'Ok', {
         duration: 3000
       });
+      console.log(game);
       // creating group face
       const res$ = this.groupService.create(this.game.groupName, this.game.groupName + '_name');
       res$.subscribe( x => {
