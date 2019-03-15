@@ -1,8 +1,9 @@
 <div class="launcher">
-<mat-toolbar  role="heading" [style.background-color]="" >
+<mat-toolbar  role="heading" [style.background-color]="getColorTeam()" >
   <mat-toolbar-row style="text-align:center">
       <h3>Hello {{user.name}},</h3>
       <span class="example-spacer"></span>
+      <h3> {{ teamUser?.teamName }} </h3>
       <button (click)=logOut() mat-stroked-button >
           <mat-icon>logout</mat-icon>
       </button>

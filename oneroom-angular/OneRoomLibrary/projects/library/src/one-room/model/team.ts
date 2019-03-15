@@ -4,4 +4,6 @@ export class Team {
   teamId: number;
   creationDate: Date;
   users: User[];
+  teamColor: string;
+  teamName: string;
 }
