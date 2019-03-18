@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
-using oneroom_api.ViewModels;
 
 namespace oneroom_api.Controllers
 {
@@ -30,7 +29,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(int gameId)
         {
-            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == gameId)
+            var users = await _context.Users.Where(u => u.GameId == gameId)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             return users;
@@ -42,7 +41,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> GetUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
                                            .SingleOrDefaultAsync();
 
             if (user == null)
@@ -136,7 +135,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<IEnumerable<User>>> Optimize(int GameId)
         {
-            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+            var users = await _context.Users.Where(u => u.GameId == GameId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
@@ -179,7 +178,7 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-                var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == user.UserId)
+                var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == user.UserId)
                                         .SingleOrDefaultAsync(); ;
 
                 if (usr != null)
@@ -190,13 +189,13 @@ namespace oneroom_api.Controllers
                     return Conflict("user already exists");
                 }
 
-                var count = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                var count = await _context.Users.Where(u => u.GameId == GameId)
                                                 .CountAsync();
 
                 user.Name = "Person " + (++count);
-                _context.Users.Add(user);
                 // Link user to game
-                _context.Entry(user).Property("GameId").CurrentValue = GameId;
+                user.GameId = GameId;
+                _context.Users.Add(user);
 
                 UsersUtilities.OptimizeResults(user);
                 UsersUtilities.GenerateAvatar(user);
@@ -224,7 +223,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> DeleteUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
+            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
                                            .SingleOrDefaultAsync();
             if (user == null)
             {
@@ -240,7 +239,7 @@ namespace oneroom_api.Controllers
 
         private bool UserExists( int GameId, Guid id)
         {
-            return _context.Users.Any(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id);
+            return _context.Users.Any(u => u.GameId == GameId && u.UserId == id);
         }
     }
 }

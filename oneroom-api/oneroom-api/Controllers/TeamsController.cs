@@ -30,7 +30,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int GameId)
         {
-            return await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+            return await _context.Teams.Where(t => t.GameId == GameId)
                                        .Include(t => t.Users)
                                        .ToListAsync();
         }
@@ -41,7 +41,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Team>> GetTeam(int GameId, int id)
         {
-            var team = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId && t.TeamId == id)
+            var team = await _context.Teams.Where(t => t.GameId == GameId && t.TeamId == id)
                                            .SingleOrDefaultAsync();
 
             if (team == null)
@@ -58,7 +58,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<List<Team>>> CreateTeam(int GameId, int numOfTeams)
         {
-            var count = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+            var count = await _context.Teams.Where(t => t.GameId == GameId)
                                             .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
@@ -67,7 +67,7 @@ namespace oneroom_api.Controllers
                 .Where(g => g.GameId == GameId)
                 .SingleOrDefaultAsync();
 
-            List<User> users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+            List<User> users = await _context.Users.Where(u => u.GameId == GameId)
                                                    .Where(u => u.Recognized >= game.Config.MinimumRecognized)
                                                    .ToListAsync();
 
@@ -103,11 +103,10 @@ namespace oneroom_api.Controllers
                     
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
+                team.GameId = GameId;
                 teams.Add(team);
 
                 _context.Teams.Add(team);
-                _context.Entry(team).Property("GameId").CurrentValue = GameId;
-
             }
 
             int nbTeams = teams.Count();
@@ -130,7 +129,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
         {
-            var teams = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+            var teams = await _context.Teams.Where(t => t.GameId == GameId)
                                             .Include(t => t.Users).ToListAsync();
             if (teams.Count() == 0)
             {

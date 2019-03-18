@@ -30,7 +30,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
         {
-            var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == UserId)
+            var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == UserId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .SingleOrDefaultAsync();
