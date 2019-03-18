@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,9 +27,9 @@ namespace oneroom_api.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Team>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int GameId)
+        public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int gameId)
         {
-            return await _context.Teams.Where(t => t.GameId == GameId)
+            return await _context.Teams.Where(t => t.GameId == gameId)
                                        .Include(t => t.Users)
                                        .ToListAsync();
         }
@@ -39,9 +38,9 @@ namespace oneroom_api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Team>> GetTeam(int GameId, int id)
+        public async Task<ActionResult<Team>> GetTeam(int gameId, int id)
         {
-            var team = await _context.Teams.Where(t => t.GameId == GameId && t.TeamId == id)
+            var team = await _context.Teams.Where(t => t.GameId == gameId && t.TeamId == id)
                                            .SingleOrDefaultAsync();
 
             if (team == null)
@@ -56,18 +55,18 @@ namespace oneroom_api.Controllers
         [HttpPost("{numOfTeams}")]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<List<Team>>>))]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<List<Team>>> CreateTeam(int GameId, int numOfTeams)
+        public async Task<ActionResult<List<Team>>> CreateTeam(int gameId, int numOfTeams)
         {
-            var count = await _context.Teams.Where(t => t.GameId == GameId)
+            var count = await _context.Teams.Where(t => t.GameId == gameId)
                                             .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
             var game = await _context.Games
                 .Include(g => g.Config)
-                .Where(g => g.GameId == GameId)
+                .Where(g => g.GameId == gameId)
                 .SingleOrDefaultAsync();
 
-            List<User> users = await _context.Users.Where(u => u.GameId == GameId)
+            List<User> users = await _context.Users.Where(u => u.GameId == gameId)
                                                    .Where(u => u.Recognized >= game.Config.MinimumRecognized)
                                                    .ToListAsync();
 
@@ -75,9 +74,8 @@ namespace oneroom_api.Controllers
 
             List<Team> teams = new List<Team>();
             users.Shuffle();
-            int nbUserPerTeam = (int)Math.Ceiling((double)users.Count() / numOfTeams);
 
-            for (int i = 0; i<numOfTeams; i++)
+            for (var i = 0; i<numOfTeams; i++)
             {
                 Team team = new Team();
                 // pick random team name
@@ -88,7 +86,7 @@ namespace oneroom_api.Controllers
                 } while (teams.Select(t => t.TeamName).Contains(name));
                 team.TeamName = name;
                 // pick random team color
-                string color = "";
+                string color;
                 do
                 {
                     Color colorAll;
@@ -103,7 +101,7 @@ namespace oneroom_api.Controllers
                     
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
-                team.GameId = GameId;
+                team.GameId = gameId;
                 teams.Add(team);
 
                 _context.Teams.Add(team);
@@ -120,7 +118,7 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(game.GroupName).UpdateTeams(teams);
 
-            return CreatedAtAction("GetTeam", new { GameId}, teams);
+            return CreatedAtAction("GetTeam", new { GameId = gameId}, teams);
         }
 
         // DELETE: api/Games/1/Teams

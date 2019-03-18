@@ -39,9 +39,9 @@ namespace oneroom_api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> GetUser( int GameId, Guid id)
+        public async Task<ActionResult<User>> GetUser( int gameId, Guid id)
         {
-            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
+            var user = await _context.Users.Where(u => u.GameId == gameId && u.UserId == id)
                                            .SingleOrDefaultAsync();
 
             if (user == null)
@@ -152,11 +152,12 @@ namespace oneroom_api.Controllers
             {
                 await _context.SaveChangesAsync();
                 var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
-                // update users dashboard and leaderboard
+                // update users dashboard and leader board
                 await _hubClients.Clients.Group(game.GroupName).UpdateUsers(users);
 
             }
-            catch (Exception) { }
+            catch (Exception)
+            {}
 
             return users;
         }
@@ -181,7 +182,7 @@ namespace oneroom_api.Controllers
                 }
 
                 var usr = await _context.Users.Where(u => u.GameId == gameId && u.UserId == user.UserId)
-                                        .SingleOrDefaultAsync(); ;
+                                        .SingleOrDefaultAsync();
                 var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                 if (usr != null)
                 {
@@ -238,9 +239,9 @@ namespace oneroom_api.Controllers
             return user;
         }
 
-        private bool UserExists( int GameId, Guid id)
+        private bool UserExists( int gameId, Guid id)
         {
-            return _context.Users.Any(u => u.GameId == GameId && u.UserId == id);
+            return _context.Users.Any(u => u.GameId == gameId && u.UserId == id);
         }
     }
 }

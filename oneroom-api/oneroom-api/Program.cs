@@ -45,11 +45,11 @@ namespace oneroom_api
     // Class to add a safe random and a shuffle method to a list
     public static class ThreadSafeRandom
     {
-        [ThreadStatic] private static Random Local;
+        [ThreadStatic] private static Random _local;
 
         public static Random ThisThreadsRandom
         {
-            get { return Local ?? (Local = new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId))); }
+            get { return _local ?? (_local = new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId))); }
         }
     }
 
