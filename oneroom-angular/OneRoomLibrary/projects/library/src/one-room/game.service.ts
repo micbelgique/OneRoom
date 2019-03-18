@@ -31,6 +31,10 @@ export class GameService {
     return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
 
+  disconnect(groupName: string): Observable<Game> {
+    return this.http.get<Game>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/Disconnect/', { headers: this.headers });
+  }
+
   switchState(groupName: string, newState: GameState): Observable<number> {
     return this.http.post<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/SwitchState/' + newState, null);
   }

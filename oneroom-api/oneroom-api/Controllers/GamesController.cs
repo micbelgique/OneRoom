@@ -27,7 +27,6 @@ namespace oneroom_api.Controllers
             _hubClients = hubClients;
         }
 
-
         // GET: api/Games
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Game>>>))]
@@ -57,8 +56,22 @@ namespace oneroom_api.Controllers
             }
 
             // add client to group hub
-            // await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
+            await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
 
+            return game;
+        }
+
+        // GET: api/Games/groupName/Disconnect
+        [HttpGet("{groupName}/Disconnect")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Game>> Disconnect(string groupName)
+        {
+            var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
+            if (game != null)
+                await _hubClients.Groups.RemoveFromGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
+            else
+                return NotFound();
             return game;
         }
 
