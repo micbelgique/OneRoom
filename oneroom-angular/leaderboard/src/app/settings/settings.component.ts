@@ -16,6 +16,7 @@ export class SettingsComponent implements OnInit {
   endPoint: string;
   group: string;
   minimumRecognized: number;
+  connected = JSON.parse(localStorage.getItem('connected') === null ? false : JSON.parse(localStorage.getItem('connected')));
 
   // available games
   games: Game[];
@@ -83,6 +84,19 @@ export class SettingsComponent implements OnInit {
       this.toast.open('Game fetched', 'Ok', {
         duration: 3000
       });
+      if (game.config) {
+        console.log('auto Config');
+        console.log(game.config);
+        // connection
+        this.connected = true;
+        localStorage.setItem('connected', JSON.stringify(this.connected));
+      }
+    });
+  }
+  disconnect() {
+    this.gameService.disconnect(this.game.groupName).subscribe(() => {
+      this.connected = false;
+      localStorage.setItem('connected', JSON.stringify(this.connected));
     });
   }
 }

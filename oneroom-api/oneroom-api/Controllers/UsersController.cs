@@ -182,6 +182,7 @@ namespace oneroom_api.Controllers
 
                 var usr = await _context.Users.Where(u => u.GameId == gameId && u.UserId == user.UserId)
                                         .SingleOrDefaultAsync(); ;
+                var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                 if (usr != null)
                 {
 
@@ -192,7 +193,6 @@ namespace oneroom_api.Controllers
 
                 var count = await _context.Users.Where(u => u.GameId == gameId)
                                                 .CountAsync();
-                var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                 user.Name = "Person " + (++count);
                 // Link user to game
                 user.GameId = gameId;

@@ -28,7 +28,7 @@
         <mat-card-content>
             <div style='text-align: center'>
                 <mat-form-field>
-                    <mat-select placeholder="Game" [(ngModel)]="this.group" >
+                    <mat-select placeholder="Game" [(ngModel)]="this.group" [disabled]="this.connected">
                         <mat-option *ngFor="let game of games" [value]="game.groupName">
                       {{game.groupName}}
                     </mat-option>
@@ -41,10 +41,13 @@
         </mat-card-content>
         <mat-card-actions>
           <div style="text-align: center">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" >Connecter</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" [disabled]="this.connected" >Connecter</button>
+          </div>
+          <div style="text-align: center">
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='disconnect()' color="primary" i18n="@@settingsCreate" [disabled]="!this.connected">Déconnexion</button>
           </div>
         </mat-card-actions>
-      </mat-expansion-panel>
+          </mat-expansion-panel>
     </mat-accordion>
 
     <mat-accordion class="example-headers-align">

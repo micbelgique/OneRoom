@@ -21,6 +21,7 @@ export class SettingsComponent implements OnInit {
     // coordinator
     endPoint: string;
     refreshRate: number;
+    connected = JSON.parse(localStorage.getItem('connected')) === null ? false : JSON.parse(localStorage.getItem('connected'));
     // game
     game: Game = new Game();
     games: Game[];
@@ -130,7 +131,16 @@ export class SettingsComponent implements OnInit {
           // refreshRate
           this.refreshRate = game.config.refreshRate;
           this.saveRefreshRate();
+          // connection
+          this.connected = true;
+          localStorage.setItem('connected', JSON.stringify(this.connected));
         }
+      });
+    }
+    disconnect() {
+      this.gameService.disconnect(this.game.groupName).subscribe(() => {
+        this.connected = false;
+        localStorage.setItem('connected', JSON.stringify(this.connected));
       });
     }
 
