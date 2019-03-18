@@ -154,10 +154,5 @@ namespace oneroom_api.Controllers
 
             return game;
         }
-
-        private bool GameExists(int id)
-        {
-            return _context.Games.Any(e => e.GameId == id);
-        }
     }
 }

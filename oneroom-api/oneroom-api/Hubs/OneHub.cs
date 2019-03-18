@@ -21,9 +21,7 @@ namespace oneroom_api.Hubs
         //
         Task UpdateTeams( IEnumerable<Team> teams);
         //
-        Task DeleteTeams(int gameID);
-        // All clients receive automatic configuration when changed
-        Task UpdateConfigurations();
+        Task DeleteTeams(int gameId);
         // When game state changed
         Task UpdateGameState(int gameId);
         // when game deleted or updated
@@ -42,7 +40,5 @@ namespace oneroom_api.Hubs
         public async Task JoinGroupAsync(string groupName) => await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
         public async Task LeaveGroupAsync(string groupName) => await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-        // todo : groups 
     }
 }
