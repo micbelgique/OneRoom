@@ -156,8 +156,10 @@ namespace oneroom_api.Controllers
                 await _hubClients.Clients.Group(game.GroupName).UpdateUsers(users);
 
             }
-            catch (Exception)
-            {}
+            catch
+            {
+                // ignored
+            }
 
             return users;
         }

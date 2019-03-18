@@ -32,20 +32,8 @@ namespace oneroom_api.Hubs
         Task LeaveGroupAsync(string groupName);
     }
 
-    // possible clients
-    public enum ClientType
-    {
-        Leaderboard,
-        Dashboard,
-        Register
-    }
-
     public class OneHub : Hub<IActionClient>
     {
-        public OneHub()
-        {
-        }
-
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();

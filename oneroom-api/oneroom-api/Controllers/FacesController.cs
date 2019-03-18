@@ -80,10 +80,5 @@ namespace oneroom_api.Controllers
 
             return Ok(face);
         }
-
-        private bool FaceExists(Guid id)
-        {
-            return _context.Faces.Any(e => e.FaceId.Equals(id));
-        }
     }
 }
