@@ -28,6 +28,8 @@ namespace oneroom_api.Hubs
         Task UpdateGameState(int gameId);
         // when game deleted or updated
         Task UpdateGame(int gameId);
+        Task JoinGroupAsync(string groupName);
+        Task LeaveGroupAsync(string groupName);
     }
 
     // possible clients
@@ -49,15 +51,9 @@ namespace oneroom_api.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task JoinGroupAsync(string groupName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        }
+        public async Task JoinGroupAsync(string groupName) => await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-        public async Task LeaveGroupAsync(string groupName)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-        }
+        public async Task LeaveGroupAsync(string groupName) => await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
         // todo : groups 
     }

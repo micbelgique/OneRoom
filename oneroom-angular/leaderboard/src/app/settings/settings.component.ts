@@ -22,7 +22,7 @@ export class SettingsComponent implements OnInit {
   games: Game[];
 
   // current game
-  private game: Game;
+  game: Game;
 
   constructor(
     private toast: MatSnackBar,
@@ -34,7 +34,7 @@ export class SettingsComponent implements OnInit {
     } else {
       this.minimumRecognized = 3;
     }
-
+    console.log(localStorage.getItem('gameData'));
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
     }

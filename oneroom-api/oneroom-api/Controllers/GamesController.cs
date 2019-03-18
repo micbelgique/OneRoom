@@ -56,7 +56,7 @@ namespace oneroom_api.Controllers
             }
 
             // add client to group hub
-            await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
+            await _hubClients.Clients.All.JoinGroupAsync(groupName);
 
             return game;
         }
@@ -69,7 +69,7 @@ namespace oneroom_api.Controllers
         {
             var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
             if (game != null)
-                await _hubClients.Groups.RemoveFromGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
+                await _hubClients.Clients.All.LeaveGroupAsync(groupName);
             else
                 return NotFound();
             return game;
