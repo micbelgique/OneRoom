@@ -15,6 +15,7 @@ namespace oneroom_api.Model
         public string Name { get; set; }
         public string UrlAvatar { get; set; }
         public List<Face> Faces { get; set; } = new List<Face>();
+        public int GameId { get; set; }
 
         // recalculated details
         public double Age { get; set; }
