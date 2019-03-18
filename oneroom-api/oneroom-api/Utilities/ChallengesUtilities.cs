@@ -2,9 +2,9 @@
 
 namespace oneroom_api.Utilities
 {
-    public class ChallengesUtilities
+    public static class ChallengesUtilities
     {
-        public static ChallengeDTO ToChallengeDTOMap(Challenge challenge)
+        public static ChallengeDTO ToDTO(this Challenge challenge)
         {
             return new ChallengeDTO()
             {

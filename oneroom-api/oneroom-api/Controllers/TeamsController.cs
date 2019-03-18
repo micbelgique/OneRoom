@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
@@ -41,8 +42,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Team>> GetTeam(int GameId, int id)
         {
-            var team = await _context.Teams.Where(t => t.GameId == GameId && t.TeamId == id)
-                                           .SingleOrDefaultAsync();
+            var team = await _context.Teams.SingleOrDefaultAsync(t => t.GameId == GameId && t.TeamId == id);
 
             if (team == null)
             {
@@ -62,10 +62,8 @@ namespace oneroom_api.Controllers
                                             .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
-            var game = await _context.Games
-                .Include(g => g.Config)
-                .Where(g => g.GameId == GameId)
-                .SingleOrDefaultAsync();
+            var game = await _context.Games.Include(g => g.Config)
+                                           .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             List<User> users = await _context.Users.Where(u => u.GameId == GameId)
                                                    .Where(u => u.Recognized >= game.Config.MinimumRecognized)
@@ -130,7 +128,8 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
         {
             var teams = await _context.Teams.Where(t => t.GameId == GameId)
-                                            .Include(t => t.Users).ToListAsync();
+                                            .Include(t => t.Users)
+                                            .ToListAsync();
             if (teams.Count() == 0)
             {
                 return NotFound();

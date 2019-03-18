@@ -30,10 +30,9 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
         {
-            var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == UserId)
-                                            .Include(u => u.Faces)
-                                            .OrderByDescending(u => u.RecognizedDate)
-                                            .SingleOrDefaultAsync();
+            var usr = await _context.Users.Include(u => u.Faces)
+                                          .OrderByDescending(u => u.RecognizedDate)
+                                          .SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == UserId);
             if (usr != null)
                 {
 
@@ -45,8 +44,8 @@ namespace oneroom_api.Controllers
                     _context.Entry(usr).State = EntityState.Modified;
                 try
                 {
-                    UsersUtilities.OptimizeResults(usr);
-                    UsersUtilities.GenerateAvatar(usr);
+                    usr.OptimizeResults();
+                    usr.GenerateAvatar();
 
                     await _context.SaveChangesAsync();
 

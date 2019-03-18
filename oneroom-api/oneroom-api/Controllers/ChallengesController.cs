@@ -25,7 +25,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallenges()
         {
-            return await _context.Challenges.Select(c => ChallengesUtilities.ToChallengeDTOMap(c))
+            return await _context.Challenges.Select(c => c.ToDTO())
                                             .ToListAsync();
         }
 
@@ -38,9 +38,9 @@ namespace oneroom_api.Controllers
             if(!GameExists(GameId)) return NotFound("There is no game with id:" + GameId);
 
             List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.GameChallenges)
-                                                                  .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
-                                                                  .Select(c => ChallengesUtilities.ToChallengeDTOMap(c))
-                                                                  .ToListAsync();
+                                                                     .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
+                                                                     .Select(c => c.ToDTO())
+                                                                     .ToListAsync();
 
             return challenges;
         }
@@ -58,7 +58,7 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            return ChallengesUtilities.ToChallengeDTOMap(challenge);
+            return challenge.ToDTO();
         }
 
         // PUT: api/Challenges/5
@@ -100,7 +100,7 @@ namespace oneroom_api.Controllers
             _context.Challenges.Add(challenge);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, ChallengesUtilities.ToChallengeDTOMap(challenge));
+            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDTO());
         }
 
         // POST: api/Games/5/Challenges
@@ -109,9 +109,8 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Where(g => g.GameId == GameId)
-                                            .Include(c => c.GameChallenges)
-                                            .SingleOrDefaultAsync();
+            Game game = await _context.Games.Include(c => c.GameChallenges)
+                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
@@ -133,8 +132,7 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<Challenge>> DeleteChallenge(int id)
         {
             var challenge = await _context.Challenges.Include(c => c.GameChallenges)
-                                                     .Where(c => c.ChallengeId == id)
-                                                     .SingleOrDefaultAsync();
+                                                     .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
             {
                 return NotFound();
@@ -154,10 +152,9 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Where(g => g.GameId == GameId)
-                                            .Include(c => c.GameChallenges)
+            Game game = await _context.Games.Include(c => c.GameChallenges)
                                                 .ThenInclude(gc => gc.Challenge)
-                                            .SingleOrDefaultAsync();
+                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 

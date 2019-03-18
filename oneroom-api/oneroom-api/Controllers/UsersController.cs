@@ -41,8 +41,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> GetUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
-                                           .SingleOrDefaultAsync();
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == id);
 
             if (user == null)
             {
@@ -178,8 +177,7 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-                var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == user.UserId)
-                                        .SingleOrDefaultAsync(); ;
+                var usr = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == user.UserId);
 
                 if (usr != null)
                 {
@@ -197,8 +195,8 @@ namespace oneroom_api.Controllers
                 user.GameId = GameId;
                 _context.Users.Add(user);
 
-                UsersUtilities.OptimizeResults(user);
-                UsersUtilities.GenerateAvatar(user);
+                user.OptimizeResults();
+                user.GenerateAvatar();
 
                 await _context.SaveChangesAsync();               
 
@@ -223,8 +221,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> DeleteUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
-                                           .SingleOrDefaultAsync();
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == id);
             if (user == null)
             {
                 return NotFound();

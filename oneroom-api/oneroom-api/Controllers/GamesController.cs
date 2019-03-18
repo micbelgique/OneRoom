@@ -34,7 +34,8 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
             // return config to select it
-            return await _context.Games.Include(g => g.Config).ToListAsync();
+            return await _context.Games.Include(g => g.Config)
+                                       .ToListAsync();
         }
 
         // GET: api/Games/groupName
@@ -43,12 +44,10 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> GetGame(string groupName)
         {
-            var game = await _context.Games
-                .Include(g => g.Users)
-                .Include(g => g.Teams)
-                .Include(g => g.Config)
-                .Where(g => g.GroupName.Equals(groupName))
-                .SingleOrDefaultAsync();
+            var game = await _context.Games.Include(g => g.Users)
+                                           .Include(g => g.Teams)
+                                           .Include(g => g.Config)
+                                           .SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
 
             if (game == null)
             {
@@ -140,8 +139,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> DeleteGame(string groupName)
         {
-            var game = await _context.Games.Where(g => g.GroupName.Equals(groupName))
-                                           .SingleOrDefaultAsync();
+            var game = await _context.Games.SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
             if (game == null)
             {
                 return NotFound();
