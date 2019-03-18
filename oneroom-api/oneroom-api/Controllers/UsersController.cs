@@ -57,7 +57,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> UpdateUser(int GameId, Guid id, User usr)
+        public async Task<ActionResult<User>> UpdateUser(int gameId, Guid id, User usr)
         {
             if (usr == null)
             {
@@ -76,11 +76,12 @@ namespace oneroom_api.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUser(usr);
+                var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
+                await _hubClients.Clients.Group(game.GroupName).UpdateUser(usr);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists( GameId, usr.UserId))
+                if (!UserExists( gameId, usr.UserId))
                 {
                     return NotFound();
                 }
@@ -112,7 +113,8 @@ namespace oneroom_api.Controllers
                             u.IsFirstConnected = true;
                             _context.Entry(u).State = EntityState.Modified;
                             await _context.SaveChangesAsync();
-                            await _hubClients.Clients.All.UpdateUser(u);
+                            var game = await (from e in _context.Games where e.GameId == user.GameId select e).FirstOrDefaultAsync();
+                            await _hubClients.Clients.Group(game.GroupName).UpdateUser(u);
                         }
                         return u;
                     }
@@ -133,9 +135,9 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<IEnumerable<User>>> Optimize(int GameId)
+        public async Task<ActionResult<IEnumerable<User>>> Optimize(int gameId)
         {
-            var users = await _context.Users.Where(u => u.GameId == GameId)
+            var users = await _context.Users.Where(u => u.GameId == gameId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
@@ -149,9 +151,9 @@ namespace oneroom_api.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-
+                var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUsers(users);
+                await _hubClients.Clients.Group(game.GroupName).UpdateUsers(users);
 
             }
             catch (Exception) { }
@@ -164,7 +166,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<User>> PostUser( int GameId, User user)
+        public async Task<ActionResult<User>> PostUser( int gameId, User user)
         {
             try
             {
@@ -178,23 +180,22 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-                var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == user.UserId)
+                var usr = await _context.Users.Where(u => u.GameId == gameId && u.UserId == user.UserId)
                                         .SingleOrDefaultAsync(); ;
-
                 if (usr != null)
                 {
 
                     // warn dashboard user is in front of the camera
-                    await _hubClients.Clients.All.HighlightUser(user.UserId);
+                    await _hubClients.Clients.Group(game.GroupName).HighlightUser(user.UserId);
                     return Conflict("user already exists");
                 }
 
-                var count = await _context.Users.Where(u => u.GameId == GameId)
+                var count = await _context.Users.Where(u => u.GameId == gameId)
                                                 .CountAsync();
-
+                var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                 user.Name = "Person " + (++count);
                 // Link user to game
-                user.GameId = GameId;
+                user.GameId = gameId;
                 _context.Users.Add(user);
 
                 UsersUtilities.OptimizeResults(user);
@@ -203,12 +204,12 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.CreateUser(user);
+                await _hubClients.Clients.Group(game.GroupName).CreateUser(user);
 
                 // warn dashboard user is in front of the camera
-                await _hubClients.Clients.All.HighlightUser(user.UserId);
+                await _hubClients.Clients.Group(game.GroupName).HighlightUser(user.UserId);
 
-                return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
+                return CreatedAtAction("GetUser", new { gameId, id = user.UserId }, user);
             }
             catch (Exception)
             {
@@ -221,18 +222,18 @@ namespace oneroom_api.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> DeleteUser( int GameId, Guid id)
+        public async Task<ActionResult<User>> DeleteUser( int gameId, Guid id)
         {
-            var user = await _context.Users.Where(u => u.GameId == GameId && u.UserId == id)
+            var user = await _context.Users.Where(u => u.GameId == gameId && u.UserId == id)
                                            .SingleOrDefaultAsync();
             if (user == null)
             {
                 return NotFound();
             }
-
+            var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.DeleteUser(user);
+            await _hubClients.Clients.Group(game.GroupName).DeleteUser(user);
 
             return user;
         }

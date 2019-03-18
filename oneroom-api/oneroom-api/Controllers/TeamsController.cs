@@ -118,7 +118,7 @@ namespace oneroom_api.Controllers
             }
 
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams(teams);
+            await _hubClients.Clients.Group(game.GroupName).UpdateTeams(teams);
 
             return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
@@ -127,9 +127,9 @@ namespace oneroom_api.Controllers
         [HttpDelete]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
+        public async Task<ActionResult<List<Team>>> DeleteTeams( int gameId)
         {
-            var teams = await _context.Teams.Where(t => t.GameId == GameId)
+            var teams = await _context.Teams.Where(t => t.GameId == gameId)
                                             .Include(t => t.Users).ToListAsync();
             if (teams.Count() == 0)
             {
@@ -137,7 +137,8 @@ namespace oneroom_api.Controllers
             }
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.DeleteTeams(GameId);
+            var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
+            await _hubClients.Clients.Group(game.GroupName).DeleteTeams(gameId);
             return teams;
         }
     }

@@ -28,9 +28,9 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
+        public async Task<ActionResult<Face>> PostFace( int gameId, Guid UserId, [FromBody] Face face)
         {
-            var usr = await _context.Users.Where(u => u.GameId == GameId && u.UserId == UserId)
+            var usr = await _context.Users.Where(u => u.GameId == gameId && u.UserId == UserId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .SingleOrDefaultAsync();
@@ -49,16 +49,16 @@ namespace oneroom_api.Controllers
                     UsersUtilities.GenerateAvatar(usr);
 
                     await _context.SaveChangesAsync();
-
+                    var game = await (from e in _context.Games where e.GameId == gameId select e).FirstOrDefaultAsync();
                     // update users dashboard and leaderboard
-                    await _hubClients.Clients.All.UpdateUser(usr);
+                    await _hubClients.Clients.Group(game.GroupName).UpdateUser(usr);
 
                 } catch(DbUpdateException)
                 {
                     return Conflict("face already exists : "+ face.FaceId);
                 }
 
-                    return CreatedAtAction("GetUser", "Users", new { GameId, id = UserId }, face);
+                    return CreatedAtAction("GetUser", "Users", new { gameId, id = UserId }, face);
                 }
                 else
                     return NotFound("user not found");

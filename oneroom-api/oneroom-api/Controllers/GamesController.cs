@@ -101,7 +101,7 @@ namespace oneroom_api.Controllers
                 _context.Entry(game).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 // update state clients
-                await _hubClients.Clients.All.UpdateGameState(game.GameId);
+                await _hubClients.Clients.Group(groupName).UpdateGameState(game.GameId);
                 return game.State;
             }
             else
@@ -151,7 +151,7 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
             // update clients
             // await _hubClients.Clients.Group(groupName).UpdateGame();
-            await _hubClients.Clients.All.UpdateGame(game.GameId);
+            await _hubClients.Clients.Group(groupName).UpdateGame(game.GameId);
 
             return game;
         }
