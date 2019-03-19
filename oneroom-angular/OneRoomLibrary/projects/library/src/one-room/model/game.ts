@@ -2,7 +2,6 @@ import { User } from './user';
 import { Team } from './team';
 import { GameState } from './game-state.enum';
 import { Configuration } from './configuration';
-import { Challenge } from './challenge';
 
 export class Game {
   gameId: number;
@@ -11,6 +10,6 @@ export class Game {
   state: GameState;
   users: User[] = [];
   teams: Team[] = [];
-  challenges: Challenge[] = [];
+  challengesId: number[] = [];
   config: Configuration = new Configuration();
 }

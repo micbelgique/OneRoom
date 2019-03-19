@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace oneroom_api.Model
@@ -23,5 +24,17 @@ namespace oneroom_api.Model
         public string URLDocumentation { get; set; }
 
         public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
+
+        public override bool Equals(object obj)
+        {
+            var challenge = obj as Challenge;
+            return challenge != null &&
+                   ChallengeId == challenge.ChallengeId;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ChallengeId);
+        }
     }
 }

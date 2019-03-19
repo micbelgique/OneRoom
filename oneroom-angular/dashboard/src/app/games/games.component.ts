@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-// import { Game } from '../services/OnePoint/model/game';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { Game, Configuration, GameService, GameState, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
-import { FormControl } from '@angular/forms';
-// import { GameState } from '../services/OnePoint/model/game-state.enum';
-// import { Configuration } from '../services/OnePoint/model/configuration';
 
 @Component({
   selector: 'app-games',
@@ -26,7 +20,7 @@ export class GamesComponent implements OnInit {
 
   gameStates: string[];
 
-  challengesSelected = new FormControl();
+  challengesIdBefore: number[] = [];
   challenges: Challenge[];
 
   constructor(
@@ -47,18 +41,16 @@ export class GamesComponent implements OnInit {
   }
 
   refreshGames() {
-    const res$ = this.gameService.getGames();
-    res$.subscribe(
-      (games) => {
+    this.gameService.getGames().subscribe( (games) => {
         this.games = games;
         // pick availables configs to choose from
         games.forEach( (g) => {
+          this.getChallengesIdByGame(g);
           if (g.config.faceEndpoint && g.config.faceKey) {
             if (this.configs.map(c => c.id).indexOf(g.config.id) === -1) {
               this.configs.push(g.config);
             }
           }
-          // g.challenges = this.getChallengesByGame(g);
         });
       },
       (err) => {
@@ -77,9 +69,22 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  addChallenges(bool: boolean, game: Game) {
+  updateChallengesInGames(bool: boolean, game: Game) {
     if (!bool) {
-      this.challengeService.addChallengeToGame(this.challengesSelected.value).subscribe(() => {
+      this.addChallengesToGame( this.challenges.filter(c => game.challengesId.includes(c.challengeId)
+                                && !this.challengesIdBefore.includes(c.challengeId)));
+      this.removeChallengesFromGames( this.challenges.filter(c => !game.challengesId.includes(c.challengeId)
+                                      && this.challengesIdBefore.includes(c.challengeId)));
+    } else {
+      localStorage.setItem('gameData', JSON.stringify(game));
+      this.challengesIdBefore = game.challengesId;
+    }
+  }
+
+  addChallengesToGame(challenges: Challenge[]) {
+    if (challenges.length > 0) {
+      console.log(challenges);
+      this.challengeService.addChallengeToGame(challenges).subscribe(() => {
         this.snackBar.open('Challenges added', 'Ok', {
           duration: 1000
         });
@@ -88,22 +93,41 @@ export class GamesComponent implements OnInit {
           console.log(err);
         }
       );
-    } else {
-      localStorage.setItem('gameData', JSON.stringify(game));
     }
   }
 
-  getChallengesByGame(game: Game): Challenge[] {
+  removeChallengesFromGames(challenges: Challenge[]) {
+    if (challenges.length > 0) {
+      console.log(challenges);
+      this.challengeService.deleteChallengeFromGame(challenges).subscribe(() => {
+        this.snackBar.open('Challenges deleted', 'Ok', {
+          duration: 1000
+        });
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+  }
+
+  getChallengesIdByGame(game: Game) {
     localStorage.setItem('gameData', JSON.stringify(game));
-    this.challengeService.getChallengesByGame().subscribe(
-      (challenges) => {
-        return challenges;
+    this.challengeService.getChallengesByGame().subscribe( (challenges) => {
+        game.challengesId = challenges.map(c => c.challengeId);
       },
       (err) => {
         console.log(err);
       }
     );
-    return null;
+  }
+
+  getChallengeTitleById(id: number): string {
+    if (this.challenges.findIndex(c => c.challengeId === id) !== -1) {
+      return this.challenges.find(c => c.challengeId === id).title;
+    } else {
+      return '';
+    }
   }
 
   // getGame() {
