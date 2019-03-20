@@ -54,23 +54,6 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            // add client to group hub
-            await _hubClients.Groups.AddToGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
-
-            return game;
-        }
-
-        // GET: api/Games/groupName/Disconnect
-        [HttpGet("{groupName}/Disconnect")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<Game>> Disconnect(string groupName)
-        {
-            var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
-            if (game != null)
-                await _hubClients.Groups.RemoveFromGroupAsync(ControllerContext.HttpContext.Connection.Id, groupName);
-            else
-                return NotFound();
             return game;
         }
 
@@ -100,7 +83,7 @@ namespace oneroom_api.Controllers
                 _context.Entry(game).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 // update state clients
-                await _hubClients.Clients.All.UpdateGameState(game.GameId);
+                await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGameState(game.GameId);
                 return game.State;
             }
             else
@@ -149,7 +132,7 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
             // update clients
             // await _hubClients.Clients.Group(groupName).UpdateGame();
-            await _hubClients.Clients.All.UpdateGame(game.GameId);
+            await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGame(game.GameId);
 
             return game;
         }

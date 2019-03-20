@@ -46,6 +46,7 @@ namespace oneroom_api.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            Console.WriteLine(Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
@@ -58,7 +59,5 @@ namespace oneroom_api.Hubs
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
-
-        // todo : groups 
     }
 }

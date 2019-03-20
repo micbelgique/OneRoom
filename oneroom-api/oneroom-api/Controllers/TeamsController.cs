@@ -116,7 +116,7 @@ namespace oneroom_api.Controllers
             }
 
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams(teams);
+            await _hubClients.Clients.Group(GameId.ToString()).UpdateTeams(teams);
 
             return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
@@ -136,7 +136,7 @@ namespace oneroom_api.Controllers
             }
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.DeleteTeams(GameId);
+            await _hubClients.Clients.Group(GameId.ToString()).DeleteTeams(GameId);
             return teams;
         }
     }

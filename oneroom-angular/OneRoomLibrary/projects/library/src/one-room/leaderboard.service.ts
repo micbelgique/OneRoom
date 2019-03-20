@@ -7,7 +7,14 @@ import { User } from './model/user';
 import { Team } from './model/team';
 
 interface MonitoringMethods extends SignalrMethods {
+  UpdateGameState: SignalrMethod;
   UpdateUsers: SignalrMethod;
+  UpdateTeams: SignalrMethod;
+  DeleteTeams: SignalrMethod;
+  UpdateUser: SignalrMethod;
+  CreateUser: SignalrMethod;
+  DeleteUser: SignalrMethod;
+  HighlightUser: SignalrMethod;
 }
 
 @Injectable({
@@ -66,6 +73,14 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
 
   constructor() {
     super();
+  }
+
+  public joinGroup(groupName: string): void {
+    this.send('JoinGroupAsync', groupName);
+  }
+
+  public leaveGroup(groupName: string): void {
+    this.send('LeaveGroupAsync', groupName);
   }
 
   public run(): Observable<any> {

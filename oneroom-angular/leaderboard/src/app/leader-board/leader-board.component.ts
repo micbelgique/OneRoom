@@ -1,12 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { UserService } from '../services/OnePoint/user.service';
-// import { User } from '../services/OnePoint/model/user';
-import { MatSnackBar } from '@angular/material';
-import {User, Team, UserService, TeamService, LeaderboardService} from '@oneroomic/oneroomlibrary';
-import { EndPointGetterService } from '@oneroomic/oneroomlibrary/utilities/end-point-getter.service';
-// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-// import { TeamService } from '../services/OnePoint/team.service';
-// import { Team } from '../services/OnePoint/model/team';
+import {User, Team, UserService, TeamService, LeaderboardService, Game} from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-leader-board',
@@ -17,6 +10,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   users: User[];
   teams: Team[];
+  game: Game;
   errorMessage: string;
   refreshBtn = true;
   title: string;
@@ -46,7 +40,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.users = [];
     this.teams = [];
     this.title = localStorage.getItem('groupName');
-
+    this.game = JSON.parse(localStorage.getItem('gameData'));
     // minimum face
     if (localStorage.getItem('minimumRecognized')) {
       this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
@@ -56,7 +50,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
     this.detectedUserId = '';
     // attach to event from hub
-    this.hubServiceSub = this.hubService.run().subscribe();
+    this.hubServiceSub = this.hubService.run().subscribe( () => this.hubService.joinGroup(this.game.gameId.toString()));
     this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
       this.updateUser(result);
     });
@@ -129,7 +123,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teams = teams;
   }
   private deleteTeamList(idGame: number) {
-    if (idGame === JSON.parse(localStorage.getItem('gameData')).gameId) {
+    if (idGame === this.game.gameId) {
     this.teams = [];
     }
   }
@@ -183,6 +177,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.hightlightUserSub.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
+      this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
     }
   }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import { User, UserService, Team, TeamService, LeaderboardService } from '@oneroomic/oneroomlibrary';
+import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
 @Component({
@@ -13,6 +13,7 @@ export class NavComponent implements OnInit {
   user: User;
   teams: Team[];
   teamUser: Team;
+  game: Game;
   private updateTeam;
   private deleteTeam;
   private hubServiceSub;
@@ -26,6 +27,7 @@ export class NavComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.game = JSON.parse(localStorage.getItem('gameData'));
     if (localStorage.getItem('user') == null) {
       this.route.navigate(['/lock']);
     } else {
@@ -37,12 +39,12 @@ export class NavComponent implements OnInit {
         this.updateTeamList(result);
       });
     }
-    this.hubServiceSub = this.hubService.run().subscribe();
+    this.hubServiceSub = this.hubService.run().subscribe(() => this.hubService.joinGroup(this.game.gameId.toString()));
     this.updateTeam = this.hubService.refreshTeamList.subscribe((result) => {
       this.updateTeamList(result);
     });
     this.deleteTeam = this.hubService.deleteTeamList.subscribe((result) => {
-      if (JSON.parse(localStorage.getItem('gameData')).gameId === result) {
+      if (this.game.gameId === result) {
         this.deleteTeamList();
       }
     });
@@ -94,6 +96,7 @@ export class NavComponent implements OnInit {
       this.deleteTeam.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
+      this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
     }
   }

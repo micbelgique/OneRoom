@@ -70,12 +70,12 @@ namespace oneroom_api.Controllers
 
             _context.Entry(usr).State = EntityState.Modified;
 
-            UsersUtilities.GenerateAvatar(usr);
+            usr.GenerateAvatar();
 
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUser(usr);
+                await _hubClients.Clients.Group(GameId.ToString()).UpdateUser(usr);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -140,7 +140,6 @@ namespace oneroom_api.Controllers
                                             .ToListAsync();
             foreach( User u in users)
             {
-                u.Name = u.Name.Replace("Player", "Person");
                 UsersUtilities.OptimizeResults(u);
                 UsersUtilities.GenerateAvatar(u);
             }
@@ -150,7 +149,7 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUsers(users);
+                await _hubClients.Clients.Group(GameId.ToString()).UpdateUsers(users);
 
             }
             catch (Exception) { }
@@ -183,7 +182,7 @@ namespace oneroom_api.Controllers
                 {
 
                     // warn dashboard user is in front of the camera
-                    await _hubClients.Clients.All.HighlightUser(user.UserId);
+                    await _hubClients.Clients.Group(GameId.ToString()).HighlightUser(user.UserId);
                     return Conflict("user already exists");
                 }
 
@@ -201,10 +200,10 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.CreateUser(user);
+                await _hubClients.Clients.Group(GameId.ToString()).CreateUser(user);
 
                 // warn dashboard user is in front of the camera
-                await _hubClients.Clients.All.HighlightUser(user.UserId);
+                await _hubClients.Clients.Group(GameId.ToString()).HighlightUser(user.UserId);
 
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
@@ -229,7 +228,7 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.DeleteUser(user);
+            await _hubClients.Clients.Group(GameId.ToString()).DeleteUser(user);
 
             return user;
         }
