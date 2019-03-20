@@ -376,3 +376,7 @@ ASALocalRun/
 /oneroom-angular/.DS_Store
 /oneroom-angular/Thumbs.db
 /oneroom-angular/package-lock.json
+/oneroom-angular/launcher/launcher-win32-x64.zip
+/oneroom-angular/launcher/launcher-win32-x64/*
+/oneroom-angular/register/register-win32-x64.zip
+/oneroom-angular/register/register-win32-x64/*
