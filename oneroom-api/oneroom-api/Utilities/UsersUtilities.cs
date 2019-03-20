@@ -124,126 +124,129 @@ namespace oneroom_api.Utilities
                     break;
             }
 
-            // Add Random Clothes
-            double randClothes = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
-            switch (randClothes)
+            if (u.Faces.Count() == 1)
             {
-                case double i when i < (double)1 / 7:
-                    urlAvatar.Append("&clotheType=GraphicShirt");
-                    break;
-                case double i when i < (double)2 / 7:
-                    urlAvatar.Append("&clotheType=CollarSweater");
-                    break;
-                case double i when i < (double)3 / 7:
-                    urlAvatar.Append("&clotheType=Hoodie");
-                    break;
-                case double i when i < (double)4 / 7:
-                    urlAvatar.Append("&clotheType=ShirtVNeck");
-                    break;
-                case double i when i < (double)5 / 7:
-                    urlAvatar.Append(u.Gender == Gender.Male ? "&clotheType=ShirtCrewNeck": "&clotheType=ShirtScoopNeck");
-                    break;
-                case double i when i < (double)6 / 7:
-                    urlAvatar.Append("&clotheType=BlazerSweater");
-                    break;
-                case double i when i < (double)7 / 7:
-                    urlAvatar.Append("&clotheType=BlazerShirt");
-                    break;
-            }
- 
-            // Set a Random clothe color
-            double randClothesColor = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
-            if(randClothes < (double)5 / 7)
-            {
-                switch (randClothesColor)
+                // Add Random Clothes
+                double randClothes = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
+                switch (randClothes)
                 {
-                    case double i when i < (double)1 / 15:
-                        urlAvatar.Append("&clotheColor=Black");
+                    case double i when i < (double)1 / 7:
+                        urlAvatar.Append("&clotheType=GraphicShirt");
                         break;
-                    case double i when i < (double)2 / 15:
-                        urlAvatar.Append("&clotheColor=Blue01");
+                    case double i when i < (double)2 / 7:
+                        urlAvatar.Append("&clotheType=CollarSweater");
                         break;
-                    case double i when i < (double)3 / 15:
-                        urlAvatar.Append("&clotheColor=Blue02");
+                    case double i when i < (double)3 / 7:
+                        urlAvatar.Append("&clotheType=Hoodie");
                         break;
-                    case double i when i < (double)4 / 15:
-                        urlAvatar.Append("&clotheColor=Blue03");
+                    case double i when i < (double)4 / 7:
+                        urlAvatar.Append("&clotheType=ShirtVNeck");
                         break;
-                    case double i when i < (double)5 / 15:
-                        urlAvatar.Append("&clotheColor=Gray01");
+                    case double i when i < (double)5 / 7:
+                        urlAvatar.Append(u.Gender == Gender.Male ? "&clotheType=ShirtCrewNeck" : "&clotheType=ShirtScoopNeck");
                         break;
-                    case double i when i < (double)6 / 15:
-                        urlAvatar.Append("&clotheColor=Gray02");
+                    case double i when i < (double)6 / 7:
+                        urlAvatar.Append("&clotheType=BlazerSweater");
                         break;
-                    case double i when i < (double)7 / 15:
-                        urlAvatar.Append("&clotheColor=Heater");
-                        break;
-                    case double i when i < (double)8 / 15:
-                        urlAvatar.Append("&clotheColor=PastelBlue");
-                        break;
-                    case double i when i < (double)9 / 15:
-                        urlAvatar.Append("&clotheColor=PastelGreen");
-                        break;
-                    case double i when i < (double)10 / 15:
-                        urlAvatar.Append("&clotheColor=PastelOrange");
-                        break;
-                    case double i when i < (double)11 / 15:
-                        urlAvatar.Append("&clotheColor=PastelRed");
-                        break;
-                    case double i when i < (double)12 / 15:
-                        urlAvatar.Append("&clotheColor=PastelYellow");
-                        break;
-                    case double i when i < (double)13 / 15:
-                        urlAvatar.Append("&clotheColor=Pink");
-                        break;
-                    case double i when i < (double)14 / 15:
-                        urlAvatar.Append("&clotheColor=Red");
-                        break;
-                    case double i when i < (double)15 / 15:
-                        urlAvatar.Append("&clotheColor=White");
+                    case double i when i < (double)7 / 7:
+                        urlAvatar.Append("&clotheType=BlazerShirt");
                         break;
                 }
-            }
 
-            // Set a Random graphic on clothe
-            double randGraphicClothes = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
-            if (randClothes < (double)1 / 7)
-            {
-                switch (randGraphicClothes)
+                // Set a Random clothe color
+                double randClothesColor = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
+                if (randClothes < (double)5 / 7)
                 {
-                    case double i when i < (double)1 / 11:
-                        urlAvatar.Append("&graphicType=Bat");
-                        break;
-                    case double i when i < (double)2 / 11:
-                        urlAvatar.Append("&graphicType=Cumbia");
-                        break;
-                    case double i when i < (double)3 / 11:
-                        urlAvatar.Append("&graphicType=Deer");
-                        break;
-                    case double i when i < (double)4 / 11:
-                        urlAvatar.Append("&graphicType=Diamond");
-                        break;
-                    case double i when i < (double)5 / 11:
-                        urlAvatar.Append("&graphicType=Hola");
-                        break;
-                    case double i when i < (double)6 / 11:
-                        urlAvatar.Append("&graphicType=Pizza");
-                        break;
-                    case double i when i < (double)7 / 11:
-                        urlAvatar.Append("&graphicType=Resist");
-                        break;
-                    case double i when i < (double)8 / 11:
-                        urlAvatar.Append("&graphicType=Selena");
-                        break;
-                    case double i when i < (double)9 / 11:
-                        urlAvatar.Append("&graphicType=Bear");
-                        break;
-                    case double i when i < (double)10 / 11:
-                        urlAvatar.Append("&graphicType=SkullOutline");
-                        break;
-                    case double i when i < (double)11 / 11:
-                        urlAvatar.Append("&graphicType=Skull");
-                        break;
+                    switch (randClothesColor)
+                    {
+                        case double i when i < (double)1 / 15:
+                            urlAvatar.Append("&clotheColor=Black");
+                            break;
+                        case double i when i < (double)2 / 15:
+                            urlAvatar.Append("&clotheColor=Blue01");
+                            break;
+                        case double i when i < (double)3 / 15:
+                            urlAvatar.Append("&clotheColor=Blue02");
+                            break;
+                        case double i when i < (double)4 / 15:
+                            urlAvatar.Append("&clotheColor=Blue03");
+                            break;
+                        case double i when i < (double)5 / 15:
+                            urlAvatar.Append("&clotheColor=Gray01");
+                            break;
+                        case double i when i < (double)6 / 15:
+                            urlAvatar.Append("&clotheColor=Gray02");
+                            break;
+                        case double i when i < (double)7 / 15:
+                            urlAvatar.Append("&clotheColor=Heater");
+                            break;
+                        case double i when i < (double)8 / 15:
+                            urlAvatar.Append("&clotheColor=PastelBlue");
+                            break;
+                        case double i when i < (double)9 / 15:
+                            urlAvatar.Append("&clotheColor=PastelGreen");
+                            break;
+                        case double i when i < (double)10 / 15:
+                            urlAvatar.Append("&clotheColor=PastelOrange");
+                            break;
+                        case double i when i < (double)11 / 15:
+                            urlAvatar.Append("&clotheColor=PastelRed");
+                            break;
+                        case double i when i < (double)12 / 15:
+                            urlAvatar.Append("&clotheColor=PastelYellow");
+                            break;
+                        case double i when i < (double)13 / 15:
+                            urlAvatar.Append("&clotheColor=Pink");
+                            break;
+                        case double i when i < (double)14 / 15:
+                            urlAvatar.Append("&clotheColor=Red");
+                            break;
+                        case double i when i < (double)15 / 15:
+                            urlAvatar.Append("&clotheColor=White");
+                            break;
+                    }
+                }
+
+                // Set a Random graphic on clothe
+                double randGraphicClothes = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
+                if (randClothes < (double)1 / 7)
+                {
+                    switch (randGraphicClothes)
+                    {
+                        case double i when i < (double)1 / 11:
+                            urlAvatar.Append("&graphicType=Bat");
+                            break;
+                        case double i when i < (double)2 / 11:
+                            urlAvatar.Append("&graphicType=Cumbia");
+                            break;
+                        case double i when i < (double)3 / 11:
+                            urlAvatar.Append("&graphicType=Deer");
+                            break;
+                        case double i when i < (double)4 / 11:
+                            urlAvatar.Append("&graphicType=Diamond");
+                            break;
+                        case double i when i < (double)5 / 11:
+                            urlAvatar.Append("&graphicType=Hola");
+                            break;
+                        case double i when i < (double)6 / 11:
+                            urlAvatar.Append("&graphicType=Pizza");
+                            break;
+                        case double i when i < (double)7 / 11:
+                            urlAvatar.Append("&graphicType=Resist");
+                            break;
+                        case double i when i < (double)8 / 11:
+                            urlAvatar.Append("&graphicType=Selena");
+                            break;
+                        case double i when i < (double)9 / 11:
+                            urlAvatar.Append("&graphicType=Bear");
+                            break;
+                        case double i when i < (double)10 / 11:
+                            urlAvatar.Append("&graphicType=SkullOutline");
+                            break;
+                        case double i when i < (double)11 / 11:
+                            urlAvatar.Append("&graphicType=Skull");
+                            break;
+                    }
                 }
             }
 
