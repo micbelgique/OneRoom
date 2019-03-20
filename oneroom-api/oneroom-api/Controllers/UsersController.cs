@@ -140,8 +140,8 @@ namespace oneroom_api.Controllers
                                             .ToListAsync();
             foreach( User u in users)
             {
-                UsersUtilities.OptimizeResults(u);
-                UsersUtilities.GenerateAvatar(u);
+                u.OptimizeResults();
+                u.GenerateAvatar();
             }
 
             try
@@ -227,8 +227,16 @@ namespace oneroom_api.Controllers
             }
 
             _context.Users.Remove(user);
+
+            var game = await _context.Games.Include(g => g.Users)
+                                           .Include(g => g.Teams)
+                                           .SingleOrDefaultAsync(g => g.GameId.Equals(GameId));
+
+            TeamsController.SpreadPlayers(game);
+
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(GameId.ToString()).DeleteUser(user);
+            await _hubClients.Clients.Group(GameId.ToString()).UpdateTeams(game.Teams);
 
             return user;
         }

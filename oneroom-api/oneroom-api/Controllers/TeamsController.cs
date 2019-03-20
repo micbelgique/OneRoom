@@ -72,7 +72,6 @@ namespace oneroom_api.Controllers
             if (users.Count() < numOfTeams) return BadRequest("There isn't enough players to create "+ numOfTeams + " teams");
 
             List<Team> teams = new List<Team>();
-            users.Shuffle();
             int nbUserPerTeam = (int)Math.Ceiling((double)users.Count() / numOfTeams);
 
             for (int i = 0; i<numOfTeams; i++)
@@ -107,13 +106,8 @@ namespace oneroom_api.Controllers
                 _context.Teams.Add(team);
             }
 
-            int nbTeams = teams.Count();
-            int j = 0;
-            foreach( User u in users)
-            {
-                teams[j++].Users.Add(u);
-                if (j == nbTeams) j = 0;
-            }
+            users.Shuffle();
+            SpreadPlayers(game);
 
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(GameId.ToString()).UpdateTeams(teams);
@@ -138,6 +132,24 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(GameId.ToString()).DeleteTeams(GameId);
             return teams;
+        }
+
+        public static void SpreadPlayers(Game game)
+        {
+            int nbTeams = game.Teams.Count();
+            if(nbTeams > 0)
+            {
+                int j = 0;
+                for (int i = 0; i < nbTeams; i++)
+                {
+                    game.Teams[i].Users.Clear();
+                }
+                foreach (User u in game.Users)
+                {
+                    game.Teams[j++].Users.Add(u);
+                    if (j == nbTeams) j = 0;
+                }
+            }
         }
     }
 }
