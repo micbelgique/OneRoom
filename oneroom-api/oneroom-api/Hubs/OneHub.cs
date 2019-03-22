@@ -40,5 +40,6 @@ namespace oneroom_api.Hubs
         public async Task JoinGroupAsync(string groupName) => await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
         public async Task LeaveGroupAsync(string groupName) => await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
     }
 }
