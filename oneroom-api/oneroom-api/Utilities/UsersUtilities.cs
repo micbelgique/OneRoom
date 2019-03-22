@@ -157,51 +157,45 @@ namespace oneroom_api.Utilities
                 double randClothesColor = ThreadSafeRandom.ThisThreadsRandom.NextDouble();
                 if (randClothes < (double)5 / 7)
                 {
-                    switch (randClothesColor)
+                    switch (randClothesColor) // All colors are include exept PastelYellow and PastelOrange due to skin color interference
                     {
-                        case double i when i < (double)1 / 15:
+                        case double i when i < (double)1 / 13:
                             urlAvatar.Append("&clotheColor=Black");
                             break;
-                        case double i when i < (double)2 / 15:
+                        case double i when i < (double)2 / 13:
                             urlAvatar.Append("&clotheColor=Blue01");
                             break;
-                        case double i when i < (double)3 / 15:
+                        case double i when i < (double)3 / 13:
                             urlAvatar.Append("&clotheColor=Blue02");
                             break;
-                        case double i when i < (double)4 / 15:
+                        case double i when i < (double)4 / 13:
                             urlAvatar.Append("&clotheColor=Blue03");
                             break;
-                        case double i when i < (double)5 / 15:
+                        case double i when i < (double)5 / 13:
                             urlAvatar.Append("&clotheColor=Gray01");
                             break;
-                        case double i when i < (double)6 / 15:
+                        case double i when i < (double)6 / 13:
                             urlAvatar.Append("&clotheColor=Gray02");
                             break;
-                        case double i when i < (double)7 / 15:
+                        case double i when i < (double)7 / 13:
                             urlAvatar.Append("&clotheColor=Heater");
                             break;
-                        case double i when i < (double)8 / 15:
+                        case double i when i < (double)8 / 13:
                             urlAvatar.Append("&clotheColor=PastelBlue");
                             break;
-                        case double i when i < (double)9 / 15:
+                        case double i when i < (double)9 / 13:
                             urlAvatar.Append("&clotheColor=PastelGreen");
                             break;
-                        case double i when i < (double)10 / 15:
-                            urlAvatar.Append("&clotheColor=PastelOrange");
-                            break;
-                        case double i when i < (double)11 / 15:
+                        case double i when i < (double)10 / 13:
                             urlAvatar.Append("&clotheColor=PastelRed");
                             break;
-                        case double i when i < (double)12 / 15:
-                            urlAvatar.Append("&clotheColor=PastelYellow");
-                            break;
-                        case double i when i < (double)13 / 15:
+                        case double i when i < (double)11 / 13:
                             urlAvatar.Append("&clotheColor=Pink");
                             break;
-                        case double i when i < (double)14 / 15:
+                        case double i when i < (double)12 / 13:
                             urlAvatar.Append("&clotheColor=Red");
                             break;
-                        case double i when i < (double)15 / 15:
+                        case double i when i < (double)13 / 13:
                             urlAvatar.Append("&clotheColor=White");
                             break;
                     }
