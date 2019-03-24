@@ -71,8 +71,9 @@ export class FaceProcessService {
         console.log('face detected : ' + faces.length);
         if (faces.length === 0) {
           this.result$.next(null);
+        } else {
+          this.identifyOnly(faces[0], group);
         }
-        this.identifyOnly(faces[0], group);
       },
       () => {
         // error
@@ -89,8 +90,16 @@ export class FaceProcessService {
     (faceCandidates) => {
       console.log('identified candidates : ' + faceCandidates.length);
       console.log(faceCandidates);
-      this.resultForDetect = faceCandidates[0].candidates[0].personId;
-      this.getString();
+      if (faceCandidates.length > 0 && faceCandidates[0].candidates.length > 0) {
+        this.resultForDetect = faceCandidates[0].candidates[0].personId;
+        this.getString();
+      } else {
+        this.resForDetect$.next(null);
+      }
+    },
+    () => {
+      console.log('ERROR : Identify');
+      this.resForDetect$.next(null);
     });
   }
 
@@ -110,7 +119,7 @@ export class FaceProcessService {
           }
           // Simple message with an action.
           for (const face of faces) {
-              this.identify(face, group, stream);
+              this.identify(face, group, stream, 0.6);
           }
         },
         () => {
@@ -120,10 +129,10 @@ export class FaceProcessService {
         });
   }
 
-  private identify(face: Face, group: Group, stream: Blob) {
+  private identify(face: Face, group: Group, stream: Blob, minConfidence = 0.5) {
             // 2. Identify person
             console.log(group.personGroupId);
-            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
+            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, minConfidence);
             identify$.subscribe(
             (faceCandidates) => {
               console.log('identified candidates : ' + faceCandidates.length);
@@ -176,7 +185,7 @@ export class FaceProcessService {
  private createPerson(group: Group, stream: Blob, face: Face) {
     // 3. Create person
     // tslint:disable-next-line:max-line-length
-    const person$ = this.personService.create(group.personGroupId, 'user_' + Math.random(), 'test person created to train a model');
+    const person$ = this.personService.create(group.personGroupId, group.name, group.userData);
 
     person$.subscribe(
           (data) => {
@@ -193,7 +202,7 @@ export class FaceProcessService {
     const train$ = this.groupService.train(groupId);
     train$.subscribe(
     () => {
-      this.list();
+      this.result$.next(this.result);
     },
     () => {
       // 6. training status
@@ -203,20 +212,9 @@ export class FaceProcessService {
     });
   }
 
-  private list() {
-    // list person with their face
-    this.result$.next(this.result);
-    /*
-    const $persons = this.personService.list(groupId);
-    $persons.subscribe(
-    (data) => {
-      console.log('LISTING');
-      console.log('total person in group : ' + data.length);
-      for (const p of data) {
-          console.log('person : ' + p.name);
-          console.log(p);
-      }
-    });*/
+  // list person with their face
+  list(groupId) {
+    return this.personService.list(groupId);
   }
 
 }

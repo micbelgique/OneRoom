@@ -86,6 +86,7 @@ namespace oneroom_api.Controllers
             {
                 game.State = newState;
                 _context.Entry(game).State = EntityState.Modified;
+                // TODO : delete teams
                 await _context.SaveChangesAsync();
                 // update state clients
                 await _hubClients.Clients.All.UpdateGameState(game.GameId);

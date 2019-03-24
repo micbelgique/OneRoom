@@ -1,23 +1,11 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-
 import * as faceapi from 'face-api.js';
-// import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
-// import { Face } from '../services/OnePoint/model/face';
-// import { User } from '../services/OnePoint/model/user';
-// import { UserService } from '../services/OnePoint/user.service';
-// import { FaceService } from '../services/OnePoint/face.service';
-import { Group, FaceProcessService, VisioncomputerService, HairlengthService } from '@oneroomic/facecognitivelibrary';
+// tslint:disable-next-line:max-line-length
+import { Group, FaceProcessService, VisioncomputerService, HairlengthService, CustomVisionPredictionService, EndPointGetterService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
-// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
-// import { GameState } from '../services/OnePoint/model/game-state.enum';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
-// import { PredictionHairLength } from '../utilities/prediction-hairlength';
-// tslint:disable-next-line:max-line-length
-
 // patch electron
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -39,7 +27,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
   /* input stream devices */
   /* selector devices */
   public selectors;
-
   // containers
   @ViewChild('canvas2')
   public overlay;
@@ -79,16 +66,22 @@ export class FacecamComponent implements OnInit, OnDestroy {
   // refresh rate
   refreshRate: number;
 
+  // camid
+  videoSource;
+
   constructor(
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService,
-    private visonComputerService: VisioncomputerService,
-    private hairLengthService: HairlengthService,
+    private customVisionPredictionService: CustomVisionPredictionService,
+    private endpointService: EndPointGetterService,
     private hubService: LeaderboardService,
-    private gameService: GameService) {}
+    private gameService: GameService) {
+      this.opencam();
+      this.loadModels();
+    }
 
   ngOnInit() {
     // init lock
@@ -96,6 +89,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.alertContainer = false;
     this.stateContainer = false;
     this.lock = false;
+    if (localStorage.getItem('videoSource')) {
+      this.videoSource = localStorage.getItem('videoSource');
+    }
     // save canvas context
     this.ctx = this.overlay.nativeElement.getContext('2d');
     // refreshRate
@@ -106,7 +102,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.refreshRate = 3000;
       }
     }
-    this.loadModels();
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
@@ -130,14 +125,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
           async () => {
             // init stream
-            this.opencam();
+            this.initStreamDetection();
           }
         );
-
-    /* FACE RECOGNITION
-                // async () => faceapi.loadFaceExpressionModel('assets/models/').then(
-         //  async () => await faceapi.loadFaceRecognitionModel('assets/models/')
-    */
   }
 
   initStreamDetection() {
@@ -195,7 +185,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
               .enumerateDevices()
               .then((d) => {
                 this.selectors = this.getCaptureDevices(d);
-                this.initStreamDetection();
               })
               .catch(this.handleError);
   }
@@ -205,14 +194,15 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
-        videoSource = videoSource ? videoSource : this.selectors[0];
+        this.videoSource = videoSource ? videoSource : (this.videoSource ? this.videoSource : this.selectors[0].id);
+        localStorage.setItem('videoSource', this.videoSource);
         // access the web cam
         navigator.mediaDevices.getUserMedia({
             audio : false,
             video: {
                 // selfie mode
                 // facingMode: {exact: 'user' },
-                deviceId: videoSource ? { exact: videoSource } : undefined
+                deviceId: this.videoSource ? { exact: this.videoSource } : undefined
             }
         })
             // permission granted:
@@ -319,7 +309,8 @@ private crop(canvas, x1, y1, width, height) {
   return newCan;
 }
 
-imageCapture(canvas) {
+async imageCapture(canvas) {
+  return;
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls FACE disabled');
@@ -357,7 +348,6 @@ imageCapture(canvas) {
                 return;
           }
           const users: User[] = [];
-          console.log(data.persons);
           data.persons.forEach(element => {
           const u = new User();
           u.name = 'user_' + Math.random();
@@ -460,35 +450,59 @@ imageCapture(canvas) {
 // detection hair length with custom vision
 private getHairLength(stream) {
   const sub = new Subject<string>();
-  this.hairLengthService.detectLength(stream).subscribe(
-    (result) => {
-      this.deleteHairLength(result.id);
-      sub.next(result.predictions[0].tagName);
+  // tslint:disable-next-line:max-line-length
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream, '3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc').subscribe(
+    (result: ImagePrediction) => {
+      // this.deleteHairLength(result.id);
+      // sub.next(result.predictions[0].tagName);
+      if (result.predictions.length > 0) {
+        sub.next(result.predictions[0].tagName);
+        console.log(result.predictions[0].region);
+      } else {
+        sub.next(null);
+      }
+    },
+    (err) => {
+      console.log(err);
     }
   );
   return sub;
 }
 
+/*
 private deleteHairLength(id) {
-  this.hairLengthService.deleteImg(id)
+  this.customVisionPredictionService.deleteImg(id)
   .subscribe(
     () => console.log('deleted'),
     (err) => console.log(err)
   );
-}
+}*/
 
 // detection skin color with custom vision
 private getSkinColor(stream) {
   const sub = new Subject<string>();
-  this.visonComputerService.getSkinColor(stream).subscribe(
-      (result) => {
-      this.deleteSkinColor(result.id);
-      sub.next(result.predictions[0].tagName);
+  // tslint:disable-next-line:max-line-length
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream, 'a1cb0694-4bdb-4def-a20f-52226ced6ded').subscribe(
+      (result: ImagePrediction) => {
+      // this.deleteSkinColor(result.id);
+      // sub.next(result.predictions[0].tagName);
+      if (result.predictions.length > 0) {
+        sub.next(result.predictions[0].tagName);
+        console.log(result.predictions[0].region);
+      } else {
+        sub.next(null);
+      }
+    },
+    (err) => {
+      console.log(err);
     }
   );
   return sub;
 }
 
+/*
 // delete detection
 private deleteSkinColor(id) {
   this.visonComputerService.deleteImg(id)
@@ -496,7 +510,7 @@ private deleteSkinColor(id) {
     () => console.log('deleted'),
     (err) => console.log(err)
   );
-}
+}*/
 
 private saveUsers(user: User) {
   // adding user
@@ -513,14 +527,6 @@ private saveUsers(user: User) {
           this.snackBar.open('User recognized', 'Ok', {
             duration: 2000
           });
-          // update avatar
-          // const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
-          // tslint:disable-next-line:no-shadowed-variable
-          /*avatar$.subscribe(
-            (response) => console.log('avatar updated'),
-            // tslint:disable-next-line:no-shadowed-variable
-            (error) => console.log('avatar not updated')
-          );*/
           // adding face to already existant user
           // for (const face of user.faces) {
           if (user.faces[user.faces.length - 1]) {

@@ -4,6 +4,7 @@ import { NavComponent } from './nav/nav.component';
 import { LockscreenComponent } from './lockscreen/lockscreen.component';
 import { SettingsComponent } from './settings/settings.component';
 
+import { VaultAppSharedModule } from 'projects/vault/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 
@@ -12,6 +13,8 @@ const routes: Routes = [
     loadChildren: '../../projects/scanner/src/app/app.module#ScannerAppSharedModule'},
   {path: 'profil',
     loadChildren: '../../projects/profil/src/app/app.module#ProfilAppSharedModule'},
+  {path: 'vault',
+    loadChildren: '../../projects/profil/src/app/app.module#VaultAppSharedModule'},
   { path: 'nav', component: NavComponent },
   { path: 'lock', component: LockscreenComponent },
   { path: 'settings', component : SettingsComponent},
@@ -22,7 +25,8 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes),
     ProfilAppSharedModule.forRoot(),
-    ScannerAppSharedModule.forRoot()
+    ScannerAppSharedModule.forRoot(),
+    VaultAppSharedModule.forRoot()
   ],
   exports: [RouterModule]
 })
