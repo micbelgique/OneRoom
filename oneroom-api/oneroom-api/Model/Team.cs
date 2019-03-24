@@ -21,6 +21,7 @@ namespace oneroom_api.Model
         public string TeamColor { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public List<User> Users { get; set; } = new List<User>();
+        public int GameId { get; set; }
 
         public static string RandomName()
         {

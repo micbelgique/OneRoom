@@ -27,7 +27,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Titre");
+                    b.Property<string>("Title");
 
                     b.Property<string>("URLDocumentation");
 
@@ -146,7 +146,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<int?>("GameId");
+                    b.Property<int>("GameId");
 
                     b.Property<string>("TeamColor");
 
@@ -174,7 +174,7 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("EmotionDominant");
 
-                    b.Property<int?>("GameId");
+                    b.Property<int>("GameId");
 
                     b.Property<int>("Gender");
 

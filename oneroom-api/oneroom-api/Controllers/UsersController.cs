@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
-using oneroom_api.ViewModels;
 
 namespace oneroom_api.Controllers
 {
@@ -30,7 +29,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(int gameId)
         {
-            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == gameId)
+            var users = await _context.Users.Where(u => u.GameId == gameId)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             return users;
@@ -42,8 +41,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> GetUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
-                                           .SingleOrDefaultAsync();
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == id);
 
             if (user == null)
             {
@@ -72,12 +70,12 @@ namespace oneroom_api.Controllers
 
             _context.Entry(usr).State = EntityState.Modified;
 
-            UsersUtilities.GenerateAvatar(usr);
+            usr.GenerateAvatar();
 
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubClients.Clients.All.UpdateUser(usr);
+                await _hubClients.Clients.Group(GameId.ToString()).UpdateUser(usr);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -136,15 +134,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<IEnumerable<User>>> Optimize(int GameId)
         {
-            var users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+            var users = await _context.Users.Where(u => u.GameId == GameId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             foreach( User u in users)
             {
-                u.Name = u.Name.Replace("Player", "Person");
-                UsersUtilities.OptimizeResults(u);
-                UsersUtilities.GenerateAvatar(u);
+                u.OptimizeResults();
+                u.GenerateAvatar();
             }
 
             try
@@ -152,7 +149,7 @@ namespace oneroom_api.Controllers
                 await _context.SaveChangesAsync();
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.UpdateUsers(users);
+                await _hubClients.Clients.Group(GameId.ToString()).UpdateUsers(users);
 
             }
             catch (Exception) { }
@@ -179,35 +176,34 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-                var usr = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == user.UserId)
-                                        .SingleOrDefaultAsync(); ;
+                var usr = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == user.UserId);
 
                 if (usr != null)
                 {
 
                     // warn dashboard user is in front of the camera
-                    await _hubClients.Clients.All.HighlightUser(user.UserId);
+                    await _hubClients.Clients.Group(GameId.ToString()).HighlightUser(user.UserId);
                     return Conflict("user already exists");
                 }
 
-                var count = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+                var count = await _context.Users.Where(u => u.GameId == GameId)
                                                 .CountAsync();
 
                 user.Name = "Person " + (++count);
-                _context.Users.Add(user);
                 // Link user to game
-                _context.Entry(user).Property("GameId").CurrentValue = GameId;
+                user.GameId = GameId;
+                _context.Users.Add(user);
 
-                UsersUtilities.OptimizeResults(user);
-                UsersUtilities.GenerateAvatar(user);
+                user.OptimizeResults();
+                user.GenerateAvatar();
 
                 await _context.SaveChangesAsync();               
 
                 // update users dashboard and leaderboard
-                await _hubClients.Clients.All.CreateUser(user);
+                await _hubClients.Clients.Group(GameId.ToString()).CreateUser(user);
 
                 // warn dashboard user is in front of the camera
-                await _hubClients.Clients.All.HighlightUser(user.UserId);
+                await _hubClients.Clients.Group(GameId.ToString()).HighlightUser(user.UserId);
 
                 return CreatedAtAction("GetUser", new { GameId, id = user.UserId }, user);
             }
@@ -224,23 +220,30 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> DeleteUser( int GameId, Guid id)
         {
-            var user = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id)
-                                           .SingleOrDefaultAsync();
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == id);
             if (user == null)
             {
                 return NotFound();
             }
 
             _context.Users.Remove(user);
+
+            var game = await _context.Games.Include(g => g.Users)
+                                           .Include(g => g.Teams)
+                                           .SingleOrDefaultAsync(g => g.GameId.Equals(GameId));
+
+            TeamsController.SpreadPlayers(game);
+
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.DeleteUser(user);
+            await _hubClients.Clients.Group(GameId.ToString()).DeleteUser(user);
+            await _hubClients.Clients.Group(GameId.ToString()).UpdateTeams(game.Teams);
 
             return user;
         }
 
         private bool UserExists( int GameId, Guid id)
         {
-            return _context.Users.Any(u => EF.Property<int>(u, "GameId") == GameId && u.UserId == id);
+            return _context.Users.Any(u => u.GameId == GameId && u.UserId == id);
         }
     }
 }

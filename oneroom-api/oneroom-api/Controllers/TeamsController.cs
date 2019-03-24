@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
@@ -30,7 +31,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int GameId)
         {
-            return await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+            return await _context.Teams.Where(t => t.GameId == GameId)
                                        .Include(t => t.Users)
                                        .ToListAsync();
         }
@@ -41,8 +42,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Team>> GetTeam(int GameId, int id)
         {
-            var team = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId && t.TeamId == id)
-                                           .SingleOrDefaultAsync();
+            var team = await _context.Teams.SingleOrDefaultAsync(t => t.GameId == GameId && t.TeamId == id);
 
             if (team == null)
             {
@@ -58,23 +58,20 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<List<Team>>> CreateTeam(int GameId, int numOfTeams)
         {
-            var count = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
+            var count = await _context.Teams.Where(t => t.GameId == GameId)
                                             .CountAsync();
             if (count > 0) return Conflict("Teams are alredy created");
 
-            var game = await _context.Games
-                .Include(g => g.Config)
-                .Where(g => g.GameId == GameId)
-                .SingleOrDefaultAsync();
+            var game = await _context.Games.Include(g => g.Config)
+                                           .SingleOrDefaultAsync(g => g.GameId == GameId);
 
-            List<User> users = await _context.Users.Where(u => EF.Property<int>(u, "GameId") == GameId)
+            List<User> users = await _context.Users.Where(u => u.GameId == GameId)
                                                    .Where(u => u.Recognized >= game.Config.MinimumRecognized)
                                                    .ToListAsync();
 
             if (users.Count() < numOfTeams) return BadRequest("There isn't enough players to create "+ numOfTeams + " teams");
 
             List<Team> teams = new List<Team>();
-            users.Shuffle();
             int nbUserPerTeam = (int)Math.Ceiling((double)users.Count() / numOfTeams);
 
             for (int i = 0; i<numOfTeams; i++)
@@ -103,23 +100,17 @@ namespace oneroom_api.Controllers
                     
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
+                team.GameId = GameId;
                 teams.Add(team);
 
                 _context.Teams.Add(team);
-                _context.Entry(team).Property("GameId").CurrentValue = GameId;
-
             }
 
-            int nbTeams = teams.Count();
-            int j = 0;
-            foreach( User u in users)
-            {
-                teams[j++].Users.Add(u);
-                if (j == nbTeams) j = 0;
-            }
+            users.Shuffle();
+            SpreadPlayers(game);
 
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams();
+            await _hubClients.Clients.Group(GameId.ToString()).UpdateTeams(teams);
 
             return CreatedAtAction("GetTeam", new { GameId}, teams);
         }
@@ -130,18 +121,35 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<List<Team>>> DeleteTeams( int GameId)
         {
-            var teams = await _context.Teams.Where(t => EF.Property<int>(t, "GameId") == GameId)
-                                            .Include(t => t.Users).ToListAsync();
+            var teams = await _context.Teams.Where(t => t.GameId == GameId)
+                                            .Include(t => t.Users)
+                                            .ToListAsync();
             if (teams.Count() == 0)
             {
                 return NotFound();
             }
-
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.All.UpdateTeams();
-
+            await _hubClients.Clients.Group(GameId.ToString()).DeleteTeams(GameId);
             return teams;
+        }
+
+        public static void SpreadPlayers(Game game)
+        {
+            int nbTeams = game.Teams.Count();
+            if(nbTeams > 0)
+            {
+                int j = 0;
+                for (int i = 0; i < nbTeams; i++)
+                {
+                    game.Teams[i].Users.Clear();
+                }
+                foreach (User u in game.Users)
+                {
+                    game.Teams[j++].Users.Add(u);
+                    if (j == nbTeams) j = 0;
+                }
+            }
         }
     }
 }

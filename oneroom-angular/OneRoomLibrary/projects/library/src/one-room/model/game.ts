@@ -10,5 +10,6 @@ export class Game {
   state: GameState;
   users: User[] = [];
   teams: Team[] = [];
+  challengesId: number[] = [];
   config: Configuration = new Configuration();
 }

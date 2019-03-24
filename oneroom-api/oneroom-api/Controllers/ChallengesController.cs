@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
@@ -26,7 +25,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallenges()
         {
-            return await _context.Challenges.Select(c => ChallengesUtilities.ToChallengeDTOMap(c))
+            return await _context.Challenges.Select(c => c.ToDTO())
                                             .ToListAsync();
         }
 
@@ -39,9 +38,9 @@ namespace oneroom_api.Controllers
             if(!GameExists(GameId)) return NotFound("There is no game with id:" + GameId);
 
             List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.GameChallenges)
-                                                                  .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
-                                                                  .Select(c => ChallengesUtilities.ToChallengeDTOMap(c))
-                                                                  .ToListAsync();
+                                                                     .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
+                                                                     .Select(c => c.ToDTO())
+                                                                     .ToListAsync();
 
             return challenges;
         }
@@ -59,7 +58,7 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            return ChallengesUtilities.ToChallengeDTOMap(challenge);
+            return challenge.ToDTO();
         }
 
         // PUT: api/Challenges/5
@@ -101,24 +100,23 @@ namespace oneroom_api.Controllers
             _context.Challenges.Add(challenge);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, ChallengesUtilities.ToChallengeDTOMap(challenge));
+            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDTO());
         }
 
         // POST: api/Games/5/Challenges
         [HttpPost("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] int[] ChallengesId)
+        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
         {
             Game game = await _context.Games.Include(c => c.GameChallenges)
-                                .Where(g => g.GameId == GameId)
-                                .SingleOrDefaultAsync();
+                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
-            foreach( int ChallengeId in ChallengesId)
+            foreach( Challenge challenge in challenges)
             {
-                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = _context.Challenges.Find(ChallengeId) });
+                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -134,8 +132,7 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<Challenge>> DeleteChallenge(int id)
         {
             var challenge = await _context.Challenges.Include(c => c.GameChallenges)
-                                                     .Where(c => c.ChallengeId == id)
-                                                     .SingleOrDefaultAsync();
+                                                     .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
             {
                 return NotFound();
@@ -153,15 +150,15 @@ namespace oneroom_api.Controllers
         [HttpDelete("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] int[] ChallengesId)
+        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
         {
             Game game = await _context.Games.Include(c => c.GameChallenges)
-                                .Where(g => g.GameId == GameId)
-                                .SingleOrDefaultAsync();
+                                                .ThenInclude(gc => gc.Challenge)
+                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
-            game.GameChallenges.RemoveAll(gc => ChallengesId.Contains(gc.ChallengeId));
+            game.GameChallenges.RemoveAll(gc => challenges.Contains(gc.Challenge));
 
             await _context.SaveChangesAsync();
 

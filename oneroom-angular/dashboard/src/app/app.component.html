@@ -12,6 +12,9 @@
     <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened">
       <mat-list>
         <mat-list-item>
+            <span i18n="@@menuSettings"><a [routerLink]="['/challenges']" routerLinkActive="router-link-active" >Challenges</a></span>
+        </mat-list-item>
+        <mat-list-item>
               <span i18n="@@menuSettings"><a [routerLink]="['/games']" routerLinkActive="router-link-active" >Games</a></span>
         </mat-list-item>
         <mat-list-item>

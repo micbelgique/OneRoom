@@ -21,7 +21,7 @@ export class SettingsComponent implements OnInit {
   games: Game[];
 
   // current game
-  private game: Game;
+  game: Game;
 
   constructor(
     private toast: MatSnackBar,
@@ -73,8 +73,8 @@ export class SettingsComponent implements OnInit {
   }
 
   getGame() {
-    const resGame$ = this.gameService.getGame(this.group);
-    resGame$.subscribe( (game: Game) => {
+    this.gameService.getGame(this.group).subscribe( (game: Game) => {
+      this.game = game;
       localStorage.setItem('gameData', JSON.stringify(game));
       // localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);

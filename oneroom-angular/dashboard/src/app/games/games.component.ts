@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-// import { Game } from '../services/OnePoint/model/game';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
-import { Game, Configuration, GameService, GameState } from '@oneroomic/oneroomlibrary';
+import { Game, Configuration, GameService, GameState, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
-// import { GameState } from '../services/OnePoint/model/game-state.enum';
-// import { Configuration } from '../services/OnePoint/model/configuration';
 
 @Component({
   selector: 'app-games',
@@ -18,14 +13,18 @@ export class GamesComponent implements OnInit {
   // list of launched games
   games: Game[];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'challenge', 'delete'];
   // game to add
   game: Game;
   configs: Configuration[];
 
   gameStates: string[];
 
+  challengesIdBefore: number[] = [];
+  challenges: Challenge[];
+
   constructor(
+    private challengeService: ChallengeService,
     private gameService: GameService,
     private groupService: PersonGroupService,
     private snackBar: MatSnackBar) {
@@ -36,16 +35,17 @@ export class GamesComponent implements OnInit {
     this.games = [];
     this.configs = [];
     this.game = new Game();
+    this.challenges = [];
     this.refreshGames();
+    this.refreshChallenges();
   }
 
   refreshGames() {
-    const res$ = this.gameService.getGames();
-    res$.subscribe(
-      (games) => {
+    this.gameService.getGames().subscribe( (games) => {
         this.games = games;
         // pick availables configs to choose from
         games.forEach( (g) => {
+          this.getChallengesIdByGame(g);
           if (g.config.faceEndpoint && g.config.faceKey) {
             if (this.configs.map(c => c.id).indexOf(g.config.id) === -1) {
               this.configs.push(g.config);
@@ -59,16 +59,87 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  /*getGame() {
-    const resGame$ = this.gameService.getGame(this.group);
-    resGame$.subscribe( (game: Game) => {
-      localStorage.setItem('gameId', game.gameId.toString());
-      localStorage.setItem('groupName', game.groupName);
-      this.snackBar.open('Game fetched', 'Ok', {
-        duration: 3000
-      });
-    });
-  }*/
+  refreshChallenges() {
+    this.challengeService.getChallenges().subscribe((challenges) => {
+        this.challenges = challenges;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  updateChallengesInGames(bool: boolean, game: Game) {
+    if (!bool) {
+      this.addChallengesToGame( this.challenges.filter(c => game.challengesId.includes(c.challengeId)
+                                && !this.challengesIdBefore.includes(c.challengeId)));
+      this.removeChallengesFromGames( this.challenges.filter(c => !game.challengesId.includes(c.challengeId)
+                                      && this.challengesIdBefore.includes(c.challengeId)));
+    } else {
+      localStorage.setItem('gameData', JSON.stringify(game));
+      this.challengesIdBefore = game.challengesId;
+    }
+  }
+
+  addChallengesToGame(challenges: Challenge[]) {
+    if (challenges.length > 0) {
+      console.log(challenges);
+      this.challengeService.addChallengeToGame(challenges).subscribe(() => {
+        this.snackBar.open('Challenges added', 'Ok', {
+          duration: 1000
+        });
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+  }
+
+  removeChallengesFromGames(challenges: Challenge[]) {
+    if (challenges.length > 0) {
+      console.log(challenges);
+      this.challengeService.deleteChallengeFromGame(challenges).subscribe(() => {
+        this.snackBar.open('Challenges deleted', 'Ok', {
+          duration: 1000
+        });
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+  }
+
+  getChallengesIdByGame(game: Game) {
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.challengeService.getChallengesByGame().subscribe( (challenges) => {
+        game.challengesId = challenges.map(c => c.challengeId);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
+  getChallengeTitleById(id: number): string {
+    if (this.challenges.findIndex(c => c.challengeId === id) !== -1) {
+      return this.challenges.find(c => c.challengeId === id).title;
+    } else {
+      return '';
+    }
+  }
+
+  // getGame() {
+  //   const resGame$ = this.gameService.getGame(this.group);
+  //   resGame$.subscribe( (game: Game) => {
+  //     localStorage.setItem('gameId', game.gameId.toString());
+  //     localStorage.setItem('groupName', game.groupName);
+  //     this.snackBar.open('Game fetched', 'Ok', {
+  //       duration: 3000
+  //     });
+  //   });
+  // }
 
   createGame() {
     // set correct endpoint and key
@@ -79,6 +150,7 @@ export class GamesComponent implements OnInit {
       this.snackBar.open('Game Initialized', 'Ok', {
         duration: 3000
       });
+      console.log(game);
       // creating group face
       const res$ = this.groupService.create(this.game.groupName, this.game.groupName + '_name');
       res$.subscribe( x => {

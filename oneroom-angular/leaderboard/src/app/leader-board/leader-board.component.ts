@@ -1,11 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { UserService } from '../services/OnePoint/user.service';
-// import { User } from '../services/OnePoint/model/user';
-import { MatSnackBar } from '@angular/material';
-import {User, Team, UserService, TeamService, LeaderboardService} from '@oneroomic/oneroomlibrary';
-// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-// import { TeamService } from '../services/OnePoint/team.service';
-// import { Team } from '../services/OnePoint/model/team';
+import {User, Team, UserService, TeamService, LeaderboardService, Game} from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-leader-board',
@@ -16,6 +10,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   users: User[];
   teams: Team[];
+  game: Game;
   errorMessage: string;
   refreshBtn = true;
   title: string;
@@ -28,7 +23,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private userCreateSub;
   private userDeleteSub;
   private teamSub;
-  private teamNotifySub;
+  private teamCreateSub;
+  private teamDeleteSub;
   private hubServiceSub;
 
   private hightlightUserSub;
@@ -38,13 +34,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private teamService: TeamService,
     private hubService: LeaderboardService,
-    private snackBar: MatSnackBar) { }
+    ) { }
 
   ngOnInit() {
     this.users = [];
     this.teams = [];
     this.title = localStorage.getItem('groupName');
-
+    this.game = JSON.parse(localStorage.getItem('gameData'));
     // minimum face
     if (localStorage.getItem('minimumRecognized')) {
       this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
@@ -54,7 +50,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
     this.detectedUserId = '';
     // attach to event from hub
-    this.hubServiceSub = this.hubService.run().subscribe();
+    this.hubServiceSub = this.hubService.run().subscribe( () => this.hubService.joinGroup(this.game.gameId.toString()));
     this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
       this.updateUser(result);
     });
@@ -67,8 +63,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.userDeleteSub = this.hubService.deleteUser.subscribe( (result) => {
       this.deleteUser(result);
     });
-    this.teamNotifySub = this.hubService.refreshTeamList.subscribe(() => {
-      this.refreshTeamList();
+    this.teamCreateSub = this.hubService.refreshTeamList.subscribe((result) => {
+      this.refreshTeamList(result);
+    });
+    this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
+      this.deleteTeamList(result);
     });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
@@ -78,14 +77,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     });
 
     this.getUserList();
-    this.refreshTeamList();
+    this.getTeams();
   }
 
   private getUserList() {
     this.userSub = this.userService.getUsers().subscribe(
       (usersList) => {
         this.users = [];
-        console.log(usersList);
         usersList.forEach( u => {
           // User.generateAvatar(u);
           if (u.recognized >= this.minimumRecognized) {
@@ -100,7 +98,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private updateUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
-    console.log(u);
   }
 
   private updateUsers(users: User[]) {
@@ -116,14 +113,19 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users.splice(u, 1);
   }
+  private getTeams() {
+    this.teamService.getTeams().subscribe((result) => {
+      this.teams = result;
+    });
+  }
 
-  private refreshTeamList() {
-    this.teamSub = this.teamService.getTeams().subscribe(
-      (teamList) => {
-        this.teams = teamList;
-      },
-      error => this.errorMessage = error as any
-    );
+  private refreshTeamList(teams: Team[]) {
+    this.teams = teams;
+  }
+  private deleteTeamList(idGame: number) {
+    if (idGame === this.game.gameId) {
+    this.teams = [];
+    }
   }
 
   isHighLighted(userId: number): string {
@@ -162,8 +164,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.teamSub) {
       this.teamSub.unsubscribe();
     }
-    if (this.teamNotifySub) {
-      this.teamNotifySub.unsubscribe();
+    if (this.teamCreateSub) {
+      this.teamCreateSub.unsubscribe();
+    }
+    if (this.teamDeleteSub) {
+      this.teamDeleteSub.unsubscribe();
     }
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
@@ -172,6 +177,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.hightlightUserSub.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
+      this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
     }
   }

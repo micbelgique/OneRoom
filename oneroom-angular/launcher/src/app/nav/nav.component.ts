@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import { User, UserService } from '@oneroomic/oneroomlibrary';
+import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
 @Component({
@@ -11,14 +11,23 @@ import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name
 export class NavComponent implements OnInit {
 
   user: User;
+  teams: Team[];
+  teamUser: Team;
+  game: Game;
+  private updateTeam;
+  private deleteTeam;
+  private hubServiceSub;
 
   constructor(
     private route: Router,
     private modal: MatDialog,
-    private userService: UserService
+    private userService: UserService,
+    private teamService: TeamService,
+    private hubService: LeaderboardService
   ) { }
 
   ngOnInit() {
+    this.game = JSON.parse(localStorage.getItem('gameData'));
     if (localStorage.getItem('user') == null) {
       this.route.navigate(['/lock']);
     } else {
@@ -26,7 +35,19 @@ export class NavComponent implements OnInit {
       if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
         this.openModal();
       }
+      this.teamService.getTeams().subscribe((result) => {
+        this.updateTeamList(result);
+      });
     }
+    this.hubServiceSub = this.hubService.run().subscribe(() => this.hubService.joinGroup(this.game.gameId.toString()));
+    this.updateTeam = this.hubService.refreshTeamList.subscribe((result) => {
+      this.updateTeamList(result);
+    });
+    this.deleteTeam = this.hubService.deleteTeamList.subscribe((result) => {
+      if (this.game.gameId === result) {
+        this.deleteTeamList();
+      }
+    });
   }
   logOut() {
     localStorage.removeItem('user');
@@ -47,5 +68,36 @@ export class NavComponent implements OnInit {
       );
     });
   }
-
+  updateTeamList(teams: Team[]) {
+    this.teams = teams;
+    for (const item of this.teams) {
+      if (item.users.some(x => x.userId === this.user.userId)) {
+        this.teamUser = item;
+       }
+    }
+  }
+  deleteTeamList() {
+    this.teamUser = null;
+  }
+  getColorTeam() {
+    if (this.teamUser) {
+      return 'rgb(' + this.teamUser.teamColor + ')';
+    }
+  }
+  // tslint:disable-next-line:use-life-cycle-interface
+  ngOnDestroy() {
+    if (this.hubServiceSub) {
+      this.hubServiceSub.unsubscribe();
+    }
+    if (this.updateTeam) {
+      this.updateTeam.unsubscribe();
+    }
+    if (this.deleteTeam) {
+      this.deleteTeam.unsubscribe();
+    }
+    if (!this.hubService.connected.isStopped) {
+      this.hubService.leaveGroup(this.game.gameId.toString());
+      this.hubService.stopService();
+    }
+  }
 }
