@@ -112,6 +112,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
           console.log('Updating state ...');
           this.refreshGameState(game);
         }
+      },
+      (err) => {
+        console.log('Error game state');
+        console.log(err);
       });
 
       this.refreshGameState(game);
@@ -194,6 +198,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
+        if (this.selectors.map(s => s.id).indexOf(this.videoSource) === -1) {
+          // check if prefered cam is available in the list
+          this.videoSource = null;
+        }
         this.videoSource = videoSource ? videoSource : (this.videoSource ? this.videoSource : this.selectors[0].id);
         localStorage.setItem('videoSource', this.videoSource);
         // access the web cam

@@ -169,9 +169,13 @@ export class LockscreenComponent implements OnInit {
   public startStream(videoSource = null) {
 
     if (navigator.mediaDevices) {
+        if (this.selectors.map(s => s.id).indexOf(this.videoSource) === -1) {
+          // check if prefered cam is available in the list
+          this.videoSource = null;
+        }
         // select specific camera on mobile
         this.videoSource = videoSource === null ?
-        ( this.videoSource ? this.videoSource : this.videoSelect.nativeElement.value) : videoSource;
+        ( this.videoSource ? this.videoSource : this.selectors[0].id) : videoSource;
 
         // save prefered cam
         localStorage.setItem('camId', this.videoSource);

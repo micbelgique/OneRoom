@@ -14,7 +14,7 @@ const routes: Routes = [
   {path: 'profil',
     loadChildren: '../../projects/profil/src/app/app.module#ProfilAppSharedModule'},
   {path: 'vault',
-    loadChildren: '../../projects/profil/src/app/app.module#VaultAppSharedModule'},
+    loadChildren: '../../projects/vault/src/app/app.module#VaultAppSharedModule'},
   { path: 'nav', component: NavComponent },
   { path: 'lock', component: LockscreenComponent },
   { path: 'settings', component : SettingsComponent},
