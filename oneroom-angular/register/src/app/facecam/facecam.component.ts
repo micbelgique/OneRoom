@@ -105,7 +105,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
-      this.hubServiceSub = this.hubService.run().subscribe();
+      // join new group
+      this.hubServiceSub = this.hubService.run().subscribe(
+        () => this.hubService.joinGroup(game.gameId.toString())
+      );
       this.gameSub = this.hubService.refreshGameState.subscribe(
       (gameId) => {
         if (gameId === game.gameId) {
@@ -605,6 +608,7 @@ private saveUsers(user: User) {
             this.detectId = null;
             this.stream = null;
             this.opencam();
+            this.startStream();
           }
         },
         (err) => {

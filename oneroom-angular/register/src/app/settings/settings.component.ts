@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
-import { Game, GameService } from '@oneroomic/oneroomlibrary';
+import { Game, GameService, LeaderboardService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
 
   // coordinator
   endPoint: string;
@@ -26,9 +24,12 @@ export class SettingsComponent implements OnInit {
   endPointCustomVision: string;
   callCustomVisionStatus = true;
 
+  private hubServiceSub;
+
   constructor(
     private toast: MatSnackBar,
-    private gameService: GameService) {}
+    private gameService: GameService,
+    private hubService: LeaderboardService) {}
 
   ngOnInit() {
     // game
@@ -54,6 +55,7 @@ export class SettingsComponent implements OnInit {
     // load available games from coordinator
     this.games = [];
     this.loadGames();
+    this.hubServiceSub = this.hubService.run().subscribe();
   }
 
   loadGames() {
@@ -99,11 +101,17 @@ export class SettingsComponent implements OnInit {
   getGame() {
     const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
+      // leave old group
+      if (this.game) {
+        this.hubService.leaveGroup(this.game.gameId.toString());
+      }
       this.game = game;
       localStorage.setItem('gameData', JSON.stringify(game));
       this.toast.open('Game fetched', 'Ok', {
         duration: 2000
       });
+      // join new group
+      this.hubService.joinGroup(this.game.gameId.toString());
       if (game.config) {
         console.log('auto Config');
         console.log(game.config);
@@ -160,5 +168,10 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.hubServiceSub) {
+      this.hubServiceSub.unsubscribe();
+    }
+  }
 
 }

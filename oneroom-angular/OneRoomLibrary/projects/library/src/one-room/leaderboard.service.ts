@@ -66,21 +66,19 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     UpdateUser: (result) => this._refreshUser.emit(result),
     CreateUser: (result) => this._createUser.emit(result),
     DeleteUser: (result) => this._deleteUser.emit(result),
-    HighlightUser: (userId) => {
-      this._highlightUser.emit(userId);
-    }
+    HighlightUser: (userId) => this._highlightUser.emit(userId)
   };
 
   constructor() {
     super();
   }
 
-  public joinGroup(groupName: string): void {
-    this.send('JoinGroupAsync', groupName);
+  public joinGroup(groupName: string): Observable<any> {
+    return this.send('JoinGroupAsync', groupName);
   }
 
-  public leaveGroup(groupName: string): void {
-    this.send('LeaveGroupAsync', groupName);
+  public leaveGroup(groupName: string): Observable<any> {
+    return this.send('LeaveGroupAsync', groupName);
   }
 
   public run(): Observable<any> {
