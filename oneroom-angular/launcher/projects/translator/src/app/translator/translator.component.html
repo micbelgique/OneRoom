@@ -1,6 +1,8 @@
 <div style="text-align: center">
-<button mat-button (click)='start()' color="primary">Start</button>
-<button mat-button (click)='stop()' color="warn">Stop</button>
-<hr>
-<audio #player controls autoplay playsinline></audio>
+  <button (click)="initiateRecording()" mat-button color='primary' *ngIf="!recording"> Start Recording </button>
+  <button (click)="stopRecording()" mat-button color='warn' *ngIf="recording"> Stop Recording </button>
+  <hr>
+  <audio controls="" *ngIf="url">
+    <source [src]="sanitize(url)" type="audio/wav">
+  </audio>
 </div>

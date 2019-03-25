@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-
-import MediaStreamRecorder from 'msr';
+import { Component, OnInit } from '@angular/core';
+import * as RecordRTC from 'recordrtc';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-translator',
@@ -9,52 +9,59 @@ import MediaStreamRecorder from 'msr';
 })
 export class TranslatorComponent implements OnInit {
 
-  @ViewChild('player')
-  player;
+  // Lets initiate Record OBJ
+  private record;
+  // Will use this flag for detect recording
+  recording = false;
+  // Url of Blob
+  url: string;
+  private error;
 
-  private audioRecorder: MediaStreamRecorder;
-  private mediaConstraints = {
-    audio: true,
-    video: false
-  };
-
-  constructor() {
+  constructor(private domSanitizer: DomSanitizer) {
   }
 
-  ngOnInit() {
-    navigator.getUserMedia(this.mediaConstraints,
-      (stream) => {
-        this.audioRecorder = new MediaStreamRecorder(stream);
-        this.audioRecorder.stream = stream;
-        this.audioRecorder.mimeType = 'audio/wav';
-        this.audioRecorder.ondataavailable = (blob) => {
-            this.player.nativeElement.controls = true;
-            this.player.nativeElement.srcObject = null;
-            this.player.nativeElement.src = URL.createObjectURL(blob);
-        };
-    },
-      (error) => {
-        console.log(error);
-    });
+  ngOnInit(): void {
   }
 
-  start() {
-    console.log('starting');
-    // max length audio 100 000 milli sec
-    this.audioRecorder.start(100000);
+  sanitize(url: string) {
+    return this.domSanitizer.bypassSecurityTrustUrl(url);
   }
 
-  stop() {
-    console.log('stoping');
-    this.audioRecorder.stop();
-    // or pass external blob/file
-    this.audioRecorder.save();
+  initiateRecording() {
+      this.url = null;
+      this.recording = true;
+      const mediaConstraints = {
+           video: false,
+           audio: true
+      };
+      navigator.mediaDevices
+           .getUserMedia(mediaConstraints)
+           .then(this.successCallback.bind(this), this.errorCallback.bind(this));
   }
 
-  speechToText() {
-    // TODO : utiliser src pour speech to text
-    console.log(this.player.nativeElement.src);
+  successCallback(stream) {
+      const options = {
+           mimeType: 'audio/wav',
+           numberOfAudioChannels: 1
+      };
+      // Start Actuall Recording
+      const StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
+      this.record = new StereoAudioRecorder(stream, options);
+      this.record.record();
+  }
 
-    // TODO : SPEECH TO TEXT MICROSOFT WITH SDK HERE
+  stopRecording() {
+    this.recording = false;
+    this.record.stop(this.processRecording.bind(this));
+
+    /// TODO : call speech to text microsoft using blob url
+  }
+
+  processRecording(blob) {
+    this.url = URL.createObjectURL(blob);
+  }
+
+  errorCallback(error) {
+       this.error = 'Cannot play audio';
   }
 }
