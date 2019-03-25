@@ -6,8 +6,8 @@ namespace oneroom_api.Model
     {
         public int ChallengeId { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        [Url]
-        public string URLDocumentation { get; set; }
+        public string AppName { get; set; }
+        public string ToolName { get; set; }
+        public string Config { get; set; }
     }
 }

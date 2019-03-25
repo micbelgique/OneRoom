@@ -25,11 +25,13 @@ namespace oneroom_api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description");
+                    b.Property<string>("AppName");
+
+                    b.Property<string>("Config");
 
                     b.Property<string>("Title");
 
-                    b.Property<string>("URLDocumentation");
+                    b.Property<string>("ToolName");
 
                     b.HasKey("ChallengeId");
 

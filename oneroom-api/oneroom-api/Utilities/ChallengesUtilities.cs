@@ -10,8 +10,9 @@ namespace oneroom_api.Utilities
             {
                 ChallengeId = challenge.ChallengeId,
                 Title = challenge.Title,
-                Description = challenge.Description,
-                URLDocumentation = challenge.URLDocumentation
+                AppName = challenge.AppName,
+                ToolName = challenge.ToolName,
+                Config = challenge.Config
             };
         }
     }

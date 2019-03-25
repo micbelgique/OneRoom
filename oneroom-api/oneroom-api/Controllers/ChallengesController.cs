@@ -104,7 +104,6 @@ namespace oneroom_api.Controllers
         }
 
         // POST: api/Games/5/Challenges
-        // TODO REFACTOR
         [HttpPost("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
