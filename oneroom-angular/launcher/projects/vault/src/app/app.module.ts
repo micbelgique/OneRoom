@@ -28,11 +28,12 @@ import {
   MatSliderModule
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
+import { LockscreenComponent } from './lockscreen/lockscreen.component';
 
 const arrProviders = [];
 
 @NgModule({
-  declarations: [],
+  declarations: [LockscreenComponent],
   imports : [
     MatSliderModule,
     MatOptionModule,

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
+import { LockscreenComponent } from './lockscreen/lockscreen.component';
 
 const routes: Routes = [
-  { path: 'vault/lock', component: AppComponent},
+  { path: 'vault/lock', component: LockscreenComponent},
   { path: 'vault', redirectTo: 'vault/lock' }
 ];
 

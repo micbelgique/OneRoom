@@ -321,7 +321,6 @@ private crop(canvas, x1, y1, width, height) {
 }
 
 async imageCapture(canvas) {
-  return;
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls FACE disabled');
