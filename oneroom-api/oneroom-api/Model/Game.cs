@@ -23,9 +23,8 @@ namespace oneroom_api.Model
         // (optional) required for automatic configuration of clients
         public Configuration Config { get; set; } = new Configuration();
 
-        // Challenges of the Game
-        public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
-
+        // Scenario of the Game
+        public Scenario Scenario { get; set; }
 
         public Game()
         {

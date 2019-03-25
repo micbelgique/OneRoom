@@ -37,8 +37,8 @@ namespace oneroom_api.Controllers
         {
             if(!GameExists(GameId)) return NotFound("There is no game with id:" + GameId);
 
-            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.GameChallenges)
-                                                                     .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
+            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
+                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.Scenario.Games.Any(g => g.GameId == GameId)))
                                                                      .Select(c => c.ToDTO())
                                                                      .ToListAsync();
 
@@ -104,19 +104,21 @@ namespace oneroom_api.Controllers
         }
 
         // POST: api/Games/5/Challenges
+        // TODO REFACTOR
         [HttpPost("~/api/Games/{GameId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
+            Game game = await _context.Games.Include(g => g.Scenario)
+                                                .ThenInclude(s => s.ScenarioChallenges)
                                             .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
             foreach( Challenge challenge in challenges)
             {
-                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
+                game.Scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = game.Scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -131,14 +133,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<Challenge>> DeleteChallenge(int id)
         {
-            var challenge = await _context.Challenges.Include(c => c.GameChallenges)
+            var challenge = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                      .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
             {
                 return NotFound();
             }
 
-            if (challenge.GameChallenges.Count() != 0) return Conflict("This Challenge is still used in at least one Game!");
+            if (challenge.ScenarioChallenges.Count() != 0) return Conflict("This Challenge is still used in at least one Game!");
             
             _context.Challenges.Remove(challenge);
             await _context.SaveChangesAsync();
@@ -152,13 +154,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
-                                                .ThenInclude(gc => gc.Challenge)
+            Game game = await _context.Games.Include(g => g.Scenario)
+                                                .ThenInclude(s => s.ScenarioChallenges)
+                                                    .ThenInclude(sc => sc.Challenge)
                                             .SingleOrDefaultAsync(g => g.GameId == GameId);
 
             if (game == null) return NotFound("There is no game with id:" + GameId);
 
-            game.GameChallenges.RemoveAll(gc => challenges.Contains(gc.Challenge));
+            game.Scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
 
             await _context.SaveChangesAsync();
 
