@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { TranslationComponent } from './translation/translation.component';
+import { TranslatorComponent } from './translator/translator.component';
 
 const routes: Routes = [
-  { path: 'translator/home', component: TranslationComponent},
+  { path: 'translator/home', component: TranslatorComponent},
   { path: 'translator', redirectTo: 'translator/home' }
 ];
 

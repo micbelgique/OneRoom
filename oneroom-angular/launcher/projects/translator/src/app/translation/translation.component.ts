@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AudioRecordingService } from '../services/audio-recording.service';
+// import { AudioRecordingService } from '../services/audio-recording.service';
 @Component({
   selector: 'app-translation',
   templateUrl: './translation.component.html',
@@ -12,11 +12,13 @@ export class TranslationComponent implements OnInit {
   data: Blob;
 
   constructor(
-    private record: AudioRecordingService,
+    // private record: AudioRecordingService,
     ) { }
 
   ngOnInit() {
   }
+
+  /*
   translate() {
     if (this.data != null) {
 
@@ -64,4 +66,5 @@ export class TranslationComponent implements OnInit {
       .join('\n');
     console.log(`Transcription: ${transcription}`);
     }
+    */
 }

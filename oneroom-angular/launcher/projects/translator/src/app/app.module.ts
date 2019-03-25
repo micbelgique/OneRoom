@@ -26,9 +26,11 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
+import { TranslatorComponent } from './translator/translator.component';
 @NgModule({
   declarations: [
-    TranslationComponent
+    TranslationComponent,
+    TranslatorComponent
   ],
   imports: [
     BrowserModule,
