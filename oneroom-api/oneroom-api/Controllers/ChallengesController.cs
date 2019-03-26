@@ -103,21 +103,20 @@ namespace oneroom_api.Controllers
             return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDTO());
         }
 
-        // POST: api/Games/5/Challenges
-        [HttpPost("~/api/Games/{GameId}/Challenges")]
+        // POST: api/Scenarios/5/Challenges
+        [HttpPost("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> AddChallengeInScenario( int ScenarioId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(g => g.Scenario)
-                                                .ThenInclude(s => s.ScenarioChallenges)
-                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
+            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                              .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
 
-            if (game == null) return NotFound("There is no game with id:" + GameId);
+            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
 
             foreach( Challenge challenge in challenges)
             {
-                game.Scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = game.Scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
+                Scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = Scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -147,20 +146,19 @@ namespace oneroom_api.Controllers
             return challenge;
         }
 
-        // DELETE: api/Games/5/Challenges
-        [HttpDelete("~/api/Games/{GameId}/Challenges")]
+        // DELETE: api/Scenarios/5/Challenges
+        [HttpDelete("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> DeleteChallengeInScenario(int ScenarioId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(g => g.Scenario)
-                                                .ThenInclude(s => s.ScenarioChallenges)
-                                                    .ThenInclude(sc => sc.Challenge)
-                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
+            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                                            .ThenInclude(sc => sc.Challenge)
+                                                        .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
 
-            if (game == null) return NotFound("There is no game with id:" + GameId);
+            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
 
-            game.Scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
+            Scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
 
             await _context.SaveChangesAsync();
 

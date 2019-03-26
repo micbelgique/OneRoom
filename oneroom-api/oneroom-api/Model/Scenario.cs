@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace oneroom_api.Model
 {
+    /*
+    * ScenarioChallenge class to handle the many to many relation ship 
+    * between Scenario and Challenge is in Challenge.cs
+    */
     public class Scenario
     {
         public int ScenarioId { get; set; }

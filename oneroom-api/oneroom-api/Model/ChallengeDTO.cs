@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace oneroom_api.Model
+﻿namespace oneroom_api.Model
 {
     public class ChallengeDTO
     {

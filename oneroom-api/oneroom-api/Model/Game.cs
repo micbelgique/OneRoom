@@ -4,10 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace oneroom_api.Model
 {
-    /*
-     * GameChallenge class to handle the many to many relation ship 
-     * between Game and Challenge is in Challenge.cs
-     */
     public class Game
     {
         public int GameId { get; set; }

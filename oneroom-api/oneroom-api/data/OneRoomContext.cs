@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using oneroom_api.Model;
 
 namespace oneroom_api.Model
 {

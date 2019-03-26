@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -131,7 +130,6 @@ namespace oneroom_api.Controllers
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
             // update clients
-            // await _hubClients.Clients.Group(groupName).UpdateGame();
             await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGame(game.GameId);
 
             return game;
