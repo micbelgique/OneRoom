@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import MediaStreamRecorder from 'msr';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-translator',
@@ -12,17 +13,25 @@ export class TranslatorComponent implements OnInit {
   @ViewChild('player')
   player;
   private lastBlob;
-
+  private headers;
+  untranslated: string;
+  translated: string;
+  languageOne: string;
+  languageTwo: string;
   private audioRecorder: MediaStreamRecorder;
   private mediaConstraints = {
     audio: true,
     video: false
   };
 
-  constructor() {
+  constructor(private http: HttpClient) {
   }
 
   ngOnInit() {
+    this.headers = new HttpHeaders({
+      'Ocp-Apim-Subscription-Key': '14d3566a4d5b48e98d63ac050434d641',
+      'Content-Type': 'application/json'
+    });
     navigator.getUserMedia(this.mediaConstraints,
       (stream) => {
         this.audioRecorder = new MediaStreamRecorder(stream);
@@ -55,7 +64,6 @@ export class TranslatorComponent implements OnInit {
     /// TODO : call speech to text microsoft using blob url
   }
   speechToText() {
-    this.lastBlob =await  this.record.getBlob();
     // TODO : utiliser src pour speech to text
       // pull in the required packages.
     let sdk = require('microsoft-cognitiveservices-speech-sdk');
@@ -81,24 +89,20 @@ export class TranslatorComponent implements OnInit {
       // });
 
       // we are done with the setup
-      console.log(pushStream);
-
       // now create the audio-config pointing to our stream and
       // the speech config specifying the language.
       let audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
       let speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
 
       // setting the recognition language to English.
-      speechConfig.speechRecognitionLanguage = 'en-US';
+      speechConfig.speechRecognitionLanguage = this.languageOne;
 
       // create the speech recognizer.
       let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-      console.log('hey');
       // start the recognizer and wait for a result.
       recognizer.recognizeOnceAsync(
         (result) => {
-          console.log(result);
-
+          this.untranslated = result.privText;
           recognizer.close();
           recognizer = undefined;
         },
@@ -113,34 +117,11 @@ export class TranslatorComponent implements OnInit {
     // create the push stream we need for the speech sdk.
         // TODO : SPEECH TO TEXT MICROSOFT WITH SDK HERE
   }
-  private makeblob(dataURL) {
-    const BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) === -1) {
-        // tslint:disable-next-line:no-shadowed-variable
-        const parts = dataURL.split(',');
-        // tslint:disable-next-line:no-shadowed-variable
-        const contentType = parts[0].split(':')[1];
-        // tslint:disable-next-line:no-shadowed-variable
-        const raw = decodeURIComponent(parts[1]);
-        return {
-          rawlength: raw.length,
-          blob: new Blob([raw], { type: contentType })
-        };
-    }
-    const parts = dataURL.split(BASE64_MARKER);
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-
-    const uInt8Array = new Uint8Array(rawLength);
-
-    for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return {
-      rawlength: raw.length,
-      blob: new Blob([uInt8Array], { type: contentType })
-    };
-    }
+  translate() {
+    let body = [{Text: this.untranslated}];
+    // tslint:disable-next-line:max-line-length
+    this.http.post<any>('https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=' + this.languageOne + '&to=' + this.languageTwo, body, {headers: this.headers}).subscribe(
+      (result) => { this.translated = result[0].translations[0].text; console.log(result)}
+    );
+  }
 }
