@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-
-import MediaStreamRecorder from 'msr';
+import { Component, OnInit } from '@angular/core';
+import * as RecordRTC from 'recordrtc';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-translator',
@@ -9,19 +9,31 @@ import MediaStreamRecorder from 'msr';
 })
 export class TranslatorComponent implements OnInit {
 
+<<<<<<< HEAD
   @ViewChild('player')
   player;
   private lastBlob;
+=======
+  // Lets initiate Record OBJ
+  private record;
+  // Will use this flag for detect recording
+  recording = false;
+  // Url of Blob
+  url: string;
+  private error;
 
-  private audioRecorder: MediaStreamRecorder;
-  private mediaConstraints = {
-    audio: true,
-    video: false
-  };
+  constructor(private domSanitizer: DomSanitizer) {
+  }
+>>>>>>> TranslatorApp
 
-  constructor() {
+  ngOnInit(): void {
   }
 
+  sanitize(url: string) {
+    return this.domSanitizer.bypassSecurityTrustUrl(url);
+  }
+
+<<<<<<< HEAD
   ngOnInit() {
     navigator.getUserMedia(this.mediaConstraints,
       (stream) => {
@@ -38,14 +50,32 @@ export class TranslatorComponent implements OnInit {
       (error) => {
         console.log(error);
     });
+=======
+  initiateRecording() {
+      this.url = null;
+      this.recording = true;
+      const mediaConstraints = {
+           video: false,
+           audio: true
+      };
+      navigator.mediaDevices
+           .getUserMedia(mediaConstraints)
+           .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+>>>>>>> TranslatorApp
   }
 
-  start() {
-    console.log('starting');
-    // max length audio 100 000 milli sec
-    this.audioRecorder.start(100000);
+  successCallback(stream) {
+      const options = {
+           mimeType: 'audio/wav',
+           numberOfAudioChannels: 1
+      };
+      // Start Actuall Recording
+      const StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
+      this.record = new StereoAudioRecorder(stream, options);
+      this.record.record();
   }
 
+<<<<<<< HEAD
   stop() {
     console.log('stoping');
     this.audioRecorder.stop();
@@ -112,6 +142,21 @@ export class TranslatorComponent implements OnInit {
     fileReader.readAsArrayBuffer(this.lastBlob);
     // create the push stream we need for the speech sdk.
         // TODO : SPEECH TO TEXT MICROSOFT WITH SDK HERE
+=======
+  stopRecording() {
+    this.recording = false;
+    this.record.stop(this.processRecording.bind(this));
+
+    /// TODO : call speech to text microsoft using blob url
+  }
+
+  processRecording(blob) {
+    this.url = URL.createObjectURL(blob);
+  }
+
+  errorCallback(error) {
+       this.error = 'Cannot play audio';
+>>>>>>> TranslatorApp
   }
   private makeblob(dataURL) {
     const BASE64_MARKER = ';base64,';
