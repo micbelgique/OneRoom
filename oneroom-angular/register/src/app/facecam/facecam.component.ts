@@ -468,7 +468,6 @@ private getHairLength(stream) {
       // sub.next(result.predictions[0].tagName);
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
-        console.log(result.predictions[0].region);
       } else {
         sub.next(null);
       }
@@ -500,7 +499,6 @@ private getSkinColor(stream) {
       // sub.next(result.predictions[0].tagName);
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
-        console.log(result.predictions[0].region);
       } else {
         sub.next(null);
       }

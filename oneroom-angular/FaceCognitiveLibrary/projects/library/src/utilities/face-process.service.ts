@@ -118,9 +118,10 @@ export class FaceProcessService {
             this.result$.next(null);
           }
           // Simple message with an action.
-          for (const face of faces) {
+          this.identifyFaces(faces, group, stream, 0.6);
+          /*for (const face of faces) {
               this.identify(face, group, stream, 0.6);
-          }
+          }*/
         },
         () => {
           // error
@@ -129,15 +130,62 @@ export class FaceProcessService {
         });
   }
 
+  /*
+    Identify multiple faces : use this to make less calls
+  */
+  private identifyFaces(faces: Face[], group: Group, stream: Blob, minConfidence = 0.5) {
+     // 2. Identify person
+     console.log(group.personGroupId);
+     const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 10, minConfidence);
+     identify$.subscribe(
+     (faceCandidates) => {
+       for (const candidate of faceCandidates) {
+         const idxFace = faces.map(f => f.faceId).indexOf(candidate.faceId);
+         if (candidate.candidates.length === 1) {
+          this.addFace(group, candidate.candidates[0].personId, stream, faces[idxFace]);
+         } else if (candidate.candidates.length > 1) {
+          console.log(candidate.candidates);
+          // optimise results
+          for (let i = 1; i < candidate.candidates.length; i++) {
+            if (candidate.candidates[i].confidence > 0.80) {
+              // delete duplicate where confidence is greater than 80 %
+              // TODO (improvement): GET faces from this person and assigned them to the most known person
+              const del$ = this.personService.delete(group.personGroupId, candidate.candidates[i].personId);
+              del$.subscribe(
+                () => {
+                  console.log('Duplicate person deleted');
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+            }
+          }
+          // adds face and retrain
+          this.addFace(group, candidate.candidates[0].personId, stream, faces[idxFace]);
+         } else {
+          this.createPerson(group, stream, faces[idxFace]);
+         }
+       }
+     },
+     (error) => {
+       // 3. Create person group not trained
+       for (const f of faces) {
+        this.createPerson(group, stream, f);
+       }
+     });
+  }
+
+  /*
+    Identify one face only
+  */
   private identify(face: Face, group: Group, stream: Blob, minConfidence = 0.5) {
             // 2. Identify person
             console.log(group.personGroupId);
             const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, minConfidence);
             identify$.subscribe(
             (faceCandidates) => {
-              console.log('identified candidates : ' + faceCandidates.length);
               for (const candidate of faceCandidates) {
-                console.log('Face ID : ' + candidate.faceId);
                 if (candidate.candidates.length === 1) {
                   this.addFace(group, candidate.candidates[0].personId, stream, face);
                 } else {
@@ -146,12 +194,14 @@ export class FaceProcessService {
               }
             },
             (error) => {
-              // 3. Create person AI not trained
-              console.log('ERROR : Identify person');
+              // 3. Create person group not trained
               this.createPerson(group, stream, face);
             });
   }
 
+  /*
+   Add Face to an existant person
+  */
   private addFace(group: Group, personId: string, stream: Blob, face: Face) {
           // person identified matching the face
           // 4. Add Face to person
@@ -182,6 +232,9 @@ export class FaceProcessService {
           });
   }
 
+  /*
+    Create person and adds a face to this person
+  */
  private createPerson(group: Group, stream: Blob, face: Face) {
     // 3. Create person
     // tslint:disable-next-line:max-line-length
@@ -197,6 +250,9 @@ export class FaceProcessService {
           });
  }
 
+  /*
+    Train the group : must be done every time a new person is added
+  */
   private train(groupId) {
     // 5. train group
     const train$ = this.groupService.train(groupId);
