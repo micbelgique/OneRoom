@@ -52,11 +52,11 @@ export class TranslatorComponent implements OnInit {
     // or pass external blob/file
     // this.audioRecorder.save();
     this.speechToText();
+    /// TODO : call speech to text microsoft using blob url
   }
-
   speechToText() {
+    this.lastBlob =await  this.record.getBlob();
     // TODO : utiliser src pour speech to text
-    console.log(this.lastBlob);
       // pull in the required packages.
     let sdk = require('microsoft-cognitiveservices-speech-sdk');
 
