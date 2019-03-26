@@ -1,10 +1,22 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+
 import * as faceapi from 'face-api.js';
+// import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
+// import { Face } from '../services/OnePoint/model/face';
+// import { User } from '../services/OnePoint/model/user';
+// import { UserService } from '../services/OnePoint/user.service';
+// import { FaceService } from '../services/OnePoint/face.service';
 import { Group, FaceProcessService, VisioncomputerService, HairlengthService } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
+// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
+// import { GameService } from '../services/OnePoint/game.service';
+// import { Game } from '../services/OnePoint/model/game';
+// import { GameState } from '../services/OnePoint/model/game-state.enum';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
+// import { PredictionHairLength } from '../utilities/prediction-hairlength';
+// tslint:disable-next-line:max-line-length
 
 // patch electron
 faceapi.env.monkeyPatch({
