@@ -16,10 +16,10 @@
     <br>
     <div [style.display]=this.displayStream >
       <div id="overlayContainer" class="center">
-        <mat-card *ngFor='let object of this.objects' class='detections'>
-          <mat-card-title>{{object}} détecté</mat-card-title>
+        <mat-card *ngFor='let object of this.objectsOverlay' class='detections'>
+          <mat-card-title>{{object.label}} détecté</mat-card-title>
           <mat-card-actions>
-              <button mat-stroked-button color="primary">Détails</button>
+              <button mat-stroked-button color="primary" (click)='openBottomSheet(object)'>Détails</button>
           </mat-card-actions>
         </mat-card>
         <video id="stream" #webcam autoplay></video>

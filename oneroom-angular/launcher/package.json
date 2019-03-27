@@ -25,7 +25,7 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "@aspnet/signalr": "^1.1.2",
-    "@oneroomic/facecognitivelibrary": "^0.1.16",
+    "@oneroomic/facecognitivelibrary": "^0.1.18",
     "@oneroomic/oneroomlibrary": "0.0.27",
     "@tensorflow/tfjs": "^1.0.1",
     "@tensorflow/tfjs-node": "^0.3.1",

@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { DetectorComponent } from './detector/detector.component';
 
 import {
+  MatBottomSheetModule,
   MatButtonModule,
   MatCheckboxModule,
   MatToolbarModule,
@@ -29,12 +30,14 @@ import {
   MatSliderModule
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
+import { BottomSheetDetailComponent } from './bottom-sheet-detail/bottom-sheet-detail.component';
 
 const arrProviders = [];
 
 @NgModule({
-  declarations: [DetectorComponent],
+  declarations: [DetectorComponent, BottomSheetDetailComponent],
   imports : [
+    MatBottomSheetModule,
     MatSliderModule,
     MatOptionModule,
     MatButtonModule,
@@ -58,6 +61,9 @@ const arrProviders = [];
     MatDatepickerModule,
     FormsModule,
     BrowserModule
+  ],
+  entryComponents: [
+    BottomSheetDetailComponent
   ]
 })
 export class ScannerAppSharedModule {

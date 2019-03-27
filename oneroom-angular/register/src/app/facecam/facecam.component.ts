@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import * as faceapi from 'face-api.js';
 // tslint:disable-next-line:max-line-length
-import { Group, FaceProcessService, VisioncomputerService, HairlengthService, CustomVisionPredictionService, EndPointGetterService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService, CustomVisionPredictionService, EndPointGetterService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
@@ -63,11 +63,17 @@ export class FacecamComponent implements OnInit, OnDestroy {
   private hubServiceSub;
   private gameSub;
 
+  // current game
+  private game: Game;
+
   // refresh rate
   refreshRate: number;
 
   // camid
   videoSource;
+
+  // start processing stream
+  private modelsReady = false;
 
   constructor(
     public dialog: MatDialog,
@@ -76,7 +82,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private faceService: FaceService,
     private customVisionPredictionService: CustomVisionPredictionService,
-    private endpointService: EndPointGetterService,
     private hubService: LeaderboardService,
     private gameService: GameService) {
       this.opencam();
@@ -104,16 +109,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
     }
     // game context
     if (localStorage.getItem('gameData')) {
-      const game: Game = JSON.parse(localStorage.getItem('gameData'));
+      this.game = JSON.parse(localStorage.getItem('gameData'));
       // join new group
       this.hubServiceSub = this.hubService.run().subscribe(
-        () => this.hubService.joinGroup(game.gameId.toString())
+        () => this.hubService.joinGroup(this.game.gameId.toString())
       );
       this.gameSub = this.hubService.refreshGameState.subscribe(
       (gameId) => {
-        if (gameId === game.gameId) {
+        if (gameId === this.game.gameId) {
           console.log('Updating state ...');
-          this.refreshGameState(game);
+          this.refreshGameState(this.game);
         }
       },
       (err) => {
@@ -121,7 +126,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         console.log(err);
       });
 
-      this.refreshGameState(game);
+      this.refreshGameState(this.game);
     }
   }
 
@@ -131,8 +136,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
           async () => {
-            // init stream
-            this.initStreamDetection();
+            // ...
+            this.modelsReady = true;
           }
         );
   }
@@ -145,7 +150,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.detectId = setInterval( () => {
           // state still registering
           if (!this.stateContainer) {
-            this.detectFaces();
+            if (this.modelsReady === true) {
+              this.detectFaces();
+            }
           }
         }, this.refreshRate);
       }
@@ -192,6 +199,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
               .enumerateDevices()
               .then((d) => {
                 this.selectors = this.getCaptureDevices(d);
+                // init stream
+                this.initStreamDetection();
               })
               .catch(this.handleError);
   }
@@ -335,18 +344,20 @@ async imageCapture(canvas) {
     const stream = this.makeblob(canvas.toDataURL('image/png'));
     // set du groupe
     const group = new Group();
-    if (localStorage.getItem('gameData')) {
-      group.personGroupId = JSON.parse(localStorage.getItem('gameData')).groupName;
+    if (this.game) {
+      group.personGroupId = this.game.groupName;
+      group.name = this.game.groupName;
+      group.userData = this.game.groupName;
+    } else {
+      // game must be set
+      return ;
     }
     console.log('group : ' + group.personGroupId);
-    group.name = 'mic_stage_2019';
-    group.userData = 'Group de test en developpement pour oneroom';
     // timeout to unlock detection
     setTimeout(() => {
       this.lock = false;
     }, 2500);
     // traitement face API
-    // return an observable;
     const res$ = this.faceProcess.byImg(stream.blob, group);
     sub$ = res$.subscribe(
         (data) => {
@@ -450,7 +461,6 @@ async imageCapture(canvas) {
       );
     } catch (e) {
       console.log('Error : ' + e.message);
-      console.log(e);
       // unlock capture
       this.lock = false;
     }

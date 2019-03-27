@@ -33,9 +33,9 @@
 }
 
 .detections {
-  height: 5%;
-  width: 15%;
-  z-index: -98;
+  height: 10%;
+  width: 20%;
+  z-index: 0;
   margin: 5%;
   animation: pulse 1s forwards;
 }

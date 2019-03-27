@@ -1,9 +1,21 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import { User, LeaderboardService, GameService, Game, GameState } from '@oneroomic/oneroomlibrary';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog, MatSnackBar, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
+import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
 
+export class Objects {
+  label: string;
+  description: string;
+  hint: string;
+
+  constructor(label, description, hint) {
+    this.label = label;
+    this.description = description;
+    this.hint = hint;
+  }
+}
 
 @Component({
   selector: 'app-detector',
@@ -15,7 +27,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   /* input stream devices */
   /* selector devices */
-  public selectors;
+  public selectors = [];
   // containers
   @ViewChild('canvas2')
   public overlay;
@@ -54,16 +66,24 @@ export class DetectorComponent implements OnInit, OnDestroy {
   // camid
   videoSource;
 
-  // detection
-  objects: string[];
-
+  // detection overlay objects detected
+  objectsOverlay: Objects[] = [];
+  objectsDictionary: Objects[] = [];
 
   constructor(
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private hubService: LeaderboardService,
     private gameService: GameService,
-    private predictionService: CustomVisionPredictionService) {
+    private predictionService: CustomVisionPredictionService,
+    private bottomSheet: MatBottomSheet) {
+      // TODO : get from challenge in API
+      this.objectsDictionary.push(
+        new Objects('cup', 'J aime boire du café pendant que je code' , ''),
+        new Objects('plant', 'Du vert pour un environnement plus agréable', ''),
+        new Objects('phone', 'Ma batterie est morte, j ai besoin d appeler un client chinois', '0478073017'),
+        new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', '')
+      );
       this.opencam();
     }
 
@@ -72,7 +92,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
       this.videoSource = localStorage.getItem('videoSource');
     }
     // init detected objects array
-    this.objects = [];
+    this.objectsOverlay = [];
     // init lock
     this.lastUsers = [];
     this.alertContainer = false;
@@ -87,7 +107,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
         this.refreshRate = 3000;
       }
     }
-    this.initStreamDetection();
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
@@ -112,7 +131,11 @@ export class DetectorComponent implements OnInit, OnDestroy {
         this.detectId = setInterval( () => {
           // state still registering
           if (!this.stateContainer) {
-            this.detectObjects();
+            if (this.stream) {
+              this.detectObjects();
+            } else {
+              clearInterval(this.detectId);
+            }
           }
         }, 1000);
       }
@@ -154,6 +177,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
               .enumerateDevices()
               .then((d) => {
                 this.selectors = this.getCaptureDevices(d);
+                this.initStreamDetection();
               })
               .catch(this.handleError);
   }
@@ -162,6 +186,10 @@ export class DetectorComponent implements OnInit, OnDestroy {
   public startStream(videoSource = null) {
 
     if (navigator.mediaDevices) {
+        if (this.selectors.map(s => s.id).indexOf(this.videoSource) === -1) {
+          // check if prefered cam is available in the list
+          this.videoSource = null;
+        }
         // select specific camera on mobile
         this.videoSource = videoSource ? videoSource : (this.videoSource ? this.videoSource : this.selectors[0].id);
         localStorage.setItem('videoSource', this.videoSource);
@@ -299,10 +327,13 @@ export class DetectorComponent implements OnInit, OnDestroy {
                 p.boundingBox.height * this.overlay.nativeElement.height,
                 p.tagName
                 );
-              if (this.objects.indexOf(p.tagName) === -1) {
-                this.objects.push(p.tagName);
+
+              if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
+                const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
+                const obj = this.objectsDictionary[idx];
+                this.objectsOverlay.push(obj);
                 setTimeout(() => {
-                  this.objects.pop();
+                  this.objectsOverlay.pop();
                 }, 5000);
               }
               console.log(p.tagName + ' ' + (p.probability * 100) + ' % ');
@@ -317,6 +348,10 @@ export class DetectorComponent implements OnInit, OnDestroy {
     const prediction = this.objects.getTopKClasses(result, 1);
     this.detection = ' Found : ' + prediction[0].label + ' with ' + prediction[0].value + '';
     console.log(this.detection);*/
+  }
+
+  openBottomSheet(o: Objects) {
+    this.bottomSheet.open(BottomSheetDetailComponent, { data: o });
   }
 
   // transform dataUrl in blob
