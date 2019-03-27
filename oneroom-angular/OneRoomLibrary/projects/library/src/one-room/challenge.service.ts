@@ -32,19 +32,15 @@ export class ChallengeService {
     return this.http.delete<Challenge>(this.EPGetter.getEndPointUrl() + '/Challenges/' + challengeId);
   }
 
-  // Challenges in Game
-  getChallengesByGame(): Observable<Challenge[]> {
-    return this.http.get<Challenge[]>(this.EPGetter.getEndPointUrlWithId() + '/Challenges');
+  // Challenges in Scenario
+  addChallengeToScenario(ScenarioId: number, challenges: Challenge[]): Observable<boolean> {
+    return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario/' + ScenarioId + '/Challenges', challenges);
   }
 
-  addChallengeToGame(challenges: Challenge[]): Observable<boolean> {
-    return this.http.post<boolean>(this.EPGetter.getEndPointUrlWithId() + '/Challenges', challenges);
-  }
-
-  deleteChallengeFromGame(challenges: Challenge[]): Observable<boolean> {
+  deleteChallengeFromScenario(ScenarioId: number, challenges: Challenge[]): Observable<boolean> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }), body: challenges
     };
-    return this.http.delete<boolean>(this.EPGetter.getEndPointUrlWithId() + '/Challenges', httpOptions);
+    return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario/' + ScenarioId + '/Challenges', httpOptions);
   }
 }
