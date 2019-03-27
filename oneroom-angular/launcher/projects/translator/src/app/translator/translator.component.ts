@@ -121,7 +121,37 @@ export class TranslatorComponent implements OnInit {
     let body = [{Text: this.untranslated}];
     // tslint:disable-next-line:max-line-length
     this.http.post<any>('https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=' + this.languageOne + '&to=' + this.languageTwo, body, {headers: this.headers}).subscribe(
-      (result) => { this.translated = result[0].translations[0].text; console.log(result)}
+      (result) => { this.translated = result[0].translations[0].text; console.log(result); }
     );
+    this.textToSpeech(this.translated);
+  }
+  textToSpeech(text: string) {
+    // Requires xmlbuilder to build the SSML body
+    const xmlbuilder = require('xmlbuilder');
+    // tslint:disable-next-line:max-line-length
+    this.http.post<any>('https://westeurope.api.cognitive.microsoft.com/sts/v1.0/issueToken', {headers: new HttpHeaders({'Ocp-Apim-Subscription-Key': '3e17428195894a8f9de3e76ee431ff80'})}).subscribe(
+      (result) => {
+        console.log(result);
+        let xml_body = xmlbuilder.create('speak')
+        .att('version', '1.0')
+        .att('xml:lang', 'en-us')
+        .ele('voice')
+        .att('xml:lang', 'en-us')
+        .att('name', 'Microsoft Server Speech Text to Speech Voice (en-US, Guy24KRUS)')
+        .txt(text)
+        .end();
+        let body = xml_body.toString();
+        let headersSpeech = new HttpHeaders({
+            'Authorization': 'Bearer ' + result,
+            'cache-control': 'no-cache',
+            'User-Agent': 'SpeechOneRoomDev',
+            'X-Microsoft-OutputFormat': 'riff-24khz-16bit-mono-pcm',
+            'Content-Type': 'application/ssml+xml'
+
+        });
+        this.http.post<any>('https://westeurope.tts.speech.microsoft.com/', body, {headers: headersSpeech}).subscribe(
+          (resultData) => console.log(resultData)
+        );
+      });
   }
 }
