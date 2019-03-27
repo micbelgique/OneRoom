@@ -59,64 +59,29 @@ export class TranslatorComponent implements OnInit {
   stop() {
     console.log('stoping');
     this.audioRecorder.stop();
-    // or pass external blob/file
-    // this.audioRecorder.save();
     this.speechToText();
-    /// TODO : call speech to text microsoft using blob url
   }
   speechToText() {
-    // TODO : utiliser src pour speech to text
-      // pull in the required packages.
-    let sdk = require('microsoft-cognitiveservices-speech-sdk');
-
-    // replace with your own subscription key,
-    // service region (e.g., "westus"), and
-    // the name of the file you want to run
-    // through the speech recognizer.
-    let subscriptionKey = '3e17428195894a8f9de3e76ee431ff80';
-    let serviceRegion = 'westeurope'; // e.g., "westus"
-    // let filename = "YourAudioFile.wav"; // 16000 Hz, Mono
     let arrayBuffer;
     let fileReader = new FileReader();
     fileReader.onload = (event) => {
-      arrayBuffer = event.target;
-      let pushStream = sdk.AudioInputStream.createPushStream();
-      pushStream.write(arrayBuffer);
-      // open the file and push it to the push stream.
-      // fs.createReadStream(filename).on('data', function(arrayBuffer) {
-      //   pushStream.write(arrayBuffer.buffer);
-      // }).on('end', function() {
-      //   pushStream.close();
-      // });
-
-      // we are done with the setup
-      // now create the audio-config pointing to our stream and
-      // the speech config specifying the language.
-      let audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
-      let speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
-
-      // setting the recognition language to English.
-      speechConfig.speechRecognitionLanguage = this.languageOne;
-
-      // create the speech recognizer.
-      let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-      // start the recognizer and wait for a result.
-      recognizer.recognizeOnceAsync(
-        (result) => {
-          this.untranslated = result.privText;
-          recognizer.close();
-          recognizer = undefined;
+      arrayBuffer = event.target.result;
+      const url = 'https://speech.googleapis.com/v1/speech:recognize?key=' + environment.googleSubKeySpeech;
+      const audio = this.arrayBufferToBase64(arrayBuffer);
+      const body = {
+        config : {
+          audioChannelCount: 2,
+          languageCode: this.languageOne
         },
-        (err) => {
-          console.log('err - ' + err);
-
-          recognizer.close();
-          recognizer = undefined;
-        });
+        audio : {
+          content: audio
+        }
+      };
+      this.http.post<any>(url, body).subscribe((result) => {
+        this.untranslated = result.results[0].alternatives[0].transcript;
+      });
     };
     fileReader.readAsArrayBuffer(this.lastBlob);
-    // create the push stream we need for the speech sdk.
-        // TODO : SPEECH TO TEXT MICROSOFT WITH SDK HERE
   }
   translate() {
     let body = [{Text: this.untranslated}];
@@ -128,41 +93,8 @@ export class TranslatorComponent implements OnInit {
       }
     );
   }
-  textToSpeech(text: string) {
-    // Requires xmlbuilder to build the SSML body
-    const xmlbuilder = require('xmlbuilder');
-    // tslint:disable-next-line:max-line-length
-    this.http.post<any>('https://westeurope.api.cognitive.microsoft.com/sts/v1.0/issueToken', null, {headers: new HttpHeaders({'Ocp-Apim-Subscription-Key': '3e17428195894a8f9de3e76ee431ff80'})}).subscribe(
-      () => {},
-      (err) => {
-        console.log(err.error.text);
-        // let xml_body = xmlbuilder.create('speak')
-        // .att('version', '1.0')
-        // .att('xml:lang', 'en-us')
-        // .ele('voice')
-        // .att('xml:lang', 'en-us')
-        // .att('name', 'Microsoft Server Speech Text to Speech Voice (en-US, Guy24KRUS)')
-        // .txt(text)
-        // .end();
-        // let body = xml_body.toString();
-        // tslint:disable-next-line:max-line-length
-        let body = '<speak version=\'1.0\' xmlns="https://www.w3.org/2001/10/synthesis" xml:lang=\'en-US\'><voice  name=\'Microsoft Server Speech Text to Speech Voice (en-US, Jessa24kRUS)\'>Welcome to Microsoft Cognitive Services <break time="100ms" /> Text-to-Speech API.</voice> </speak>';
-        let headersSpeech = new HttpHeaders({
-          'Access-Control-Allow-Origin': 'http://localhost:4200/',
-          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': '*',
-          'Authorization': 'Bearer ' + err.error.text,
-          'cache-control': 'no-cache',
-          'X-Microsoft-OutputFormat': 'riff-24khz-16bit-mono-pcm',
-          'Content-Type': 'application/ssml+xml'
-        });
-        this.http.post<any>('https://westeurope.tts.speech.microsoft.com/', body, {headers: headersSpeech}).subscribe(
-          (resultData) => console.log(resultData)
-        );
-      });
-  }
   textToSpeechGoogle(text: string) {
-    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + environment.googleSubscriptionKey;
+    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + environment.googleSubTextKey;
     const body = {
       input: {
         text
@@ -179,8 +111,17 @@ export class TranslatorComponent implements OnInit {
       'Content-Type': 'application/json'
     });
     this.http.post<any>(url, body, {headers: httpHeaders}).subscribe((result) => {
-      console.log(result);
       this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
     });
   }
+  arrayBufferToBase64( buffer ) {
+    let binary = '';
+    let bytes = new Uint8Array( buffer );
+    let len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return window.btoa( binary );
 }
+}
+
