@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import MediaStreamRecorder from 'msr';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { environment } from 'projects/translator/src/environments/environment';
 
 @Component({
   selector: 'app-translator',
@@ -78,7 +79,7 @@ export class TranslatorComponent implements OnInit {
     let arrayBuffer;
     let fileReader = new FileReader();
     fileReader.onload = (event) => {
-      arrayBuffer = event.target.result;
+      arrayBuffer = event.target;
       let pushStream = sdk.AudioInputStream.createPushStream();
       pushStream.write(arrayBuffer);
       // open the file and push it to the push stream.
@@ -123,7 +124,7 @@ export class TranslatorComponent implements OnInit {
     this.http.post<any>('https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=' + this.languageOne + '&to=' + this.languageTwo, body, {headers: this.headers}).subscribe(
       (result) => {
         this.translated = result[0].translations[0].text;
-        this.textToSpeech(this.translated);
+        this.textToSpeechGoogle(this.translated);
       }
     );
   }
@@ -159,5 +160,27 @@ export class TranslatorComponent implements OnInit {
           (resultData) => console.log(resultData)
         );
       });
+  }
+  textToSpeechGoogle(text: string) {
+    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + environment.googleSubscriptionKey;
+    const body = {
+      input: {
+        text
+      },
+      voice: {
+        languageCode: this.languageTwo,
+        ssmlGender: 'NEUTRAL'
+      },
+      audioConfig: {
+        audioEncoding: 'MP3'
+      }
+    };
+    const httpHeaders = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    this.http.post<any>(url, body, {headers: httpHeaders}).subscribe((result) => {
+      console.log(result);
+      this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
+    });
   }
 }

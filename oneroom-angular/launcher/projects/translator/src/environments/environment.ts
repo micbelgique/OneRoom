@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  GOOGLE_APPLICATION_CREDENTIALS: 'C:\OneRoom\ProxiCall-e91d44c4c54b.json',
+  googleSubscriptionKey: 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA'
 };
 
 /*
