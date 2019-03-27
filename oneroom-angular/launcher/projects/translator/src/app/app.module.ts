@@ -27,6 +27,7 @@ import {
   MatSelectModule
 } from '@angular/material';
 import { TranslatorComponent } from './translator/translator.component';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     TranslationComponent,
@@ -52,7 +53,8 @@ import { TranslatorComponent } from './translator/translator.component';
     MatProgressBarModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    FormsModule
   ],
   providers: arrProviders,
   bootstrap: [AppComponent]
