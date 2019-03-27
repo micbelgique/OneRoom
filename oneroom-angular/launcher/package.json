@@ -34,7 +34,6 @@
     "electron-build": "0.0.3",
     "face-api.js": "^0.18.0",
     "hammerjs": "^2.0.8",
-    "microsoft-cognitiveservices-speech-sdk": "^1.3.0",
     "moment": "^2.24.0",
     "msr": "^1.3.4",
     "node-lame": "^1.2.0",
