@@ -459,11 +459,26 @@ async imageCapture(canvas) {
             this.lock = false;
         }
       );
+
+
+    // Optimisation
+    this.faceProcess.resForDuplicate$.subscribe(
+      (id) => {
+        console.log('Deleting user from oneroom: ' + id);
+        const d$ = this.userService.deleteUser(id);
+        d$.subscribe(
+          () => console.log('user deleted')
+        );
+      }
+    );
+
     } catch (e) {
       console.log('Error : ' + e.message);
       // unlock capture
       this.lock = false;
     }
+
+
 }
 
 

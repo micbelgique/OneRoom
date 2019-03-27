@@ -102,7 +102,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
       // leave old group
-      if (this.game) {
+      if (this.game.gameId) {
         this.hubService.leaveGroup(this.game.gameId.toString());
       }
       this.game = game;
