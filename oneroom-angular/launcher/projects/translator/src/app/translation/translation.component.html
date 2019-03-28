@@ -1,0 +1,46 @@
+<div>
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile>
+      <mat-form-field>
+        <mat-label>Langue:</mat-label>
+        <mat-select>
+          <mat-option>
+            Français
+          </mat-option>
+          <mat-option>
+            Anglais
+          </mat-option>
+          <mat-option>
+            Chinois
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <textarea matInput placeholder="Your text" value="{{untranslated}}"></textarea>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>Langue:</mat-label>
+          <mat-select>
+            <mat-option>
+              Français
+            </mat-option>
+            <mat-option>
+              Anglais
+            </mat-option>
+            <mat-option>
+              Chinois
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <textarea matInput placeholder="Your text" value="{{translated}}"></textarea>
+        </mat-form-field>
+      </mat-grid-tile>
+  </mat-grid-list>
+</div>
+
+<button mat-raised-button color="primary" (click)="this.register()">Record</button>
+<button mat-raised-button color="primary" (click)="this.stopRegister()">Stop</button>
+{{this.data}}

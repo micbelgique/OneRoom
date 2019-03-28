@@ -1,0 +1,55 @@
+<div>
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile>
+        <mat-list>
+            <mat-list-item>
+              <mat-form-field>
+                <mat-label>Langue:</mat-label>
+                <mat-select [(value)]="this.languageOne">
+                  <mat-option value="fr-FR">
+                    Français
+                  </mat-option>
+                  <mat-option value="en-US">
+                    Anglais
+                  </mat-option>
+                  <mat-option value="zh-CN">
+                    Chinois
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-list-item>
+          <mat-list-item>
+              <mat-form-field>
+                <textarea class="text" matInput placeholder="Your text" [(ngModel)]="this.untranslated"></textarea>
+              </mat-form-field>
+          </mat-list-item>
+          <mat-list-item>
+              <button mat-button (click)='start()' color="primary">Start</button>
+              <button mat-button (click)='stop()' color="warn">Stop</button>
+              <hr>
+              <audio #player controls autoplay playsinline></audio>
+          </mat-list-item>
+          <button mat-button (click)='translate()' color="primary">traduire</button>
+        </mat-list>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <mat-form-field>
+          <mat-label>Langue:</mat-label>
+          <mat-select [(value)]="this.languageTwo">
+            <mat-option value="fr">
+                Français
+              </mat-option>
+              <mat-option value="en">
+                Anglais
+              </mat-option>
+              <mat-option value="zh-CN">
+                Chinois
+              </mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <textarea matInput placeholder="Your text" [(ngModel)]="this.translated"></textarea>
+        </mat-form-field>
+      </mat-grid-tile>
+  </mat-grid-list>
+</div>
