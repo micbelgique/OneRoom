@@ -1,4 +1,3 @@
-import { Group } from './cognitive/person-group.service';
 
 /*
  * Public API Surface of face-cognitive-library
@@ -24,9 +23,15 @@ export * from './cognitive/face/model/occlusion';
 export * from './cognitive/face-list.service';
 export * from './cognitive/face.service';
 export * from './cognitive/person-group-person.service';
-export { Group };
+export { Group } from './cognitive/person-group.service';
 export * from './cognitive/person-group.service';
 export * from './utilities/end-point-getter.service';
 export * from './utilities/face-process.service';
-export * from './cognitive/vision/hairlength.service';
+export * from './cognitive/vision/model/image-prediction';
+export * from './cognitive/vision/model/prediction';
+export * from './cognitive/vision/model/region';
+
+export * from './cognitive/vision/custom-vision-prediction.service';
+
 export * from './cognitive/vision/visioncomputer.service';
+export * from './cognitive/vision/hairlength.service';

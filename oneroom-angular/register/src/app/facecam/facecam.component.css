@@ -1,13 +1,29 @@
-#overlayContainer {
-  position: relative;
-}
 
 #overlayContainer #stream, #overlay {
   position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 #stream {
   border: 2px solid black;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: -100;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+#overlay {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: -99;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 }
 
 .center {

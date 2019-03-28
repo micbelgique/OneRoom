@@ -4,7 +4,7 @@
 }
 
 .launcher {
-  height: 90vh;
+  height: 95vh;
   overflow-y: auto;
 }
 
@@ -27,9 +27,9 @@
 }
 
 .app-mat-icon, .img-profil {
-  font-size: 150px;
-  height: 150px;
-  width: 150px;
+  font-size: 15vh;
+  height: 15vh;
+  width: 15vw;
 }
 
 .app-icon {

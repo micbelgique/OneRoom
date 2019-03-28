@@ -1,10 +1,10 @@
-import * as canvas from 'canvas';
+
 import * as faceapi from 'face-api.js';
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { FaceProcessService, Group } from '@oneroomic/facecognitivelibrary';
-import { UserService } from '@oneroomic/oneroomlibrary';
+import { UserService, Game } from '@oneroomic/oneroomlibrary';
 import {Router} from '@angular/router';
 
 faceapi.env.monkeyPatch({
@@ -95,16 +95,19 @@ export class LockscreenComponent implements OnInit {
 
   initStreamDetection(videoSource = null) {
       this.startStream(videoSource);
+      console.log('starting scan');
       if (!this.detectId) {
         // detection interval: default 3000
         this.detectId = setInterval( () => {
+          console.log('Scanning for faces');
           this.detectFaces();
-        }, this.refreshRate);
+        }, 1000);
       }
   }
 
   public unLock(videoSource = null) {
     if (this.buttonLock === false) {
+      this.lock = false;
       this.toast.open('Scan en cours', 'Ok');
       this.initStreamDetection(videoSource);
     } else {
@@ -125,7 +128,7 @@ export class LockscreenComponent implements OnInit {
         // if (fullFaceDescriptions.length > 0) {
         if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
         // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
+        // await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
         // tslint:disable-next-line:max-line-length
         // await faceapi.drawFaceExpressions(this.canvas2.nativeElement, ({ position: fullFaceDescriptions.detection.box, expressions: fullFaceDescriptions.expressions }));
         // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
@@ -166,9 +169,13 @@ export class LockscreenComponent implements OnInit {
   public startStream(videoSource = null) {
 
     if (navigator.mediaDevices) {
+        if (this.selectors.map(s => s.id).indexOf(this.videoSource) === -1) {
+          // check if prefered cam is available in the list
+          this.videoSource = null;
+        }
         // select specific camera on mobile
         this.videoSource = videoSource === null ?
-        ( this.videoSource ? this.videoSource : this.videoSelect.nativeElement.value) : videoSource;
+        ( this.videoSource ? this.videoSource : this.selectors[0].id) : videoSource;
 
         // save prefered cam
         localStorage.setItem('camId', this.videoSource);
@@ -273,33 +280,33 @@ export class LockscreenComponent implements OnInit {
     console.log('calls disabled');
     return;
   }
-  // button not pressed
-  if (!this.buttonLock) {
-    console.log('locked');
-    this.lock = false;
-    return;
-  }
   try {
     const stream = this.makeblob(dataUrl);
     // set du groupe
     const group = new Group();
     if (localStorage.getItem('gameData')) {
-      group.personGroupId = JSON.parse(localStorage.getItem('gameData')).groupName;
+      const currentGame = JSON.parse(localStorage.getItem('gameData'));
+      group.personGroupId = currentGame.groupName;
+      group.name = currentGame.groupName;
+      group.userData = '';
+    } else {
+      this.lock = false;
+      return;
     }
-    console.log('group : ' + group.personGroupId);
-    group.name = 'mic_stage_2019';
-    group.userData = 'Group de test en developpement pour oneroom';
+    console.log(group);
+    // group.name = 'mic_stage_2019';
+    // group.userData = 'Group de test en developpement pour oneroom';
     // timeout to unlock detection
     setTimeout(() => {
       this.lock = false;
     }, 2500);
     // traitement face API
     // return an observable;
-    this.faceProcess.detectOnly(stream.blob, group).subscribe((result) => {
+    this.faceProcess.detectOnly(stream.blob, group).subscribe(
+    (result) => {
       if (result === null) {
         console.log(result);
         this.lock = false;
-        return;
       } else {
         this.userService.getUser(result).subscribe(
           (result1) => {
@@ -310,7 +317,6 @@ export class LockscreenComponent implements OnInit {
     });
   } catch (e) {
     console.log('Error : ' + e.message);
-    console.log(e);
     // unlock capture
     this.lock = false;
   }
@@ -350,12 +356,13 @@ export class LockscreenComponent implements OnInit {
     }
     // tslint:disable-next-line:use-life-cycle-interface
     ngOnDestroy(): void {
-      clearInterval(this.detectId);
       clearTimeout(this.streamId);
       this.stopCapture();
     }
 
     private stopCapture() {
+      clearInterval(this.detectId);
+      this.detectId = null;
       // stop camera capture
       if (this.stream !== undefined && this.stream !== null) {
         this.stream.getTracks().forEach(

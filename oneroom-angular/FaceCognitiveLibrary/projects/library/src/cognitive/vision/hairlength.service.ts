@@ -36,9 +36,11 @@ export class HairlengthService {
       'Training-Key' : this.subscriptionKeyTraining,
     });
    }
+
    detectLength(stream: Blob) {
     return this.http.post<any>(this.endPointPrediction, stream, {headers: this.headersPrediction} );
    }
+
    deleteImg(id: string) {
      return this.http.delete<any>(this.endPointTraining + '/projects/' + this.projectId + '/predictions?ids=' + id,
      { headers: this.headersTraining }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FaceService, FaceCandidate } from '../cognitive/face.service';
+import { FaceService, FaceCandidate, Candidate } from '../cognitive/face.service';
 import { PersonGroupPersonService, PersistedPerson, Person } from '../cognitive/person-group-person.service';
 import { PersonGroupService, Group } from '../cognitive/person-group.service';
 import { Face } from '../cognitive/face/model/face';
@@ -25,6 +25,10 @@ export class FaceProcessService {
   private result: PersonGroup = new PersonGroup();
   resForDetect$: Subject<string> = new Subject<string>();
   private resultForDetect: string;
+
+
+  public resForDuplicate$: Subject<string> = new Subject<string>();
+  private duplicatePersons: string[][] = [];
 
   constructor(
     private faceService: FaceService,
@@ -71,8 +75,9 @@ export class FaceProcessService {
         console.log('face detected : ' + faces.length);
         if (faces.length === 0) {
           this.result$.next(null);
+        } else {
+          this.identifyOnly(faces[0], group);
         }
-        this.identifyOnly(faces[0], group);
       },
       () => {
         // error
@@ -89,8 +94,16 @@ export class FaceProcessService {
     (faceCandidates) => {
       console.log('identified candidates : ' + faceCandidates.length);
       console.log(faceCandidates);
-      this.resultForDetect = faceCandidates[0].candidates[0].personId;
-      this.getString();
+      if (faceCandidates.length > 0 && faceCandidates[0].candidates.length > 0) {
+        this.resultForDetect = faceCandidates[0].candidates[0].personId;
+        this.getString();
+      } else {
+        this.resForDetect$.next(null);
+      }
+    },
+    () => {
+      console.log('ERROR : Identify');
+      this.resForDetect$.next(null);
     });
   }
 
@@ -109,9 +122,10 @@ export class FaceProcessService {
             this.result$.next(null);
           }
           // Simple message with an action.
-          for (const face of faces) {
-              this.identify(face, group, stream);
-          }
+          this.identifyFaces(faces, group, stream, 0.6);
+          /*for (const face of faces) {
+              this.identify(face, group, stream, 0.6);
+          }*/
         },
         () => {
           // error
@@ -120,15 +134,66 @@ export class FaceProcessService {
         });
   }
 
-  private identify(face: Face, group: Group, stream: Blob) {
+  /*
+    Identify multiple faces : use this to make less calls
+  */
+  private identifyFaces(faces: Face[], group: Group, stream: Blob, minConfidence = 0.5) {
+     // 2. Identify person
+     const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 10, minConfidence);
+     identify$.subscribe(
+     (faceCandidates) => {
+       for (const candidate of faceCandidates) {
+         const idxFace = faces.map(f => f.faceId).indexOf(candidate.faceId);
+         if (candidate.candidates.length === 1) {
+          this.addFace(group, candidate.candidates[0].personId, stream, faces[idxFace]);
+         } else if (candidate.candidates.length > 1) {
+          console.log('Possible duplicates');
+          let keepId = null;
+          let maxConfidence = 0;
+          candidate.candidates.forEach(c => {
+            if (c.confidence > maxConfidence) {
+              maxConfidence = c.confidence;
+              keepId = c.personId;
+            } else if (c.confidence > 0.80) {
+              // delete possible duplicate
+              const del$ = this.personService.delete(group.personGroupId, c.personId);
+              del$.subscribe(
+                () => {
+                  console.log('Duplicate deleted');
+                  // emit person ID deleted
+                  this.resForDuplicate$.next(c.personId);
+                },
+                () => console.log('Error deleting duplicate')
+              );
+            }
+          });
+          // optimise results
+          // this.duplicatePersons.push(candidate.candidates.map( (c) => { if (c.confidence > 0.80) { return c.personId; } }));
+          // adds face and retrain
+          this.addFace(group, keepId, stream, faces[idxFace]);
+         } else {
+          this.createPerson(group, stream, faces[idxFace]);
+         }
+       }
+     },
+     (error) => {
+       // 3. Create person group not trained
+       for (const f of faces) {
+        this.createPerson(group, stream, f);
+       }
+     });
+  }
+
+  /*
+    Identify one face only
+  */
+  private identify(face: Face, group: Group, stream: Blob, minConfidence = 0.5) {
             // 2. Identify person
             console.log(group.personGroupId);
-            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, 0.6);
+            const identify$ = this.faceService.identify([face.faceId], group.personGroupId, 1, minConfidence);
             identify$.subscribe(
             (faceCandidates) => {
-              console.log('identified candidates : ' + faceCandidates.length);
               for (const candidate of faceCandidates) {
-                console.log('Face ID : ' + candidate.faceId);
                 if (candidate.candidates.length === 1) {
                   this.addFace(group, candidate.candidates[0].personId, stream, face);
                 } else {
@@ -137,12 +202,14 @@ export class FaceProcessService {
               }
             },
             (error) => {
-              // 3. Create person AI not trained
-              console.log('ERROR : Identify person');
+              // 3. Create person group not trained
               this.createPerson(group, stream, face);
             });
   }
 
+  /*
+   Add Face to an existant person
+  */
   private addFace(group: Group, personId: string, stream: Blob, face: Face) {
           // person identified matching the face
           // 4. Add Face to person
@@ -173,10 +240,13 @@ export class FaceProcessService {
           });
   }
 
+  /*
+    Create person and adds a face to this person
+  */
  private createPerson(group: Group, stream: Blob, face: Face) {
     // 3. Create person
     // tslint:disable-next-line:max-line-length
-    const person$ = this.personService.create(group.personGroupId, 'user_' + Math.random(), 'test person created to train a model');
+    const person$ = this.personService.create(group.personGroupId, group.name, group.userData);
 
     person$.subscribe(
           (data) => {
@@ -188,12 +258,15 @@ export class FaceProcessService {
           });
  }
 
+  /*
+    Train the group : must be done every time a new person is added
+  */
   private train(groupId) {
     // 5. train group
     const train$ = this.groupService.train(groupId);
     train$.subscribe(
     () => {
-      this.list();
+      this.result$.next(this.result);
     },
     () => {
       // 6. training status
@@ -203,20 +276,67 @@ export class FaceProcessService {
     });
   }
 
-  private list() {
-    // list person with their face
-    this.result$.next(this.result);
-    /*
-    const $persons = this.personService.list(groupId);
-    $persons.subscribe(
-    (data) => {
-      console.log('LISTING');
-      console.log('total person in group : ' + data.length);
-      for (const p of data) {
-          console.log('person : ' + p.name);
-          console.log(p);
+  // list person with their face
+  reduceDuplicate(groupId): Observable<string> {
+
+    if (this.duplicatePersons.length >= 1) {
+
+    const obs$ = this.personService.list(groupId);
+
+    console.log('reducing duplicates');
+    obs$.subscribe(
+      (list) => {
+        console.log(list);
+        console.log('----');
+        console.log(this.duplicatePersons);
+
+        for (const candidates of this.duplicatePersons) {
+          let amountFaces = 0;
+          const pId = [];
+
+          for (const candidate of candidates) {
+            console.log('candidate');
+            console.log(candidate);
+
+            const idxPerson = list.map(p => p.personId).indexOf(candidate);
+            console.log('idx: ' + idxPerson);
+            if (idxPerson !== -1 ) {
+              const person = list[idxPerson];
+              if ( person.persistedFaceIds.length > amountFaces ) {
+                amountFaces = person.persistedFaceIds.length;
+              } else {
+                console.log('pushing ' + person.personId);
+                pId.push(person.personId);
+              }
+            }
+          }
+
+          pId.forEach(id => {
+            console.log('p: ' + id);
+            const del$ = this.personService.delete(groupId, id);
+            del$.subscribe(
+                () => {
+                    console.log('Duplicate person deleted');
+                    this.resForDuplicate$.next(id);
+                },
+                (err) => {
+                    console.log(err);
+                }
+            );
+          });
+
+          this.duplicatePersons = [];
+
+        }
+      },
+      (err) => {
+        console.log(err);
       }
-    });*/
+    );
+
+    }
+
+    return this.resForDuplicate$;
   }
 
 }

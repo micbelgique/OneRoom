@@ -1,4 +1,5 @@
 import { SignalRAbstractService, SignalrMethods } from './signalr.abstract.service';
+import { OnInit } from '@angular/core';
 
 export abstract class SignalRCoreService<T extends SignalrMethods> extends SignalRAbstractService<T> {
 

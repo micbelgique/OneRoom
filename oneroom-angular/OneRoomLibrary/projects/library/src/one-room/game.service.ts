@@ -36,7 +36,6 @@ export class GameService {
   }
 
   createGame(game: Game) {
-    console.log(game);
     return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/', game, { headers: this.headers });
   }
 

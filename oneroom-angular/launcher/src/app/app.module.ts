@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { ControlComponent } from './control/control.component';
 // Sub Module for apps
+import { VaultAppSharedModule } from 'projects/vault/src/app/app.module';
 import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
@@ -51,6 +52,7 @@ import {
     // Sub module for apps
     ScannerAppSharedModule,
     ProfilAppSharedModule,
+    VaultAppSharedModule,
     TranslatorAppSharedModule,
     // other
     BrowserAnimationsModule,

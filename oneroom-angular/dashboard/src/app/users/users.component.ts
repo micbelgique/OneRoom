@@ -85,6 +85,7 @@ export class UsersComponent implements OnInit {
       this.userService.deleteUser(idUser).subscribe(
       () => {
           this.loadUsers();
+          // TODO : recreate team from api
           const res$ = this.teamService.deleteTeams();
           res$.subscribe( x => {
             this.toast.open('Teams deleted', 'Ok', {
