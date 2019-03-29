@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
+import { Console } from '@angular/core/src/console';
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -32,11 +33,12 @@ export class NavComponent implements OnInit {
       this.route.navigate(['/lock']);
     } else {
       this.user = JSON.parse(localStorage.getItem('user'));
-      if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
-        this.openModal();
-      }
       this.teamService.getTeams().subscribe((result) => {
         this.updateTeamList(result);
+        this.openModal();
+        if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
+          this.openModal();
+        }
       });
     }
     this.hubServiceSub = this.hubService.run().subscribe(() => this.hubService.joinGroup(this.game.gameId.toString()));
@@ -55,10 +57,19 @@ export class NavComponent implements OnInit {
   }
   openModal() {
     const mod = this.modal.open(ModalChangeNameComponent, {
-      data: {user: this.user.name}
+      data: {user: this.user.name, team: this.teamUser.teamName, color: this.teamUser.teamColor}
     });
     mod.afterClosed().subscribe((result) => {
-      this.user.name = result;
+      const color = this.hexToRgb(result.color);
+      const colorString = '' + color.r + '' + color.g + '' + color.b;
+      this.user.name = result.user;
+      this.teamUser.teamName = result.team;
+      this.teamUser.teamColor = result.color;
+      this.teamService.editTeam(this.teamUser).subscribe(
+        (teamRes) => {
+          this.teamUser = teamRes;
+        }
+      );
       this.userService.updateNameUser(this.user).subscribe(
       (userRes) => {
         this.user = userRes;
@@ -100,4 +111,12 @@ export class NavComponent implements OnInit {
       this.hubService.stopService();
     }
   }
+  hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 }

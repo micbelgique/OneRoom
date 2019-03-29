@@ -134,6 +134,21 @@ namespace oneroom_api.Controllers
             return teams;
         }
 
+        [HttpPut]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Team>> EditGame([FromBody] Team team, int gameId)
+        {
+            var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId).FirstOrDefaultAsync();
+            if (teamDb == null) return NotFound();
+            if (teamDb.CreationDate.AddMinutes(5) >= DateTime.Now) return teamDb;
+            teamDb.TeamName = team.TeamName;
+            teamDb.TeamColor = team.TeamColor;
+            _context.Entry(teamDb).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return teamDb;
+        }
+
         public static void SpreadPlayers(Game game)
         {
             int nbTeams = game.Teams.Count();

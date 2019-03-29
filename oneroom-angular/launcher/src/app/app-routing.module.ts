@@ -29,7 +29,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     ProfilAppSharedModule.forRoot(),
     ScannerAppSharedModule.forRoot(),
-    TranslatorAppSharedModule.forRoot()
+    TranslatorAppSharedModule.forRoot(),
     ScannerAppSharedModule.forRoot(),
     VaultAppSharedModule.forRoot()
   ],

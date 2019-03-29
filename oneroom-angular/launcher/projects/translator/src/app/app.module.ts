@@ -3,7 +3,6 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TranslationComponent } from './translation/translation.component';
 
 const arrProviders = [];
 import {
@@ -30,7 +29,6 @@ import { TranslatorComponent } from './translator/translator.component';
 import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
-    TranslationComponent,
     TranslatorComponent
   ],
   imports: [

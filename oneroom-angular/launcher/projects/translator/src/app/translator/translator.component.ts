@@ -13,7 +13,7 @@ export class TranslatorComponent implements OnInit {
 
   @ViewChild('player')
   player;
-  private lastBlob;
+  private lastBlob: Blob;
   private headers;
   untranslated: string;
   translated: string;
@@ -63,7 +63,7 @@ export class TranslatorComponent implements OnInit {
   }
   speechToText() {
     let arrayBuffer;
-    let fileReader = new FileReader();
+    const fileReader = new FileReader();
     fileReader.onload = (event) => {
       arrayBuffer = event.target.result;
       const url = 'https://speech.googleapis.com/v1/speech:recognize?key=' + environment.googleSubKeySpeech;
@@ -84,7 +84,7 @@ export class TranslatorComponent implements OnInit {
     fileReader.readAsArrayBuffer(this.lastBlob);
   }
   translate() {
-    let body = [{Text: this.untranslated}];
+    const body = [{Text: this.untranslated}];
     // tslint:disable-next-line:max-line-length
     this.http.post<any>('https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=' + this.languageOne + '&to=' + this.languageTwo, body, {headers: this.headers}).subscribe(
       (result) => {
@@ -116,8 +116,8 @@ export class TranslatorComponent implements OnInit {
   }
   arrayBufferToBase64( buffer ) {
     let binary = '';
-    let bytes = new Uint8Array( buffer );
-    let len = bytes.byteLength;
+    const bytes = new Uint8Array( buffer );
+    const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
         binary += String.fromCharCode( bytes[ i ] );
     }
