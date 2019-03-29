@@ -31,7 +31,7 @@
     "@angular/router": "^7.2.7",
     "@aspnet/signalr": "^1.1.2",
     "@oneroomic/facecognitivelibrary": "^0.1.11",
-    "@oneroomic/oneroomlibrary": "0.0.30",
+    "@oneroomic/oneroomlibrary": "0.0.33",
     "@tensorflow/tfjs": "^1.0.0",
     "avataaars": "^1.2.1",
     "babel-polyfill": "^6.26.0",

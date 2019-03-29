@@ -14,7 +14,7 @@ export class ChallengeComponent implements OnInit {
   // list of challenges available
   challenges: Challenge[];
   // column order
-  displayedColumns: string[] = ['id', 'title', 'description', 'urlDocumentation', 'delete'];
+  displayedColumns: string[] = ['id', 'title', 'appName', 'toolName', 'config', 'delete'];
 
   constructor(private challengeService: ChallengeService,
               private snackBar: MatSnackBar) { }

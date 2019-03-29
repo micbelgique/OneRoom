@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EndPointGetterService } from '../utilities/end-point-getter.service';
-import { Scenario } from './model/Scenario';
+import { Scenario } from './model/scenario';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,23 +13,27 @@ export class ScenarioService {
 
   // Scenario itself
   getScenarios(): Observable<Scenario[]> {
-    return this.http.get<Scenario[]>(this.EPGetter.getEndPointUrl() + '/Scenario');
+    return this.http.get<Scenario[]>(this.EPGetter.getEndPointUrl() + '/Scenarios');
   }
 
   getScenario(scenarioId: number): Observable<Scenario> {
-    return this.http.get<Scenario>(this.EPGetter.getEndPointUrl() + '/Scenario/' + scenarioId);
+    return this.http.get<Scenario>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + scenarioId);
   }
 
   createScenario(scenario: Scenario) {
-    return this.http.post(this.EPGetter.getEndPointUrl() + '/Scenario', scenario);
+    return this.http.post(this.EPGetter.getEndPointUrl() + '/Scenarios', scenario);
   }
 
   deleteScenario(scenarioId: number): Observable<Scenario> {
-    return this.http.delete<Scenario>(this.EPGetter.getEndPointUrl() + '/Scenario/' + scenarioId);
+    return this.http.delete<Scenario>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + scenarioId);
   }
 
   // Scenario in Game
-  getScenarioByGame(): Observable<Scenario[]> {
-    return this.http.get<Scenario[]>(this.EPGetter.getEndPointUrlWithId() + '/Scenario');
+  setScenarioInGame(scenario: Scenario): Observable<boolean> {
+    return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario', scenario);
+  }
+
+  deleteScenarioFromGame(): Observable<boolean> {
+    return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario');
   }
 }

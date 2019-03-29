@@ -30,15 +30,15 @@ namespace oneroom_api.Controllers
         }
 
         // GET: api/Games/5/Challenges
-        [HttpGet("~/api/Games/{GameId}/Challenges")]
+        [HttpGet("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByGame(int GameId)
+        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByScenario(int ScenarioId)
         {
-            if(!GameExists(GameId)) return NotFound("There is no game with id:" + GameId);
+            if(!ScenarioExists(ScenarioId)) return NotFound("There is no scenario with id:" + ScenarioId);
 
             List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
-                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.Scenario.Games.Any(g => g.GameId == GameId)))
+                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == ScenarioId))
                                                                      .Select(c => c.ToDTO())
                                                                      .ToListAsync();
 
@@ -170,9 +170,9 @@ namespace oneroom_api.Controllers
             return _context.Challenges.Any(e => e.ChallengeId == id);
         }
 
-        private bool GameExists(int id)
+        private bool ScenarioExists(int id)
         {
-            return _context.Games.Any(e => e.GameId == id);
+            return _context.Scenarios.Any(e => e.ScenarioId == id);
         }
     }
 }

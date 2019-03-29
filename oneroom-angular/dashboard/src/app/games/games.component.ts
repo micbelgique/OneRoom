@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, Configuration, GameService, GameState, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
+import { Game, Configuration, GameService, GameState, ScenarioService, Scenario } from '@oneroomic/oneroomlibrary';
 import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
 
 @Component({
@@ -13,18 +13,17 @@ export class GamesComponent implements OnInit {
   // list of launched games
   games: Game[];
   // column order
-  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'challenge', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'date', 'update', 'scenario', 'delete'];
   // game to add
   game: Game;
   configs: Configuration[];
 
   gameStates: string[];
 
-  challengesIdBefore: number[] = [];
-  challenges: Challenge[];
+  scenarios: Scenario[];
 
   constructor(
-    private challengeService: ChallengeService,
+    private scenarioService: ScenarioService,
     private gameService: GameService,
     private groupService: PersonGroupService,
     private snackBar: MatSnackBar) {
@@ -35,9 +34,9 @@ export class GamesComponent implements OnInit {
     this.games = [];
     this.configs = [];
     this.game = new Game();
-    this.challenges = [];
+    this.scenarios = [];
     this.refreshGames();
-    this.refreshChallenges();
+    this.refreshScenario();
   }
 
   refreshGames() {
@@ -45,7 +44,6 @@ export class GamesComponent implements OnInit {
         this.games = games;
         // pick availables configs to choose from
         games.forEach( (g) => {
-          this.getChallengesIdByGame(g);
           if (g.config.faceEndpoint && g.config.faceKey) {
             if (this.configs.map(c => c.id).indexOf(g.config.id) === -1) {
               this.configs.push(g.config);
@@ -59,9 +57,9 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  refreshChallenges() {
-    this.challengeService.getChallenges().subscribe((challenges) => {
-        this.challenges = challenges;
+  refreshScenario() {
+    this.scenarioService.getScenarios().subscribe((scenarios) => {
+        this.scenarios = scenarios;
       },
       (err) => {
         console.log(err);
@@ -69,65 +67,16 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  updateChallengesInGames(bool: boolean, game: Game) {
-    if (!bool) {
-      this.addChallengesToGame( this.challenges.filter(c => game.challengesId.includes(c.challengeId)
-                                && !this.challengesIdBefore.includes(c.challengeId)));
-      this.removeChallengesFromGames( this.challenges.filter(c => !game.challengesId.includes(c.challengeId)
-                                      && this.challengesIdBefore.includes(c.challengeId)));
-    } else {
-      localStorage.setItem('gameData', JSON.stringify(game));
-      this.challengesIdBefore = game.challengesId;
-    }
-  }
-
-  addChallengesToGame(challenges: Challenge[]) {
-    if (challenges.length > 0) {
-      console.log(challenges);
-      this.challengeService.addChallengeToGame(challenges).subscribe(() => {
-        this.snackBar.open('Challenges added', 'Ok', {
-          duration: 1000
-        });
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    }
-  }
-
-  removeChallengesFromGames(challenges: Challenge[]) {
-    if (challenges.length > 0) {
-      console.log(challenges);
-      this.challengeService.deleteChallengeFromGame(challenges).subscribe(() => {
-        this.snackBar.open('Challenges deleted', 'Ok', {
-          duration: 1000
-        });
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    }
-  }
-
-  getChallengesIdByGame(game: Game) {
-    localStorage.setItem('gameData', JSON.stringify(game));
-    this.challengeService.getChallengesByGame().subscribe( (challenges) => {
-        game.challengesId = challenges.map(c => c.challengeId);
-      },
-      (err) => {
-        console.log(err);
+  setScenario(scenario: Scenario) {
+    this.scenarioService.setScenarioInGame(scenario).subscribe((done) => {
+      if (done) {
+        this.game.scenario = scenario;
       }
-    );
-  }
-
-  getChallengeTitleById(id: number): string {
-    if (this.challenges.findIndex(c => c.challengeId === id) !== -1) {
-      return this.challenges.find(c => c.challengeId === id).title;
-    } else {
-      return '';
+    },
+    (err) => {
+      console.log(err);
     }
+  );
   }
 
   // getGame() {

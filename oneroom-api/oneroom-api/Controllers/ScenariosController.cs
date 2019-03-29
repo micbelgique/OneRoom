@@ -37,7 +37,7 @@ namespace oneroom_api.Controllers
             }
 
             return scenario;
-        } 
+        }
 
         // POST: api/Scenarios
         [HttpPost]
@@ -100,6 +100,11 @@ namespace oneroom_api.Controllers
         private bool ScenarioExists(int id)
         {
             return _context.Scenarios.Any(e => e.ScenarioId == id);
+        }
+
+        private bool GameExists(int id)
+        {
+            return _context.Games.Any(e => e.GameId == id);
         }
     }
 }

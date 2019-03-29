@@ -33,6 +33,10 @@ export class ChallengeService {
   }
 
   // Challenges in Scenario
+  getChallengesByScenario(ScenarioId: number): Observable<Challenge[]> {
+    return this.http.get<Challenge[]>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + ScenarioId + '/Challenges/');
+  }
+
   addChallengeToScenario(ScenarioId: number, challenges: Challenge[]): Observable<boolean> {
     return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario/' + ScenarioId + '/Challenges', challenges);
   }
