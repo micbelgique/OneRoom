@@ -76,15 +76,25 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<State>> SwitchState(string groupName, State newState)
         {
-            var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
+            var game = await _context.Games.Where( e => e.GroupName == groupName).Include(g => g.Teams).FirstOrDefaultAsync();
             if (game != null)
             {
                 game.State = newState;
+
+                if (newState.Equals(State.REGISTER))
+                {
+                    // TODO : delete teams
+                    // game.Teams.Clear();
+                }
+
                 _context.Entry(game).State = EntityState.Modified;
-                // TODO : delete teams
                 await _context.SaveChangesAsync();
                 // update state clients
                 await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGameState(game.GameId);
+
+                /*if (newState.Equals(State.REGISTER))
+                    await _hubClients.Clients.Group(game.GameId.ToString()).DeleteTeams(game.GameId);*/
+
                 return game.State;
             }
             else
