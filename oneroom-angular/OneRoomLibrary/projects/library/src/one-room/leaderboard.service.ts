@@ -54,6 +54,10 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   private _deleteUser = new EventEmitter<any>();
   public deleteUser = this._deleteUser.asObservable();
 
+  // tslint:disable-next-line:variable-name
+  private _finishGame = new EventEmitter<any>();
+  public finishGame = this._finishGame.asObservable();
+
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;
   protected connectionTryDelay = 10000;
@@ -66,7 +70,8 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
     UpdateUser: (result) => this._refreshUser.emit(result),
     CreateUser: (result) => this._createUser.emit(result),
     DeleteUser: (result) => this._deleteUser.emit(result),
-    HighlightUser: (userId) => this._highlightUser.emit(userId)
+    HighlightUser: (userId) => this._highlightUser.emit(userId),
+    FinishGame: (teamId) => this._finishGame.emit(teamId)
   };
 
   constructor() {

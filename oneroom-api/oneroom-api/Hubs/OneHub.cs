@@ -28,6 +28,7 @@ namespace oneroom_api.Hubs
         Task UpdateGameState(int gameId);
         // when game deleted or updated
         Task UpdateGame(int gameId);
+        Task FinishGame(int teamId);
     }
 
     public class OneHub : Hub<IActionClient>
