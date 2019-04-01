@@ -8,7 +8,7 @@ function createWindow () {
     width: 800,
     height: 800,
     backgroundColor: '#FFFFFF',
-    icon: `file://${__dirname}/dist/oneroom-angular/assets/logo.png`
+    icon: `file://${__dirname}/logo.png`
   })
 
 

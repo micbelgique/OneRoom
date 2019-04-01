@@ -29,7 +29,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
   /* selector devices */
   public selectors = [];
   // containers
-  @ViewChild('canvas2')
+  @ViewChild('overlay')
   public overlay;
   // canvas 2D context
   private ctx;
@@ -72,16 +72,16 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private hubService: LeaderboardService,
     private gameService: GameService,
     private predictionService: CustomVisionPredictionService,
     private bottomSheet: MatBottomSheet) {
       // TODO : get from challenge in API
       this.objectsDictionary.push(
-        new Objects('cup', 'J aime boire du café pendant que je code' , ''),
+        new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !' , ''),
         new Objects('plant', 'Du vert pour un environnement plus agréable', ''),
-        new Objects('phone', 'Ma batterie est morte, j ai besoin d appeler un client chinois', '0478073017'),
+        // tslint:disable-next-line:max-line-length
+        new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants', '+3225882695'),
         new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', '')
       );
       this.opencam();
@@ -163,7 +163,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
     this.ctx.beginPath();
     this.ctx.rect(x, y, w, h);
     if (title !== null) {
-      console.log(title);
       this.ctx.font = '20px Arial';
       this.ctx.fillText(title, x + (w * 0.05), y + (h / 1.05));
     }
@@ -422,8 +421,8 @@ export class DetectorComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-      clearInterval(this.detectId);
       this.stopCaptureStream();
+      clearInterval(this.detectId);
       // stop game context signal
       if (localStorage.getItem('gameData')) {
         if (this.hubServiceSub) {

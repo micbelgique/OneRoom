@@ -90,6 +90,7 @@ export class NavComponent implements OnInit {
     for (const item of this.teams) {
       if (item.users.some(x => x.userId === this.user.userId)) {
         this.teamUser = item;
+        localStorage.setItem('teamData', JSON.stringify(item));
        }
     }
   }

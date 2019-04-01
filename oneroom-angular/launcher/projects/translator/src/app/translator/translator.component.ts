@@ -64,7 +64,7 @@ export class TranslatorComponent implements OnInit {
   speechToText() {
     let arrayBuffer;
     const fileReader = new FileReader();
-    fileReader.onload = (event) => {
+    fileReader.onload = (event: any) => {
       arrayBuffer = event.target.result;
       const url = 'https://speech.googleapis.com/v1/speech:recognize?key=' + environment.googleSubKeySpeech;
       const audio = this.arrayBufferToBase64(arrayBuffer);
