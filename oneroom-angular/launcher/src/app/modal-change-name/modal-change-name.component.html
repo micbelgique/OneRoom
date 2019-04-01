@@ -4,8 +4,14 @@
   <mat-form-field>
     <input matInput [(ngModel)]="data.user">
   </mat-form-field>
+  <p>Nom de votre équipe?</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.team">
+  </mat-form-field>
+  <p>Couleur de votre équipe?</p>
+    <input type="color" [(ngModel)]="data.color">
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data.user" cdkFocusInitial>Save</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
 </div>

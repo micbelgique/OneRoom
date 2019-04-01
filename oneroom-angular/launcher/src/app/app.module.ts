@@ -9,10 +9,12 @@ import { ModalChangeNameComponent } from './modal-change-name/modal-change-name.
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { ControlComponent } from './control/control.component';
 // Sub Module for apps
 import { VaultAppSharedModule } from 'projects/vault/src/app/app.module';
 import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
+import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
 
 import {
   MatButtonModule,
@@ -34,7 +36,6 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
-import { ControlComponent } from './control/control.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,8 @@ import { ControlComponent } from './control/control.component';
     ScannerAppSharedModule,
     ProfilAppSharedModule,
     VaultAppSharedModule,
+    TranslatorAppSharedModule,
+    // other
     BrowserAnimationsModule,
     MatButtonModule,
     MatCheckboxModule,

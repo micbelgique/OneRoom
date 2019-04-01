@@ -13,7 +13,6 @@ export class ModalChangeNameComponent implements OnInit {
     public dialogRef: MatDialogRef<ModalChangeNameComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
-
   ngOnInit() {
   }
   onNoClick(): void {
