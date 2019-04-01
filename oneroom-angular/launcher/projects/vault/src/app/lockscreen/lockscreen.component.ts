@@ -8,8 +8,11 @@ import { Component, OnInit } from '@angular/core';
 export class LockscreenComponent implements OnInit {
 
   password: string;
+  private code: string;
 
-  constructor() { }
+  constructor() {
+    // this.code = ;
+   }
 
   ngOnInit() {
   }
