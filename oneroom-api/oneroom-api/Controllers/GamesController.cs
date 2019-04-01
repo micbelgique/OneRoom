@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.data;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 
@@ -136,11 +137,6 @@ namespace oneroom_api.Controllers
             await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGame(game.GameId);
 
             return game;
-        }
-
-        private bool GameExists(int id)
-        {
-            return _context.Games.Any(e => e.GameId == id);
         }
     }
 }

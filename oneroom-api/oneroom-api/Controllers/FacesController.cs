@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.data;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
@@ -28,11 +29,11 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Face>> PostFace( int GameId, Guid UserId, [FromBody] Face face)
+        public async Task<ActionResult<Face>> PostFace( int gameId, Guid userId, [FromBody] Face face)
         {
             var usr = await _context.Users.Include(u => u.Faces)
                                           .OrderByDescending(u => u.RecognizedDate)
-                                          .SingleOrDefaultAsync(u => u.GameId == GameId && u.UserId == UserId);
+                                          .SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId);
             if (usr != null)
                 {
 
@@ -50,14 +51,14 @@ namespace oneroom_api.Controllers
                     await _context.SaveChangesAsync();
 
                     // update users dashboard and leaderboard
-                    await _hubClients.Clients.Group(GameId.ToString()).UpdateUser(usr);
+                    await _hubClients.Clients.Group(gameId.ToString()).UpdateUser(usr);
 
                 } catch(DbUpdateException)
                 {
                     return Conflict("face already exists : "+ face.FaceId);
                 }
 
-                    return CreatedAtAction("GetUser", "Users", new { GameId, id = UserId }, face);
+                    return CreatedAtAction("GetUser", "Users", new { GameId = gameId, id = userId }, face);
                 }
                 else
                     return NotFound("user not found");
@@ -78,11 +79,6 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(face);
-        }
-
-        private bool FaceExists(Guid id)
-        {
-            return _context.Faces.Any(e => e.FaceId.Equals(id));
         }
     }
 }

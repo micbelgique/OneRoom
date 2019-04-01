@@ -25,12 +25,6 @@ namespace oneroom_api.Model
 
         // Challenges of the Game
         public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
-
-
-        public Game()
-        {
-
-        }
     }
     public enum State
     {

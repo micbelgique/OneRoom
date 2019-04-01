@@ -21,7 +21,7 @@ namespace oneroom_api.Model
         public string Title { get; set; }
         public string Description { get; set; }
         [Url]
-        public string URLDocumentation { get; set; }
+        public string UrlDocumentation { get; set; }
 
         public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
 
