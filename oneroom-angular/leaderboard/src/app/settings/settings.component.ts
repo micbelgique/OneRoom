@@ -11,7 +11,6 @@ export class SettingsComponent implements OnInit {
 
   // coordinator
   endPoint: string;
-  group: string;
   minimumRecognized: number;
 
   // available games
@@ -70,10 +69,10 @@ export class SettingsComponent implements OnInit {
   }
 
   getGame() {
-    this.gameService.getGame(this.group).subscribe( (game: Game) => {
+    this.gameService.getGame(this.game.groupName).subscribe( (game: Game) => {
       this.game = game;
       localStorage.setItem('gameData', JSON.stringify(game));
-      // localStorage.setItem('gameId', game.gameId.toString());
+      localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);
       localStorage.setItem('minimumRecognized', '' + game.config.minimumRecognized);
       this.minimumRecognized = game.config.minimumRecognized;
