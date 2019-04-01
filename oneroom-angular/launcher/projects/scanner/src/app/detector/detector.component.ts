@@ -72,7 +72,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private hubService: LeaderboardService,
     private gameService: GameService,
     private predictionService: CustomVisionPredictionService,
@@ -422,8 +421,8 @@ export class DetectorComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-      clearInterval(this.detectId);
       this.stopCaptureStream();
+      clearInterval(this.detectId);
       // stop game context signal
       if (localStorage.getItem('gameData')) {
         if (this.hubServiceSub) {
