@@ -26,6 +26,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private teamCreateSub;
   private teamDeleteSub;
   private hubServiceSub;
+  private finishGameSub;
 
   private hightlightUserSub;
   private detectedUserId;
@@ -69,6 +70,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
       this.deleteTeamList(result);
     });
+    this.finishGameSub = this.hubService.finishGame.subscribe((result) => {
+      this.finishGame(result);
+    });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
       setTimeout( () => {
@@ -93,6 +97,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       },
       error => this.errorMessage = error as any
     );
+  }
+  private finishGame(teamId) {
+    console.log(teamId);
   }
 
   private updateUser(user: User) {

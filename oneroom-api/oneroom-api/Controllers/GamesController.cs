@@ -87,8 +87,13 @@ namespace oneroom_api.Controllers
 
                 if (newState.Equals(State.REGISTER))
                 {
-                    // TODO : delete teams
-                    // game.Teams.Clear();
+                    var teams = await _context.Teams.Where(t => t.GameId == game.GameId)
+                                            .Include(t => t.Users)
+                                            .ToListAsync();
+                    if (teams.Count() != 0)
+                    {
+                        _context.Teams.RemoveRange(teams);
+                    }
                 }
 
                 _context.Entry(game).State = EntityState.Modified;
@@ -96,8 +101,8 @@ namespace oneroom_api.Controllers
                 // update state clients
                 await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGameState(game.GameId);
 
-                /*if (newState.Equals(State.REGISTER))
-                    await _hubClients.Clients.Group(game.GameId.ToString()).DeleteTeams(game.GameId);*/
+                if (newState.Equals(State.REGISTER))
+                    await _hubClients.Clients.Group(game.GameId.ToString()).DeleteTeams(game.GameId);
 
                 return game.State;
             }
