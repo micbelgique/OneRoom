@@ -78,6 +78,7 @@ export class TranslatorComponent implements OnInit {
         }
       };
       this.http.post<any>(url, body).subscribe((result) => {
+        console.log(result);
         this.untranslated = result.results[0].alternatives[0].transcript;
       });
     };
