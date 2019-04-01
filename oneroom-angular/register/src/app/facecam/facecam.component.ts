@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import * as faceapi from 'face-api.js';
 // tslint:disable-next-line:max-line-length
-import { Group, FaceProcessService, CustomVisionPredictionService, EndPointGetterService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
