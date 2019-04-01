@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using oneroom_api.data;
 using oneroom_api.Model;
 
 namespace oneroom_api
@@ -23,7 +22,6 @@ namespace oneroom_api
                 {
                     var context = services.GetRequiredService<OneRoomContext>();
                     context.Database.Migrate();
-                    SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace oneroom_api.data
+namespace oneroom_api.Model
 {
     public class OneRoomContext : DbContext
     {
