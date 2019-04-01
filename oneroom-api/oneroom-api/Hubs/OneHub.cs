@@ -21,7 +21,7 @@ namespace oneroom_api.Hubs
         //
         Task UpdateTeams( IEnumerable<Team> teams);
         //
-        Task DeleteTeams(int gameID);
+        Task DeleteTeams(int gameId);
         // All clients receive automatic configuration when changed
         Task UpdateConfigurations();
         // When game state changed
@@ -30,20 +30,8 @@ namespace oneroom_api.Hubs
         Task UpdateGame(int gameId);
     }
 
-    // possible clients
-    public enum ClientType
-    {
-        Leaderboard,
-        Dashboard,
-        Register
-    }
-
     public class OneHub : Hub<IActionClient>
     {
-        public OneHub()
-        {
-        }
-
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine(Context.ConnectionId);

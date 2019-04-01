@@ -22,7 +22,6 @@ namespace oneroom_api
                 {
                     var context = services.GetRequiredService<OneRoomContext>();
                     context.Database.Migrate();
-                    SeedData.Initialize(services);
                 }
                 catch (Exception ex)
                 {

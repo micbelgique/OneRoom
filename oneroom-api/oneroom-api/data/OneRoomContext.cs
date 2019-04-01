@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using oneroom_api.Model;
 
 namespace oneroom_api.Model
 {
@@ -10,6 +9,7 @@ namespace oneroom_api.Model
         public DbSet<Game> Games { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
+        public DbSet<Scenario> Scenarios { get; set; }
 
         public OneRoomContext(DbContextOptions<OneRoomContext> options)
             : base(options)
@@ -48,18 +48,18 @@ namespace oneroom_api.Model
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Many to many manual handle
-            modelBuilder.Entity<GameChallenge>()
-           .HasKey(t => new { t.GameId, t.ChallengeId });
+            modelBuilder.Entity<ScenarioChallenge>()
+           .HasKey(t => new { t.ScenarioId, t.ChallengeId });
 
-            modelBuilder.Entity<GameChallenge>()
-                .HasOne(gc => gc.Game)
-                .WithMany(g => g.GameChallenges)
-                .HasForeignKey(gc => gc.GameId);
+            modelBuilder.Entity<ScenarioChallenge>()
+                .HasOne(sc => sc.Scenario)
+                .WithMany(s => s.ScenarioChallenges)
+                .HasForeignKey(sc => sc.ScenarioId);
 
-            modelBuilder.Entity<GameChallenge>()
-                .HasOne(gc => gc.Challenge)
-                .WithMany(c => c.GameChallenges)
-                .HasForeignKey(gc => gc.ChallengeId);
+            modelBuilder.Entity<ScenarioChallenge>()
+                .HasOne(sc => sc.Challenge)
+                .WithMany(c => c.ScenarioChallenges)
+                .HasForeignKey(sc => sc.ChallengeId);
         }
 
     }

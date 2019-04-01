@@ -6,10 +6,10 @@ namespace oneroom_api.Model
 {
     // Many to Many manual pattern
     // See here : https://docs.microsoft.com/en-us/ef/core/modeling/relationships#many-to-many
-    public class GameChallenge
+    public class ScenarioChallenge
     {
-        public int GameId { get; set; }
-        public Game Game { get; set; }
+        public int ScenarioId { get; set; }
+        public Scenario Scenario { get; set; }
 
         public int ChallengeId { get; set; }
         public Challenge Challenge { get; set; }
@@ -19,11 +19,12 @@ namespace oneroom_api.Model
     {
         public int ChallengeId { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        [Url]
-        public string URLDocumentation { get; set; }
+        public string AppName { get; set; }
+        public string ToolName { get; set; }
+        /* a Json string who contains all the critical informations */
+        public string Config { get; set; }
 
-        public List<GameChallenge> GameChallenges { get; set; } = new List<GameChallenge>();
+        public List<ScenarioChallenge> ScenarioChallenges { get; set; } = new List<ScenarioChallenge>();
 
         public override bool Equals(object obj)
         {

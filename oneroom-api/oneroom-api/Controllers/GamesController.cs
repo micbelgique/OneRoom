@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 
 // TODO : add put and send signal to update config if changed
@@ -29,24 +29,28 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Game>>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<GameDTO>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
         {
             // return config to select it
             return await _context.Games.Include(g => g.Config)
+                                       .Include(g => g.Scenario)
+                                       .Select(g => g.ToDTO())
                                        .ToListAsync();
         }
 
         // GET: api/Games/groupName
         [HttpGet("{groupName}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Game>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<GameDTO>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Game>> GetGame(string groupName)
+        public async Task<ActionResult<GameDTO>> GetGame(string groupName)
         {
             var game = await _context.Games.Include(g => g.Users)
                                            .Include(g => g.Teams)
                                            .Include(g => g.Config)
+                                           .Include(g => g.Scenario)
+                                           .Select(g => g.ToDTO())
                                            .SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
 
             if (game == null)
@@ -142,15 +146,9 @@ namespace oneroom_api.Controllers
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
             // update clients
-            // await _hubClients.Clients.Group(groupName).UpdateGame();
             await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGame(game.GameId);
 
             return game;
-        }
-
-        private bool GameExists(int id)
-        {
-            return _context.Games.Any(e => e.GameId == id);
         }
     }
 }

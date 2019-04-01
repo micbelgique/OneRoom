@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -29,16 +28,16 @@ namespace oneroom_api.Controllers
                                             .ToListAsync();
         }
 
-        // GET: api/Games/5/Challenges
-        [HttpGet("~/api/Games/{GameId}/Challenges")]
+        // GET: api/Scenarios/5/Challenges
+        [HttpGet("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByGame(int GameId)
+        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByScenario(int ScenarioId)
         {
-            if(!GameExists(GameId)) return NotFound("There is no game with id:" + GameId);
+            if(!ScenarioExists(ScenarioId)) return NotFound("There is no scenario with id:" + ScenarioId);
 
-            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.GameChallenges)
-                                                                     .Where(c => c.GameChallenges.Any(gc => gc.GameId == GameId))
+            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
+                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == ScenarioId))
                                                                      .Select(c => c.ToDTO())
                                                                      .ToListAsync();
 
@@ -103,20 +102,20 @@ namespace oneroom_api.Controllers
             return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDTO());
         }
 
-        // POST: api/Games/5/Challenges
-        [HttpPost("~/api/Games/{GameId}/Challenges")]
+        // POST: api/Scenarios/5/Challenges
+        [HttpPost("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> AddChallengeInGame( int GameId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> AddChallengeInScenario( int ScenarioId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
-                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
+            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                              .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
 
-            if (game == null) return NotFound("There is no game with id:" + GameId);
+            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
 
             foreach( Challenge challenge in challenges)
             {
-                game.GameChallenges.Add(new GameChallenge { Game = game, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
+                Scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = Scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -131,14 +130,14 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<Challenge>> DeleteChallenge(int id)
         {
-            var challenge = await _context.Challenges.Include(c => c.GameChallenges)
+            var challenge = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                      .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
             {
                 return NotFound();
             }
 
-            if (challenge.GameChallenges.Count() != 0) return Conflict("This Challenge is still used in at least one Game!");
+            if (challenge.ScenarioChallenges.Count() != 0) return Conflict("This Challenge is still used in at least one Game!");
             
             _context.Challenges.Remove(challenge);
             await _context.SaveChangesAsync();
@@ -146,19 +145,19 @@ namespace oneroom_api.Controllers
             return challenge;
         }
 
-        // DELETE: api/Games/5/Challenges
-        [HttpDelete("~/api/Games/{GameId}/Challenges")]
+        // DELETE: api/Scenarios/5/Challenges
+        [HttpDelete("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> DeleteChallengeInGame(int GameId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> DeleteChallengeInScenario(int ScenarioId, [FromBody] Challenge[] challenges)
         {
-            Game game = await _context.Games.Include(c => c.GameChallenges)
-                                                .ThenInclude(gc => gc.Challenge)
-                                            .SingleOrDefaultAsync(g => g.GameId == GameId);
+            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                                            .ThenInclude(sc => sc.Challenge)
+                                                        .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
 
-            if (game == null) return NotFound("There is no game with id:" + GameId);
+            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
 
-            game.GameChallenges.RemoveAll(gc => challenges.Contains(gc.Challenge));
+            Scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
 
             await _context.SaveChangesAsync();
 
@@ -170,9 +169,9 @@ namespace oneroom_api.Controllers
             return _context.Challenges.Any(e => e.ChallengeId == id);
         }
 
-        private bool GameExists(int id)
+        private bool ScenarioExists(int id)
         {
-            return _context.Games.Any(e => e.GameId == id);
+            return _context.Scenarios.Any(e => e.ScenarioId == id);
         }
     }
 }
