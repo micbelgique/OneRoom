@@ -20,9 +20,9 @@ namespace oneroom_api.Controllers
         }
 
         [HttpPost]
-        public async Task<bool> FinishGame([FromForm]string password,int gameId,int teamId)
+        public async Task<bool> FinishGame([FromForm]int password,int gameId,int teamId)
         {
-            if (password.Equals("7255")) return false;
+            if (password==7255) return false;
             await _hubClients.Clients.Group(gameId.ToString()).FinishGame(teamId);
             return true;
         }
