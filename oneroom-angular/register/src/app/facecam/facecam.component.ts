@@ -1,23 +1,11 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-
 import * as faceapi from 'face-api.js';
-// import { GlassesType } from '../services/OnePoint/model/glasses-type.enum';
-// import { Face } from '../services/OnePoint/model/face';
-// import { User } from '../services/OnePoint/model/user';
-// import { UserService } from '../services/OnePoint/user.service';
-// import { FaceService } from '../services/OnePoint/face.service';
-import { Group, FaceProcessService, VisioncomputerService, HairlengthService } from '@oneroomic/facecognitivelibrary';
+// tslint:disable-next-line:max-line-length
+import { Group, FaceProcessService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
-// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
-// import { GameState } from '../services/OnePoint/model/game-state.enum';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
-// import { PredictionHairLength } from '../utilities/prediction-hairlength';
-// tslint:disable-next-line:max-line-length
-
 // patch electron
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -39,7 +27,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
   /* input stream devices */
   /* selector devices */
   public selectors;
-
   // containers
   @ViewChild('canvas2')
   public overlay;
@@ -76,8 +63,17 @@ export class FacecamComponent implements OnInit, OnDestroy {
   private hubServiceSub;
   private gameSub;
 
+  // current game
+  private game: Game;
+
   // refresh rate
   refreshRate: number;
+
+  // camid
+  videoSource;
+
+  // start processing stream
+  private modelsReady = false;
 
   constructor(
     public dialog: MatDialog,
@@ -85,10 +81,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService,
-    private visonComputerService: VisioncomputerService,
-    private hairLengthService: HairlengthService,
+    private customVisionPredictionService: CustomVisionPredictionService,
     private hubService: LeaderboardService,
-    private gameService: GameService) {}
+    private gameService: GameService) {
+      this.opencam();
+      this.loadModels();
+    }
 
   ngOnInit() {
     // init lock
@@ -96,6 +94,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.alertContainer = false;
     this.stateContainer = false;
     this.lock = false;
+    if (localStorage.getItem('videoSource')) {
+      this.videoSource = localStorage.getItem('videoSource');
+    }
     // save canvas context
     this.ctx = this.overlay.nativeElement.getContext('2d');
     // refreshRate
@@ -106,20 +107,26 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.refreshRate = 3000;
       }
     }
-    this.loadModels();
     // game context
     if (localStorage.getItem('gameData')) {
-      const game: Game = JSON.parse(localStorage.getItem('gameData'));
-      this.hubServiceSub = this.hubService.run().subscribe();
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+      // join new group
+      this.hubServiceSub = this.hubService.run().subscribe(
+        () => this.hubService.joinGroup(this.game.gameId.toString())
+      );
       this.gameSub = this.hubService.refreshGameState.subscribe(
       (gameId) => {
-        if (gameId === game.gameId) {
+        if (gameId === this.game.gameId) {
           console.log('Updating state ...');
-          this.refreshGameState(game);
+          this.refreshGameState(this.game);
         }
+      },
+      (err) => {
+        console.log('Error game state');
+        console.log(err);
       });
 
-      this.refreshGameState(game);
+      this.refreshGameState(this.game);
     }
   }
 
@@ -129,15 +136,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
           async () => {
-            // init stream
-            this.opencam();
+            // ...
+            this.modelsReady = true;
           }
         );
-
-    /* FACE RECOGNITION
-                // async () => faceapi.loadFaceExpressionModel('assets/models/').then(
-         //  async () => await faceapi.loadFaceRecognitionModel('assets/models/')
-    */
   }
 
   initStreamDetection() {
@@ -148,7 +150,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
         this.detectId = setInterval( () => {
           // state still registering
           if (!this.stateContainer) {
-            this.detectFaces();
+            if (this.modelsReady === true) {
+              this.detectFaces();
+            }
           }
         }, this.refreshRate);
       }
@@ -195,6 +199,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               .enumerateDevices()
               .then((d) => {
                 this.selectors = this.getCaptureDevices(d);
+                // init stream
                 this.initStreamDetection();
               })
               .catch(this.handleError);
@@ -205,14 +210,19 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     if (navigator.mediaDevices) {
         // select specific camera on mobile
-        videoSource = videoSource ? videoSource : this.selectors[0];
+        if (this.selectors.map(s => s.id).indexOf(this.videoSource) === -1) {
+          // check if prefered cam is available in the list
+          this.videoSource = null;
+        }
+        this.videoSource = videoSource ? videoSource : (this.videoSource ? this.videoSource : this.selectors[0].id);
+        localStorage.setItem('videoSource', this.videoSource);
         // access the web cam
         navigator.mediaDevices.getUserMedia({
             audio : false,
             video: {
                 // selfie mode
                 // facingMode: {exact: 'user' },
-                deviceId: videoSource ? { exact: videoSource } : undefined
+                deviceId: this.videoSource ? { exact: this.videoSource } : undefined
             }
         })
             // permission granted:
@@ -319,7 +329,7 @@ private crop(canvas, x1, y1, width, height) {
   return newCan;
 }
 
-imageCapture(canvas) {
+async imageCapture(canvas) {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
     console.log('calls FACE disabled');
@@ -334,18 +344,20 @@ imageCapture(canvas) {
     const stream = this.makeblob(canvas.toDataURL('image/png'));
     // set du groupe
     const group = new Group();
-    if (localStorage.getItem('gameData')) {
-      group.personGroupId = JSON.parse(localStorage.getItem('gameData')).groupName;
+    if (this.game) {
+      group.personGroupId = this.game.groupName;
+      group.name = this.game.groupName;
+      group.userData = this.game.groupName;
+    } else {
+      // game must be set
+      return ;
     }
     console.log('group : ' + group.personGroupId);
-    group.name = 'mic_stage_2019';
-    group.userData = 'Group de test en developpement pour oneroom';
     // timeout to unlock detection
     setTimeout(() => {
       this.lock = false;
     }, 2500);
     // traitement face API
-    // return an observable;
     const res$ = this.faceProcess.byImg(stream.blob, group);
     sub$ = res$.subscribe(
         (data) => {
@@ -357,7 +369,6 @@ imageCapture(canvas) {
                 return;
           }
           const users: User[] = [];
-          console.log(data.persons);
           data.persons.forEach(element => {
           const u = new User();
           u.name = 'user_' + Math.random();
@@ -448,47 +459,83 @@ imageCapture(canvas) {
             this.lock = false;
         }
       );
+
+
+    // Optimisation
+    this.faceProcess.resForDuplicate$.subscribe(
+      (id) => {
+        console.log('Deleting user from oneroom: ' + id);
+        const d$ = this.userService.deleteUser(id);
+        d$.subscribe(
+          () => console.log('user deleted')
+        );
+      }
+    );
+
     } catch (e) {
       console.log('Error : ' + e.message);
-      console.log(e);
       // unlock capture
       this.lock = false;
     }
+
+
 }
 
 
 // detection hair length with custom vision
 private getHairLength(stream) {
   const sub = new Subject<string>();
-  this.hairLengthService.detectLength(stream).subscribe(
-    (result) => {
-      this.deleteHairLength(result.id);
-      sub.next(result.predictions[0].tagName);
+  // tslint:disable-next-line:max-line-length
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream, '3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc').subscribe(
+    (result: ImagePrediction) => {
+      // this.deleteHairLength(result.id);
+      // sub.next(result.predictions[0].tagName);
+      if (result.predictions.length > 0) {
+        sub.next(result.predictions[0].tagName);
+      } else {
+        sub.next(null);
+      }
+    },
+    (err) => {
+      console.log(err);
     }
   );
   return sub;
 }
 
+/*
 private deleteHairLength(id) {
-  this.hairLengthService.deleteImg(id)
+  this.customVisionPredictionService.deleteImg(id)
   .subscribe(
     () => console.log('deleted'),
     (err) => console.log(err)
   );
-}
+}*/
 
 // detection skin color with custom vision
 private getSkinColor(stream) {
   const sub = new Subject<string>();
-  this.visonComputerService.getSkinColor(stream).subscribe(
-      (result) => {
-      this.deleteSkinColor(result.id);
-      sub.next(result.predictions[0].tagName);
+  // tslint:disable-next-line:max-line-length
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream, 'a1cb0694-4bdb-4def-a20f-52226ced6ded').subscribe(
+      (result: ImagePrediction) => {
+      // this.deleteSkinColor(result.id);
+      // sub.next(result.predictions[0].tagName);
+      if (result.predictions.length > 0) {
+        sub.next(result.predictions[0].tagName);
+      } else {
+        sub.next(null);
+      }
+    },
+    (err) => {
+      console.log(err);
     }
   );
   return sub;
 }
 
+/*
 // delete detection
 private deleteSkinColor(id) {
   this.visonComputerService.deleteImg(id)
@@ -496,7 +543,7 @@ private deleteSkinColor(id) {
     () => console.log('deleted'),
     (err) => console.log(err)
   );
-}
+}*/
 
 private saveUsers(user: User) {
   // adding user
@@ -513,14 +560,6 @@ private saveUsers(user: User) {
           this.snackBar.open('User recognized', 'Ok', {
             duration: 2000
           });
-          // update avatar
-          // const avatar$ = this.userService.updateAvatar(user.userId, user.urlAvatar);
-          // tslint:disable-next-line:no-shadowed-variable
-          /*avatar$.subscribe(
-            (response) => console.log('avatar updated'),
-            // tslint:disable-next-line:no-shadowed-variable
-            (error) => console.log('avatar not updated')
-          );*/
           // adding face to already existant user
           // for (const face of user.faces) {
           if (user.faces[user.faces.length - 1]) {
@@ -591,6 +630,7 @@ private saveUsers(user: User) {
             this.detectId = null;
             this.stream = null;
             this.opencam();
+            this.startStream();
           }
         },
         (err) => {

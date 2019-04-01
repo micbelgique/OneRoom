@@ -7,7 +7,7 @@ namespace oneroom_api.Model
     public class Team
     {
         // All possible names
-        private static readonly List<string> TeamNames = new List<string>(new String[] {
+        private static readonly List<string> TeamNames = new List<string>(new[] {
             "alpha", "bravo", "charlie", "delta", "echo", "foxtrot",
             "golf", "hotel", "india", "juliet", "kilo", "lima",
             "mike", "november", "oscar", "papa", "quebec", "romeo",
@@ -26,14 +26,14 @@ namespace oneroom_api.Model
         public static string RandomName()
         {
             var random = new Random();
-            int r = random.Next(TeamNames.Count);
+            var r = random.Next(TeamNames.Count);
             return TeamNames[r];
         }
 
         public static Color RandomColor()
         {
             var random = new Random();
-            Color randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+            var randomColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
             return randomColor;
         }
     }

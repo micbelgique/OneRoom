@@ -1,12 +1,13 @@
-<mat-toolbar role="heading" >
-    <mat-toolbar-row>
-        <button mat-icon-button (click)="toggleMenu()">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <span class="example-spacer"></span>
-        <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >{{ title }}</a></span>
-    </mat-toolbar-row>
-  </mat-toolbar>
+<!---->
+<mat-toolbar role="heading" style="bottom:0px">
+  <mat-toolbar-row>
+      <button mat-icon-button (click)="toggleMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="example-spacer"></span>
+      <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" >{{ title }}</a></span>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 <mat-sidenav-container style="margin:0" class="container-sidenav">
     <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened">

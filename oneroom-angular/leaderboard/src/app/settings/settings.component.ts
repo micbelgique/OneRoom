@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-// import { PersonGroupService } from '../services/cognitive/person-group.service';
 import { MatSnackBar } from '@angular/material';
 import { GameService, Game } from '@oneroomic/oneroomlibrary';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
 
 @Component({
   selector: 'app-settings',
