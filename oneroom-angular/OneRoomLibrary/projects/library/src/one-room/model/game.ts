@@ -11,6 +11,7 @@ export class Game {
   state: GameState;
   users: User[] = [];
   teams: Team[] = [];
+  scenarioId: number;
   scenario: Scenario;
   config: Configuration = new Configuration();
 }

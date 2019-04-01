@@ -44,14 +44,14 @@
     <th mat-header-cell *matHeaderCellDef> Challenges </th>
     <td mat-cell *matCellDef="let element">
       <mat-form-field>
-        <mat-select placeholder="Challenges" [(ngModel)]="element.challenges" (openedChange)="updateChallengesInScenario($event, element)" multiple>
+        <mat-select placeholder="Challenges" [(ngModel)]="element.challengesId" (openedChange)="updateChallengesInScenario($event, element)" multiple>
           <mat-select-trigger>
-            {{element.challenges ? element.challenges[0].title : ''}}
+            {{element.challengesId ? getChallengeTitleById(element.challengesId[0]) : ''}}
             <span *ngIf="element.challengesId?.length > 1" class="additional-selection">
-              (+{{element.challenges.length - 1}} {{element.challenges?.length === 2 ? 'other' : 'others'}})
+              (+{{element.challengesId.length - 1}} {{element.challengesId.length === 2 ? 'other' : 'others'}})
             </span>
           </mat-select-trigger>
-          <mat-option *ngFor="let challenge of challenges" [value]="challenge">{{challenge.title}}</mat-option>
+          <mat-option *ngFor="let challenge of challenges" [value]="challenge.challengeId">{{challenge.title}}</mat-option>
         </mat-select>
       </mat-form-field>
     </td>

@@ -29,7 +29,7 @@ namespace oneroom_api.Controllers
                                             .ToListAsync();
         }
 
-        // GET: api/Games/5/Challenges
+        // GET: api/Scenarios/5/Challenges
         [HttpGet("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         [ProducesResponseType(404)]

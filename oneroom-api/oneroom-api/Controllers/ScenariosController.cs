@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Model;
+using oneroom_api.Utilities;
 
 namespace oneroom_api.Controllers
 {
@@ -20,23 +21,28 @@ namespace oneroom_api.Controllers
 
         // GET: api/Scenarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Scenario>>> GetScenarios()
+        public async Task<ActionResult<IEnumerable<ScenarioDTO>>> GetScenarios()
         {
-            return await _context.Scenarios.ToListAsync();
+            return await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                              .ThenInclude(sc =>  sc.Challenge)
+                                           .Select(s => s.ToDTO())
+                                           .ToListAsync();
         }
 
         // GET: api/Scenarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Scenario>> GetScenario(int id)
+        public async Task<ActionResult<ScenarioDTO>> GetScenario(int id)
         {
-            var scenario = await _context.Scenarios.FindAsync(id);
+            var scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                                      .ThenInclude(sc => sc.Challenge)
+                                                   .SingleOrDefaultAsync(s => s.ScenarioId == id);
 
             if (scenario == null)
             {
                 return NotFound();
             }
 
-            return scenario;
+            return scenario.ToDTO();
         }
 
         // POST: api/Scenarios
@@ -54,14 +60,24 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<Scenario>> SetScenarioToGame( int GameId, Scenario scenario)
         {
             var game = await _context.Games.SingleOrDefaultAsync(g => g.GameId == GameId);
+            if (game == null)
+            {
+                return NotFound();
+            }
 
-            game.Scenario = scenario;
+            var scenario_context = await _context.Scenarios.FindAsync(scenario.ScenarioId);
+            if (scenario_context == null)
+            {
+                return NotFound();
+            }
+
+            game.Scenario = scenario_context;
 
             _context.Entry(game).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetScenario", new { id = scenario.ScenarioId }, scenario);
+            return CreatedAtAction("GetScenario", new { id = scenario_context.ScenarioId }, scenario_context);
         }
 
         // DELETE: api/Scenarios/5
@@ -91,7 +107,9 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            _context.Scenarios.Remove(game.Scenario);
+            game.Scenario = null;
+            _context.Entry(game).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
 
             return NoContent();

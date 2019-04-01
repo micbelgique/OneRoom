@@ -38,13 +38,13 @@ export class ChallengeService {
   }
 
   addChallengeToScenario(ScenarioId: number, challenges: Challenge[]): Observable<boolean> {
-    return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario/' + ScenarioId + '/Challenges', challenges);
+    return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + ScenarioId + '/Challenges', challenges);
   }
 
   deleteChallengeFromScenario(ScenarioId: number, challenges: Challenge[]): Observable<boolean> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }), body: challenges
     };
-    return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario/' + ScenarioId + '/Challenges', httpOptions);
+    return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + ScenarioId + '/Challenges', httpOptions);
   }
 }

@@ -44,6 +44,9 @@ export class GamesComponent implements OnInit {
         this.games = games;
         // pick availables configs to choose from
         games.forEach( (g) => {
+          if (g.scenario !== null) {
+            g.scenarioId = g.scenario.scenarioId;
+          }
           if (g.config.faceEndpoint && g.config.faceKey) {
             if (this.configs.map(c => c.id).indexOf(g.config.id) === -1) {
               this.configs.push(g.config);
@@ -67,16 +70,33 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  setScenario(scenario: Scenario) {
-    this.scenarioService.setScenarioInGame(scenario).subscribe((done) => {
-      if (done) {
-        this.game.scenario = scenario;
+  setScenario(game: Game) {
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.scenarioService.setScenarioInGame(this.scenarios.find(s => s.scenarioId === game.scenarioId)).subscribe((scenario) => {
+        game.scenario = scenario;
+        this.snackBar.open('Scenario link to the game', 'Ok', {
+          duration: 3000
+        });
+      },
+      (err) => {
+        console.log(err);
       }
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
+    );
+  }
+
+  deleteScenario(game: Game) {
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.scenarioService.deleteScenarioFromGame().subscribe(() => {
+        game.scenario = null;
+        game.scenarioId = null;
+        this.snackBar.open('Scenario unlink to the game', 'Ok', {
+          duration: 3000
+        });
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   // getGame() {

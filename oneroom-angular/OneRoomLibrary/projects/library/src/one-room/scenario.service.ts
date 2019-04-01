@@ -29,11 +29,11 @@ export class ScenarioService {
   }
 
   // Scenario in Game
-  setScenarioInGame(scenario: Scenario): Observable<boolean> {
-    return this.http.post<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario', scenario);
+  setScenarioInGame(scenario: Scenario): Observable<Scenario> {
+    return this.http.post<Scenario>(this.EPGetter.getEndPointUrlWithId() + '/Scenario', scenario);
   }
 
-  deleteScenarioFromGame(): Observable<boolean> {
-    return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenario');
+  deleteScenarioFromGame(): Observable<Scenario> {
+    return this.http.delete<Scenario>(this.EPGetter.getEndPointUrlWithId() + '/Scenario');
   }
 }

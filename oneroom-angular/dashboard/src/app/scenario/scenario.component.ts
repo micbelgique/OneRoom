@@ -12,7 +12,7 @@ export class ScenarioComponent implements OnInit {
   scenario: Scenario;
   scenarios: Scenario[];
 
-  challengesBefore: Challenge[];
+  challengesIdBefore: number[];
   challenges: Challenge[];
 
   displayedColumns: string[] = ['id', 'name', 'description', 'challenge', 'delete'];
@@ -25,6 +25,7 @@ export class ScenarioComponent implements OnInit {
     this.scenario = new Scenario();
     this.scenarios = [];
     this.challenges = [];
+    this.challengesIdBefore = [];
     this.refreshScenario();
     this.refreshChallenges();
   }
@@ -39,8 +40,8 @@ export class ScenarioComponent implements OnInit {
     });
   }
 
-  public deleteScenario(scenario: Scenario) {
-    this.scenarioService.deleteScenario(scenario.ScenarioId).subscribe( (s: Scenario) => {
+  deleteScenario(scenario: Scenario) {
+    this.scenarioService.deleteScenario(scenario.scenarioId).subscribe( (s: Scenario) => {
         this.snackBar.open('Game removed', 'Ok', {
           duration: 1000
         });
@@ -51,6 +52,7 @@ export class ScenarioComponent implements OnInit {
   refreshScenario() {
     this.scenarioService.getScenarios().subscribe( (scenarios) => {
         this.scenarios = scenarios;
+        scenarios.forEach(s => this.getChallengesIdByScenario(s));
       },
       (err) => {
         console.log(err);
@@ -69,8 +71,8 @@ export class ScenarioComponent implements OnInit {
   }
 
   getChallengesIdByScenario(scenario: Scenario) {
-    this.challengeService.getChallengesByScenario(scenario.ScenarioId).subscribe( (challenges) => {
-        scenario.challenges = challenges;
+    this.challengeService.getChallengesByScenario(scenario.scenarioId).subscribe( (challenges) => {
+        scenario.challengesId = challenges.map(c => c.challengeId);
       },
       (err) => {
         console.log(err);
@@ -80,18 +82,18 @@ export class ScenarioComponent implements OnInit {
 
   updateChallengesInScenario(open: boolean, scenario: Scenario) {
     if (!open) {
-      this.addChallengesToScenario( scenario, this.challenges.filter(c => scenario.challenges.includes(c)
-                                && !this.challengesBefore.includes(c)));
-      this.removeChallengesFromScenario( scenario, this.challenges.filter(c => !scenario.challenges.includes(c)
-                                      && this.challengesBefore.includes(c)));
+      this.addChallengesToScenario( scenario, this.challenges.filter(c => scenario.challengesId.includes(c.challengeId)
+                                && !this.challengesIdBefore.includes(c.challengeId)));
+      this.removeChallengesFromScenario( scenario, this.challenges.filter(c => !scenario.challengesId.includes(c.challengeId)
+                                      && this.challengesIdBefore.includes(c.challengeId)));
     } else {
-      this.challengesBefore = scenario.challenges;
+      this.challengesIdBefore = scenario.challengesId;
     }
   }
 
   addChallengesToScenario( scenario: Scenario, challenges: Challenge[]) {
     if (challenges.length > 0) {
-      this.challengeService.addChallengeToScenario( scenario.ScenarioId, challenges).subscribe(() => {
+      this.challengeService.addChallengeToScenario( scenario.scenarioId, challenges).subscribe(() => {
         this.snackBar.open('Challenges added', 'Ok', {
           duration: 1000
         });
@@ -106,7 +108,7 @@ export class ScenarioComponent implements OnInit {
   removeChallengesFromScenario( scenario: Scenario, challenges: Challenge[]) {
     if (challenges.length > 0) {
       console.log(challenges);
-      this.challengeService.deleteChallengeFromScenario( scenario.ScenarioId, challenges).subscribe(() => {
+      this.challengeService.deleteChallengeFromScenario( scenario.scenarioId, challenges).subscribe(() => {
         this.snackBar.open('Challenges deleted', 'Ok', {
           duration: 1000
         });
@@ -115,6 +117,14 @@ export class ScenarioComponent implements OnInit {
           console.log(err);
         }
       );
+    }
+  }
+
+  getChallengeTitleById(id: number): string {
+    if (this.challenges.findIndex(c => c.challengeId === id) !== -1) {
+      return this.challenges.find(c => c.challengeId === id).title;
+    } else {
+      return '';
     }
   }
 

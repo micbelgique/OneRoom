@@ -94,12 +94,13 @@
         <th mat-header-cell *matHeaderCellDef> Scénario </th>
         <td mat-cell *matCellDef="let element">
           <mat-form-field>
-            <mat-select i18n="@@settingsSenario" placeholder="Scénario" [(ngModel)]="element.scenario" >
-              <mat-option *ngFor="let scenario of this.scenarios; let i = index" [value]="i" (click)=setScenario(scenario)>
-              {{scenario}}
+            <mat-select i18n="@@settingsSenario" placeholder="Scénario" [(ngModel)]="element.scenarioId">
+              <mat-option *ngFor="let scenario of this.scenarios" [value]="scenario.scenarioId" (click)=setScenario(element)>
+              {{scenario.title}}
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteScenario(element)' color="accent" i18n="@@settingsDelete">Delete</button>
         </td>
       </ng-container>
 
