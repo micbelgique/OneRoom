@@ -35,7 +35,6 @@ export class NavComponent implements OnInit {
       this.user = JSON.parse(localStorage.getItem('user'));
       this.teamService.getTeams().subscribe((result) => {
         this.updateTeamList(result);
-        this.openModal();
         if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
           this.openModal();
         }
@@ -56,20 +55,27 @@ export class NavComponent implements OnInit {
     this.route.navigate(['/lock']);
   }
   openModal() {
+    console.log(this.teamUser);
     const mod = this.modal.open(ModalChangeNameComponent, {
-      data: {user: this.user.name, team: this.teamUser.teamName, color: this.teamUser.teamColor}
+      data: {
+        user: this.user.name,
+        team: this.teamUser === undefined ? null : this.teamUser.teamName,
+        color: this.teamUser === undefined ? null : this.teamUser.teamColor
+      }
     });
     mod.afterClosed().subscribe((result) => {
-      const color = this.hexToRgb(result.color);
-      const colorString = '' + color.r + '' + color.g + '' + color.b;
       this.user.name = result.user;
-      this.teamUser.teamName = result.team;
-      this.teamUser.teamColor = result.color;
-      this.teamService.editTeam(this.teamUser).subscribe(
-        (teamRes) => {
-          this.teamUser = teamRes;
-        }
-      );
+      if (this.teamUser !== undefined) {
+        const color = this.hexToRgb(result.color);
+        const colorString = '' + color.r + ',' + color.g + ',' + color.b;
+        this.teamUser.teamName = result.team;
+        this.teamUser.teamColor = colorString;
+        this.teamService.editTeam(this.teamUser).subscribe(
+          (teamRes) => {
+            this.teamUser = teamRes;
+          }
+        );
+      }
       this.userService.updateNameUser(this.user).subscribe(
       (userRes) => {
         this.user = userRes;
