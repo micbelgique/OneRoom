@@ -33,7 +33,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // game
-    this.game.groupName = '';
+    this.game.groupName = null;
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
     }
@@ -102,7 +102,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const resGame$ = this.gameService.getGame(this.game.groupName);
     resGame$.subscribe( (game: Game) => {
       // leave old group
-      if (this.game.gameId) {
+      if (this.game.groupName !== null && this.hubService.connected) {
         this.hubService.leaveGroup(this.game.gameId.toString());
       }
       this.game = game;
