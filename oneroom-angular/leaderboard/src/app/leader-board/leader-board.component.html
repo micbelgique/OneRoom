@@ -12,7 +12,7 @@
     <ng-template #UserCard let-UsersContainer>
       <div *ngFor="let u of UsersContainer.users" >
           <mat-grid-tile *ngIf="u.recognized >= this.minimumRecognized">
-              <mat-card [style.background-color]='getTeamColor(UsersContainer?.teamColor)' [style.box-shadow]='isHighLighted(u.userId)'>
+              <mat-card [style.background-color]='getTeamColor(UsersContainer?.teamColor)' [style.box-shadow]='isHighLighted(u.userId)' [ngClass]='hasFinished(UsersContainer?.teamId)'>
                   <div style="width: calc(40%);">
                     <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
                   </div>

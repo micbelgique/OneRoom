@@ -113,6 +113,9 @@ export class SettingsComponent implements OnInit {
     getGame() {
       const resGame$ = this.gameService.getGame(this.game.groupName);
       resGame$.subscribe( (game: Game) => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('teamData');
+        localStorage.removeItem('gameData');
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
         localStorage.setItem('gameId', game.gameId.toString());

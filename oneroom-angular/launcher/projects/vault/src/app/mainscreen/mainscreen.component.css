@@ -1,26 +1,8 @@
-.title-center {
-  flex: 1 1 auto;
-  text-align: center;
-}
-
-mat-card {
-  width: calc(100% - 50px);
-  height: calc(100% - 50px);
-  padding: 10px;
-  display: flex;
-}
-
-mat-card div {
-  width: calc(100%);
-  height: calc(100%);
-}
-
-.mat-card-image {
-  height: calc(100%);
-}
-
-.mat-card-image:first-child {
-  margin-top: -5px;
+.content {
+  height: 95vh;
+  padding-right: 10%;
+  padding-left: 10%;
+  overflow-y: auto;
 }
 
 

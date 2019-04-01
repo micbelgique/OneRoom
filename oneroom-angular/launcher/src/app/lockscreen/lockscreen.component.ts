@@ -51,7 +51,7 @@ export class LockscreenComponent implements OnInit {
   private detectId;
 
   private lock = false;
-  private buttonLock = false;
+  buttonLock = false;
 
   // refresh rate
   refreshRate: number;
@@ -108,10 +108,14 @@ export class LockscreenComponent implements OnInit {
   public unLock(videoSource = null) {
     if (this.buttonLock === false) {
       this.lock = false;
-      this.toast.open('Scan en cours', 'Ok');
+      this.toast.open('Scan en cours', 'Ok', {
+        duration : 3000
+      });
       this.initStreamDetection(videoSource);
     } else {
-      this.toast.open('Scan interrompu', 'Ok');
+      this.toast.open('Scan interrompu', 'Ok', {
+        duration : 3000
+      });
       this.stopCapture();
     }
     this.buttonLock = !this.buttonLock;

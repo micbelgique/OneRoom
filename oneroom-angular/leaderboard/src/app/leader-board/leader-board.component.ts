@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {User, Team, UserService, TeamService, LeaderboardService, Game} from '@oneroomic/oneroomlibrary';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-leader-board',
@@ -15,6 +16,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   refreshBtn = true;
   title: string;
   minimumRecognized: number;
+
+  // winner teams
+  private winners: number[] = [];
 
   private timeSubscription;
   private userSub;
@@ -34,7 +38,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private teamService: TeamService,
-    private hubService: LeaderboardService,
+    private hubService: LeaderboardService
     ) { }
 
   ngOnInit() {
@@ -100,6 +104,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
   private finishGame(teamId) {
     console.log(teamId);
+    this.winners.push(teamId);
   }
 
   private updateUser(user: User) {
@@ -138,6 +143,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   isHighLighted(userId: number): string {
     if (userId === this.detectedUserId) {
       return '15px 15px 5px grey';
+    } else {
+      return '';
+    }
+  }
+
+  hasFinished(teamId: number): string {
+    if (this.winners.indexOf(teamId) !== -1) {
+      return 'gradient';
     } else {
       return '';
     }
@@ -183,7 +196,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.hightlightUserSub) {
       this.hightlightUserSub.unsubscribe();
     }
-    if (!this.hubService.connected.isStopped) {
+    if (this.hubService.connected.closed) {
       this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
     }

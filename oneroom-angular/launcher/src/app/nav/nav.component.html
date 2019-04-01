@@ -3,7 +3,8 @@
   <mat-toolbar-row style="text-align:center">
       <h3>Hello {{user.name}},</h3>
       <span class="example-spacer"></span>
-      <h3> {{ teamUser?.teamName }} </h3>
+      <h3> {{ teamUser?.teamName | uppercase }} </h3>
+      <span class="example-spacer"></span>
       <button (click)=logOut() mat-stroked-button >
           <mat-icon>logout</mat-icon>
       </button>

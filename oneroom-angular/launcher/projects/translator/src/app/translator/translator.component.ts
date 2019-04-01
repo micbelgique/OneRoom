@@ -11,6 +11,7 @@ import { environment } from 'projects/translator/src/environments/environment';
 })
 export class TranslatorComponent implements OnInit {
 
+  recording = false;
   @ViewChild('player')
   player;
   private lastBlob: Blob;
@@ -29,6 +30,7 @@ export class TranslatorComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.recording = false;
     this.headers = new HttpHeaders({
       'Ocp-Apim-Subscription-Key': '14d3566a4d5b48e98d63ac050434d641',
       'Content-Type': 'application/json'
@@ -51,12 +53,14 @@ export class TranslatorComponent implements OnInit {
   }
 
   start() {
+    this.recording = true;
     console.log('starting');
     // max length audio 100 000 milli sec
     this.audioRecorder.start(100000);
   }
 
   stop() {
+    this.recording = false;
     console.log('stoping');
     this.audioRecorder.stop();
     this.speechToText();

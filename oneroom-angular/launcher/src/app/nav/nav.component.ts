@@ -113,7 +113,7 @@ export class NavComponent implements OnInit {
     if (this.deleteTeam) {
       this.deleteTeam.unsubscribe();
     }
-    if (!this.hubService.connected.isStopped) {
+    if (this.hubService.connected.closed) {
       this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
     }

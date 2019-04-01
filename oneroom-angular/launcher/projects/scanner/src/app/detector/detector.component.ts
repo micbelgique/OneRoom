@@ -84,10 +84,12 @@ export class DetectorComponent implements OnInit, OnDestroy {
         new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants', '+3225882695'),
         new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', '')
       );
+      this.stream = null;
       this.opencam();
     }
 
   ngOnInit() {
+    this.detectId = null;
     if (localStorage.getItem('videoSource')) {
       this.videoSource = localStorage.getItem('videoSource');
     }
@@ -124,14 +126,14 @@ export class DetectorComponent implements OnInit, OnDestroy {
   }
 
   initStreamDetection() {
-    if (!this.stream) {
+    if (this.stream === null) {
       this.startStream();
-      if (!this.detectId) {
+      if (this.detectId === null) {
         // detection interval: default 3000
         this.detectId = setInterval( () => {
           // state still registering
           if (!this.stateContainer) {
-            if (this.stream) {
+            if (this.stream !== null) {
               this.detectObjects();
             } else {
               clearInterval(this.detectId);
@@ -423,6 +425,8 @@ export class DetectorComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
       this.stopCaptureStream();
       clearInterval(this.detectId);
+      this.detectId = null;
+      this.stream = null;
       // stop game context signal
       if (localStorage.getItem('gameData')) {
         if (this.hubServiceSub) {
