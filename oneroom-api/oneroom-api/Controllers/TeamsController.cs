@@ -141,11 +141,12 @@ namespace oneroom_api.Controllers
         {
             var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId).FirstOrDefaultAsync();
             if (teamDb == null) return NotFound();
-            if (teamDb.CreationDate.AddMinutes(5) >= DateTime.Now) return teamDb;
+            if (teamDb.CreationDate.AddMinutes(5) <= DateTime.Now) return teamDb;
             teamDb.TeamName = team.TeamName;
             teamDb.TeamColor = team.TeamColor;
             _context.Entry(teamDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.ToList());
             return teamDb;
         }
 
