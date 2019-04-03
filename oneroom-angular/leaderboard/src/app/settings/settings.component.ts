@@ -35,7 +35,7 @@ export class SettingsComponent implements OnInit {
       this.game = JSON.parse(localStorage.getItem('gameData'));
     } else {
       this.game = new Game();
-      this.game.groupName = '';
+      this.game.groupName = null;
     }
 
     if (localStorage.getItem('endpoint')) {

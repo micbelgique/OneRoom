@@ -65,6 +65,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   // current game
   private game: Game;
+  private group: Group;
 
   // refresh rate
   refreshRate: number;
@@ -107,7 +108,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
       this.faceCallsDisabled = false;
     }
 
-    if (localStorage.getItem('customVisionStatus') === 'false') {
+    if (localStorage.getItem('customVisionStatus')) {
+      console.log(localStorage.getItem('customVisionStatus'));
       this.customVisionCallsDisabled = localStorage.getItem('customVisionStatus') === 'false' ? false : true;
     } else {
       this.customVisionCallsDisabled = false;
@@ -126,10 +128,18 @@ export class FacecamComponent implements OnInit, OnDestroy {
     // game context
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
+      // set du groupe
+      this.group = new Group();
+      this.group.personGroupId = this.game.groupName;
+      this.group.name = this.game.groupName;
+      this.group.userData = this.game.groupName;
+
       // join new group
       this.hubServiceSub = this.hubService.run().subscribe(
         () => this.hubService.joinGroup(this.game.gameId.toString())
       );
+
+      // new game state
       this.gameSub = this.hubService.refreshGameState.subscribe(
       (gameId) => {
         if (gameId === this.game.gameId) {
@@ -137,11 +147,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
         }
       },
       (err) => {
-        console.log('Error game state');
         console.log(err);
       });
 
       this.refreshGameState(this.game);
+    } else {
+      this.game = null;
+      this.group = null;
     }
   }
 
@@ -160,7 +172,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
     if (!this.stream) {
       this.startStream();
       if (!this.detectId) {
-        // detection interval: default 3000
         this.detectId = setInterval( () => {
           // state still registering
           if (!this.stateContainer) {
@@ -307,26 +318,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.group === null || this.game === null) {
+      this.snackBar.open('Game not set', 'Ok', {
+        duration: 2000
+      });
+      return;
+    }
+
     try {
       canvas.toBlob((blob) => {
         const stream = blob;
-        // set du groupe
-        const group = new Group();
-        if (this.game) {
-          group.personGroupId = this.game.groupName;
-          group.name = this.game.groupName;
-          group.userData = this.game.groupName;
-        } else {
-          // game must be set
-          return ;
-        }
 
         // timeout to unlock detection
         /*setTimeout(() => {
           this.lock = false;
         }, 2500);*/
 
-        const res$ = this.faceProcess.byImg(stream, group);
+        const res$ = this.faceProcess.byImg(stream, this.group);
         // traitement face API
         res$.subscribe(
         (data) => {

@@ -22,7 +22,7 @@ export class SettingsComponent implements OnInit {
     endPoint: string;
     refreshRate: number;
     // game
-    game: Game = new Game();
+    game: Game;
     games: Game[];
     // Face
     subscriptionKey: string;
@@ -53,7 +53,7 @@ export class SettingsComponent implements OnInit {
         this.game = JSON.parse(localStorage.getItem('gameData'));
       } else {
         this.game = new Game();
-        this.game.groupName = '';
+        this.game.groupName = null;
       }
       // coordinator
       if (localStorage.getItem('endpoint')) {

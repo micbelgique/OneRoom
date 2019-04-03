@@ -1,11 +1,8 @@
 <div id="mainLock">
   <div class="lock">
+  <img id='background' src="assets/wallpaperlockscreen.png" alt="lockscreen">
 
-    <mat-card class="example-card" style="height: 85vh">
-        <img mat-card-image src="assets/wallpaperlockscreen.png" alt="lockscreen">
-    </mat-card>
-
-    <mat-toolbar role="heading" style='height: 15vh'>
+    <mat-toolbar role="heading" id='toolbar'>
         <mat-toolbar-row>
             <span class="example-fill-remaining-space"></span>
             <button mat-stroked-button color="white" (click)=unLock()>
@@ -24,6 +21,7 @@
             </mat-menu>
         </mat-toolbar-row>
     </mat-toolbar>
+
   <mat-progress-bar *ngIf=this.buttonLock mode="buffer"></mat-progress-bar>
   </div>
 

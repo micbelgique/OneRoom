@@ -30,7 +30,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private toast: MatSnackBar,
     private gameService: GameService,
     private hubService: LeaderboardService) {
-      this.hubServiceSub = this.hubService.run().subscribe();
     }
 
   ngOnInit() {
@@ -98,6 +97,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.callCustomVisionStatus = false;
     }
 
+    this.hubServiceSub = this.hubService.run().subscribe();
   }
 
   loadGames() {
