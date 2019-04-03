@@ -1,5 +1,8 @@
 <mat-nav-list style="margin-bottom: 20%">
-  <h3>{{data.label}}</h3>
+  <div style='text-align:center'>
+    <h1>{{data.label}}</h1>
+    <img style='height:10%' *ngIf=data.image [src]=data.image alt='object'>
+  </div>
   <hr>
   <p>{{data.description}}</p>
   <p>{{data.hint}}</p>

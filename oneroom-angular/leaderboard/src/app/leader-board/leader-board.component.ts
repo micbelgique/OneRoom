@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {User, Team, UserService, TeamService, LeaderboardService, Game} from '@oneroomic/oneroomlibrary';
-import { DomSanitizer } from '@angular/platform-browser';
+import {User, Team, UserService, TeamService, LeaderboardService, Game, GameService, GameState} from '@oneroomic/oneroomlibrary';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-leader-board',
@@ -20,6 +20,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   // winner teams
   private winners: number[] = [];
 
+  // timer 30 min
+  timeLeft = 30 * 60;
+  time = 1;
+  displayTimer = false;
+
   private timeSubscription;
   private userSub;
   private userNotifySub;
@@ -38,6 +43,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private teamService: TeamService,
+    private gameService: GameService,
     private hubService: LeaderboardService
     ) { }
 
@@ -71,6 +77,15 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamCreateSub = this.hubService.refreshTeamList.subscribe((result) => {
       this.refreshTeamList(result);
     });
+    this.hubService.refreshGameState.subscribe((newState) => {
+      this.gameService.getStateGame(this.game.groupName).subscribe((state) => {
+        if (state === GameState.LAUNCH) {
+          this.setTimer();
+        } else {
+          this.displayTimer = false;
+        }
+      });
+    });
     this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
       this.deleteTeamList(result);
     });
@@ -103,7 +118,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     );
   }
   private finishGame(teamId) {
-    console.log(teamId);
     this.winners.push(teamId);
   }
 
@@ -119,7 +133,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private createUser(user: User) {
-      this.users.push(user);
+    console.log(user);
+    this.users.push(user);
   }
   private deleteUser(user: User) {
     const u = this.users.findIndex(e => e.userId === user.userId);
@@ -154,6 +169,24 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     } else {
       return '';
     }
+  }
+
+  truncateName(name: string) {
+    let truncateName = name.slice(0, 10);
+    if (name.length > 15) {
+      truncateName += '...';
+    }
+    return truncateName;
+  }
+
+  setTimer() {
+    this.displayTimer = true;
+    const timers = timer(1000, 1000);
+    const abc = timers.subscribe(val => {
+      if (this.time > 0) {
+        this.time = this.timeLeft - val;
+      }
+    });
   }
 
   getTeamColor(color: string) {
@@ -196,9 +229,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.hightlightUserSub) {
       this.hightlightUserSub.unsubscribe();
     }
-    if (this.hubService.connected.closed) {
+    /*if (!this.hubService.connected.isStopped) {
       this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
-    }
+    }*/
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, LeaderboardService, TeamService } from '@oneroomic/oneroomlibrary';
+import { Game, GameService } from '@oneroomic/oneroomlibrary';
 import { Router } from '@angular/router';
 
 export enum KEY_CODE {
@@ -47,27 +47,45 @@ export class SettingsComponent implements OnInit {
       ) {}
 
     ngOnInit() {
+      this.games = [];
       // game
-      this.game.groupName = '';
       if (localStorage.getItem('gameData')) {
         this.game = JSON.parse(localStorage.getItem('gameData'));
+      } else {
+        this.game = new Game();
+        this.game.groupName = '';
       }
       // coordinator
       if (localStorage.getItem('endpoint')) {
         this.endPoint = localStorage.getItem('endpoint');
+        this.loadGames();
+      } else {
+        this.endPoint = '';
       }
       // refreshRate
-      this.refreshRate = 3000;
       if (localStorage.getItem('refreshRate')) {
         this.refreshRate = Number(localStorage.getItem('refreshRate'));
+      } else {
+        this.refreshRate = 3000;
       }
       // face
-      this.endPointCognitive = localStorage.getItem('endpointCognitive');
-      this.subscriptionKey = localStorage.getItem('subscriptionKey');
-      this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+      if (localStorage.getItem('endpointCognitive')) {
+        this.endPointCognitive = localStorage.getItem('endpointCognitive');
+      } else {
+        this.endPointCognitive = '';
+      }
 
-      this.games = [];
-      this.loadGames();
+      if (localStorage.getItem('subscriptionKey')) {
+        this.subscriptionKey = localStorage.getItem('subscriptionKey');
+      } else {
+        this.subscriptionKey = '';
+      }
+
+      if (localStorage.getItem('cognitiveStatus')) {
+        this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+      } else {
+        this.callFaceStatus = false;
+      }
     }
 
     loadGames() {
@@ -124,7 +142,6 @@ export class SettingsComponent implements OnInit {
           duration: 2000
         });
         if (game.config) {
-          console.log('auto Config');
           console.log(game.config);
           // face
           this.endPointCognitive = game.config.faceEndpoint;

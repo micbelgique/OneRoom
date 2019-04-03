@@ -13,7 +13,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   endPoint: string;
   refreshRate: number;
   // game
-  game: Game = new Game();
+  game: Game;
   games: Game[];
   // Face
   subscriptionKey: string;
@@ -29,33 +29,75 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     private toast: MatSnackBar,
     private gameService: GameService,
-    private hubService: LeaderboardService) {}
+    private hubService: LeaderboardService) {
+      this.hubServiceSub = this.hubService.run().subscribe();
+    }
 
   ngOnInit() {
+    // init vars
+    this.games = [];
     // game
-    this.game.groupName = null;
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
+    } else {
+      this.game = new Game();
+      this.game.groupName = null;
     }
     // coordinator
-    this.endPoint = localStorage.getItem('endpoint');
+    if (localStorage.getItem('endpoint')) {
+      this.endPoint = localStorage.getItem('endpoint');
+      // load available games from coordinator
+      this.loadGames();
+    } else {
+      this.endPoint = '';
+    }
+
     // refreshRate
-    this.refreshRate = 3000;
     if (localStorage.getItem('refreshRate')) {
       this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    } else {
+      this.refreshRate = 2500;
     }
-    // face
-    this.endPointCognitive = localStorage.getItem('endpointCognitive');
-    this.subscriptionKey = localStorage.getItem('subscriptionKey');
-    this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+
+    // Face config
+
+    if (localStorage.getItem('endpointCognitive')) {
+      this.endPointCognitive = localStorage.getItem('endpointCognitive');
+    } else {
+      this.endPointCognitive = '';
+    }
+
+    if (localStorage.getItem('subscriptionKey')) {
+      this.subscriptionKey = localStorage.getItem('subscriptionKey');
+    } else {
+      this.subscriptionKey = '';
+    }
+
+    if (localStorage.getItem('cognitiveStatus')) {
+      this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+    } else {
+      this.callFaceStatus = false;
+    }
+
     // custom vision
-    this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
-    this.endPointCustomVision = localStorage.getItem('endPointCustomVision');
-    this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
-    // load available games from coordinator
-    this.games = [];
-    this.loadGames();
-    this.hubServiceSub = this.hubService.run().subscribe();
+    if (localStorage.getItem('subscriptionKeyCustomVision')) {
+      this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
+    } else {
+      this.subscriptionKeyCustomVision = '';
+    }
+
+    if (localStorage.getItem('endPointCustomVision')) {
+      this.endPointCustomVision = localStorage.getItem('endPointCustomVision');
+    } else {
+      this.endPointCustomVision = '';
+    }
+
+    if (localStorage.getItem('customVisionStatus')) {
+      this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
+    } else {
+      this.callCustomVisionStatus = false;
+    }
+
   }
 
   loadGames() {
@@ -113,8 +155,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
       // join new group
       this.hubService.joinGroup(this.game.gameId.toString());
       if (game.config) {
-        console.log('auto Config');
-        console.log(game.config);
         // face
         this.endPointCognitive = game.config.faceEndpoint;
         this.subscriptionKey = game.config.faceKey;

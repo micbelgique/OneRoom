@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import { User, LeaderboardService, GameService, Game, GameState } from '@oneroomic/oneroomlibrary';
-import { MatDialog, MatSnackBar, MatBottomSheet } from '@angular/material';
+import { MatDialog, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export class Objects {
   label: string;
   description: string;
   hint: string;
+  image = null;
 
   constructor(label, description, hint) {
     this.label = label;
@@ -73,16 +75,20 @@ export class DetectorComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private hubService: LeaderboardService,
-    private gameService: GameService,
     private predictionService: CustomVisionPredictionService,
-    private bottomSheet: MatBottomSheet) {
+    private bottomSheet: MatBottomSheet,
+    private sanitizer: DomSanitizer) {
       // TODO : get from challenge in API
       this.objectsDictionary.push(
-        new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !' , ''),
-        new Objects('plant', 'Du vert pour un environnement plus agréable', ''),
-        // tslint:disable-next-line:max-line-length
-        new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants', '+3225882695'),
-        new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', '')
+        new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !' ,
+        'Je colle souvent des penses betes, + 5 % 10 pour chaque chiffre et ensuite inverser la chaine'),
+        new Objects('plant', 'Du vert pour un environnement plus agréable, c est l idéal !', ''),
+        // 3225882695
+        new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants',
+        'je ne comprends rien au japonais malheureusement'),
+        new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', ''),
+        new Objects('can', 'J adore ajouter de la poudre de lait dans mon café, quand elle est vide, je m en sert comme poubelle',
+        'Je colle souvent des penses betes dedans, + 5 % 10 pour chaque chiffre et ensuite inverser la chaine')
       );
       this.stream = null;
       this.opencam();
@@ -112,16 +118,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
-      this.hubServiceSub = this.hubService.run().subscribe();
-      this.gameSub = this.hubService.refreshGameState.subscribe(
-      (gameId) => {
-        if (gameId === game.gameId) {
-          console.log('Updating state ...');
-          this.refreshGameState(game);
-        }
-      });
-
-      this.refreshGameState(game);
+      // TODO retrieve challenge info
     }
   }
 
@@ -135,11 +132,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
           if (!this.stateContainer) {
             if (this.stream !== null) {
               this.detectObjects();
-            } else {
-              clearInterval(this.detectId);
             }
           }
-        }, 1000);
+        }, 1500);
       }
     }
   }
@@ -246,61 +241,16 @@ export class DetectorComponent implements OnInit, OnDestroy {
     console.log('navigator.getUserMedia error: ', error);
   }
 
-  /* convert img|video element into blob to send using ajax */
-  private convertToBlob(img) {
-    if (img === null || img === undefined) {
-      return false;
-    }
-    // get image url data
-    const ImageURL = img.src;
-    // Split the base64 string in data and contentType
-    const block = ImageURL.split(';');
-    // Get the content type of the image
-    const contentType = block[0].split(':')[1];
-    // In this case "image/png"
-    // get the real base64 content of the file
-    const realData = block[1].split(',')[1];
-    // Convert it to a blob to upload
-    const blob = this.base64ToBlob(realData, contentType, null);
-    return blob;
-}
-
-  /* convert base 64 string into blob img */
-  private base64ToBlob(b64Data, contentType, sliceSize) {
-    contentType = contentType || '';
-    sliceSize = sliceSize || 512;
-
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-        const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-
-        byteArrays.push(byteArray);
-    }
-
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-}
-
   private crop(canvas, x1, y1, width, height) {
     // get your canvas and a context for it
     const ctx = canvas.getContext('2d');
     // get the image data you want to keep.
-    const imageData = ctx.getImageData(x1 / 1.5, y1 / 1.5, width * 1.5, height * 1.5);
+    const imageData = ctx.getImageData(x1, y1, width, height);
     // create a new cavnas same as clipped size and a context
     const newCan = document.createElement('canvas');
     // define sizes
-    newCan.width = width * 1.5;
-    newCan.height = height * 1.5;
+    newCan.width = width;
+    newCan.height = height;
     const newCtx = newCan.getContext('2d');
     // put the clipped image on the new canvas.
     newCtx.putImageData(imageData, 0, 0);
@@ -313,36 +263,56 @@ export class DetectorComponent implements OnInit, OnDestroy {
     canvas.height = this.overlay.nativeElement.height;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0);
-    const blob = this.makeblob(canvas.toDataURL());
-    this.predictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
-    const detection$ = this.predictionService.predictImageWithNoStore(blob.blob, '5ab1f20a-0826-4d7f-8c6c-093a37e2e93a');
-    detection$.subscribe(
-      (predictions: any) => {
-        predictions.predictions.forEach(
-          p => {
-            if (p.probability >= 0.50) {
-              this.drawOverlay(
-                p.boundingBox.left * this.overlay.nativeElement.width,
-                p.boundingBox.top * this.overlay.nativeElement.height,
-                p.boundingBox.width * this.overlay.nativeElement.width,
-                p.boundingBox.height * this.overlay.nativeElement.height,
-                p.tagName
-                );
+    canvas.toBlob((blob) => {
+      this.predictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
+      const detection$ = this.predictionService.predictImageWithNoStore(blob, '5ab1f20a-0826-4d7f-8c6c-093a37e2e93a');
+      detection$.subscribe(
+        (predictions: any) => {
+          predictions.predictions.forEach(
+            p => {
+              if (p.probability >= 0.50) {
+                this.drawOverlay(
+                  p.boundingBox.left * this.overlay.nativeElement.width,
+                  p.boundingBox.top * this.overlay.nativeElement.height,
+                  p.boundingBox.width * this.overlay.nativeElement.width,
+                  p.boundingBox.height * this.overlay.nativeElement.height,
+                  p.tagName
+                  );
 
-              if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
-                const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
-                const obj = this.objectsDictionary[idx];
-                this.objectsOverlay.push(obj);
-                setTimeout(() => {
-                  this.objectsOverlay.pop();
-                }, 5000);
+                if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
+                  const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
+                  const obj = this.objectsDictionary[idx];
+
+                  const croppedCanvas = this.crop(canvas,
+                    p.boundingBox.left * this.overlay.nativeElement.width,
+                    p.boundingBox.top * this.overlay.nativeElement.height,
+                    p.boundingBox.width * this.overlay.nativeElement.width,
+                    p.boundingBox.height * this.overlay.nativeElement.height);
+
+                  croppedCanvas.toBlob(
+                    (blobObject) => {
+                      const urlblob = URL.createObjectURL(blobObject);
+                      obj.image = this.sanitizer.bypassSecurityTrustUrl(urlblob);
+                    }
+                  );
+
+                  // add to overlay
+                  this.objectsOverlay.push(obj);
+
+                  // remove from overlay after 5 sec
+                  setTimeout(() => {
+                    this.objectsOverlay.pop();
+                  }, 5000);
+                }
+                console.log(p.tagName + ' ' + (p.probability * 100) + ' % ');
               }
-              console.log(p.tagName + ' ' + (p.probability * 100) + ' % ');
             }
-          }
-        );
-      }
-    );
+          );
+        }
+      );
+    });
+/*
+
     /*const result = this.objects.predict(canvas);
     const label = result.argMax(1).get([0]);
     console.log(label);
@@ -355,64 +325,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
     this.bottomSheet.open(BottomSheetDetailComponent, { data: o });
   }
 
-  // transform dataUrl in blob
-  private makeblob(dataURL) {
-    const BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) === -1) {
-        // tslint:disable-next-line:no-shadowed-variable
-        const parts = dataURL.split(',');
-        // tslint:disable-next-line:no-shadowed-variable
-        const contentType = parts[0].split(':')[1];
-        // tslint:disable-next-line:no-shadowed-variable
-        const raw = decodeURIComponent(parts[1]);
-        return {
-          rawlength: raw.length,
-          blob: new Blob([raw], { type: contentType })
-        };
-    }
-    const parts = dataURL.split(BASE64_MARKER);
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-
-    const uInt8Array = new Uint8Array(rawLength);
-
-    for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return {
-      rawlength: raw.length,
-      blob: new Blob([uInt8Array], { type: contentType })
-    };
-    }
-
-    /* Update the game state */
-    refreshGameState(game: Game) {
-      const res$ = this.gameService.getStateGame(game.groupName);
-      res$.subscribe(
-        (state) => {
-          console.log(state);
-          if (state !== GameState.REGISTER) {
-            this.stopCaptureStream();
-            this.stateMessage = 'Enregistrement des participants désormais cloturé !';
-            this.stateContainer = true;
-            this.displayStream = 'none';
-          } else {
-            this.stateMessage = '';
-            this.stateContainer = false;
-            this.detectId = null;
-            this.stream = null;
-            this.opencam();
-          }
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    }
-
-    private stopCaptureStream() {
+  private stopCaptureStream() {
       // stop camera capture
       if (this.stream) {
         this.stream.getTracks().forEach(
@@ -420,7 +333,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
           track.stop();
         });
       }
-    }
+  }
 
     ngOnDestroy(): void {
       this.stopCaptureStream();
