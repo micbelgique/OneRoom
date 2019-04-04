@@ -7,7 +7,7 @@
               <mat-form-field>
                 <mat-label>Langue:</mat-label>
                 <mat-select [(value)]="this.languageOne">
-                  <mat-option value="fr-FR">
+                  <mat-option value="fr-FR" >
                     Français
                   </mat-option>
                   <mat-option value="en-US">
@@ -16,28 +16,41 @@
                   <mat-option value="ja-JP">
                     Japonais
                   </mat-option>
+                  <mat-option value="it-IT">
+                    Italien
+                  </mat-option>
+                  <mat-option value="de-DE">
+                    Allemand
+                  </mat-option>
+                  <mat-option value="zh-HK">
+                    Chinois
+                  </mat-option>
+                  <mat-option value="nl-NL">
+                      Néerlandais
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </mat-list-item>
             <br>
           <mat-list-item>
               <mat-form-field>
-                <textarea class="text" matInput placeholder="Your text" [(ngModel)]="this.untranslated"></textarea>
+                <textarea class="text" style="width: 100%" matInput placeholder="Your text" [(ngModel)]="this.untranslated"></textarea>
               </mat-form-field>
           </mat-list-item>
           <br>
-          <button mat-stroked-button style='width:100%' (click)='translate()' color="primary">traduire</button>
-        </mat-list>
+         </mat-list>
     </mat-grid-tile>
     <mat-grid-tile>
         <mat-list-item style='text-align:center'>
-            <button mat-button (click)='start()' color="warn" >Débuter capture</button>
-            <button mat-button (click)='stop()' *ngIf=this.recording color="warn">Arreter capture</button>
+            <button mat-raised-button (click)='start()' *ngIf=!this.recording color="warn" >Débuter capture</button>
+            <button mat-raised-button (click)='stop()' *ngIf=this.recording color="warn">Arreter capture</button>
             <hr>
             <audio #player controls autoplay playsinline></audio>
+            <hr>
+            <button mat-raised-button style='width:100%' (click)='translate()' color="primary">traduire</button>
         </mat-list-item>
     </mat-grid-tile>
-    <mat-grid-tile>
+    <mat-grid-tile >
       <mat-list>
       <mat-list-item>
         <mat-form-field>
@@ -51,6 +64,18 @@
               </mat-option>
               <mat-option value="ja-JP">
                 Japonais
+              </mat-option>
+              <mat-option value="it-IT">
+                Italien
+              </mat-option>
+              <mat-option value="de-DE">
+                Allemand
+              </mat-option>
+              <mat-option value="zh-HK">
+                Chinois
+              </mat-option>
+              <mat-option value="nl-NL">
+                Néerlandais
               </mat-option>
         </mat-select>
         </mat-form-field>

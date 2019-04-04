@@ -1,4 +1,5 @@
 <div>
+  <h1 *ngIf='this.displayTimer' class='gradient' style='display:block; margin:0; text-align: center; color:white '>{{ this.time }} SECONDES RESTANTES</h1>
   <mat-grid-list cols="4" rowHeight="2:1">
 
     <ng-container *ngTemplateOutlet="teams.length ? TeamsHandle : UserCard; context: {$implicit: this}"></ng-container>
@@ -17,7 +18,7 @@
                     <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
                   </div>
                   <div style="width: calc(60%); padding: 10px;">
-                    <mat-card-title style="font-size:2vw;">{{u.name}}</mat-card-title>
+                    <mat-card-title style="font-size:2vw;">{{truncateName(u.name)}}</mat-card-title>
                     <mat-card-content>
                       <div>
                         <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge" style="font-size:1vw;">{{ u.age}} ans</span></div>

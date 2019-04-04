@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, LeaderboardService, TeamService } from '@oneroomic/oneroomlibrary';
+import { Game, GameService, LeaderboardService, GameState } from '@oneroomic/oneroomlibrary';
 import { Router } from '@angular/router';
 
 export enum KEY_CODE {
@@ -22,8 +22,12 @@ export class SettingsComponent implements OnInit {
     endPoint: string;
     refreshRate: number;
     // game
-    game: Game = new Game();
+    game: Game;
     games: Game[];
+      // signalR
+    private hubServiceSub;
+    private gameSub;
+    infoMessage: string;
     // Face
     subscriptionKey: string;
     endPointCognitive: string;
@@ -43,31 +47,71 @@ export class SettingsComponent implements OnInit {
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
-      private router: Router
+      private router: Router,
+      private hubService: LeaderboardService
       ) {}
 
     ngOnInit() {
+      this.infoMessage = null;
+      this.games = [];
       // game
-      this.game.groupName = '';
       if (localStorage.getItem('gameData')) {
         this.game = JSON.parse(localStorage.getItem('gameData'));
+
+        // DISABLE CONFIG WHEN GAME LAUNCHED
+
+        // join new group
+        this.hubServiceSub = this.hubService.run().subscribe(
+          () => this.hubService.joinGroup(this.game.gameId.toString())
+        );
+
+        // new game state
+        this.gameSub = this.hubService.refreshGameState.subscribe(
+        (gameId) => {
+          if (gameId === this.game.gameId) {
+            this.refreshGameState(this.game);
+          }
+        },
+        (err) => {
+          console.log(err);
+        });
+
+        this.refreshGameState(this.game);
+      } else {
+        this.game = new Game();
+        this.game.groupName = null;
       }
       // coordinator
       if (localStorage.getItem('endpoint')) {
         this.endPoint = localStorage.getItem('endpoint');
+        this.loadGames();
+      } else {
+        this.endPoint = '';
       }
       // refreshRate
-      this.refreshRate = 3000;
       if (localStorage.getItem('refreshRate')) {
         this.refreshRate = Number(localStorage.getItem('refreshRate'));
+      } else {
+        this.refreshRate = 3000;
       }
       // face
-      this.endPointCognitive = localStorage.getItem('endpointCognitive');
-      this.subscriptionKey = localStorage.getItem('subscriptionKey');
-      this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+      if (localStorage.getItem('endpointCognitive')) {
+        this.endPointCognitive = localStorage.getItem('endpointCognitive');
+      } else {
+        this.endPointCognitive = '';
+      }
 
-      this.games = [];
-      this.loadGames();
+      if (localStorage.getItem('subscriptionKey')) {
+        this.subscriptionKey = localStorage.getItem('subscriptionKey');
+      } else {
+        this.subscriptionKey = '';
+      }
+
+      if (localStorage.getItem('cognitiveStatus')) {
+        this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
+      } else {
+        this.callFaceStatus = false;
+      }
     }
 
     loadGames() {
@@ -124,7 +168,6 @@ export class SettingsComponent implements OnInit {
           duration: 2000
         });
         if (game.config) {
-          console.log('auto Config');
           console.log(game.config);
           // face
           this.endPointCognitive = game.config.faceEndpoint;
@@ -150,6 +193,23 @@ export class SettingsComponent implements OnInit {
           duration: 2000
         });
       }
+    }
+
+     /* Update the game state to disable configuration modifications */
+     refreshGameState(game: Game) {
+      const res$ = this.gameService.getStateGame(game.groupName);
+      res$.subscribe(
+        (state) => {
+          if (state === GameState.LAUNCH) {
+            this.infoMessage = 'La partie est lancée, les paramètres ne peuvent plus être modifié !';
+          } else {
+            this.infoMessage = null;
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
     }
 
 }

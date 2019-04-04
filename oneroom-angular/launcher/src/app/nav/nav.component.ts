@@ -3,7 +3,6 @@ import {Router} from '@angular/router';
 import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
-import { Console } from '@angular/core/src/console';
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -66,10 +65,11 @@ export class NavComponent implements OnInit {
     mod.afterClosed().subscribe((result) => {
       this.user.name = result.user;
       if (this.teamUser !== undefined) {
-        const color = this.hexToRgb(result.color);
-        const colorString = '' + color.r + ',' + color.g + ',' + color.b;
+        // const color = this.hexToRgb(result.color);
+        // console.log(color);
+        // const colorString = '' + color.r + ',' + color.g + ',' + color.b;
         this.teamUser.teamName = result.team;
-        this.teamUser.teamColor = colorString;
+        this.teamUser.teamColor = this.teamUser.teamColor;
         this.teamService.editTeam(this.teamUser).subscribe(
           (teamRes) => {
             this.teamUser = teamRes;

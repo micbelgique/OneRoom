@@ -24,6 +24,7 @@ export class SettingsComponent implements OnInit {
     private gameService: GameService) {}
 
   ngOnInit() {
+    this.games = [];
     if (localStorage.getItem('minimumRecognized')) {
       this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
     } else {
@@ -32,17 +33,20 @@ export class SettingsComponent implements OnInit {
 
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
+    } else {
+      this.game = new Game();
+      this.game.groupName = null;
     }
 
     if (localStorage.getItem('endpoint')) {
       this.endPoint = localStorage.getItem('endpoint');
+      // load available games from coordinator
+      this.loadGames();
+    } else {
+      this.endPoint = '';
     }
     // group face
     // this.group = localStorage.getItem('groupName');
-
-    // load available games from coordinator
-    this.games = [];
-    this.loadGames();
   }
 
   loadGames() {

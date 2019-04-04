@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
-
 import {
   MatButtonModule,
   MatCheckboxModule,
@@ -64,7 +63,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     RouterModule.forRoot([
       { path: 'welcome', component: FacecamComponent },
       { path: 'settings', component: SettingsComponent },
-      { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+      { path: '**', redirectTo: 'settings', pathMatch: 'full' }
     ]),
     MatListModule,
     MatTabsModule,

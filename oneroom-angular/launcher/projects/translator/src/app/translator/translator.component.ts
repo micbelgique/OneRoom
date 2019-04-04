@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
 import MediaStreamRecorder from 'msr';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'projects/translator/src/environments/environment';
@@ -30,6 +29,9 @@ export class TranslatorComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.languageOne = 'fr-FR';
+    this.languageTwo = 'en';
+
     this.recording = false;
     this.headers = new HttpHeaders({
       'Ocp-Apim-Subscription-Key': '14d3566a4d5b48e98d63ac050434d641',
@@ -37,6 +39,7 @@ export class TranslatorComponent implements OnInit {
     });
     navigator.getUserMedia(this.mediaConstraints,
       (stream) => {
+        console.log('user media');
         this.audioRecorder = new MediaStreamRecorder(stream);
         this.audioRecorder.stream = stream;
         this.audioRecorder.mimeType = 'audio/wav';
@@ -54,14 +57,12 @@ export class TranslatorComponent implements OnInit {
 
   start() {
     this.recording = true;
-    console.log('starting');
     // max length audio 100 000 milli sec
     this.audioRecorder.start(100000);
   }
 
   stop() {
     this.recording = false;
-    console.log('stoping');
     this.audioRecorder.stop();
     this.speechToText();
   }

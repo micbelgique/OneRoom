@@ -1,4 +1,12 @@
 <div class="content">
+
+<mat-card style="text-align:center" *ngIf=infoMessage>
+  <mat-card-title>{{infoMessage}}</mat-card-title>
+  <mat-card-content>Nom de la partie en cours : {{game.groupName}}</mat-card-content>
+</mat-card>
+
+<div *ngIf=!infoMessage>
+
 <mat-accordion class="example-headers-align">
   <mat-expansion-panel [expanded]=false>
       <mat-expansion-panel-header>
@@ -7,6 +15,7 @@
         </mat-panel-title>
         </mat-expansion-panel-header>
     <mat-card-content>
+        <p>Url du coordinateur de jeu</p>
         <mat-form-field style="width: 100%">
               <input matInput placeholder="EndPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
         </mat-form-field>
@@ -27,6 +36,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-card-content>
+      <p>Sélection de la partie à rejoindre</p>
       <div style='text-align: center'>
         <mat-form-field>
           <mat-select placeholder="Game" [(ngModel)]="this.game.groupName">
@@ -54,6 +64,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
+          <p>Taux de rafraichissement de la détection faciale</p>
           <mat-form-field style="width: 100%">
             <input matInput placeholder="Refresh rate (ms)" type='number' [disabled]='this.game.config.refreshRate > 0' [(ngModel)]="this.game.config.refreshRate" value='{{refreshRate}}'>
           </mat-form-field>
@@ -74,6 +85,7 @@
         </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-card-content>
+          <p>Configuration pour la détection faciale</p>
           <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Appels API</mat-slide-toggle>
           <br><br>
           <mat-form-field style="width: 100%">
@@ -91,4 +103,7 @@
     </mat-card-actions>
   </mat-expansion-panel>
 </mat-accordion>
+
+</div>
+
 </div>
