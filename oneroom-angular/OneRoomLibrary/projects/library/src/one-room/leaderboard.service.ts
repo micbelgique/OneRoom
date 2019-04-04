@@ -79,19 +79,29 @@ export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
   }
 
   public joinGroup(groupName: string): Observable<any> {
+    if (localStorage.getItem('endpoint')) {
+      this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
+    }
     return this.send('JoinGroupAsync', groupName);
   }
 
   public leaveGroup(groupName: string): Observable<any> {
+    if (localStorage.getItem('endpoint')) {
+      this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
+    }
     return this.send('LeaveGroupAsync', groupName);
   }
 
   public run(): Observable<any> {
+    if (localStorage.getItem('endpoint')) {
+      this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
+    }
     return this.start();
   }
 
   public stopService() {
     this.stop();
+    return true;
   }
 
 }

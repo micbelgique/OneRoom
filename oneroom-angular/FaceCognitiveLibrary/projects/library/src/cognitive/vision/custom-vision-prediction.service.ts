@@ -26,28 +26,51 @@ export class CustomVisionPredictionService {
       'Access-Control-Allow-Origin': 'http://localhost:4200',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       'Access-Control-Allow-Headers': '*',
-      'Prediction-Key' : this.subscriptionKey,
-      'Content-Type' : 'application/octet-stream'
+      'Prediction-Key' : this.subscriptionKey
     });
   }
 
-  predictImageWithNoStore(stream: Blob, projectId: string): Observable<ImagePrediction> {
-    const url = this.endPoint + '/Prediction/' + projectId + '/image/nostore';
+  predictImageWithNoStore(stream: Blob, projectId: string = null): Observable<ImagePrediction> {
+    let url;
+    this.headers.set('Content-Type', 'application/octet-stream');
+    if (projectId !== null) {
+      url = this.endPoint + '/Prediction/' + projectId + '/image/nostore';
+    } else {
+      url = this.endPoint + '/image/nostore';
+    }
     return this.http.post<ImagePrediction>(url, stream, {headers: this.headers});
   }
 
-  predictImage(stream: Blob, projectId: string): Observable<ImagePrediction> {
-    const url = this.endPoint + '/Prediction/' + projectId + '/image';
+  predictImage(stream: Blob, projectId: string = null): Observable<ImagePrediction> {
+    let url;
+    this.headers.set('Content-Type', 'application/octet-stream');
+    if (projectId !== null) {
+      url = this.endPoint + '/Prediction/' + projectId + '/image';
+    } else {
+      url = this.endPoint + '/image';
+    }
     return this.http.post<ImagePrediction>(url, stream, {headers: this.headers} );
   }
 
-  predictImageUrl(urlImage: string, projectId: string): Observable<ImagePrediction> {
-    const url = this.endPoint + '/Prediction/' + projectId + '/url';
+  predictImageUrl(urlImage: string, projectId: string = null): Observable<ImagePrediction> {
+    let url;
+    this.headers.set('Content-Type', 'application/json');
+    if (projectId !== null) {
+      url = this.endPoint + '/Prediction/' + projectId + '/url';
+    } else {
+      url = this.endPoint + '/url';
+    }
     return this.http.post<ImagePrediction>(url, {Url: urlImage}, {headers: this.headers});
   }
 
-  predictImageUrlWithNoStore(urlImage: string, projectId: string): Observable<ImagePrediction> {
-    const url = this.endPoint + '/Prediction/' + projectId + '/url/nostore';
+  predictImageUrlWithNoStore(urlImage: string, projectId: string = null): Observable<ImagePrediction> {
+    let url;
+    this.headers.set('Content-Type', 'application/json');
+    if (projectId !== null) {
+      url = this.endPoint + '/Prediction/' + projectId + '/url/nostore';
+    } else {
+      url = this.endPoint + '/url/nostore';
+    }
     return this.http.post<ImagePrediction>(url, {Url: urlImage}, {headers: this.headers});
   }
 }

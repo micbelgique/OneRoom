@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
-import { User, LeaderboardService, GameService, Game, GameState } from '@oneroomic/oneroomlibrary';
+import { User, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
@@ -88,7 +88,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
         'je ne comprends rien au japonais malheureusement'),
         new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps', ''),
         new Objects('can', 'J adore ajouter de la poudre de lait dans mon café, quand elle est vide, je m en sert comme poubelle',
-        'Je colle souvent des penses betes dedans, + 5 % 10 pour chaque chiffre et ensuite inverser la chaine')
+        'Je colle souvent des penses betes dedans, + 5 % 10 pour chaque chiffre et ensuite inverser la chaine'),
+        new Objects('headset', 'Listening to music is my favorite thing to do', ''),
+        new Objects('calculator', 'A basic calculator', '')
       );
       this.stream = null;
       this.opencam();
@@ -264,8 +266,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0);
     canvas.toBlob((blob) => {
-      this.predictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
-      const detection$ = this.predictionService.predictImageWithNoStore(blob, '5ab1f20a-0826-4d7f-8c6c-093a37e2e93a');
+      // tslint:disable-next-line:max-line-length
+      this.predictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15', '8139b0c8c2a54b59861bbe5e7e089d2b');
+      const detection$ = this.predictionService.predictImageWithNoStore(blob);
       detection$.subscribe(
         (predictions: any) => {
           predictions.predictions.forEach(

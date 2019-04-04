@@ -1,13 +1,15 @@
 import { SignalRAbstractService, SignalrMethods } from './signalr.abstract.service';
-import { OnInit } from '@angular/core';
 
 export abstract class SignalRCoreService<T extends SignalrMethods> extends SignalRAbstractService<T> {
 
-    protected baseUrl = localStorage.getItem('endpoint').replace('/api', '');
+    protected baseUrl;
     protected connectionTryDelay = 3000;
 
     constructor() {
         super();
+        if (localStorage.getItem('endpoint')) {
+          this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
+        }
     }
 
 }

@@ -463,8 +463,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
 private getHairLength(stream) {
   const sub = new Subject<string>();
   // tslint:disable-next-line:max-line-length
-  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
-  this.customVisionPredictionService.predictImageWithNoStore(stream, '3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc').subscribe(
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
     (result: ImagePrediction) => {
       // this.deleteHairLength(result.id);
       // sub.next(result.predictions[0].tagName);
@@ -494,8 +494,8 @@ private deleteHairLength(id) {
 private getSkinColor(stream) {
   const sub = new Subject<string>();
   // tslint:disable-next-line:max-line-length
-  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/', '8139b0c8c2a54b59861bbe5e7e089d2b');
-  this.customVisionPredictionService.predictImageWithNoStore(stream, 'a1cb0694-4bdb-4def-a20f-52226ced6ded').subscribe(
+  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/a1cb0694-4bdb-4def-a20f-52226ced6ded', '8139b0c8c2a54b59861bbe5e7e089d2b');
+  this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
       (result: ImagePrediction) => {
       // this.deleteSkinColor(result.id);
       // sub.next(result.predictions[0].tagName);
