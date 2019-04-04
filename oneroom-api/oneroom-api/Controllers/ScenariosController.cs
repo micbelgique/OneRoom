@@ -21,6 +21,7 @@ namespace oneroom_api.Controllers
 
         // GET: api/Scenarios
         [HttpGet]
+        [ProducesResponseType(200,Type = typeof(Task<ActionResult<IEnumerable<ScenarioDTO>>>))]
         public async Task<ActionResult<IEnumerable<ScenarioDTO>>> GetScenarios()
         {
             return await _context.Scenarios.Include(s => s.ScenarioChallenges)
@@ -31,6 +32,8 @@ namespace oneroom_api.Controllers
 
         // GET: api/Scenarios/5
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ScenarioDTO>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<ScenarioDTO>> GetScenario(int id)
         {
             var scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
@@ -47,8 +50,12 @@ namespace oneroom_api.Controllers
 
         // POST: api/Scenarios
         [HttpPost]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(409)]
         public async Task<ActionResult<Scenario>> PostScenario(Scenario scenario)
         {
+            var sc = await _context.Scenarios.FindAsync(scenario.ScenarioId);
+            if (sc != null) return Conflict("Scenario already exist");
             _context.Scenarios.Add(scenario);
             await _context.SaveChangesAsync();
 
@@ -57,31 +64,35 @@ namespace oneroom_api.Controllers
 
         // POST: api/Games/5/Scenario
         [HttpPost("~/api/Games/{GameId}/Scenario")]
-        public async Task<ActionResult<Scenario>> SetScenarioToGame( int GameId, Scenario scenario)
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Scenario>> SetScenarioToGame( int gameId, Scenario scenario)
         {
-            var game = await _context.Games.SingleOrDefaultAsync(g => g.GameId == GameId);
+            var game = await _context.Games.SingleOrDefaultAsync(g => g.GameId == gameId);
             if (game == null)
             {
-                return NotFound();
+                return NotFound("game not found");
             }
 
-            var scenario_context = await _context.Scenarios.FindAsync(scenario.ScenarioId);
-            if (scenario_context == null)
+            var scenarioContext = await _context.Scenarios.FindAsync(scenario.ScenarioId);
+            if (scenarioContext == null)
             {
-                return NotFound();
+                return NotFound("scenario not found");
             }
 
-            game.Scenario = scenario_context;
+            game.Scenario = scenarioContext;
 
             _context.Entry(game).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetScenario", new { id = scenario_context.ScenarioId }, scenario_context);
+            return CreatedAtAction("GetScenario", new { id = scenarioContext.ScenarioId }, scenarioContext);
         }
 
         // DELETE: api/Scenarios/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(200,Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Scenario>> DeleteScenario(int id)
         {
             var scenario = await _context.Scenarios.FindAsync(id);
@@ -98,10 +109,12 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Games/5/Scenario
         [HttpDelete("~/api/Games/{GameId}/Scenario")]
-        public async Task<ActionResult<Scenario>> DeleteScenarioFromGame( int GameId)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Scenario>> DeleteScenarioFromGame( int gameId)
         {
             var game = await _context.Games.Include(g => g.Scenario)
-                                         .SingleOrDefaultAsync(g => g.GameId == GameId);
+                                         .SingleOrDefaultAsync(g => g.GameId == gameId);
             if (game?.Scenario == null)
             {
                 return NotFound();
@@ -113,16 +126,6 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ScenarioExists(int id)
-        {
-            return _context.Scenarios.Any(e => e.ScenarioId == id);
-        }
-
-        private bool GameExists(int id)
-        {
-            return _context.Games.Any(e => e.GameId == id);
         }
     }
 }

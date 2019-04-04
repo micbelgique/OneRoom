@@ -32,12 +32,12 @@ namespace oneroom_api.Controllers
         [HttpGet("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByScenario(int ScenarioId)
+        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByScenario(int scenarioId)
         {
-            if(!ScenarioExists(ScenarioId)) return NotFound("There is no scenario with id:" + ScenarioId);
+            if(!ScenarioExists(scenarioId)) return NotFound("There is no scenario with id:" + scenarioId);
 
             List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
-                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == ScenarioId))
+                                                                     .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == scenarioId))
                                                                      .Select(c => c.ToDTO())
                                                                      .ToListAsync();
 
@@ -63,6 +63,8 @@ namespace oneroom_api.Controllers
         // PUT: api/Challenges/5
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> PutChallenge(int id, Challenge challenge)
         {
             if (id != challenge.ChallengeId)
@@ -106,16 +108,16 @@ namespace oneroom_api.Controllers
         [HttpPost("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> AddChallengeInScenario( int ScenarioId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> AddChallengeInScenario( int scenarioId, [FromBody] Challenge[] challenges)
         {
-            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
-                                              .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
+            var scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+                                              .SingleOrDefaultAsync(s => s.ScenarioId == scenarioId);
 
-            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
+            if (scenario == null) return NotFound("There is no scenario with id:" + scenarioId);
 
             foreach( Challenge challenge in challenges)
             {
-                Scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = Scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
+                scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
 
             await _context.SaveChangesAsync();
@@ -133,7 +135,7 @@ namespace oneroom_api.Controllers
             var challenge = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                      .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
-            {
+            {   
                 return NotFound();
             }
 
@@ -149,15 +151,15 @@ namespace oneroom_api.Controllers
         [HttpDelete("~/api/Scenarios/{ScenarioId}/Challenges")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> DeleteChallengeInScenario(int ScenarioId, [FromBody] Challenge[] challenges)
+        public async Task<ActionResult> DeleteChallengeInScenario(int scenarioId, [FromBody] Challenge[] challenges)
         {
-            Scenario Scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
+            var scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
                                                             .ThenInclude(sc => sc.Challenge)
-                                                        .SingleOrDefaultAsync(s => s.ScenarioId == ScenarioId);
+                                                        .SingleOrDefaultAsync(s => s.ScenarioId == scenarioId);
 
-            if (Scenario == null) return NotFound("There is no scenario with id:" + ScenarioId);
+            if (scenario == null) return NotFound("There is no scenario with id:" + scenarioId);
 
-            Scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
+            scenario.ScenarioChallenges.RemoveAll(sc => challenges.Contains(sc.Challenge));
 
             await _context.SaveChangesAsync();
 

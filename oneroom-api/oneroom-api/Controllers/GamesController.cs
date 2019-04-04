@@ -30,7 +30,6 @@ namespace oneroom_api.Controllers
         // GET: api/Games
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<GameDTO>>>))]
-        [ProducesResponseType(404)]
         public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
         {
             // return config to select it

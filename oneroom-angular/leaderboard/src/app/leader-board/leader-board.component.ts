@@ -122,6 +122,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private updateUser(user: User) {
+    console.log(user);
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
   }
