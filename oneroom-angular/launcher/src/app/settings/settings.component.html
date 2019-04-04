@@ -1,4 +1,12 @@
 <div class="content">
+
+<mat-card style="text-align:center" *ngIf=infoMessage>
+  <mat-card-title>{{infoMessage}}</mat-card-title>
+  <mat-card-content>Nom de la partie en cours : {{game.groupName}}</mat-card-content>
+</mat-card>
+
+<div *ngIf=!infoMessage>
+
 <mat-accordion class="example-headers-align">
   <mat-expansion-panel [expanded]=false>
       <mat-expansion-panel-header>
@@ -95,4 +103,7 @@
     </mat-card-actions>
   </mat-expansion-panel>
 </mat-accordion>
+
+</div>
+
 </div>
