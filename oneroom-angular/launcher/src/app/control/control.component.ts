@@ -1,5 +1,5 @@
 import { Component, OnInit, Output } from '@angular/core';
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 
 @Component({
@@ -10,6 +10,10 @@ import { Router, NavigationStart } from '@angular/router';
 export class ControlComponent implements OnInit {
 
   showActions = false;
+  showActionChatbot = false;
+
+  @Output()
+  actions: EventEmitter<string> = new EventEmitter();
 
   constructor(private router: Router) {
     this.router.events.subscribe(event => {
@@ -19,6 +23,12 @@ export class ControlComponent implements OnInit {
           console.log('hiding controls');
         } else {
           this.showActions = true;
+        }
+
+        if (event.url === '/chatbot') {
+          this.showActionChatbot = false;
+        } else {
+          this.showActionChatbot = true;
         }
       }
     });
@@ -34,6 +44,18 @@ export class ControlComponent implements OnInit {
 
     } else {
       this.router.navigateByUrl('/nav');
+    }
+  }
+
+  toggleChatbot() {
+    this.actions.emit('chatbot');
+  }
+
+  isChatbotActionVisible() {
+    if (this.showActionChatbot === true) {
+      return 'visible';
+    } else {
+      return 'hidden';
     }
   }
 

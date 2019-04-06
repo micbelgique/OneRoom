@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material';
-import { Objects } from '../detector/detector.component';
+import { Objects } from '../utilities/object';
+
 @Component({
   selector: 'app-bottom-sheet-detail',
   templateUrl: './bottom-sheet-detail.component.html',

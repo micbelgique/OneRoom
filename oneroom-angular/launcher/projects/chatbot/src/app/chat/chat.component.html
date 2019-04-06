@@ -1,0 +1,13 @@
+<div style="padding-top: 5%; padding-left: 5%; padding-right: 5%; height: 75vh">
+  <mat-chip-list class="mat-chip-list-stacked" >
+      <mat-chip *ngFor="let chip of messages" selected [color]="chip.color">
+        {{chip.name}}
+      </mat-chip>
+  </mat-chip-list>
+</div>
+<div style="height: 10vh;">
+  <mat-form-field style="width: 80%;margin-left: 10%; margin-right: 10%">
+    <textarea matInput placeholder="Demander a Stéphane"></textarea>
+  </mat-form-field>
+  <button mat-flat-button style="width:100%" color="primary">Demander</button>
+</div>

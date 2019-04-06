@@ -2,6 +2,16 @@
   "name": "launcher",
   "version": "0.0.0",
   "main": "main.js",
+  "browser": {
+    "http": false,
+    "https":false,
+    "net": false,
+    "path": false,
+    "stream": false,
+    "tls": false,
+    "fs": false,
+    "crypto": false
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

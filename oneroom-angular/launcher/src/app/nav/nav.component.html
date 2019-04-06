@@ -1,5 +1,5 @@
 <div class="launcher">
-<mat-toolbar  role="heading" [style.background-color]="getColorTeam()" >
+<mat-toolbar  role="heading"  >
   <mat-toolbar-row style="text-align:center">
       <h3>Hello {{user.name}},</h3>
       <span class="example-spacer"></span>
@@ -11,35 +11,48 @@
     </mat-toolbar-row>
 </mat-toolbar>
 
-<mat-grid-list cols="4" rowHeight="3:3">
+<mat-grid-list [style.background-color]="getColorTeam()" cols="4" rowHeight="3:3">
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/scanner">
-        <h3>Scanner</h3>
-        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon></div>
+        <mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon>
+        <p class='launcher-app-title'>Scanner</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/translator">
-        <h3>Traducteur</h3>
-        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon></div>
+        <mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon>
+        <p class='launcher-app-title'>Traducteur</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/profil">
-        <h3>Profil</h3>
         <img src='{{ user.urlAvatar }}' class="img-profil">
+        <p class='launcher-app-title'>Profil</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/vault">
-        <h3>Vault</h3>
-        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="vault">lock</mat-icon></div>
+        <mat-icon class='app-mat-icon' aria-label="vault">lock</mat-icon>
+        <p class='launcher-app-title'>Vault</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/settings">
-        <h3>Paramètres</h3>
-        <div class="app-icon"><mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon></div>
+        <mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon>
+        <p class='launcher-app-title'>Paramètres</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/chatbot">
+        <mat-icon class='app-mat-icon' aria-label="chat">chat</mat-icon>
+        <p class='launcher-app-title'>Chatbot</p>
+      </a>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button>
+        <mat-icon class='app-mat-icon' aria-label="time">access_time</mat-icon>
+        <p class='launcher-app-title'>Horloge</p>
       </a>
   </mat-grid-tile>
 
