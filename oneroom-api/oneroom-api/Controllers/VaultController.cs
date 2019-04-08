@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using oneroom_api.Hubs;
-using oneroom_api.Model;
 
 namespace oneroom_api.Controllers
 {

@@ -36,7 +36,7 @@ namespace oneroom_api.Controllers
         {
             if(!ScenarioExists(scenarioId)) return NotFound("There is no scenario with id:" + scenarioId);
 
-            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
+            var challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                                      .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == scenarioId))
                                                                      .Select(c => c.ToDTO())
                                                                      .ToListAsync();
@@ -115,7 +115,7 @@ namespace oneroom_api.Controllers
 
             if (scenario == null) return NotFound("There is no scenario with id:" + scenarioId);
 
-            foreach( Challenge challenge in challenges)
+            foreach( var challenge in challenges)
             {
                 scenario.ScenarioChallenges.Add(new ScenarioChallenge { Scenario = scenario, Challenge = _context.Challenges.Find(challenge.ChallengeId) });
             }
