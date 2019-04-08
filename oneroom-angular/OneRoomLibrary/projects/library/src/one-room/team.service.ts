@@ -23,6 +23,10 @@ export class TeamService {
     return this.http.get<Team[]>(this.EPGetter.getEndPointUrlWithId() + '/teams', { headers: this.headers });
   }
 
+  getTeamsByGame(gameId: number): Observable<Team[]> {
+    return this.http.get<Team[]>(this.EPGetter.getEndPointUrl() + '/Games/' + gameId + '/teams/', {headers: this.headers });
+  }
+
   getTeam(teamId: number): Observable<Team> {
     return this.http.get<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams/' + teamId, { headers: this.headers });
   }

@@ -60,12 +60,12 @@ namespace oneroom_api.Controllers
         {
             var count = await _context.Teams.Where(t => t.GameId == gameId)
                                             .CountAsync();
-            if (count > 0) return Conflict("Teams are alredy created");
+            if (count > 0) return Conflict("Teams are already created");
 
             var game = await _context.Games.Include(g => g.Config)
                                            .SingleOrDefaultAsync(g => g.GameId == gameId);
 
-            List<User> users = await _context.Users.Where(u => u.GameId == gameId)
+            var users = await _context.Users.Where(u => u.GameId == gameId)
                                                    .Where(u => u.Recognized >= game.Config.MinimumRecognized)
                                                    .ToListAsync();
 
@@ -123,7 +123,7 @@ namespace oneroom_api.Controllers
             var teams = await _context.Teams.Where(t => t.GameId == gameId)
                                             .Include(t => t.Users)
                                             .ToListAsync();
-            if (teams.Count() == 0)
+            if (!teams.Any())
             {
                 return NotFound();
             }
@@ -151,19 +151,17 @@ namespace oneroom_api.Controllers
 
         public static void SpreadPlayers(Game game)
         {
-            int nbTeams = game.Teams.Count();
-            if(nbTeams > 0)
+            var nbTeams = game.Teams.Count();
+            if (nbTeams <= 0) return;
+            var j = 0;
+            for (var i = 0; i < nbTeams; i++)
             {
-                int j = 0;
-                for (int i = 0; i < nbTeams; i++)
-                {
-                    game.Teams[i].Users.Clear();
-                }
-                foreach (User u in game.Users)
-                {
-                    game.Teams[j++].Users.Add(u);
-                    if (j == nbTeams) j = 0;
-                }
+                game.Teams[i].Users.Clear();
+            }
+            foreach (var u in game.Users)
+            {
+                game.Teams[j++].Users.Add(u);
+                if (j == nbTeams) j = 0;
             }
         }
     }

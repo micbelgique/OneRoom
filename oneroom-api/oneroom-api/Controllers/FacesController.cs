@@ -49,7 +49,7 @@ namespace oneroom_api.Controllers
 
                     await _context.SaveChangesAsync();
 
-                    // update users dashboard and leaderboard
+                    // update users dashboard and leader board
                     await _hubClients.Clients.Group(gameId.ToString()).UpdateUser(usr);
 
                 } catch(DbUpdateException)
@@ -63,7 +63,7 @@ namespace oneroom_api.Controllers
                     return NotFound("user not found");
         }
 
-        // DELETE: api/Facesv2/5 
+        // DELETE: api/Faces/5 
         [HttpDelete("~/api/Games/{GameId}/Users/{UserId}/Faces/{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Face>>))]
         [ProducesResponseType(404)]

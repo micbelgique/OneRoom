@@ -83,10 +83,8 @@ namespace oneroom_api.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return usr;
@@ -100,26 +98,16 @@ namespace oneroom_api.Controllers
         {
             try
             {
-                if (user != null)
-                {
-                    var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
-                    if (u != null)
-                    {
-                        if(!u.IsFirstConnected)
-                        {
-                            u.Name = user.Name;
-                            u.IsFirstConnected = true;
-                            _context.Entry(u).State = EntityState.Modified;
-                            await _context.SaveChangesAsync();
-                            await _hubClients.Clients.All.UpdateUser(u);
-                        }
-                        return u;
-                    }
-                    else
-                        throw new Exception("user not found");
-                }
-                else
-                    throw new Exception("the parameter user not found");
+                if (user == null) throw new Exception("the parameter user not found");
+                var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
+                if (u == null) throw new Exception("user not found");
+                if (u.IsFirstConnected) return u;
+                u.Name = user.Name;
+                u.IsFirstConnected = true;
+                _context.Entry(u).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                await _hubClients.Clients.All.UpdateUser(u);
+                return u;
             }
             catch (Exception ex)
             {
@@ -138,7 +126,7 @@ namespace oneroom_api.Controllers
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
-            foreach( User u in users)
+            foreach( var u in users)
             {
                 u.OptimizeResults();
                 u.GenerateAvatar();
