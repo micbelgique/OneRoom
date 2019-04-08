@@ -6,12 +6,12 @@
         <router-outlet></router-outlet>
     </mat-sidenav-content>
     <mat-sidenav class="sidenav" position="end" #sidenav mode="side" [(opened)]="opened">
-      <app-chat></app-chat>
+      <app-chat [isOpen]=this.sidenavEmitter ></app-chat>
     </mat-sidenav>
 </mat-sidenav-container>
 
 </div>
-<div id="control" style="text-align:center">
+<div id="control" style="text-align:center;">
   <app-control (actions)=toggleAction($event) ></app-control>
 </div>
 

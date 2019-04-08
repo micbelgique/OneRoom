@@ -67,7 +67,6 @@ export class LockscreenComponent implements OnInit {
   ngOnInit() {
     if (localStorage.getItem('camId')) {
       this.videoSource = localStorage.getItem('camId');
-      console.log(this.videoSource);
     }
     if (localStorage.getItem('user') != null) {
       this.route.navigate(['/nav']);
