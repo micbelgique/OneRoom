@@ -8,7 +8,7 @@ function createWindow () {
     width: 800,
     height: 800,
     backgroundColor: '#FFFFFF',
-    icon: `file://${__dirname}/logo.png`
+    icon: __dirname + '/logo.png' // `file://${__dirname}/logo.png`
   })
 
 

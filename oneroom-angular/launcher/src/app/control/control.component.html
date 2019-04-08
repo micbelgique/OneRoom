@@ -1,5 +1,11 @@
-<div *ngIf='this.showActions' style="background-color:lightgray">
-  <button style='width: 40%' mat-button color="primary" (click)='returnHome()'>
+<div *ngIf='this.showActions' style="background-color:lightgray;">
+  <button style='width: 30%; visibility:hidden' mat-button color="primary" matTooltip="Notifications reçues" matTooltipPosition="above">
+    <mat-icon aria-label='Chatbot' style="color:black">announcement</mat-icon>
+  </button>
+  <button style='width: 40%' mat-button color="primary" (click)='returnHome()' matTooltip="Retour au menu principal" matTooltipPosition="above">
     <mat-icon aria-label="Home" style="color:black">home</mat-icon>
+  </button>
+  <button [style.visibility]=isChatbotActionVisible() matTooltip="Demander au chatbot" matTooltipPosition="above" style='width: 30%' mat-button color="primary" (click)='toggleChatbot()'>
+    <mat-icon aria-label='Chatbot' style="color:black">chat</mat-icon>
   </button>
 </div>

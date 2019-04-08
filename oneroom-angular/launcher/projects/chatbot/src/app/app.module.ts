@@ -3,8 +3,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MainscreenComponent } from './mainscreen/mainscreen.component';
-import { LockscreenComponent } from './lockscreen/lockscreen.component';
+
 
 import {
   MatButtonModule,
@@ -27,14 +26,18 @@ import {
   MatSelectModule,
   MatDatepickerModule,
   MatOptionModule,
-  MatSliderModule
+  MatSliderModule,
+  MatChipsModule
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
+import { ChatComponent } from './chat/chat.component';
+
 
 const arrProviders = [];
 
 @NgModule({
-  declarations: [LockscreenComponent, MainscreenComponent],
+  declarations: [
+  ChatComponent],
   imports : [
     MatSliderModule,
     MatOptionModule,
@@ -58,10 +61,12 @@ const arrProviders = [];
     MatSelectModule,
     MatDatepickerModule,
     FormsModule,
-    BrowserModule
-  ]
+    BrowserModule,
+    MatChipsModule
+  ],
+  exports : [ChatComponent]
 })
-export class VaultAppSharedModule {
+export class ChatbotAppSharedModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: AppModule,
@@ -69,7 +74,6 @@ export class VaultAppSharedModule {
     };
   }
 }
-
 
 @NgModule({
   declarations: [
@@ -83,3 +87,4 @@ export class VaultAppSharedModule {
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

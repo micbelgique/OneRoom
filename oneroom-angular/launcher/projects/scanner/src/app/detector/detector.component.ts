@@ -5,19 +5,7 @@ import { MatDialog, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
 import { DomSanitizer } from '@angular/platform-browser';
-
-export class Objects {
-  label: string;
-  description: string;
-  hint: string;
-  image = null;
-
-  constructor(label, description, hint) {
-    this.label = label;
-    this.description = description;
-    this.hint = hint;
-  }
-}
+import { Objects } from '../utilities/object';
 
 @Component({
   selector: 'app-detector',

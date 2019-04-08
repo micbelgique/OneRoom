@@ -8,6 +8,7 @@ import { VaultAppSharedModule } from 'projects/vault/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
+import { ChatbotAppSharedModule } from 'projects/chatbot/src/app/app.module';
 
 const routes: Routes = [
   {path: 'scanner',
@@ -18,6 +19,8 @@ const routes: Routes = [
     loadChildren: '../../projects/translator/src/app/app.module#TranslatorAppSharedModule'},
   {path: 'vault',
     loadChildren: '../../projects/vault/src/app/app.module#VaultAppSharedModule'},
+  {path: 'chatbot',
+    loadChildren: '../../projects/chatbot/src/app/app.module#ChatbotAppSharedModule'},
   { path: 'nav', component: NavComponent },
   { path: 'lock', component: LockscreenComponent },
   { path: 'settings', component : SettingsComponent},
@@ -31,7 +34,8 @@ const routes: Routes = [
     ScannerAppSharedModule.forRoot(),
     TranslatorAppSharedModule.forRoot(),
     ScannerAppSharedModule.forRoot(),
-    VaultAppSharedModule.forRoot()
+    VaultAppSharedModule.forRoot(),
+    ChatbotAppSharedModule.forRoot()
   ],
   exports: [RouterModule]
 })

@@ -15,6 +15,7 @@ import { VaultAppSharedModule } from 'projects/vault/src/app/app.module';
 import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
+import { ChatbotAppSharedModule } from 'projects/chatbot/src/app/app.module';
 
 import {
   MatButtonModule,
@@ -34,7 +35,8 @@ import {
   MatProgressBarModule,
   MatSnackBarModule,
   MatDialogModule,
-  MatSelectModule
+  MatSelectModule,
+  MatTooltipModule
 } from '@angular/material';
 
 @NgModule({
@@ -54,6 +56,7 @@ import {
     ProfilAppSharedModule,
     VaultAppSharedModule,
     TranslatorAppSharedModule,
+    ChatbotAppSharedModule,
     // other
     BrowserAnimationsModule,
     MatButtonModule,
@@ -83,7 +86,8 @@ import {
     MatDialogModule,
     MatSelectModule,
     HttpClientModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   entryComponents: [
     ModalChangeNameComponent

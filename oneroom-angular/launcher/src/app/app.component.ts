@@ -17,6 +17,7 @@ export enum KEY_CODE {
 })
 export class AppComponent {
   title = 'launcher';
+  opened = false;
 
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
@@ -27,5 +28,10 @@ export class AppComponent {
 
   constructor(public router: Router) {
 
+  }
+
+  toggleAction($event) {
+    this.opened = !this.opened;
+    console.log($event);
   }
 }
