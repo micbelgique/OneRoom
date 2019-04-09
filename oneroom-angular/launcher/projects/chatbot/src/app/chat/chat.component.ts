@@ -131,7 +131,7 @@ export class ChatComponent implements OnInit {
               case 'scanner': {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
-                    case 'presenter': {
+                    case 'expliquer': {
                       // tslint:disable-next-line:max-line-length
                       responseChatbot = 'Pointez la camera vers l\'objet à scanner, attendez un petit instant, vous devriez voir apparaitre une image de l\'objet scanné, cliquez sur le bouton information pour une description plus détaillée.';
                       break;
