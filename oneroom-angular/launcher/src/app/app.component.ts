@@ -36,4 +36,8 @@ export class AppComponent {
     this.opened = !this.opened;
     this.sidenavEmitter.next(this.opened);
   }
+
+  setSidenav($event) {
+    this.opened = $event;
+  }
 }
