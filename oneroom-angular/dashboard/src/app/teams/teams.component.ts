@@ -14,7 +14,7 @@ import { Team, Game, GameService, TeamService } from '@oneroomic/oneroomlibrary'
 export class TeamsComponent implements OnInit {
 
   nbTeams: number;
-  teams: Team[];
+  teams: Team[] = [];
   games: Game[];
   // column order
   displayedColumns: string[] = ['Name', 'Color', 'Users'];
@@ -46,7 +46,7 @@ export class TeamsComponent implements OnInit {
     if (idGame !== null) {
       localStorage.setItem('gameId', '' + idGame);
     }
-    this.teamService.getTeams().subscribe(
+    this.teamService.getTeamsByGame(idGame).subscribe(
         (teams) => {
           this.snackBar.open(teams.length + ' teams retrived', 'Ok', {
             duration: 1000

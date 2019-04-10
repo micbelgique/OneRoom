@@ -10,7 +10,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
-    "electron-build": "ng build --prod && electron ."
+    "electron-build": "ng build --prod && electron .",
+    "prod-build-dev": "ng build --prod --build-optimizer",
+    "prod-build-staging": "ng build --prod --configuration=staging --build-optimizer"
   },
   "private": true,
   "dependencies": {
@@ -26,7 +28,7 @@
     "@angular/router": "^7.2.5",
     "@aspnet/signalr": "^1.1.2",
     "@oneroomic/facecognitivelibrary": "^0.1.6",
-    "@oneroomic/oneroomlibrary": "0.0.42",
+    "@oneroomic/oneroomlibrary": "0.0.49",
     "core-js": "^2.6.5",
     "hammerjs": "^2.0.8",
     "os": "^0.1.1",
