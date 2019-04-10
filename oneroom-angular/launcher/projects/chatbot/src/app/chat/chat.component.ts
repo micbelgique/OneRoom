@@ -3,11 +3,18 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User, Game, Team, GameState } from '@oneroomic/oneroomlibrary';
 import { environment } from '../../environments/environment';
-import { Subject } from 'launcher-win32-x64/resources/app/node_modules/rxjs';
+import { replies } from '../utilities/reply-fr';
+import { Subject } from 'rxjs';
 
 export interface MessageStyle {
   name: string;
   color: string;
+}
+
+export class Bot {
+  silentMode = false;
+
+  constructor(public name: string, public gender: string, public color: string) {}
 }
 
 @Component({
@@ -17,8 +24,13 @@ export interface MessageStyle {
 })
 export class ChatComponent implements OnInit {
 
-  private silentMode = false;
-  private botGender = 'MALE';
+  bots: Bot[] = [
+    new Bot('Stéphane', 'MALE', '#9fa8da'),
+    new Bot('Stéphanie', 'FEMALE', '#bc477b')
+  ];
+
+  currentBot: Bot;
+
   // sidenav is open
   @Input()
   isOpen: Subject<boolean>;
@@ -26,8 +38,8 @@ export class ChatComponent implements OnInit {
   close = new EventEmitter<boolean>();
 
   private firstOpening = true;
+
   // chat colors
-  private botColor = '#9fa8da';
   private userColor = '#b0bec5';
 
   private intents = [
@@ -37,7 +49,9 @@ export class ChatComponent implements OnInit {
     'Profil',
     'Salutation',
     'Navigation',
-    'Remerciement'
+    'Remerciement',
+    'Commande',
+    'Compliment'
   ];
 
   messages: MessageStyle[] = [];
@@ -67,11 +81,15 @@ export class ChatComponent implements OnInit {
     if ( localStorage.getItem('teamData')) {
       this.team = JSON.parse(localStorage.getItem('teamData'));
     }
+    // selection of bot
+    this.currentBot = this.bots[0];
+    // welcome message
     const welcomeMessage: MessageStyle = {
-      name: 'Bonjour ' + this.user.name + ', Je suis Stéphane, le chatbot, que puis-je faire pour vous ?',
-      color: this.botColor
+      name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
+      color: this.currentBot.color
     };
     this.messages.push(welcomeMessage);
+    // when first opened play introduction
     this.isOpen.subscribe(
       (isOpen) => {
         if (isOpen === true && this.firstOpening === true && this.messages.length === 1) {
@@ -98,14 +116,17 @@ export class ChatComponent implements OnInit {
         } as MessageStyle);
         // process response
         const responseChatbot = this.processResponse(res);
+        console.log(responseChatbot);
+
         this.messages.push({
-          name: responseChatbot,
-          color: this.botColor
+            name: responseChatbot,
+            color: this.currentBot.color
         } as MessageStyle);
+
         // clear input
         this.question = '';
         // voice return
-        if (this.silentMode === false) {
+        if (this.currentBot.silentMode === false) {
           this.textToSpeechGoogle(responseChatbot);
         }
       },
@@ -115,281 +136,151 @@ export class ChatComponent implements OnInit {
     );
   }
 
-
-  processResponse(response: any) {
+  processResponse(response: any): string {
     let responseChatbot = '';
     // retrieve target action for the intent
+    const intent = response.topScoringIntent.intent;
     const targetAction = response.entities.filter(e => e.type.indexOf('Actions') > -1);
+    const targetHelp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
+    const targetDiscussion = response.entities.filter(e => e.type.indexOf('Divers') > -1);
+    const targetVoice = response.entities.filter(e => e.type.indexOf('Voix') > -1);
+    const targetGender = response.entities.filter(e => e.type.indexOf('Genres') > -1);
+    const targetApp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
+    const targetGame = response.entities.filter(e => e.type.indexOf('Partie') > -1);
+    const targetProfil = response.entities.filter(e => e.type.indexOf('Utilisateur') > -1);
     // switch between possibles intents
-    switch (response.topScoringIntent.intent) {
+    switch (intent) {
       case this.intents[0]: {
-        // fonctionnement
-        if (response.entities.length > 0) {
-          const targetHelp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
-          if (targetHelp.length > 0) {
-            switch (targetHelp[0].entity) {
-              case 'scanner': {
-                if (targetAction.length > 0) {
-                  switch (targetAction[0].resolution.values[0]) {
-                    case 'expliquer': {
-                      // tslint:disable-next-line:max-line-length
-                      responseChatbot = 'Pointez la camera vers l\'objet à scanner, attendez un petit instant, vous devriez voir apparaitre une image de l\'objet scanné, cliquez sur le bouton information pour une description plus détaillée.';
-                      break;
-                    }
-                    default: {
-                      // tslint:disable-next-line:max-line-length
-                      responseChatbot = 'Le scanner capture et analyse les objets dans une pièce, il est capable de donner des descriptions succinctes des objets scannés, pointez la camera vers l\'objet à scanner pour avoir sa fiche d\'informations';
-                    }
-                  }
-                }
-                break;
-              }
-              case 'chatbot': {
-                // tslint:disable-next-line:max-line-length
-                responseChatbot = 'Je suis Stéphane le chatbot, je peux vous guider et répondre à vos questions alors n\'hesitez pas à faire appel à moi !';
-                break;
-              }
-              case 'horloge': {
-                responseChatbot = 'Cette application permet de vérifier le temps restant avant la fin de la partie, organisez-vous bien !';
-                break;
-              }
-              case 'traducteur':  {
-                // tslint:disable-next-line:max-line-length
-                responseChatbot = 'Le traducteur analyse les flux audios et les traduit dans la langue selectionnée, appuyez sur le bouton "démarrer la capture" puis "arretez" et cliquez sur "traduire" en sélectionnant la langue finale souhaitée';
-                break;
-              }
-              case 'coffre': {
-                // tslint:disable-next-line:max-line-length
-                responseChatbot = 'Le coffre contient un trésor numérique, des mots de passes y sont stockés, mais pour l\'ouvrir il vous faut le mot de passe principal';
-                break;
-              }
-              default: {
-                // tslint:disable-next-line:max-line-length
-                responseChatbot = 'Demandez-moi de l aide pour les applications suivantes : coffre, traducteur, horloge, chatbot, scanner...';
-              }
-            }
+        // aide apps
+        if (targetApp.length > 0 && targetApp[0].resolution.values[0]) {
+          let apps;
+          const app = targetApp[0].resolution.values[0];
+          if (targetAction.length > 0 && targetAction[0].resolution.values[0]) {
+            const action = targetAction[0].resolution.values[0];
+            apps = replies.intents.aide[action];
+          } else {
+            apps = replies.intents.aide.expliquer;
+          }
+          if (app in apps) {
+            responseChatbot = apps[app][Math.floor(Math.random() * apps.default.length)];
+          } else {
+            // default
+            responseChatbot = apps.default[Math.floor(Math.random() * apps.default.length)];
           }
         } else {
+          // default
           // tslint:disable-next-line:max-line-length
-          responseChatbot = 'Demandez-moi de l aide pour les applications présentes dans le launcher : coffre, traducteur, horloge, chatbot, scanner...';
+          responseChatbot = replies.intents.aide.default[Math.floor(Math.random() * replies.intents.aide.default.length)];
         }
         break;
       }
       case this.intents[1]: {
         // discussion
-        if (response.entities.length > 0 ) {
-          const targetDiscussion = response.entities.filter(e => e.type.indexOf('Divers') > -1);
-          if (targetDiscussion.length > 0) {
-            switch (targetDiscussion[0].resolution.values[0]) {
-              case 'blague': {
-                const jokes = [
-                  'Désolé, les blagues IPv4 sont épuisées.',
-                  // tslint:disable-next-line:max-line-length
-                  'Je te raconterai cette blague TCP jusqu\'à ce que tu la captes, Je te raconterai cette blague TCP jusqu\'à ce que tu la captes, Je te raconterai cette blague TCP jusqu\'à ce que tu la captes.',
-                  // tslint:disable-next-line:max-line-length
-                  'Vous connaissez la blague du mec qui a oublié d\'incrementer la variable dans sa boucle while, Vous connaissez la blague du mec qui a oublié d\'incrementer la variable dans sa boucle while, Vous connaissez la blague du mec qui a oublié d\'incrementer la variable dans sa boucle while',
-                  'Je voulais te raconter une blague sur les erreurs 404, mais je ne la retrouve plu.',
-                  'Il y a deux types de personnes dans le monde : ceux qui finissent leur histoire.',
-                  'Refusée au bar, la requête SQL veut aller en boîte et le videur lui dit : « Non, dehors ! C\'est select ici.',
-                  'J\'ai une blague sur UDP, mais je suis pas sûr que tu la captes, est L\'ordre pour critique UDP. faire bonne blague une'
-                ];
-                const joke = jokes[Math.floor(Math.random() * jokes.length)];
-                responseChatbot = 'Une blague ? ok, ' + joke;
-                break;
-              }
-              case 'citation': {
-                const citations = [
-                  'Exige beaucoup de toi-même et attends peu des autres. Ainsi beaucoup d\'ennuis te seront épargnés. Confucius',
-                  'Dans la vie on ne fait pas ce que l\'on veut mais on est responsable de ce que l\'on est. Jean-Paul Sartre',
-                  'La vie est un mystère qu\'il faut vivre, et non un problème à résoudre. Gandhi',
-                  'La vie, c\'est comme une bicyclette, il faut avancer pour ne pas perdre l\'équilibre. Albert Einstein',
-                  'Choisissez un travail que vous aimez et vous n\'aurez pas à travailler un seul jour de votre vie. Confucius',
-                  // tslint:disable-next-line:max-line-length
-                  'Il ne faut avoir aucun regret pour le passé, aucun remords pour le présent, et une confiance inébranlable pour l\'avenir. Jean Jaurès',
-                  'Agis avec gentillesse, mais n\'attends pas de la reconnaissance. Confucius'
-                ];
-                const citation = citations[Math.floor(Math.random() * citations.length)];
-                responseChatbot = 'Une citation ? en voici une, ' + citation;
-                break;
-              }
-              default: {
-                responseChatbot = 'Je peux vous raconter des blagues ou des citations';
-              }
-            }
+        if (targetAction.length > 0 && targetAction[0].resolution.values[0]) {
+          const action = targetAction[0].resolution.values[0];
+          const discussion = replies.intents.discussion[action];
+          if (targetDiscussion.length > 0 && targetDiscussion[0].resolution.values[0]) {
+            // citation & blagues
+            const subject = targetDiscussion[0].resolution.values[0];
+            responseChatbot = discussion[subject][Math.floor(Math.random() * discussion[subject].length)];
           } else {
-            const targetVoice = response.entities.filter(e => e.type.indexOf('Voix') > -1);
-            if (targetVoice.length > 0) {
-              if (targetAction.length > 0) {
-                switch (targetAction[0].resolution.values[0]) {
-                  case 'fermer':
-                  case 'desactiver': {
-                    responseChatbot = 'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, precisez "mode vocal"';
-                    setTimeout( () => {
-                      this.silentMode = true;
-                    }, 2000);
-                    break;
-                  }
-                  case 'ouvrir':
-                  case 'activer': {
-                    responseChatbot = 'Synthèse vocale réactivée, me revoila, que puis-je faire pour vous ?';
-                    this.silentMode = false;
-                    break;
-                  }
-                  default: {
-                    responseChatbot = 'Je suis Stéphane, votre fidèle et valeureux companion d\'aventure !';
-                  }
-                }
-              } else {
-                switch (targetVoice[0].resolution.values[0]) {
-                    case 'muet': {
-                      responseChatbot = 'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, precisez "mode vocal"';
-                      setTimeout( () => {
-                        this.silentMode = true;
-                      }, 2000);
-                      break;
-                    }
-                    case 'vocal': {
-                      responseChatbot = 'Synthèse vocale réactivée, me revoila, que puis-je faire pour vous ?';
-                      this.silentMode = false;
-                      break;
-                    }
-                }
-              }
-            } else {
-              const targetGender = response.entities.filter(e => e.type.indexOf('Genres') > -1);
-              if (targetGender.length > 0) {
-                if (targetAction.length > 0) {
-                  switch (targetAction[0].resolution.values[0]) {
-                    case 'desactiver': {
-                      if (targetGender[0].resolution.values[0] === 'masculin') {
-                        responseChatbot = 'Bonjour, je suis Stéphanie, je remplace Stéphane, que puis-je faire pour vous ?';
-                        this.botGender = 'FEMALE';
-                      } else {
-                        responseChatbot = 'Bonjour, je suis Stéphane, je remplace Stéphanie, que puis-je faire pour vous ?';
-                        this.botGender = 'MALE';
-                      }
-                      break;
-                    }
-                    case 'activer': {
-                      if (targetGender[0].resolution.values[0] === 'masculin') {
-                        responseChatbot = 'Bonjour, je suis Stéphane, je remplace Stéphanie, que puis-je faire pour vous ?';
-                        this.botGender = 'MALE';
-                      } else {
-                        responseChatbot = 'Bonjour, je suis Stéphanie, je remplace Stéphane, que puis-je faire pour vous ?';
-                        this.botGender = 'FEMALE';
-                      }
-                      break;
-                    }
-                    default: {
-                      responseChatbot = 'Je suis Stéphane, votre fidèle et valeureux companion d\'aventure !';
-                    }
-                  }
-                } else {
-                  if (targetGender[0].resolution.values[0] === 'feminin') {
-                    responseChatbot = 'Bonjour, je suis Stéphanie, je remplace Stéphane, que puis-je faire pour vous ?';
-                    this.botGender = 'FEMALE';
-                  } else {
-                    responseChatbot = 'Bonjour, je suis Stéphane, je remplace Stéphanie, que puis-je faire pour vous ?';
-                    this.botGender = 'MALE';
-                  }
-                }
-              } else {
-
-              }
-            }
-
+            // default
+            responseChatbot = discussion.default[Math.floor(Math.random() * discussion.default.length)];
           }
         } else {
-          responseChatbot = 'Je suis Stéphane, votre fidèle et valeureux companion d\'aventure !';
+          responseChatbot = replies.intents.discussion.default[Math.floor(Math.random() * replies.intents.discussion.default.length)];
         }
-
         break;
       }
       case this.intents[2]: {
         // game
-        if (response.entities.length > 0) {
-          switch (response.entities[0].entity) {
-            case 'etat': {
-              const states = Object.keys(GameState).filter(key => !isNaN(Number(GameState[key])));
-              responseChatbot = 'L\'état de la partie est le suivant : ' + states[this.game.state] ;
-              break;
+        if (targetGame.length > 0 && targetGame[0].resolution.values[0]) {
+          let partie;
+          const ctx = targetGame[0].resolution.values[0];
+          if (targetAction.length > 0 && targetAction[0].resolution.values[0]) {
+            const action = targetAction[0].resolution.values[0];
+            partie = replies.intents.game[action];
+          } else {
+            partie = replies.intents.game;
+          }
+
+          if (ctx in partie) {
+            if ('default' in partie[ctx]) {
+              responseChatbot = partie[ctx].default[Math.floor(Math.random() * partie[ctx].default.length )];
+            } else {
+              responseChatbot = partie[ctx][Math.floor(Math.random() * partie[ctx].length )];
             }
-            case 'lieu': {
-              responseChatbot = 'TODO : LIEU';
-              break;
-            }
-            case 'scenario': {
-              responseChatbot = 'TODO : SCENARIO';
-              break;
-            }
-            case 'temps': {
-              responseChatbot = 'Le temps restant pour vous échapper est de 30 minutes';
-              break;
-            }
-            default: {
-              // tslint:disable-next-line:max-line-length
-              responseChatbot = 'Vous pouvez me demander des informations sur la partie en cours tels que l\'état de celle-ci, le lieu dans lequelle vous êtes et le temps restant';
-            }
+          } else {
+            // default
+            responseChatbot = partie.default[Math.floor(Math.random() * partie.default.length)];
           }
         } else {
-            // tslint:disable-next-line:max-line-length
-            responseChatbot = 'Vous pouvez me demander des informations sur la partie en cours tels que l\'état de celle-ci, le lieu dans lequelle vous êtes et le temps restant';
+          // default
+          // tslint:disable-next-line:max-line-length
+          responseChatbot = replies.intents.game.default[Math.floor(Math.random() * replies.intents.game.default.length)];
         }
         break;
       }
       case this.intents[3]: {
         // profil
-        if (response.entities.length > 0) {
-          switch (response.entities[0].entity) {
+        if (targetProfil.length > 0 && targetProfil[0].resolution.values[0]) {
+          switch (targetProfil[0].resolution.values[0]) {
             case 'avatar': {
-              responseChatbot = 'Vous voulez personnaliser votre avatar, rendez-vous dans l\'application profil, je la lance pour vous';
+              // tslint:disable-next-line:max-line-length
+              responseChatbot =  replies.intents.profil.configurer.avatar[Math.floor(Math.random() * replies.intents.profil.configurer.avatar.length)];
               this.router.navigateByUrl('/profil');
               break;
             }
             case 'nom': {
-              responseChatbot = 'Pour modifier votre nom, rendez-vous dans l\'application profil, je la lance pour vous';
+              // tslint:disable-next-line:max-line-length
+              responseChatbot = replies.intents.profil.configurer.nom[Math.floor(Math.random() * replies.intents.profil.configurer.nom.length)];
               this.router.navigateByUrl('/profil');
               break;
             }
             default: {
-              responseChatbot = 'Vous êtes connecté en tant que ' + this.user.name;
+              // tslint:disable-next-line:max-line-length
+              responseChatbot = replies.intents.profil.configurer.default[Math.floor(Math.random() * replies.intents.profil.configurer.default.length)];
             }
           }
         } else {
-          responseChatbot = 'Je peux vous aider à gérer votre profil si vous le souhaitez';
+          responseChatbot = replies.intents.profil.default[Math.floor(Math.random() * replies.intents.profil.default.length)];
         }
         break;
       }
       case this.intents[4]: {
         // salutation
-        responseChatbot = 'Salut ' + this.user.name;
+        responseChatbot = replies.intents.salutation.default[Math.floor(Math.random() * replies.intents.salutation.default.length)];
+        // this.user.name;
         break;
       }
       case this.intents[5]: {
         // navigation
         if (response.entities.length > 0) {
-          const targetApp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
           if (targetApp.length > 0) {
             switch (targetApp[0].resolution.values[0]) {
               case 'scanner': {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je lance l\'application scanner';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.scanner[Math.floor(Math.random() * replies.intents.navigation.ouvrir.scanner.length)];
                       this.router.navigateByUrl('/scanner');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.scanner[Math.floor(Math.random() * replies.intents.navigation.fermer.scanner.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -397,21 +288,25 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je démarre l\'application traducteur';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.traducteur[Math.floor(Math.random() * replies.intents.navigation.ouvrir.traducteur.length)];
                       this.router.navigateByUrl('/translator');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.traducteur[Math.floor(Math.random() * replies.intents.navigation.fermer.traducteur.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -419,21 +314,25 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je lance l\'application profil';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.profil[Math.floor(Math.random() * replies.intents.navigation.ouvrir.profil.length)];
                       this.router.navigateByUrl('/profil');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.profil[Math.floor(Math.random() * replies.intents.navigation.fermer.profil.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -441,21 +340,25 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je lance l\'application coffre';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.coffre[Math.floor(Math.random() * replies.intents.navigation.ouvrir.coffre.length)];
                       this.router.navigateByUrl('/vault');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.coffre[Math.floor(Math.random() * replies.intents.navigation.fermer.coffre.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -463,21 +366,25 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je lance l\'application parametres';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.parametres[Math.floor(Math.random() * replies.intents.navigation.ouvrir.parametres.length)];
                       this.router.navigateByUrl('/settings');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.parametres[Math.floor(Math.random() * replies.intents.navigation.fermer.parametres.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -485,21 +392,25 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'ouvrir': {
-                      responseChatbot = 'Je lance l\'application horloge';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.ouvrir.horloge[Math.floor(Math.random() * replies.intents.navigation.ouvrir.horloge.length)];
                       // this.router.navigateByUrl('/clock');
                       break;
                     }
                     case 'fermer': {
-                      responseChatbot = 'Je quitte l\'application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.horloge[Math.floor(Math.random() * replies.intents.navigation.fermer.horloge.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Merci de préciser une action valide concernant cette application';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                 }
                 break;
               }
@@ -507,18 +418,21 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'fermer': {
-                      responseChatbot = 'Je vous redirige vers le menu principal';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.menu[Math.floor(Math.random() * replies.intents.navigation.fermer.menu.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                     default: {
-                      responseChatbot = 'Je vous redirige vers le menu principal';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.menu[Math.floor(Math.random() * replies.intents.navigation.fermer.menu.length)];
                       this.router.navigateByUrl('/nav');
                       break;
                     }
                   }
                 } else {
-                  responseChatbot = 'Je vous redirige vers le menu principal';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.fermer.menu[Math.floor(Math.random() * replies.intents.navigation.fermer.menu.length)];
                   this.router.navigateByUrl('/nav');
                   break;
                 }
@@ -528,7 +442,8 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'fermer': {
-                      responseChatbot = 'Cloture de votre session en cours, à bientôt !... Terminé';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.session[Math.floor(Math.random() * replies.intents.navigation.fermer.session.length)];
                       localStorage.removeItem('user');
                       // send signal to close
                       this.close.emit(false);
@@ -536,11 +451,13 @@ export class ChatComponent implements OnInit {
                       break;
                     }
                     default: {
-                      responseChatbot = 'Vous possédez une session en cours, precisez "fermer" pour vous deconnecter';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.session.default[Math.floor(Math.random() * replies.intents.navigation.session.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Merci de préciser une action concernant cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.session.default[Math.floor(Math.random() * replies.intents.navigation.session.default.length)];
                 }
                 break;
               }
@@ -548,7 +465,8 @@ export class ChatComponent implements OnInit {
                 if (targetAction.length > 0) {
                   switch (targetAction[0].resolution.values[0]) {
                     case 'fermer': {
-                      responseChatbot = 'Cloture de votre session en cours, à bientôt !... Terminé';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.fermer.session[Math.floor(Math.random() * replies.intents.navigation.fermer.session.length)];
                       localStorage.removeItem('user');
                       // send signal to close
                       this.close.emit(false);
@@ -556,11 +474,13 @@ export class ChatComponent implements OnInit {
                       break;
                     }
                     default: {
-                      responseChatbot = 'Vous possédez une session en cours, precisez "fermer" pour vous deconnecter';
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.navigation.session.default[Math.floor(Math.random() * replies.intents.navigation.session.default.length)];
                     }
                   }
                 } else {
-                  responseChatbot = 'Je suis désolé, je ne peux lancer cette application';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.ouvrir.default[Math.floor(Math.random() * replies.intents.navigation.ouvrir.default.length)];
                 }
               }
             }
@@ -568,7 +488,8 @@ export class ChatComponent implements OnInit {
             if (targetAction.length > 0) {
               switch (targetAction[0].resolution.values[0]) {
                 case 'fermer': {
-                  responseChatbot = 'Cloture de votre session en cours, à bientôt !... Terminé';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.fermer.session[Math.floor(Math.random() * replies.intents.navigation.fermer.session.length)];
                   localStorage.removeItem('user');
                   // send signal to close
                   this.close.emit(false);
@@ -576,29 +497,180 @@ export class ChatComponent implements OnInit {
                   break;
                 }
                 default: {
-                  responseChatbot = 'Merci de préciser une application à lancer et je me charge du reste';
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
                   break;
                 }
               }
             }
           }
         } else {
-          responseChatbot = 'Merci de préciser l\'application à lancer et je me charge du reste';
+          // tslint:disable-next-line:max-line-length
+          responseChatbot = responseChatbot = replies.intents.navigation.default[Math.floor(Math.random() * replies.intents.navigation.default.length)];
         }
         break;
       }
       case this.intents[6]: {
-        responseChatbot = 'A votre service !';
+        responseChatbot = replies.intents.remerciement.default[Math.floor(Math.random() * replies.intents.remerciement.default.length)];
+        break;
+      }
+      case this.intents[7]: {
+        // autres commandes
+        if (response.entities.length > 0 ) {
+          if (targetVoice.length > 0) {
+            if (targetAction.length > 0) {
+              switch (targetAction[0].resolution.values[0]) {
+                case 'fermer': {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.fermer.voix[Math.floor(Math.random() * replies.intents.commande.fermer.voix.length)];
+                  setTimeout( () => {
+                    this.currentBot.silentMode = true;
+                  }, 2000);
+                  break;
+                }
+                case 'desactiver': {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.desactiver.voix[Math.floor(Math.random() * replies.intents.commande.desactiver.voix.length)];
+                  setTimeout( () => {
+                    this.currentBot.silentMode = true;
+                  }, 2000);
+                  break;
+                }
+                case 'ouvrir': {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.ouvrir.voix[Math.floor(Math.random() * replies.intents.commande.ouvrir.voix.length)];
+                  this.currentBot.silentMode = false;
+                  break;
+                }
+                case 'activer': {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.activer.voix[Math.floor(Math.random() * replies.intents.commande.activer.voix.length)];
+                  this.currentBot.silentMode = false;
+                  break;
+                }
+                default: {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.default[Math.floor(Math.random() * replies.intents.commande.default.length)];
+                }
+              }
+            } else {
+              switch (targetVoice[0].resolution.values[0]) {
+                  case 'muet': {
+                    // tslint:disable-next-line:max-line-length
+                    responseChatbot = replies.intents.commande.muet.default[Math.floor(Math.random() * replies.intents.commande.muet.default.length)];
+                    setTimeout( () => {
+                      this.currentBot.silentMode = true;
+                    }, 2000);
+                    break;
+                  }
+                  case 'vocal': {
+                    // tslint:disable-next-line:max-line-length
+                    responseChatbot = replies.intents.commande.vocal.default[Math.floor(Math.random() * replies.intents.commande.vocal.default.length)];
+                    this.currentBot.silentMode = false;
+                    break;
+                  }
+              }
+            }
+          } else {
+            if (targetGender.length > 0) {
+              if (targetAction.length > 0) {
+                switch (targetAction[0].resolution.values[0]) {
+                  case 'desactiver': {
+                    if (targetGender[0].resolution.values[0] === 'masculin') {
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.commande.feminin.default[Math.floor(Math.random() * replies.intents.commande.feminin.default.length)];
+                      this.currentBot = this.bots.filter(b => b.gender === 'FEMALE')[0];
+                    } else {
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.commande.masculin.default[Math.floor(Math.random() * replies.intents.commande.masculin.default.length)];
+                      this.currentBot = this.bots.filter(b => b.gender === 'MALE')[0];
+                    }
+                    break;
+                  }
+                  case 'activer': {
+                    if (targetGender[0].resolution.values[0] === 'masculin') {
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.commande.masculin.default[Math.floor(Math.random() * replies.intents.commande.masculin.default.length)];
+                      this.currentBot = this.bots.filter(b => b.gender === 'MALE')[0];
+                    } else {
+                      // tslint:disable-next-line:max-line-length
+                      responseChatbot = replies.intents.commande.feminin.default[Math.floor(Math.random() * replies.intents.commande.feminin.default.length)];
+                      this.currentBot = this.bots.filter(b => b.gender === 'FEMALE')[0];
+                    }
+                    break;
+                  }
+                  default: {
+                    // tslint:disable-next-line:max-line-length
+                    responseChatbot = replies.intents.commande.default[Math.floor(Math.random() * replies.intents.commande.default.length)];
+                  }
+                }
+              } else {
+                if (targetGender[0].resolution.values[0] === 'feminin') {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.feminin.default[Math.floor(Math.random() * replies.intents.commande.feminin.default.length)];
+                  this.currentBot = this.bots.filter(b => b.gender === 'FEMALE')[0];
+                } else {
+                  // tslint:disable-next-line:max-line-length
+                  responseChatbot = replies.intents.commande.masculin.default[Math.floor(Math.random() * replies.intents.commande.masculin.default.length)];
+                  this.currentBot = this.bots.filter(b => b.gender === 'MALE')[0];
+                }
+              }
+
+            } else {
+              responseChatbot = replies.intents.commande.default[Math.floor(Math.random() * replies.intents.commande.default.length)];
+            }
+          }
+          } else {
+            responseChatbot = replies.intents.commande.default[Math.floor(Math.random() * replies.intents.commande.default.length)];
+          }
+        break;
+      }
+      case this.intents[8]: {
+        responseChatbot = replies.intents.compliment.default[Math.floor(Math.random() * replies.intents.compliment.default.length)];
         break;
       }
       default: {
-        responseChatbot = 'Je n\'ai pas compris, pouvez-vous reformuler votre phrase';
+        responseChatbot = replies.intents.default[Math.floor(Math.random() * replies.intents.default.length)];
       }
     }
 
     if (responseChatbot === '') {
-      responseChatbot = 'Je ne comprends pas votre demande, pouvez-vous reformuler votre phrase pour moi';
+      responseChatbot = replies.intents.default[Math.floor(Math.random() * replies.intents.default.length)];
     }
+
+    // replace values with context
+    // nom utilisateur
+    if (responseChatbot.includes('%user::name%')) {
+      responseChatbot = responseChatbot.replace('%user::name%', this.user.name);
+    }
+    // temps restant
+    if (responseChatbot.includes('%game::timeleft%')) {
+      responseChatbot = responseChatbot.replace('%game::timeleft%', '30');
+    }
+    // histoire
+    if (responseChatbot.includes('%game::story%')) {
+      // tslint:disable-next-line:max-line-length
+      responseChatbot = responseChatbot.replace('%game::story%', 'Bienvenue dans une experience unique, vous allez être confronter à différentes énigmes, pour les résoudre faites preuve de créativité et de bon sens, vous êtes enfermez dans cette pièce, pour en sortir, trouvez la clé, vous avez des outils votre disposition. C\'est tout pour le moment, bonne chance...');
+    }
+    // lieu
+    if (responseChatbot.includes('%game::place%')) {
+      responseChatbot = responseChatbot.replace('%game::place%', 'bureau du mic');
+    }
+    // etat
+    if (responseChatbot.includes('%game::state%')) {
+      const states = Object.keys(GameState).filter(key => !isNaN(Number(GameState[key])));
+      responseChatbot = responseChatbot.replace('%game::state%', states[this.game.state]);
+    }
+    // indice
+    if (responseChatbot.includes('%game::hint%')) {
+      responseChatbot = responseChatbot.replace('%game::hint%', '...');
+    }
+    // nom bot
+    if (responseChatbot.includes('%bot::name%')) {
+      responseChatbot = responseChatbot.replace('%bot::name%', this.currentBot.name);
+    }
+
+
     return responseChatbot;
   }
 
@@ -611,7 +683,7 @@ export class ChatComponent implements OnInit {
       },
       voice: {
         languageCode: 'fr-FR',
-        ssmlGender: this.botGender
+        ssmlGender: this.currentBot.gender
       },
       audioConfig: {
         audioEncoding: 'MP3'
@@ -624,5 +696,4 @@ export class ChatComponent implements OnInit {
       this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
     });
   }
-
 }
