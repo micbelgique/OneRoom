@@ -24,12 +24,6 @@ export class ControlComponent implements OnInit {
         } else {
           this.showActions = true;
         }
-
-        if (event.url === '/chatbot') {
-          this.showActionChatbot = false;
-        } else {
-          this.showActionChatbot = true;
-        }
       }
     });
    }
@@ -49,14 +43,6 @@ export class ControlComponent implements OnInit {
 
   toggleChatbot() {
     this.actions.emit('chatbot');
-  }
-
-  isChatbotActionVisible() {
-    if (this.showActionChatbot === true) {
-      return 'visible';
-    } else {
-      return 'hidden';
-    }
   }
 
 }

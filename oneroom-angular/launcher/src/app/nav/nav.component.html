@@ -14,13 +14,28 @@
 <mat-grid-list [style.background-color]="getColorTeam()" cols="4" rowHeight="3:3">
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/scanner">
-        <mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon>
+        <!--
+        <mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon> -->
+        <svg id="icon-aperature" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="#2a2a31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+            <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+            <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+            <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+            <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+            <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+        </svg>
         <p class='launcher-app-title'>Scanner</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/translator">
-        <mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon>
+        <!--<mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon>-->
+        <svg id="icon-reload" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z" />
+          <path d="M0 0h24v24H0z" fill="none" />
+        </svg>
         <p class='launcher-app-title'>Traducteur</p>
       </a>
   </mat-grid-tile>
@@ -32,26 +47,36 @@
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/vault">
-        <mat-icon class='app-mat-icon' aria-label="vault">lock</mat-icon>
-        <p class='launcher-app-title'>Vault</p>
+        <!--<mat-icon class='app-mat-icon' aria-label="vault">lock</mat-icon>-->
+        <svg id="icon-server" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="#2a2a31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line class="ind1" stroke="#ea3970" x1="6" y1="6" x2="6" y2="6"></line>
+          <line class="ind2" stroke="#ea3970" x1="6" y1="18" x2="6" y2="18"></line>
+      </svg>
+        <p class='launcher-app-title'>Coffre</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/settings">
-        <mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon>
+        <!--<mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon>-->
+        <svg id="icon-wrench" viewBox="0 0 383 383" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 316c0 15 6 29 16 40l12 11c10 11 24 16 39 16s29-5 40-16l115-115a128 128 0 0 0 161-124c0-18-3-35-10-51l-1-1v-1l-1-2-1-1-1-1-2-1-1-1-1-1-1-1h-3l-2-1h-3l-2 1h-1l-2 1h-1l-1 1-2 1-1 1-68 68-33-34 67-68 1-1 1-1 1-2 1-1v-2l1-1v-1-2-1-2l-1-2v-1l-1-1v-2l-1-1-1-1-1-1-2-1-1-1-1-1h-1a128 128 0 0 0-175 150L16 276a56 56 0 0 0-16 40zM255 32l16 1-49 49a32 32 0 0 0 0 46l34 34a32 32 0 0 0 45 0l49-49 1 15a96 96 0 0 1-128 90 96 96 0 0 1 32-186zM39 299l106-106 1 2 6 8 3 4c6 8 13 15 21 22l4 2 9 6 1 1L84 344c-9 9-25 10-34 0l-11-11a24 24 0 0 1 0-34zm0 0" />
+        </svg>
         <p class='launcher-app-title'>Paramètres</p>
       </a>
   </mat-grid-tile>
   <mat-grid-tile>
-      <a class='launcher-app' mat-raised-button routerLink="/chatbot">
-        <mat-icon class='app-mat-icon' aria-label="chat">chat</mat-icon>
-        <p class='launcher-app-title'>Chatbot</p>
-      </a>
-  </mat-grid-tile>
-
-  <mat-grid-tile>
       <a class='launcher-app' mat-raised-button>
-        <mat-icon class='app-mat-icon' aria-label="time">access_time</mat-icon>
+        <!-- <<mat-icon class='app-mat-icon' aria-label="time">access_time</mat-icon> -->
+        <svg id="icon-speed" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        x="0px" y="0px" width="20px" height="20px" viewBox="0 0 20 20" enable-background="new 0 0 20 20"
+                        xml:space="preserve">
+                        <path d="M10,20C4.5,20,0,15.5,0,10S4.5,0,10,0s10,4.5,10,10S15.5,20,10,20z M10,2c-4.4,0-8,3.6-8,8s3.6,8,8,8s8-3.6,8-8S14.4,2,10,2
+                  z" />
+                        <path class="meter-r" fill="#ea3970" d="M8.6,11.4c-0.8-0.8-2.8-5.7-2.8-5.7s4.9,2,5.7,2.8c0.8,0.8,0.8,2,0,2.8C10.6,12.2,9.4,12.2,8.6,11.4z" />
+        </svg>
         <p class='launcher-app-title'>Horloge</p>
       </a>
   </mat-grid-tile>

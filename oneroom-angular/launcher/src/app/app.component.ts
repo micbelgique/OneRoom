@@ -1,5 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'launcher-win32-x64/resources/app/node_modules/rxjs';
 
 
 export enum KEY_CODE {
@@ -18,13 +19,14 @@ export enum KEY_CODE {
 export class AppComponent {
   title = 'launcher';
   opened = false;
+  sidenavEmitter = new Subject<boolean>();
 
-  @HostListener('window:keyup', ['$event'])
+  /*@HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if ( event.keyCode === KEY_CODE.UP_ARROW) {
       this.router.navigateByUrl('/settings');
     }
-  }
+  }*/
 
   constructor(public router: Router) {
 
@@ -32,6 +34,10 @@ export class AppComponent {
 
   toggleAction($event) {
     this.opened = !this.opened;
-    console.log($event);
+    this.sidenavEmitter.next(this.opened);
+  }
+
+  setSidenav($event) {
+    this.opened = $event;
   }
 }
