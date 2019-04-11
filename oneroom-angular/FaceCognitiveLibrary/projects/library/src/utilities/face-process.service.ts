@@ -27,7 +27,7 @@ export class FaceProcessService {
   private resultForDetect: string;
 
 
-  public resForDuplicate$: Subject<string> = new Subject<string>();
+  public resForDuplicate$: Subject<any> = new Subject<any>();
   private duplicatePersons: string[][] = [];
 
   constructor(
@@ -161,7 +161,7 @@ export class FaceProcessService {
                 () => {
                   console.log('Duplicate deleted');
                   // emit person ID deleted
-                  this.resForDuplicate$.next(c.personId);
+                  this.resForDuplicate$.next({keepId, delId: c.personId});
                 },
                 () => console.log('Error deleting duplicate')
               );
@@ -293,7 +293,7 @@ export class FaceProcessService {
         for (const candidates of this.duplicatePersons) {
           let amountFaces = 0;
           const pId = [];
-
+          console.log(candidates);
           for (const candidate of candidates) {
             console.log('candidate');
             console.log(candidate);

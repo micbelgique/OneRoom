@@ -232,6 +232,57 @@ namespace oneroom_api.Controllers
             return user;
         }
 
+        [HttpPut("MergeUser")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<User>> MergeUser(int gameId, Guid userId1, Guid userId2)
+        {
+            var user1 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId1);
+            var user2 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId2);
+            if (user1 == null || user2 == null) return NotFound("One or both users not found");
+            var finalUser = new User
+            {
+                Age = (user1.Age + user2.Age) / 2,
+                GameId = gameId,
+                BaldLevel = (user1.BaldLevel + user2.BaldLevel) / 2,
+                BeardLevel = (user1.BeardLevel + user2.BeardLevel) / 2,
+                MoustacheLevel = (user1.MoustacheLevel + user2.MoustacheLevel) / 2,
+                SmileLevel = (user1.SmileLevel + user2.SmileLevel) / 2,
+                Recognized = (user1.Recognized + user2.Recognized) /2,
+                UserId = user2.UserId
+                
+            };
+            if (user1.IsFirstConnected)
+            {
+                finalUser.Name = user1.Name;
+                finalUser.IsFirstConnected = true;
+                finalUser.EmotionDominant = user1.EmotionDominant;
+                finalUser.HairColor = user1.HairColor;
+                finalUser.Gender = user1.Gender;
+                finalUser.GlassesType = user1.GlassesType;
+                finalUser.HairLength = user1.HairLength;
+                finalUser.SkinColor = user1.SkinColor;
+                finalUser.RecognizedDate = user1.RecognizedDate;
+            }
+            else
+            {
+                finalUser.Name = user2.Name;
+                finalUser.IsFirstConnected = true;
+                finalUser.EmotionDominant = user2.EmotionDominant;
+                finalUser.HairColor = user2.HairColor;
+                finalUser.Gender = user2.Gender;
+                finalUser.GlassesType = user2.GlassesType;
+                finalUser.HairLength = user2.HairLength;
+                finalUser.SkinColor = user2.SkinColor;
+                finalUser.RecognizedDate = user2.RecognizedDate;
+            }
+            finalUser.GenerateAvatar();
+            _context.Users.Remove(user1);
+            _context.Users.Remove(user2);
+            _context.Users.Add(finalUser);
+            await _context.SaveChangesAsync();
+            return finalUser;
+        }
         private bool UserExists( int gameId, Guid id)
         {
             return _context.Users.Any(u => u.GameId == gameId && u.UserId == id);
