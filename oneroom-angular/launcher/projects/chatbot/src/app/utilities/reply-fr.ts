@@ -29,7 +29,7 @@ export const replies = {
       },
       default: [
         // tslint:disable-next-line:max-line-length
-        'Mes compétences sont les suivantes: je peux lancer ou quitter des applications pour vous, expliquer comment une application fonctionne, mais aussi, raconter une blague, dire une citation, conter une fable, citer un poème. Il est également possible de modifier ma voix et désactiver le retour vocal. Vous pouvez modifier votre profil et même cloturer votre session, et si vous avez besoin de renseignements sur la partie en cours, je peux aussi aider ;) !'
+        'Mes compétences sont les suivantes: je peux lancer ou quitter des applications pour vous, expliquer comment une application fonctionne, ou encore, raconter une blague, dire une citation, conter une fable, citer un poème. Il est également possible de modifier ma voix et désactiver le retour vocal. Vous pouvez modifier votre profil et même cloturer votre session, et si vous avez besoin de renseignements sur la partie en cours, je peux aussi aider ;) !'
       ]
     },
     discussion: {
@@ -72,6 +72,31 @@ export const replies = {
           'Je peux vous raconter des blagues, des citations, vous raconter une fable ou encore dire un poème',
           'Envie d\'entendre une citation, une blague, un poème ou une fable, demandez-moi !',
           'Je connais des blagues, des citations, des poèmes et des fables, si çà vous interesse !'
+        ]
+      },
+      heure: {
+        default: [
+          'Il est %calendar::time%'
+        ]
+      },
+      date: {
+        default: [
+          'Nous sommes le %calendar::date%'
+        ]
+      },
+      jour: {
+        default: [
+          'Aujourd\'hui nous sommes le %calendar::day%'
+        ]
+      },
+      mois: {
+        default: [
+          'Le mois actuel est %calendar::month%'
+        ]
+      },
+      annee: {
+        default: [
+          'Nous sommes en %calendar::year%'
         ]
       },
       default: [
