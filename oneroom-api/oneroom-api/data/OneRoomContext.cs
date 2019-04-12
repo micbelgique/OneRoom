@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace oneroom_api.Model
 {
@@ -60,6 +62,27 @@ namespace oneroom_api.Model
                 .HasOne(sc => sc.Challenge)
                 .WithMany(c => c.ScenarioChallenges)
                 .HasForeignKey(sc => sc.ChallengeId);
+
+            // Json convert List and dictionnary
+            modelBuilder.Entity<Challenge>()
+                .Property(c => c.Hints)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v));
+            modelBuilder.Entity<Challenge>()
+                .Property(c => c.Answers)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v));
+
+            /*
+             * https://www.jerriepelser.com/blog/store-dictionary-as-json-using-ef-core-21/
+             */
+            modelBuilder.Entity<Challenge>()
+                .Property(c => c.Config)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
         }
 
     }

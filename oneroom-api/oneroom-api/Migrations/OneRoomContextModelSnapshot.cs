@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using oneroom_api.Model;
 
 namespace oneroom_api.Migrations
@@ -14,7 +15,7 @@ namespace oneroom_api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -24,13 +25,21 @@ namespace oneroom_api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Answers");
+
                     b.Property<string>("AppName");
 
                     b.Property<string>("Config");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Description");
 
-                    b.Property<string>("ToolName");
+                    b.Property<string>("Hints");
+
+                    b.Property<int>("Order");
+
+                    b.Property<int>("TimeBox");
+
+                    b.Property<string>("Title");
 
                     b.HasKey("ChallengeId");
 

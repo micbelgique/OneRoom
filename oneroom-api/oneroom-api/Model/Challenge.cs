@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace oneroom_api.Model
 {
@@ -17,19 +17,22 @@ namespace oneroom_api.Model
 
     public class Challenge
     {
+        private static readonly char delimiter = '|';
         public int ChallengeId { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
         public string AppName { get; set; }
-        public string ToolName { get; set; }
-        /* a Json string who contains all the critical informations */
-        public string Config { get; set; }
+        public int Order { get; set; }
+        public int TimeBox { get; set; }
+        public List<string> Hints { get; set; }
+        public List<string> Answers { get; set; }
+        public Dictionary<string, string> Config { get; set; }
 
         public List<ScenarioChallenge> ScenarioChallenges { get; set; } = new List<ScenarioChallenge>();
 
         public override bool Equals(object obj)
         {
-            var challenge = obj as Challenge;
-            return challenge != null &&
+            return obj is Challenge challenge &&
                    ChallengeId == challenge.ChallengeId;
         }
 
