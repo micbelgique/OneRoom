@@ -64,25 +64,28 @@ namespace oneroom_api.Model
                 .HasForeignKey(sc => sc.ChallengeId);
 
             // Json convert List and dictionnary
+            /*
+             * https://www.jerriepelser.com/blog/store-dictionary-as-json-using-ef-core-21/
+             * when updating the entity and changing items in the dictionary, 
+             * the EF change tracking does not pick up on the fact that the dictionary was updated, 
+             * so you will need to explicitly call the Update method on the DbSet<> to set the entity 
+             * to modified in the change tracker.
+             */
             modelBuilder.Entity<Challenge>()
                 .Property(c => c.Hints)
                 .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<string>>(v));
+                    h => JsonConvert.SerializeObject(h),
+                    h => JsonConvert.DeserializeObject<List<string>>(h));
             modelBuilder.Entity<Challenge>()
                 .Property(c => c.Answers)
                 .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<string>>(v));
-
-            /*
-             * https://www.jerriepelser.com/blog/store-dictionary-as-json-using-ef-core-21/
-             */
+                    a => JsonConvert.SerializeObject(a),
+                    a => JsonConvert.DeserializeObject<List<string>>(a));
             modelBuilder.Entity<Challenge>()
-                .Property(c => c.Config)
+                .Property(ch => ch.Config)
                 .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
+                    co => JsonConvert.SerializeObject(co),
+                    co => JsonConvert.DeserializeObject<Dictionary<string, string>>(co));
         }
 
     }
