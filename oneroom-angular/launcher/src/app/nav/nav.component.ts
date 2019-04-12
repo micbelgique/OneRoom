@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
+
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -55,7 +56,6 @@ export class NavComponent implements OnInit {
     this.route.navigate(['/lock']);
   }
   openModal() {
-    console.log(this.teamUser);
     const mod = this.modal.open(ModalChangeNameComponent, {
       data: {
         user: this.user.name,
@@ -121,6 +121,7 @@ export class NavComponent implements OnInit {
       this.hubService.stopService();
     }
   }
+
   hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -128,5 +129,5 @@ export class NavComponent implements OnInit {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
     } : null;
-}
+  }
 }

@@ -22,6 +22,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   // Custom vision
   subscriptionKeyCustomVision: string;
   endPointCustomVision: string;
+  subscriptionKeyCustomVisionSkinColor: string;
+  endPointCustomVisionSkinColor: string;
   callCustomVisionStatus = true;
 
   private hubServiceSub;
@@ -72,6 +74,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.subscriptionKey = '';
     }
 
+    // enable / disable
+
     if (localStorage.getItem('cognitiveStatus')) {
       this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
     } else {
@@ -79,6 +83,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
 
     // custom vision
+    // hairlength
+
     if (localStorage.getItem('subscriptionKeyCustomVision')) {
       this.subscriptionKeyCustomVision = localStorage.getItem('subscriptionKeyCustomVision');
     } else {
@@ -90,6 +96,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
     } else {
       this.endPointCustomVision = '';
     }
+
+    // skincolor
+
+    if (localStorage.getItem('endPointCustomVisionSkinColor')) {
+      this.endPointCustomVisionSkinColor = localStorage.getItem('endPointCustomVisionSkinColor');
+    } else {
+      this.endPointCustomVisionSkinColor = '';
+    }
+
+
+    if (localStorage.getItem('subscriptionKeyCustomVisionSkinColor')) {
+      this.subscriptionKeyCustomVisionSkinColor = localStorage.getItem('subscriptionKeyCustomVisionSkinColor');
+    } else {
+      this.subscriptionKeyCustomVisionSkinColor = '';
+    }
+
+    // enable / disable
 
     if (localStorage.getItem('customVisionStatus')) {
       this.callCustomVisionStatus = localStorage.getItem('customVisionStatus') === 'true' ? true : false;
@@ -173,6 +196,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   saveCustomVisionSettings(): void {
     localStorage.setItem('endPointCustomVision', this.endPointCustomVision);
     localStorage.setItem('subscriptionKeyCustomVision', this.subscriptionKeyCustomVision);
+    localStorage.setItem('endPointCustomVisionSkinColor', this.endPointCustomVisionSkinColor);
+    localStorage.setItem('subscriptionKeyCustomVisionSkinColor', this.subscriptionKeyCustomVisionSkinColor);
     this.toast.open('Settings updated', 'Ok', {
       duration: 2000
     });
