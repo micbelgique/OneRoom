@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'launcher-win32-x64/resources/app/node_modules/rxjs';
+import { Subject } from 'rxjs';
 
 
 export enum KEY_CODE {
@@ -8,7 +8,9 @@ export enum KEY_CODE {
   DOWN_ARROW = 40,
   RIGHT_ARROW = 39,
   LEFT_ARROW = 37,
-  SPACE = 32
+  SPACE = 32,
+  TAB = 9,
+  CTRL = 17
 }
 
 @Component({
@@ -21,18 +23,20 @@ export class AppComponent {
   opened = false;
   sidenavEmitter = new Subject<boolean>();
 
-  /*@HostListener('window:keyup', ['$event'])
+  @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if ( event.keyCode === KEY_CODE.UP_ARROW) {
+    /*if ( event.keyCode === KEY_CODE.UP_ARROW) {
       this.router.navigateByUrl('/settings');
+    }*/
+    if (this.router.url !== '/' && this.router.url !== '/lock' && event.keyCode === KEY_CODE.CTRL) {
+      // display assistant
+      this.toggleAction();
     }
-  }*/
-
-  constructor(public router: Router) {
-
   }
 
-  toggleAction($event) {
+  constructor(public router: Router) {}
+
+  toggleAction() {
     this.opened = !this.opened;
     this.sidenavEmitter.next(this.opened);
   }

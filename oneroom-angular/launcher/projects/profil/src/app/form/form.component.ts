@@ -35,6 +35,8 @@ export class FormComponent implements OnInit {
   constructor(private userService: UserService, private toast: MatSnackBar) {
     this.genders = Object.keys(Gender).filter(key => !isNaN(Number(Gender[key])));
     this.glasses = Object.keys(GlassesType).map(key => key.charAt(0).toLowerCase() + key.slice(1));
+    // remove swimming goggles
+    this.glasses = this.glasses.filter(g => g !== 'swimmingGoggles');
   }
 
   ngOnInit() {
@@ -50,13 +52,19 @@ export class FormComponent implements OnInit {
   }
 
   saveProfile() {
+    if (this.user.name.length < 3 || this.user.name.length > 32 || this.user.age < 0 || this.user.age > 100) {
+      this.toast.open('Certaines données sont invalides', 'Ok', {
+        duration: 2000
+      });
+      return;
+    }
     if (localStorage.getItem('user') && this.user.userId) {
       console.log('updating');
       console.log(this.user);
       const update$ = this.userService.updateUser(this.user);
       update$.subscribe(
         (user: User) => {
-          this.toast.open('Profil mis à jour', 'Ok', {
+          this.toast.open('Profil sauvegardé', 'Ok', {
             duration: 2000
           });
           console.log('updated');

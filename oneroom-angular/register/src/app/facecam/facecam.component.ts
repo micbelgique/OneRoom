@@ -437,7 +437,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         (result) => {
           console.log(result);
           this.userService.mergeUser(result.keepId, result.delId).subscribe(
-            (result) => console.log(result)
+            (res) => console.log(res)
           );
           // console.log('Deleting user from oneroom: ' + result.delId);
           // const d$ = this.userService.deleteUser(result.delId);

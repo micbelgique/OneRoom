@@ -36,7 +36,8 @@ import {
   MatSnackBarModule,
   MatDialogModule,
   MatSelectModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatStepperModule
 } from '@angular/material';
 
 @NgModule({
@@ -87,7 +88,8 @@ import {
     MatSelectModule,
     HttpClientModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatStepperModule
   ],
   entryComponents: [
     ModalChangeNameComponent

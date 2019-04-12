@@ -141,13 +141,14 @@ export class ChatComponent implements OnInit {
     // retrieve target action for the intent
     const intent = response.topScoringIntent.intent;
     const targetAction = response.entities.filter(e => e.type.indexOf('Actions') > -1);
-    const targetHelp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
     const targetDiscussion = response.entities.filter(e => e.type.indexOf('Divers') > -1);
     const targetVoice = response.entities.filter(e => e.type.indexOf('Voix') > -1);
     const targetGender = response.entities.filter(e => e.type.indexOf('Genres') > -1);
     const targetApp = response.entities.filter(e => e.type.indexOf('Applications') > -1);
     const targetGame = response.entities.filter(e => e.type.indexOf('Partie') > -1);
     const targetProfil = response.entities.filter(e => e.type.indexOf('Utilisateur') > -1);
+    const targetCalendar = response.entities.filter(e => e.type.indexOf('Calendrier') > -1);
+
     // switch between possibles intents
     switch (intent) {
       case this.intents[0]: {
@@ -176,11 +177,19 @@ export class ChatComponent implements OnInit {
       }
       case this.intents[1]: {
         // discussion
-        if (targetAction.length > 0 && targetAction[0].resolution.values[0]) {
+        if (targetCalendar.length > 0 && targetCalendar[0].resolution.values[0]) {
+            const calendar = replies.intents.discussion[targetCalendar[0].resolution.values[0]];
+            // calendar
+            if ('default' in calendar) {
+              responseChatbot = calendar.default[Math.floor(Math.random() * calendar.default.length)];
+            } else {
+              responseChatbot = calendar[Math.floor(Math.random() * calendar.length)];
+            }
+        } else if (targetAction.length > 0 && targetAction[0].resolution.values[0]) {
           const action = targetAction[0].resolution.values[0];
           const discussion = replies.intents.discussion[action];
           if (targetDiscussion.length > 0 && targetDiscussion[0].resolution.values[0]) {
-            // citation & blagues
+            // citation, blagues, poeme, fable
             const subject = targetDiscussion[0].resolution.values[0];
             responseChatbot = discussion[subject][Math.floor(Math.random() * discussion[subject].length)];
           } else {
@@ -650,7 +659,7 @@ export class ChatComponent implements OnInit {
     // histoire
     if (responseChatbot.includes('%game::story%')) {
       // tslint:disable-next-line:max-line-length
-      responseChatbot = responseChatbot.replace('%game::story%', 'Bienvenue dans une experience unique, vous allez être confronter à différentes énigmes, pour les résoudre faites preuve de créativité et de bon sens, vous êtes enfermez dans cette pièce, pour en sortir, trouvez la clé, vous avez des outils votre disposition. C\'est tout pour le moment, bonne chance...');
+      responseChatbot = responseChatbot.replace('%game::story%', 'Bienvenue dans une expérience unique, vous allez être confronter à différentes énigmes, pour les résoudre faites preuve de créativité et de bon sens, vous êtes enfermez dans cette pièce, pour en sortir, trouvez la clé, vous avez des outils votre disposition. C\'est tout pour le moment, bonne chance...');
     }
     // lieu
     if (responseChatbot.includes('%game::place%')) {
@@ -669,7 +678,27 @@ export class ChatComponent implements OnInit {
     if (responseChatbot.includes('%bot::name%')) {
       responseChatbot = responseChatbot.replace('%bot::name%', this.currentBot.name);
     }
-
+    // calendar infos
+    const date = new Date();
+    if (responseChatbot.includes('%calendar::year%')) {
+      const options = { year: 'numeric' };
+      responseChatbot = responseChatbot.replace('%calendar::year%', date.toLocaleDateString('fr-FR', options));
+    }
+    if (responseChatbot.includes('%calendar::date%')) {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      responseChatbot = responseChatbot.replace('%calendar::date%', date.toLocaleDateString('fr-FR', options));
+    }
+    if (responseChatbot.includes('%calendar::time%')) {
+      responseChatbot = responseChatbot.replace('%calendar::time%', date.toLocaleTimeString('fr-FR'));
+    }
+    if (responseChatbot.includes('%calendar::day%')) {
+      const options = { weekday: 'long', day: 'numeric' };
+      responseChatbot = responseChatbot.replace('%calendar::day%', date.toLocaleDateString('fr-FR', options));
+    }
+    if (responseChatbot.includes('%calendar::month%')) {
+      const options = { month: 'long' };
+      responseChatbot = responseChatbot.replace('%calendar::month%', date.toLocaleDateString('fr-FR', options));
+    }
 
     return responseChatbot;
   }

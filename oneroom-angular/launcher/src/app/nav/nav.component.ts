@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
+
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -37,6 +38,7 @@ export class NavComponent implements OnInit {
         if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
           this.openModal();
         }
+        this.openModal();
       });
     }
     this.hubServiceSub = this.hubService.run().subscribe(() => this.hubService.joinGroup(this.game.gameId.toString()));
@@ -54,13 +56,14 @@ export class NavComponent implements OnInit {
     this.route.navigate(['/lock']);
   }
   openModal() {
-    console.log(this.teamUser);
     const mod = this.modal.open(ModalChangeNameComponent, {
       data: {
         user: this.user.name,
         team: this.teamUser === undefined ? null : this.teamUser.teamName,
         color: this.teamUser === undefined ? null : this.teamUser.teamColor
-      }
+      },
+      height: '40%',
+      width: '40%'
     });
     mod.afterClosed().subscribe((result) => {
       this.user.name = result.user;
@@ -118,6 +121,7 @@ export class NavComponent implements OnInit {
       this.hubService.stopService();
     }
   }
+
   hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -125,5 +129,5 @@ export class NavComponent implements OnInit {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
     } : null;
-}
+  }
 }
