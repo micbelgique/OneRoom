@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'launcher-win32-x64/resources/app/node_modules/rxjs';
+import { Subject } from 'rxjs';
 
 
 export enum KEY_CODE {

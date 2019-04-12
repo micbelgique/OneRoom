@@ -37,6 +37,7 @@ export class NavComponent implements OnInit {
         if (!this.user.isFirstConnected && this.user.name.toLowerCase().indexOf('person') > -1) {
           this.openModal();
         }
+        this.openModal();
       });
     }
     this.hubServiceSub = this.hubService.run().subscribe(() => this.hubService.joinGroup(this.game.gameId.toString()));
@@ -60,7 +61,9 @@ export class NavComponent implements OnInit {
         user: this.user.name,
         team: this.teamUser === undefined ? null : this.teamUser.teamName,
         color: this.teamUser === undefined ? null : this.teamUser.teamColor
-      }
+      },
+      height: '40%',
+      width: '40%'
     });
     mod.afterClosed().subscribe((result) => {
       this.user.name = result.user;
