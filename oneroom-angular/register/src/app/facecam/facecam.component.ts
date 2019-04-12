@@ -241,7 +241,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
             audio : false,
             video: {
                 // selfie mode
-                // facingMode: {exact: 'user' },
                 deviceId: this.videoSource ? { exact: this.videoSource } : undefined
             }
         })
@@ -256,7 +255,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
                 this.alertContainer = false;
                 // on getUserMedia
                 this.video.nativeElement.srcObject = this.stream;
-                // this.video.nativeElement.play();
             })
             // permission denied:
             .catch( (error) => {
@@ -328,12 +326,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
     try {
       canvas.toBlob((blob) => {
         const stream = blob;
-
-        // timeout to unlock detection
-        /*setTimeout(() => {
-          this.lock = false;
-        }, 2500);*/
-
         const res$ = this.faceProcess.byImg(stream, this.group);
         // traitement face API
         res$.subscribe(
@@ -442,12 +434,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
         // Optimisation
         this.faceProcess.resForDuplicate$.subscribe(
-        (id) => {
-          console.log('Deleting user from oneroom: ' + id);
-          const d$ = this.userService.deleteUser(id);
-          d$.subscribe(
-            () => console.log('user deleted')
+        (result) => {
+          console.log(result);
+          this.userService.mergeUser(result.keepId, result.delId).subscribe(
+            (result) => console.log(result)
           );
+          // console.log('Deleting user from oneroom: ' + result.delId);
+          // const d$ = this.userService.deleteUser(result.delId);
+          // d$.subscribe(
+          //   () => console.log('user deleted')
+          // );
         });
 
     });
@@ -466,8 +462,6 @@ private getHairLength(stream) {
   this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc', '8139b0c8c2a54b59861bbe5e7e089d2b');
   this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
     (result: ImagePrediction) => {
-      // this.deleteHairLength(result.id);
-      // sub.next(result.predictions[0].tagName);
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
       } else {
@@ -480,15 +474,6 @@ private getHairLength(stream) {
   );
   return sub;
 }
-
-/*
-private deleteHairLength(id) {
-  this.customVisionPredictionService.deleteImg(id)
-  .subscribe(
-    () => console.log('deleted'),
-    (err) => console.log(err)
-  );
-}*/
 
 // detection skin color with custom vision
 private getSkinColor(stream) {
@@ -497,8 +482,6 @@ private getSkinColor(stream) {
   this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/a1cb0694-4bdb-4def-a20f-52226ced6ded', '8139b0c8c2a54b59861bbe5e7e089d2b');
   this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
       (result: ImagePrediction) => {
-      // this.deleteSkinColor(result.id);
-      // sub.next(result.predictions[0].tagName);
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
       } else {
@@ -511,16 +494,6 @@ private getSkinColor(stream) {
   );
   return sub;
 }
-
-/*
-// delete detection
-private deleteSkinColor(id) {
-  this.visonComputerService.deleteImg(id)
-  .subscribe(
-    () => console.log('deleted'),
-    (err) => console.log(err)
-  );
-}*/
 
 private saveUsers(user: User) {
   // adding user
@@ -601,7 +574,6 @@ private saveUsers(user: User) {
         if (this.gameSub) {
           this.gameSub.unsubscribe();
         }
-        /*this.hubService.stopService();*/
       }
     }
 

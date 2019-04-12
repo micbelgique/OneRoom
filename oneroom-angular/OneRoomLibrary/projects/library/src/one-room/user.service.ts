@@ -48,6 +48,11 @@ export class UserService {
     return this.http.put<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + user.userId, user, { headers: this.headers });
   }
 
+  mergeUser(user1: string, user2: string): Observable<User> {
+    // tslint:disable-next-line:max-line-length
+    return this.http.put<User>(this.EPGetter.getEndPointUrlWithId() + '/Users?userId1=' + user1 + '&userId2=' + user2, null, { headers: this.headers });
+  }
+
   private handleError(err: HttpErrorResponse) {
     let errorMessage = '';
     if (err.error instanceof ErrorEvent) {
