@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace oneroom_api.Controllers
 {
@@ -29,7 +29,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<User>>>))]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(int gameId)
         {
-            var users = await _context.Users.Where(u => u.GameId == gameId)
+            List<User> users = await _context.Users.Where(u => u.GameId == gameId)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
             return users;
@@ -39,9 +39,9 @@ namespace oneroom_api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> GetUser( int gameId, Guid id)
+        public async Task<ActionResult<User>> GetUser(int gameId, Guid id)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == id);
+            User user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == id);
 
             if (user == null)
             {
@@ -79,7 +79,7 @@ namespace oneroom_api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists( gameId, usr.UserId))
+                if (!UserExists(gameId, usr.UserId))
                 {
                     return NotFound();
                 }
@@ -92,14 +92,14 @@ namespace oneroom_api.Controllers
 
         [Route("updateNameUser")]
         [HttpPost]
-        [ProducesResponseType(200,Type=typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> UpdateNameUser(User user)
         {
             try
             {
                 if (user == null) throw new Exception("the parameter user not found");
-                var u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
+                User u = await (from e in _context.Users where e.UserId == user.UserId select e).FirstOrDefaultAsync();
                 if (u == null) throw new Exception("user not found");
                 if (u.IsFirstConnected) return u;
                 u.Name = user.Name;
@@ -122,11 +122,11 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<IEnumerable<User>>> Optimize(int gameId)
         {
-            var users = await _context.Users.Where(u => u.GameId == gameId)
+            List<User> users = await _context.Users.Where(u => u.GameId == gameId)
                                             .Include(u => u.Faces)
                                             .OrderByDescending(u => u.RecognizedDate)
                                             .ToListAsync();
-            foreach( var u in users)
+            foreach (User u in users)
             {
                 u.OptimizeResults();
                 u.GenerateAvatar();
@@ -153,7 +153,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<User>> PostUser( int gameId, User user)
+        public async Task<ActionResult<User>> PostUser(int gameId, User user)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace oneroom_api.Controllers
                     return BadRequest("Invalid user");
                 }
 
-                var usr = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == user.UserId);
+                User usr = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == user.UserId);
 
                 if (usr != null)
                 {
@@ -177,7 +177,7 @@ namespace oneroom_api.Controllers
                     return Conflict("user already exists");
                 }
 
-                var count = await _context.Users.Where(u => u.GameId == gameId)
+                int count = await _context.Users.Where(u => u.GameId == gameId)
                                                 .CountAsync();
 
                 user.Name = "Person " + (++count);
@@ -188,7 +188,7 @@ namespace oneroom_api.Controllers
                 user.OptimizeResults();
                 user.GenerateAvatar();
 
-                await _context.SaveChangesAsync();               
+                await _context.SaveChangesAsync();
 
                 // update users dashboard and leaderboard
                 await _hubClients.Clients.Group(gameId.ToString()).CreateUser(user);
@@ -209,9 +209,9 @@ namespace oneroom_api.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> DeleteUser( int gameId, Guid id)
+        public async Task<ActionResult<User>> DeleteUser(int gameId, Guid id)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == id);
+            User user = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == id);
             if (user == null)
             {
                 return NotFound();
@@ -219,15 +219,18 @@ namespace oneroom_api.Controllers
 
             _context.Users.Remove(user);
 
-            var game = await _context.Games.Include(g => g.Users)
+            Game game = await _context.Games.Include(g => g.Users)
                                            .Include(g => g.Teams)
+                                           .Include(g => g.Config)
                                            .SingleOrDefaultAsync(g => g.GameId.Equals(gameId));
+
+            if (game.Users.Count(u => u.Recognized >= game.Config.MinimumRecognized) < game.Teams.Count()) return BadRequest("You can't remove another user without delete the teams because you have reached the minimum user rate for " + game.Teams.Count() + " teams");
 
             TeamsController.SpreadPlayers(game);
 
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(gameId.ToString()).DeleteUser(user);
-            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(game.Teams);
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(game.Teams.ConvertAll<TeamDTO>(t => t.ToDTO()));
 
             return user;
         }
@@ -237,10 +240,10 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<User>> MergeUser(int gameId, Guid userId1, Guid userId2)
         {
-            var user1 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId1);
-            var user2 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId2);
+            User user1 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId1);
+            User user2 = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == userId2);
             if (user1 == null || user2 == null) return NotFound("One or both users not found");
-            var finalUser = new User
+            User finalUser = new User
             {
                 Age = (user1.Age + user2.Age) / 2,
                 GameId = gameId,
@@ -248,9 +251,9 @@ namespace oneroom_api.Controllers
                 BeardLevel = (user1.BeardLevel + user2.BeardLevel) / 2,
                 MoustacheLevel = (user1.MoustacheLevel + user2.MoustacheLevel) / 2,
                 SmileLevel = (user1.SmileLevel + user2.SmileLevel) / 2,
-                Recognized = (user1.Recognized + user2.Recognized) /2,
+                Recognized = (user1.Recognized + user2.Recognized) / 2,
                 UserId = user2.UserId
-                
+
             };
             if (user1.IsFirstConnected)
             {
@@ -283,7 +286,7 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
             return finalUser;
         }
-        private bool UserExists( int gameId, Guid id)
+        private bool UserExists(int gameId, Guid id)
         {
             return _context.Users.Any(u => u.GameId == gameId && u.UserId == id);
         }

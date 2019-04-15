@@ -188,6 +188,21 @@ namespace oneroom_api.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("oneroom_api.Model.TeamChallenge", b =>
+                {
+                    b.Property<int>("TeamId");
+
+                    b.Property<int>("ChallengeId");
+
+                    b.Property<bool>("Completed");
+
+                    b.HasKey("TeamId", "ChallengeId");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.ToTable("TeamChallenge");
+                });
+
             modelBuilder.Entity("oneroom_api.Model.User", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -281,6 +296,19 @@ namespace oneroom_api.Migrations
                     b.HasOne("oneroom_api.Model.Game")
                         .WithMany("Teams")
                         .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("oneroom_api.Model.TeamChallenge", b =>
+                {
+                    b.HasOne("oneroom_api.Model.Challenge", "Challenge")
+                        .WithMany("TeamChallenges")
+                        .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("oneroom_api.Model.Team", "Team")
+                        .WithMany("TeamChallenges")
+                        .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

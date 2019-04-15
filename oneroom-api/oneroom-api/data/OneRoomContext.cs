@@ -51,7 +51,7 @@ namespace oneroom_api.Model
 
             // Many to many manual handle
             modelBuilder.Entity<ScenarioChallenge>()
-           .HasKey(t => new { t.ScenarioId, t.ChallengeId });
+                .HasKey(sc => new { sc.ScenarioId, sc.ChallengeId });
 
             modelBuilder.Entity<ScenarioChallenge>()
                 .HasOne(sc => sc.Scenario)
@@ -62,6 +62,19 @@ namespace oneroom_api.Model
                 .HasOne(sc => sc.Challenge)
                 .WithMany(c => c.ScenarioChallenges)
                 .HasForeignKey(sc => sc.ChallengeId);
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasKey(tc => new { tc.TeamId, tc.ChallengeId });
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasOne(tc => tc.Team)
+                .WithMany(t => t.TeamChallenges)
+                .HasForeignKey(tc => tc.TeamId);
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasOne(tc => tc.Challenge)
+                .WithMany(c => c.TeamChallenges)
+                .HasForeignKey(tc => tc.ChallengeId);
 
             // Json convert List and dictionnary
             /*

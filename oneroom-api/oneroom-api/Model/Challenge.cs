@@ -15,9 +15,19 @@ namespace oneroom_api.Model
         public Challenge Challenge { get; set; }
     }
 
+    public class TeamChallenge
+    {
+        public int TeamId { get; set; }
+        public Team Team { get; set; }
+
+        public int ChallengeId { get; set; }
+        public Challenge Challenge { get; set; }
+
+        public Boolean Completed { get; set; }
+    }
+
     public class Challenge
     {
-        private static readonly char delimiter = '|';
         public int ChallengeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -29,6 +39,7 @@ namespace oneroom_api.Model
         public Dictionary<string, string> Config { get; set; }
 
         public List<ScenarioChallenge> ScenarioChallenges { get; set; } = new List<ScenarioChallenge>();
+        public List<TeamChallenge> TeamChallenges { get; set; } = new List<TeamChallenge>();
 
         public override bool Equals(object obj)
         {
