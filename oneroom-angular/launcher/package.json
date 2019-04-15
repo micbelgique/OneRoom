@@ -20,7 +20,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
-    "electron-build": "ng build --prod && electron ."
+    "electron-build": "ng build --prod && electron .",
+    "prod-build-dev": "ng build --prod --build-optimizer",
+    "prod-build-staging": "ng build --prod --configuration=staging --build-optimizer"
   },
   "private": true,
   "dependencies": {
