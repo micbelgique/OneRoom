@@ -13,7 +13,6 @@ namespace oneroom_api.Utilities
                 TeamColor = team.TeamColor,
                 CreationDate = team.CreationDate,
                 Users = team.Users,
-                GameId = team.GameId,
                 Challenges = team.TeamChallenges?.ConvertAll<ChallengeTeamDTO>(tc => tc.Challenge.ToTeamDTO(tc.Completed))
             };
         }
