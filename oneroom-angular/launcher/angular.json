@@ -773,6 +773,390 @@
           }
         }
       }
+    },
+    "phoneApp": {
+      "root": "projects/phoneApp/",
+      "sourceRoot": "projects/phoneApp/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/phoneApp",
+            "index": "projects/phoneApp/src/index.html",
+            "main": "projects/phoneApp/src/main.ts",
+            "polyfills": "projects/phoneApp/src/polyfills.ts",
+            "tsConfig": "projects/phoneApp/tsconfig.app.json",
+            "assets": [
+              "projects/phoneApp/src/favicon.ico",
+              "projects/phoneApp/src/assets"
+            ],
+            "styles": [
+              "projects/phoneApp/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/phoneApp/src/environments/environment.ts",
+                  "with": "projects/phoneApp/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "phoneApp:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "phoneApp:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "phoneApp:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/phoneApp/src/test.ts",
+            "polyfills": "projects/phoneApp/src/polyfills.ts",
+            "tsConfig": "projects/phoneApp/tsconfig.spec.json",
+            "karmaConfig": "projects/phoneApp/karma.conf.js",
+            "styles": [
+              "projects/phoneApp/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/phoneApp/src/favicon.ico",
+              "projects/phoneApp/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/phoneApp/tsconfig.app.json",
+              "projects/phoneApp/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "phoneApp-e2e": {
+      "root": "projects/phoneApp-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/phoneApp-e2e/protractor.conf.js",
+            "devServerTarget": "phoneApp:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "phoneApp:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/phoneApp-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "phone": {
+      "root": "projects/phone/",
+      "sourceRoot": "projects/phone/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/phone",
+            "index": "projects/phone/src/index.html",
+            "main": "projects/phone/src/main.ts",
+            "polyfills": "projects/phone/src/polyfills.ts",
+            "tsConfig": "projects/phone/tsconfig.app.json",
+            "assets": [
+              "projects/phone/src/favicon.ico",
+              "projects/phone/src/assets"
+            ],
+            "styles": [
+              "projects/phone/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/phone/src/environments/environment.ts",
+                  "with": "projects/phone/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "phone:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "phone:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "phone:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/phone/src/test.ts",
+            "polyfills": "projects/phone/src/polyfills.ts",
+            "tsConfig": "projects/phone/tsconfig.spec.json",
+            "karmaConfig": "projects/phone/karma.conf.js",
+            "styles": [
+              "projects/phone/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/phone/src/favicon.ico",
+              "projects/phone/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/phone/tsconfig.app.json",
+              "projects/phone/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "phone-e2e": {
+      "root": "projects/phone-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/phone-e2e/protractor.conf.js",
+            "devServerTarget": "phone:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "phone:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/phone-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "notepad": {
+      "root": "projects/notepad/",
+      "sourceRoot": "projects/notepad/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/notepad",
+            "index": "projects/notepad/src/index.html",
+            "main": "projects/notepad/src/main.ts",
+            "polyfills": "projects/notepad/src/polyfills.ts",
+            "tsConfig": "projects/notepad/tsconfig.app.json",
+            "assets": [
+              "projects/notepad/src/favicon.ico",
+              "projects/notepad/src/assets"
+            ],
+            "styles": [
+              "projects/notepad/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/notepad/src/environments/environment.ts",
+                  "with": "projects/notepad/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "notepad:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "notepad:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "notepad:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/notepad/src/test.ts",
+            "polyfills": "projects/notepad/src/polyfills.ts",
+            "tsConfig": "projects/notepad/tsconfig.spec.json",
+            "karmaConfig": "projects/notepad/karma.conf.js",
+            "styles": [
+              "projects/notepad/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/notepad/src/favicon.ico",
+              "projects/notepad/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/notepad/tsconfig.app.json",
+              "projects/notepad/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "notepad-e2e": {
+      "root": "projects/notepad-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/notepad-e2e/protractor.conf.js",
+            "devServerTarget": "notepad:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "notepad:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/notepad-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "launcher"

@@ -1,0 +1,46 @@
+<mat-grid-list cols="3" rowHeight="3:0.5">
+  <mat-grid-tile [colspan]="3">
+    {{numberPhone}}
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(1)">1</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(2)">2</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(3)">3</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(4)">4</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(5)">5</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(6)">6</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(7)">7</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(8)">8</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(9)">9</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent">+</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(0)">0</button>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button class="num" mat-raised-button color="accent" (click)="this.addNumberPhone(-1)">C</button>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3">
+    <button mat-icon-button color="accent">
+        <i class="material-icons">call</i>
+    </button>
+  </mat-grid-tile>
+</mat-grid-list>
