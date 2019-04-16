@@ -52,6 +52,7 @@ export class NavComponent implements OnInit {
   }
   logOut() {
     localStorage.removeItem('user');
+    localStorage.removeItem('notes');
     this.route.navigate(['/lock']);
   }
   openModal() {
@@ -60,7 +61,9 @@ export class NavComponent implements OnInit {
         user: this.user.name,
         team: this.teamUser === undefined ? null : this.teamUser.teamName,
         color: this.teamUser === undefined ? null : this.teamUser.teamColor
-      }
+      },
+      height: '40%',
+      width: '40%'
     });
     mod.afterClosed().subscribe((result) => {
       this.user.name = result.user;

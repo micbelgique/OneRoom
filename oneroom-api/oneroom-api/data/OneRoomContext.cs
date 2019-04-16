@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace oneroom_api.Model
 {
@@ -49,7 +51,7 @@ namespace oneroom_api.Model
 
             // Many to many manual handle
             modelBuilder.Entity<ScenarioChallenge>()
-           .HasKey(t => new { t.ScenarioId, t.ChallengeId });
+                .HasKey(sc => new { sc.ScenarioId, sc.ChallengeId });
 
             modelBuilder.Entity<ScenarioChallenge>()
                 .HasOne(sc => sc.Scenario)
@@ -60,6 +62,43 @@ namespace oneroom_api.Model
                 .HasOne(sc => sc.Challenge)
                 .WithMany(c => c.ScenarioChallenges)
                 .HasForeignKey(sc => sc.ChallengeId);
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasKey(tc => new { tc.TeamId, tc.ChallengeId });
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasOne(tc => tc.Team)
+                .WithMany(t => t.TeamChallenges)
+                .HasForeignKey(tc => tc.TeamId);
+
+            modelBuilder.Entity<TeamChallenge>()
+                .HasOne(tc => tc.Challenge)
+                .WithMany(c => c.TeamChallenges)
+                .HasForeignKey(tc => tc.ChallengeId);
+
+            // Json convert List and dictionnary
+            /*
+             * https://www.jerriepelser.com/blog/store-dictionary-as-json-using-ef-core-21/
+             * when updating the entity and changing items in the dictionary, 
+             * the EF change tracking does not pick up on the fact that the dictionary was updated, 
+             * so you will need to explicitly call the Update method on the DbSet<> to set the entity 
+             * to modified in the change tracker.
+             */
+            modelBuilder.Entity<Challenge>()
+                .Property(c => c.Hints)
+                .HasConversion(
+                    h => JsonConvert.SerializeObject(h),
+                    h => JsonConvert.DeserializeObject<List<string>>(h));
+            modelBuilder.Entity<Challenge>()
+                .Property(c => c.Answers)
+                .HasConversion(
+                    a => JsonConvert.SerializeObject(a),
+                    a => JsonConvert.DeserializeObject<List<string>>(a));
+            modelBuilder.Entity<Challenge>()
+                .Property(ch => ch.Config)
+                .HasConversion(
+                    co => JsonConvert.SerializeObject(co),
+                    co => JsonConvert.DeserializeObject<Dictionary<string, string>>(co));
         }
 
     }

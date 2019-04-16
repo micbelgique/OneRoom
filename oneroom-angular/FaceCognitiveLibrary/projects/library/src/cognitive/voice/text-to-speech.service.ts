@@ -10,7 +10,7 @@ export class TextToSpeechService {
   constructor(private httpClient: HttpClient) { }
 
   /* transform a string into an audio content using google */
-  textToSpeechGoogle(text: string, endpoint, key, languageCode, ssmlGender = 'MALE', audioEncoding = 'MP3'): Observable<any> {
+  textToSpeechGoogle(text: string, endpoint, key, languageCode, ssmlGender = 'NEUTRAL', audioEncoding = 'MP3'): Observable<any> {
     const url = endpoint + '?key=' + key;
     const body = {
       input: {

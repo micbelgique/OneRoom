@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+
+:root {
+  --background-color: rgb(50, 50, 50);
+  --acid-height: 0;
+  --display-charging: "none";
+}
+
+/* html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--background-color);
+  transition: background-color .5s ease-out;
+} */
+body {
+  height: 100vh;
+}
+.cell {
+  width: 100%;
+  height: 95vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.percentage {
+  font-size: 100%;
+  font-weight: bold;
+  color: white;
+  margin-top: 15px;
+}
+i {
+  margin-right: 6px;
+  display: var(--display-charging);
+}
+
+.info {
+  position: absolute;
+  bottom: 0; left: 0;
+  display: flex;
+  align-items: center;
+
+  margin: 5px;
+  font-size: 80%;
+  color: rgba(255, 255, 255, .5);
+
+  transition: .2s ease-in-out;
+}
+.info:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+i {
+  margin-right: 5px;
+}
+
+a {
+  color: inherit;
+}
+
+.battery {
+  position: relative;
+  width: 130px;
+  height: 250px;
+  border: 4px solid #FFF;
+  border-radius: 25px;
+}
+.batery:after {
+    position: absolute;
+    top: -18px;
+    left: 45px;
+    width: 40px;
+    height: 10px;
+    background-color: #FFF;
+    border-radius: 5px 5px 0px 0px;
+    content: '';
+  }
+
+.acid-container {
+  overflow: hidden;
+  height: calc(100% - 4px * 2);
+  border-radius: 18px;
+  margin: 4px;
+}
+.acid {
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  flex-flow: column-reverse;
+}
+.fill {
+  background: white;
+  height: var(--acid-height);
+  width: 100%;
+  flex-shrink: 0;
+
+  transition: height 2s ease-in-out;
+}
+
+.waves {
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin-bottom: -1px;
+}
+.parallax > use {
+  animation: move-forever 12s linear infinite;
+}
+.parallax > use:nth-child(1){ animation-delay: -2s; fill: rgba(white, .6); }
+.parallax > use:nth-child(2){ animation-delay: -2s; animation-duration: 5s; fill: rgba(white, .8); }
+.parallax > use:nth-child(3){ animation-delay: -4s; animation-duration: 3s; fill: white; }
+
+@keyframes move-forever {
+  0%{transform: translate(-90px , 0%)}
+  100%{transform: translate(85px , 0%)}
+}
+
