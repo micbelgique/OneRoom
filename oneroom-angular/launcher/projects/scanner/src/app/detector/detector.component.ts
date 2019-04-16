@@ -60,6 +60,10 @@ export class DetectorComponent implements OnInit, OnDestroy {
   objectsOverlay: Objects[] = [];
   objectsDictionary: Objects[] = [];
 
+  // tslint:disable-next-line:max-line-length
+  private customVisionEndpoint = 'https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15';
+  private customVisionKey = '8139b0c8c2a54b59861bbe5e7e089d2b';
+
   constructor(
     public dialog: MatDialog,
     private hubService: LeaderboardService,
@@ -254,9 +258,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0);
     canvas.toBlob((blob) => {
-      // tslint:disable-next-line:max-line-length
-      this.predictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15', '8139b0c8c2a54b59861bbe5e7e089d2b');
-      const detection$ = this.predictionService.predictImageWithNoStore(blob);
+      const detection$ = this.predictionService.predictImageWithNoStore(blob, this.customVisionEndpoint, this.customVisionKey);
       detection$.subscribe(
         (predictions: any) => {
           predictions.predictions.forEach(

@@ -1,6 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-control',
@@ -15,12 +16,11 @@ export class ControlComponent implements OnInit {
   @Output()
   actions: EventEmitter<string> = new EventEmitter();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private toast: MatSnackBar) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (event.url === '/lock' || event.url === '/') {
           this.showActions = false;
-          console.log('hiding controls');
         } else {
           this.showActions = true;
         }
@@ -42,7 +42,13 @@ export class ControlComponent implements OnInit {
   }
 
   toggleChatbot() {
-    this.actions.emit('chatbot');
+    if (localStorage.getItem('user')) {
+      this.actions.emit('chatbot');
+    } else {
+      this.toast.open('Connectez-vous pour utiliser le chatbot', 'ok', {
+        duration : 2000
+      });
+    }
   }
 
 }

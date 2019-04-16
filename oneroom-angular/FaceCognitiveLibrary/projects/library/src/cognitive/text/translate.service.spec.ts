@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { HairlengthService } from './hairlength.service';
+import { TranslateService } from './translate.service';
 
-describe('HairlengthService', () => {
+describe('TranslateService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: HairlengthService = TestBed.get(HairlengthService);
+    const service: TranslateService = TestBed.get(TranslateService);
     expect(service).toBeTruthy();
   });
 });

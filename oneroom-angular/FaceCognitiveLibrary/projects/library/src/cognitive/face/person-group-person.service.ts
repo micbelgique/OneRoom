@@ -1,25 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FaceRectangle } from './face/model/face-rectangle';
-import { EndPointGetterService } from '../public_api';
-
-export class PersistedFace {
-  persistedFaceId: string;
-  userData: string;
-}
-
-export class PersistedPerson {
-  personId: string;
-}
-
-export class Person {
-  personId: string;
-  persistedFaceIds: string[] = [];
-  name: string;
-  userData: string;
-}
-
+import { FaceRectangle, PersistedFace, PersistedPerson, Person } from './face-models';
+import { EndPointGetterService } from '../../public_api';
 
 @Injectable({
   providedIn: 'root'

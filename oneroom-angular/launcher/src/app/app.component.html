@@ -6,7 +6,7 @@
         <router-outlet></router-outlet>
     </mat-sidenav-content>
     <mat-sidenav class="sidenav" position="end" #sidenav mode="side" [(opened)]="opened">
-      <app-chat (close)=setSidenav($event) [isOpen]=this.sidenavEmitter ></app-chat>
+      <app-chat *ngIf=isLogged() (close)=setSidenav($event) [isOpen]=this.sidenavEmitter ></app-chat>
     </mat-sidenav>
 </mat-sidenav-container>
 

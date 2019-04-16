@@ -27,6 +27,7 @@ import {
 } from '@angular/material';
 import { TranslatorComponent } from './translator/translator.component';
 import { FormsModule } from '@angular/forms';
+
 @NgModule({
   declarations: [
     TranslatorComponent

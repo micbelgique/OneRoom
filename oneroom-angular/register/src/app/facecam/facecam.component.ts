@@ -98,9 +98,14 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.alertContainer = false;
     this.stateContainer = false;
     this.lock = false;
+
+    // last video source
+
     if (localStorage.getItem('videoSource')) {
       this.videoSource = localStorage.getItem('videoSource');
     }
+
+    // active / disable custom vision
 
     if (localStorage.getItem('cognitiveStatus')) {
       this.faceCallsDisabled = localStorage.getItem('cognitiveStatus') === 'false' ? false : true;
@@ -109,7 +114,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
     }
 
     if (localStorage.getItem('customVisionStatus')) {
-      console.log(localStorage.getItem('customVisionStatus'));
       this.customVisionCallsDisabled = localStorage.getItem('customVisionStatus') === 'false' ? false : true;
     } else {
       this.customVisionCallsDisabled = false;
@@ -117,14 +121,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     // save canvas context
     this.ctx = this.overlay.nativeElement.getContext('2d');
-    // refreshRate
-    this.refreshRate = 3000;
-    if (localStorage.getItem('refreshRate')) {
-      this.refreshRate = Number(localStorage.getItem('refreshRate'));
-      if (this.refreshRate < 250) {
-        this.refreshRate = 3000;
-      }
-    }
+
     // game context
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
@@ -154,6 +151,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     } else {
       this.game = null;
       this.group = null;
+      this.faceCallsDisabled = false;
+      this.customVisionCallsDisabled = false;
     }
   }
 
@@ -161,7 +160,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.60});
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
-        async () => await faceapi.loadFaceLandmarkModel('assets/models/')).then(
+        async () => await faceapi.loadFaceLandmarkModel('assets/models/')
+        ).then(
           async () => {
             this.modelsReady = true;
           }
@@ -179,7 +179,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               this.detectFaces();
             }
           }
-        }, this.refreshRate);
+        }, this.refreshRate ? this.refreshRate : 2000);
       }
     }
   }
@@ -408,15 +408,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
                       this.getSkinColor(faceBlob).subscribe(
                         (sc) => {
                           f.skinColor = sc;
+                          console.log(sc);
                           this.getHairLength(faceBlob).subscribe(
                             (hl) => {
                               f.hairLength = hl;
+                              console.log(hl);
                               u.faces.push(f);
                               // save user
                               this.saveUsers(u);
                               this.lock = false;
+                            },
+                            (err) => {
+                              this.lock = false;
                             }
                           );
+                        },
+                        (err) => {
+                          this.lock = false;
                         }
                       );
                     }
@@ -426,7 +434,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         });
         },
         () => {
-          console.log('Error 429');
+          console.log('Error occured : 429');
           // unlock capture
           this.lock = false;
         }
@@ -437,7 +445,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         (result) => {
           console.log(result);
           this.userService.mergeUser(result.keepId, result.delId).subscribe(
-            (result) => console.log(result)
+            (res: any) => console.log(res)
           );
           // console.log('Deleting user from oneroom: ' + result.delId);
           // const d$ = this.userService.deleteUser(result.delId);
@@ -458,9 +466,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 // detection hair length with custom vision
 private getHairLength(stream) {
   const sub = new Subject<string>();
-  // tslint:disable-next-line:max-line-length
-  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/3ae9a19d-fa15-4b44-bfb5-b02bb11b3efc', '8139b0c8c2a54b59861bbe5e7e089d2b');
-  this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
+  this.customVisionPredictionService.predictImageWithNoStore(stream, this.game.config.visionEndpoint, this.game.config.visionKey).subscribe(
     (result: ImagePrediction) => {
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
@@ -479,8 +485,7 @@ private getHairLength(stream) {
 private getSkinColor(stream) {
   const sub = new Subject<string>();
   // tslint:disable-next-line:max-line-length
-  this.customVisionPredictionService.set('https://westeurope.api.cognitive.microsoft.com/customvision/v2.0/Prediction/a1cb0694-4bdb-4def-a20f-52226ced6ded', '8139b0c8c2a54b59861bbe5e7e089d2b');
-  this.customVisionPredictionService.predictImageWithNoStore(stream).subscribe(
+  this.customVisionPredictionService.predictImageWithNoStore(stream, this.game.config.visionEndpointSkinColor, this.game.config.visionKeySkinColor).subscribe(
       (result: ImagePrediction) => {
       if (result.predictions.length > 0) {
         sub.next(result.predictions[0].tagName);
