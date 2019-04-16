@@ -22,6 +22,7 @@ namespace oneroom_api.Model
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public List<User> Users { get; set; } = new List<User>();
         public int GameId { get; set; }
+        public List<TeamChallenge> TeamChallenges { get; set; } = new List<TeamChallenge>();
 
         public static string RandomName()
         {

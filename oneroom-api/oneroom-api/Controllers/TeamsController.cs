@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace oneroom_api.Controllers
 {
@@ -27,55 +27,65 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games/1/Teams
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<Team>>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<TeamDTO>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeam(int gameId)
+        public async Task<ActionResult<IEnumerable<TeamDTO>>> GetTeam(int gameId)
         {
             return await _context.Teams.Where(t => t.GameId == gameId)
                                        .Include(t => t.Users)
+                                       .Include(t => t.TeamChallenges)
+                                            .ThenInclude(tc => tc.Challenge)
+                                       .Select(t => t.ToDTO())
                                        .ToListAsync();
         }
 
         // GET: api/Games/1/Teams/5
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<TeamDTO>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Team>> GetTeam(int gameId, int id)
+        public async Task<ActionResult<TeamDTO>> GetTeam(int gameId, int id)
         {
-            var team = await _context.Teams.SingleOrDefaultAsync(t => t.GameId == gameId && t.TeamId == id);
+            Team team = await _context.Teams.Include(t => t.Users)
+                                            .Include(t => t.TeamChallenges)
+                                                .ThenInclude(tc => tc.Challenge)
+                                            .SingleOrDefaultAsync(t => t.GameId == gameId && t.TeamId == id);
 
             if (team == null)
             {
                 return NotFound();
             }
 
-            return team;
+            return team.ToDTO();
         }
 
         // POST: api/Games/1/Teams/2
         [HttpPost("{numOfTeams}")]
-        [ProducesResponseType(201, Type = typeof(Task<ActionResult<List<Team>>>))]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<List<TeamDTO>>>))]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<List<Team>>> CreateTeam(int gameId, int numOfTeams)
+        public async Task<ActionResult<List<TeamDTO>>> CreateTeam(int gameId, int numOfTeams)
         {
-            var count = await _context.Teams.Where(t => t.GameId == gameId)
-                                            .CountAsync();
-            if (count > 0) return Conflict("Teams are already created");
+            Game game = await _context.Games.Include(g => g.Config)
+                                            .Include(g => g.Scenario.ScenarioChallenges)
+                                                .ThenInclude(sc => sc.Challenge)
+                                            .Include(g => g.Teams)
+                                            .Include(g => g.Users)
+                                            .SingleOrDefaultAsync(g => g.GameId == gameId);
 
-            var game = await _context.Games.Include(g => g.Config)
-                                           .SingleOrDefaultAsync(g => g.GameId == gameId);
+            if (game.Teams.Count > 0) return Conflict("Teams are already created");
 
-            var users = await _context.Users.Where(u => u.GameId == gameId)
-                                                   .Where(u => u.Recognized >= game.Config.MinimumRecognized)
-                                                   .ToListAsync();
+            if (game == null) return BadRequest("The game with id : " + gameId + " doesn't exist");
 
-            if (users.Count() < numOfTeams) return BadRequest("There isn't enough players to create "+ numOfTeams + " teams");
+            if (game.Scenario == null) return BadRequest("The game doesn't contains any Scenario");
 
-            var teams = new List<Team>();
+            if (game.Scenario.ScenarioChallenges.Count > 0) return BadRequest("The Scenario doesn't contains any Challenges");
 
-            for (var i = 0; i<numOfTeams; i++)
+            if (game.Users.Count(u => u.Recognized >= game.Config.MinimumRecognized) < numOfTeams) return BadRequest("There isn't enough players to create " + numOfTeams + " teams");
+
+            List<Team> teams = new List<Team>();
+
+            for (int i = 0; i < numOfTeams; i++)
             {
-                var team = new Team();
+                Team team = new Team();
                 // pick random team name
                 string name;
                 do
@@ -96,33 +106,35 @@ namespace oneroom_api.Controllers
                         color += "," + colorAll.G;
                         color += "," + colorAll.B;
                     } while (colorAll.R < 100 || colorAll.G < 100 || colorAll.B < 100);
-                    
+
                 } while (teams.Select(t => t.TeamColor).Contains(color));
                 team.TeamColor = color;
                 team.GameId = gameId;
+                // TODO Personalize Answers By Team
+                team.TeamChallenges = game.Scenario.ScenarioChallenges.ConvertAll<TeamChallenge>(sc => new TeamChallenge { Team = team, Challenge = sc.Challenge, Completed = false });
                 teams.Add(team);
 
                 _context.Teams.Add(team);
             }
 
-            users.Shuffle();
+            game.Users.Shuffle();
             SpreadPlayers(game);
 
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(teams);
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(teams.ConvertAll<TeamDTO>(t => t.ToDTO()));
 
-            return CreatedAtAction("GetTeam", new { GameId = gameId}, teams);
+            return CreatedAtAction("GetTeam", new { GameId = gameId }, teams.ConvertAll<TeamDTO>(t => t.ToDTO()));
         }
 
         // DELETE: api/Games/1/Teams
         [HttpDelete]
         [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<List<Team>>> DeleteTeams( int gameId)
+        public async Task<ActionResult<List<Team>>> DeleteTeams(int gameId)
         {
-            var teams = await _context.Teams.Where(t => t.GameId == gameId)
-                                            .Include(t => t.Users)
-                                            .ToListAsync();
+            List<Team> teams = await _context.Teams.Where(t => t.GameId == gameId)
+                                                   .Include(t => t.Users)
+                                                   .ToListAsync();
             if (!teams.Any())
             {
                 return NotFound();
@@ -138,27 +150,27 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Team>> EditGame([FromBody] Team team, int gameId)
         {
-            var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId).FirstOrDefaultAsync();
+            Team teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId).FirstOrDefaultAsync();
             if (teamDb == null) return NotFound();
             if (teamDb.CreationDate.AddMinutes(5) <= DateTime.Now) return teamDb;
             teamDb.TeamName = team.TeamName;
             teamDb.TeamColor = team.TeamColor;
             _context.Entry(teamDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.ToList());
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.ToList().ConvertAll<TeamDTO>(t => t.ToDTO()));
             return teamDb;
         }
 
         public static void SpreadPlayers(Game game)
         {
-            var nbTeams = game.Teams.Count();
+            int nbTeams = game.Teams.Count();
             if (nbTeams <= 0) return;
-            var j = 0;
-            for (var i = 0; i < nbTeams; i++)
+            int j = 0;
+            for (int i = 0; i < nbTeams; i++)
             {
                 game.Teams[i].Users.Clear();
             }
-            foreach (var u in game.Users)
+            foreach (User u in game.Users.Where(u => u.Recognized >= game.Config.MinimumRecognized))
             {
                 game.Teams[j++].Users.Add(u);
                 if (j == nbTeams) j = 0;
