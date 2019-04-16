@@ -15,7 +15,6 @@ export class HomeComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log(this.notes);
   }
   addNote() {
     const newNote = new Note();
@@ -31,9 +30,5 @@ export class HomeComponent implements OnInit {
   removeNote(num: number) {
     this.notes.splice(num, 1);
     localStorage.setItem('notes', JSON.stringify(this.notes));
-  }
-  // tslint:disable-next-line:use-life-cycle-interface
-  ngOnDestroy() {
-    console.log('destroy note');
   }
 }
