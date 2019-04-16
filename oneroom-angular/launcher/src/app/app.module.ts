@@ -16,6 +16,7 @@ import { ScannerAppSharedModule } from 'projects/scanner/src/app/app.module';
 import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
 import { ChatbotAppSharedModule } from 'projects/chatbot/src/app/app.module';
+import { PhoneSharedModule } from 'projects/phone/src/app/app.module';
 
 import {
   MatButtonModule,
@@ -39,6 +40,7 @@ import {
   MatTooltipModule,
   MatStepperModule
 } from '@angular/material';
+import { NotepadSharedModule } from 'projects/notepad/src/app/app.module';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,8 @@ import {
     VaultAppSharedModule,
     TranslatorAppSharedModule,
     ChatbotAppSharedModule,
+    PhoneSharedModule,
+    NotepadSharedModule,
     // other
     BrowserAnimationsModule,
     MatButtonModule,
