@@ -52,6 +52,7 @@ export class NavComponent implements OnInit {
   }
   logOut() {
     localStorage.removeItem('user');
+    localStorage.removeItem('notes');
     this.route.navigate(['/lock']);
   }
   openModal() {
