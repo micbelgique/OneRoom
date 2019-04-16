@@ -1157,6 +1157,134 @@
           }
         }
       }
+    },
+    "battery": {
+      "root": "projects/battery/",
+      "sourceRoot": "projects/battery/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/battery",
+            "index": "projects/battery/src/index.html",
+            "main": "projects/battery/src/main.ts",
+            "polyfills": "projects/battery/src/polyfills.ts",
+            "tsConfig": "projects/battery/tsconfig.app.json",
+            "assets": [
+              "projects/battery/src/favicon.ico",
+              "projects/battery/src/assets"
+            ],
+            "styles": [
+              "projects/battery/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/battery/src/environments/environment.ts",
+                  "with": "projects/battery/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "battery:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "battery:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "battery:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/battery/src/test.ts",
+            "polyfills": "projects/battery/src/polyfills.ts",
+            "tsConfig": "projects/battery/tsconfig.spec.json",
+            "karmaConfig": "projects/battery/karma.conf.js",
+            "styles": [
+              "projects/battery/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/battery/src/favicon.ico",
+              "projects/battery/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/battery/tsconfig.app.json",
+              "projects/battery/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "battery-e2e": {
+      "root": "projects/battery-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/battery-e2e/protractor.conf.js",
+            "devServerTarget": "battery:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "battery:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/battery-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "launcher"

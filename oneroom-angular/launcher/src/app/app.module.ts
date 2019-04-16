@@ -41,6 +41,7 @@ import {
   MatStepperModule
 } from '@angular/material';
 import { NotepadSharedModule } from 'projects/notepad/src/app/app.module';
+import { BatterySharedModule } from 'projects/battery/src/app/app.module';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { NotepadSharedModule } from 'projects/notepad/src/app/app.module';
     ChatbotAppSharedModule,
     PhoneSharedModule,
     NotepadSharedModule,
+    BatterySharedModule,
     // other
     BrowserAnimationsModule,
     MatButtonModule,
