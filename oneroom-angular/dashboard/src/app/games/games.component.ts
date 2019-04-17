@@ -99,17 +99,6 @@ export class GamesComponent implements OnInit {
     );
   }
 
-  // getGame() {
-  //   const resGame$ = this.gameService.getGame(this.group);
-  //   resGame$.subscribe( (game: Game) => {
-  //     localStorage.setItem('gameId', game.gameId.toString());
-  //     localStorage.setItem('groupName', game.groupName);
-  //     this.snackBar.open('Game fetched', 'Ok', {
-  //       duration: 3000
-  //     });
-  //   });
-  // }
-
   createGame() {
     // set correct endpoint and key
     this.groupService.set(this.game.config.faceEndpoint, this.game.config.faceKey);
@@ -198,11 +187,12 @@ export class GamesComponent implements OnInit {
     this.game.config.faceEndpoint = existingConfig.faceEndpoint;
     this.game.config.faceKey = existingConfig.faceKey;
     this.game.config.minimumRecognized = existingConfig.minimumRecognized;
-    this.game.config.refreshRate = existingConfig.refreshRate;
     this.game.config.visionEndpoint = existingConfig.visionEndpoint;
     this.game.config.visionKey = existingConfig.visionKey;
+    this.game.config.visionEndpointSkinColor = existingConfig.visionEndpointSkinColor;
+    this.game.config.visionKeySkinColor = existingConfig.visionKeySkinColor;
+    this.game.config.refreshRate = existingConfig.refreshRate;
     this.game.config.id = 0;
-    console.log(this.game.config);
   }
 
   resolveGameState(stateId: number) {

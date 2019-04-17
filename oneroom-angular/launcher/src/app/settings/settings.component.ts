@@ -20,21 +20,17 @@ export class SettingsComponent implements OnInit {
 
     // coordinator
     endPoint: string;
-    refreshRate: number;
-    // game
+    // current game
     game: Game;
+    // all games
     games: Game[];
       // signalR
     private hubServiceSub;
     private gameSub;
     infoMessage: string;
     // Face
-    subscriptionKey: string;
-    endPointCognitive: string;
     callFaceStatus = true;
     // Custom vision
-    subscriptionKeyCustomVision: string;
-    endPointCustomVision: string;
     callCustomVisionStatus = true;
 
 
@@ -54,13 +50,13 @@ export class SettingsComponent implements OnInit {
     ngOnInit() {
       this.infoMessage = null;
       this.games = [];
+
       // game
       if (localStorage.getItem('gameData')) {
         this.game = JSON.parse(localStorage.getItem('gameData'));
 
         // DISABLE CONFIG WHEN GAME LAUNCHED
-
-        // join new group
+        // join group signalr
         this.hubServiceSub = this.hubService.run().subscribe(
           () => this.hubService.joinGroup(this.game.gameId.toString())
         );
@@ -80,6 +76,8 @@ export class SettingsComponent implements OnInit {
       } else {
         this.game = new Game();
         this.game.groupName = null;
+        this.callCustomVisionStatus = false;
+        this.callFaceStatus = false;
       }
       // coordinator
       if (localStorage.getItem('endpoint')) {
@@ -88,30 +86,12 @@ export class SettingsComponent implements OnInit {
       } else {
         this.endPoint = '';
       }
-      // refreshRate
-      if (localStorage.getItem('refreshRate')) {
-        this.refreshRate = Number(localStorage.getItem('refreshRate'));
-      } else {
-        this.refreshRate = 3000;
-      }
-      // face
-      if (localStorage.getItem('endpointCognitive')) {
-        this.endPointCognitive = localStorage.getItem('endpointCognitive');
-      } else {
-        this.endPointCognitive = '';
-      }
-
-      if (localStorage.getItem('subscriptionKey')) {
-        this.subscriptionKey = localStorage.getItem('subscriptionKey');
-      } else {
-        this.subscriptionKey = '';
-      }
-
       if (localStorage.getItem('cognitiveStatus')) {
         this.callFaceStatus = localStorage.getItem('cognitiveStatus') === 'true' ? true : false;
       } else {
         this.callFaceStatus = false;
       }
+
     }
 
     loadGames() {
@@ -136,17 +116,16 @@ export class SettingsComponent implements OnInit {
       this.loadGames();
     }
 
-    saveFaceSettings(): void {
-      localStorage.setItem('endpointCognitive', this.endPointCognitive);
-      localStorage.setItem('subscriptionKey', this.subscriptionKey);
+    saveConfiguration() {
+      // Face
+      localStorage.setItem('endpointCognitive', this.game.config.faceEndpoint);
+      localStorage.setItem('subscriptionKey', this.game.config.faceKey);
       this.toast.open('Settings updated', 'Ok', {
         duration: 2000
       });
-    }
-
-    saveRefreshRate() {
-      if (this.refreshRate >= 1000) {
-        localStorage.setItem('refreshRate', '' + this.refreshRate);
+      // refresh rate
+      if (this.game.config.refreshRate >= 1000) {
+        localStorage.setItem('refreshRate', '' + this.game.config.refreshRate);
         this.toast.open('Refresh Rate updated', 'Ok', {
           duration: 2000
         });
@@ -169,13 +148,7 @@ export class SettingsComponent implements OnInit {
         });
         if (game.config) {
           console.log(game.config);
-          // face
-          this.endPointCognitive = game.config.faceEndpoint;
-          this.subscriptionKey = game.config.faceKey;
-          this.saveFaceSettings();
-          // refreshRate
-          this.refreshRate = game.config.refreshRate;
-          this.saveRefreshRate();
+          this.saveConfiguration();
         }
       });
     }

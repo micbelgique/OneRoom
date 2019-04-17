@@ -54,7 +54,7 @@ const routes: Routes = [
     PhoneSharedModule.forRoot(),
     NotepadSharedModule.forRoot(),
     BatterySharedModule.forRoot(),
-    RadioSharedModule.forRoot()
+    RadioSharedModule.forRoot(),
     ClockAppSharedModule.forRoot()
   ],
   exports: [RouterModule]

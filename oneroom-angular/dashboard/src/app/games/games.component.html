@@ -35,16 +35,22 @@
                         <input matInput placeholder="Face clé" type='text' [(ngModel)]="game.config.faceKey" value='{{game.config.faceKey}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Vision endpoint" type='url' [(ngModel)]="game.config.visionEndpoint" value='{{game.config.visionEndpoint}}'>
+                        <input matInput placeholder="Custom vision endpoint longueur de cheveux" type='url' [(ngModel)]="game.config.visionEndpoint" value='{{game.config.visionEndpoint}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Vision clé" type='text' [(ngModel)]="game.config.visionKey" value='{{game.config.visionKey}}'>
+                        <input matInput placeholder="Custom vision clé longueur de cheveux" type='text' [(ngModel)]="game.config.visionKey" value='{{game.config.visionKey}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Taux de rafraichissement (ms)" type='text' [(ngModel)]="game.config.refreshRate" value='{{game.config.refreshRate}}'>
+                      <input matInput placeholder="Custom vision endpoint couleur de peau" type='url' [(ngModel)]="game.config.visionEndpointSkinColor" value='{{game.config.visionEndpointSkinColor}}'>
                     </mat-form-field>
                     <mat-form-field style="width: 100%">
-                      <input matInput placeholder="Reconnaissance minimale" type='number' [(ngModel)]="game.config.minimumRecognized" value='{{game.config.minimumRecognized}}'>
+                      <input matInput placeholder="Custom vision clé couleur de peau" type='text' [(ngModel)]="game.config.visionKeySkinColor" value='{{game.config.visionKeySkinColor}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Taux de rafraichissement (ms)" type='number' min='1000' [(ngModel)]="game.config.refreshRate" value='{{game.config.refreshRate}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                      <input matInput placeholder="Reconnaissance minimale" type='number' min="1" [(ngModel)]="game.config.minimumRecognized" value='{{game.config.minimumRecognized}}'>
                     </mat-form-field>
                 </mat-card-content>
               </mat-expansion-panel>

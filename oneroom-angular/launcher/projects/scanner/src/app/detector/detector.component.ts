@@ -263,7 +263,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
         (predictions: any) => {
           predictions.predictions.forEach(
             p => {
-              if (p.probability >= 0.50) {
+              if (p.probability >= 0.60) {
                 this.drawOverlay(
                   p.boundingBox.left * this.overlay.nativeElement.width,
                   p.boundingBox.top * this.overlay.nativeElement.height,

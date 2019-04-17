@@ -13,7 +13,10 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.getBatteryLevel();
   }
+
+  // NOT SUPPORTED ON FIREFOX ONLY CHROMIUM
   getBatteryLevel() {
+    // @ts-ignore
     navigator.getBattery().then(
       (result) => {
         this.batteryIsCharging = result.charging;
