@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User, Game, Team, GameState } from '@oneroomic/oneroomlibrary';
 import { environment } from '../../environments/environment';
 import { replies } from '../utilities/reply-fr';
 import { Subject } from 'rxjs';
+import { TextToSpeechService, LuisService } from '@oneroomic/facecognitivelibrary';
 
 export interface MessageStyle {
   name: string;
@@ -68,16 +68,23 @@ export class ChatComponent implements OnInit {
   player;
 
   // tslint:disable-next-line:max-line-length
-  private endpoint = 'https://centralus.api.cognitive.microsoft.com/luis/v2.0/apps/8d7cdfe9-46c3-4c10-b70d-341b65f5ed20?verbose=true&timezoneOffset=-360&subscription-key=3cf37cea3fb845ac82c53dedfd8e9f1f&q=';
+  private luisEndpoint = 'https://centralus.api.cognitive.microsoft.com/luis/v2.0/apps/8d7cdfe9-46c3-4c10-b70d-341b65f5ed20';
+  private luisKey = '3cf37cea3fb845ac82c53dedfd8e9f1f';
+  private textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
+  private textToSpeechKey =  environment.googleSubTextKey;
 
   constructor(private router: Router,
-              private httpClient: HttpClient) {
+              private textToSpeechService: TextToSpeechService,
+              private luisService: LuisService) {
   }
 
   ngOnInit() {
-    // tslint:disable-next-line:max-line-length
-    this.user = JSON.parse(localStorage.getItem('user'));
-    this.game = JSON.parse(localStorage.getItem('gameData'));
+    if (localStorage.getItem('user')) {
+      this.user = JSON.parse(localStorage.getItem('user'));
+    }
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+    }
     if ( localStorage.getItem('teamData')) {
       this.team = JSON.parse(localStorage.getItem('teamData'));
     }
@@ -94,18 +101,26 @@ export class ChatComponent implements OnInit {
       (isOpen) => {
         if (isOpen === true && this.firstOpening === true && this.messages.length === 1) {
           // welcome message from bot
-          this.textToSpeechGoogle(welcomeMessage.name);
+          // tslint:disable-next-line:max-line-length
+          this.textToSpeechService.textToSpeechGoogle(welcomeMessage.name, this.textToSpeechEndpoint, this.textToSpeechKey, 'fr-FR', this.currentBot.gender).subscribe(
+            (result) => this.talk(result.audioContent)
+          );
           this.firstOpening = false;
         }
       }
     );
   }
 
+  talk(audioBase64) {
+    this.player.nativeElement.src = 'data:audio/mpeg;base64,' + audioBase64;
+  }
+
   askStephane() {
     if (this.question === null || this.question === '' || this.question.length < 3) {
       return;
     }
-    const obs$ = this.httpClient.get<any>(this.endpoint + this.question);
+
+    const obs$ = this.luisService.luis(this.question, this.luisEndpoint, this.luisKey);
     obs$.subscribe(
       (res) => {
         console.log(res);
@@ -127,7 +142,10 @@ export class ChatComponent implements OnInit {
         this.question = '';
         // voice return
         if (this.currentBot.silentMode === false) {
-          this.textToSpeechGoogle(responseChatbot);
+          // tslint:disable-next-line:max-line-length
+          this.textToSpeechService.textToSpeechGoogle(responseChatbot, this.textToSpeechEndpoint, environment.googleSubTextKey, 'fr-FR', this.currentBot.gender).subscribe(
+            (result) => this.talk(result.audioContent)
+          );
         }
       },
       (err) => {
@@ -701,28 +719,5 @@ export class ChatComponent implements OnInit {
     }
 
     return responseChatbot;
-  }
-
-
-  textToSpeechGoogle(text: string) {
-    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + environment.googleSubTextKey;
-    const body = {
-      input: {
-        text
-      },
-      voice: {
-        languageCode: 'fr-FR',
-        ssmlGender: this.currentBot.gender
-      },
-      audioConfig: {
-        audioEncoding: 'MP3'
-      }
-    };
-    const httpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    this.httpClient.post<any>(url, body, {headers: httpHeaders}).subscribe((result) => {
-      this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
-    });
   }
 }

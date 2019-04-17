@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
@@ -18,7 +18,7 @@ export enum KEY_CODE {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'launcher';
   opened = false;
   sidenavEmitter = new Subject<boolean>();
@@ -36,6 +36,9 @@ export class AppComponent {
 
   constructor(public router: Router) {}
 
+  ngOnInit(): void {
+  }
+
   toggleAction() {
     this.opened = !this.opened;
     this.sidenavEmitter.next(this.opened);
@@ -43,5 +46,9 @@ export class AppComponent {
 
   setSidenav($event) {
     this.opened = $event;
+  }
+
+  isLogged() {
+    return  !(localStorage.getItem('user') === undefined);
   }
 }

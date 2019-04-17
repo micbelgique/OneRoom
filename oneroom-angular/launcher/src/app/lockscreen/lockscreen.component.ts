@@ -137,7 +137,9 @@ export class LockscreenComponent implements OnInit {
         // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
         // await faceapi.drawLandmarks(this.canvas2.nativeElement, fullFaceDescriptions.landmarks, { drawLines: true });
         if (this.lock === false) {
-              console.log('Preparing call and locking');
+              this.toast.open('Visage détecté', 'Ok', {
+                duration : 1000
+              });
               // const imgData = this.capture();
               const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
               this.lock = true;

@@ -7,7 +7,7 @@ export const replies = {
           // tslint:disable-next-line:max-line-length
           'Pointez la camera vers l\'objet à scanner, attendez un petit instant, vous devriez voir apparaitre une image de l\'objet scanné, cliquez sur le bouton information pour une description plus détaillée.',
           // tslint:disable-next-line:max-line-length
-          'Le scanner capture et analyse les objets dans une pièce, il est capable de donner des descriptions succinctes des objets scannés, pointez la camera vers l\'objet à scanner pour avoir sa fiche d\'informations'
+          'Le scanner capture et analyse les objets dans une pièce, il est capable de donner des descriptions succinctes des objets scannés, pointez la caméra vers l\'objet à scanner pour avoir sa fiche d\'informations'
         ],
         chatbot: [
           'Je suis %bot::name% le chatbot, je peux vous guider et répondre à vos questions alors n\'hesitez pas à faire appel à moi !'
@@ -17,11 +17,11 @@ export const replies = {
         ],
         traducteur: [
           // tslint:disable-next-line:max-line-length
-          'Le traducteur analyse les flux audios et les traduit dans la langue selectionnée, appuyez sur le bouton "démarrer la capture" puis "arretez" et cliquez sur "traduire" en sélectionnant la langue finale souhaitée'
+          'Le traducteur analyse les flux audios et les traduit dans la langue selectionnée, appuyez sur le bouton "démarrer la capture" puis "arrêtez" et cliquez sur "traduire" en sélectionnant la langue finale souhaitée'
         ],
         coffre: [
           // tslint:disable-next-line:max-line-length
-          'Le coffre contient un trésor numérique, des mots de passes y sont stockés, mais pour l\'ouvrir il vous faut le mot de passe principal'
+          'Le coffre contient un trésor numérique, des mots de passe y sont stockés, mais pour l\'ouvrir il vous faut le mot de passe principal'
         ],
         default: [
           'Demandez-moi de l\'aide pour les applications suivantes : profil, coffre, traducteur, horloge, chatbot, scanner...'
@@ -100,15 +100,15 @@ export const replies = {
         ]
       },
       default: [
-        'Je suis %bot::name%, votre fidèle et valeureux companion d\'aventure !'
+        'Je suis %bot::name%, votre fidèle et valeureux compagnon d\'aventure !'
       ]
     },
     commande: {
       // commandes
       fermer: {
         voix: [
-          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, precisez "mode vocal"',
-          'Vos désirs sont des ordres, je m\'execute, pour me réactiver, precisez "mode vocal"'
+          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, précisez "mode vocal"',
+          'Vos désirs sont des ordres, je m\'exécute, pour me réactiver, précisez "mode vocal"'
         ],
         default: [
           'Si vous le souhaitez, le retour vocal peut être désactivé avec la commande "mode sourdine"'
@@ -119,8 +119,8 @@ export const replies = {
           'Bonjour, je suis %bot::name%, que puis-je faire pour vous ?'
         ],
         voix: [
-          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, precisez "mode vocal"',
-          'Vos désirs sont des ordres, je m\'execute, pour me réactiver, precisez "mode vocal"'
+          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, précisez "mode vocal"',
+          'Vos désirs sont des ordres, je m\'exécute, pour me réactiver, précisez "mode vocal"'
         ],
         default: [
           'Si vous le souhaitez, le retour vocal peut être désactivé avec la commande "mode sourdine"'
@@ -158,13 +158,13 @@ export const replies = {
       },
       muet: {
         default: [
-          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, precisez "mode vocal"',
-          'Vos désirs sont des ordres, je m\'execute, pour me réactiver, precisez "mode vocal"'
+          'Bien reçu, vous ne m\'entendrez plus, pour me réactiver, précisez "mode vocal"',
+          'Vos désirs sont des ordres, je m\'exécute, pour me réactiver, précisez "mode vocal"'
         ]
       },
       vocal: {
         default: [
-          'Synthèse vocale réactivée, me revoila, que puis-je faire pour vous ?'
+          'Synthèse vocale réactivée, me revoilà, que puis-je faire pour vous ?'
         ]
       },
       masculin: {
@@ -178,14 +178,14 @@ export const replies = {
         ]
       },
       default: [
-        'Vous pouvez controler le genre de ma voix ou encore me passer en mode silencieux si vous le souhaitez'
+        'Vous pouvez contrôler le genre de ma voix ou encore me passer en mode silencieux si vous le souhaitez'
       ]
     },
     compliment: {
       default: [
         'Merci c\'est gentil :) ',
         'Arrête tu vas griller mes circuits intégrés',
-        'Je fait tout mon possible pour être au top',
+        'Je fais tout mon possible pour être au top',
         'J\'adopte la smart-attitude !'
       ]
     },
@@ -196,8 +196,8 @@ export const replies = {
         ],
         indice: [
             'Vous voulez un indice, ok en voici un "%game::hint%"',
-            'Je vais vous aider, voila un indice "%game::hint%"',
-            'Et voila un indice, "%game::hint%"'
+            'Je vais vous aider, voilà un indice "%game::hint%"',
+            'Et voilà un indice, "%game::hint%"'
         ]
       },
       quantifier: {
@@ -229,7 +229,7 @@ export const replies = {
       },
       lieu: {
         default: [
-          'Voici l\'endroit dans lequelle vous vous trouvez : %game::place%'
+          'Voici l\'endroit dans lequel vous vous trouvez : %game::place%'
         ]
       },
       scenario: {
@@ -240,13 +240,13 @@ export const replies = {
       indice: {
         default: [
           'Vous voulez un indice, ok en voici un "%game::hint%"',
-          'Je vais vous aider, voila un indice "%game::hint%"',
-          'Et voila un indice, "%game::hint%"'
+          'Je vais vous aider, voilà un indice "%game::hint%"',
+          'Et voilà un indice, "%game::hint%"'
         ]
       },
       default: [
         // tslint:disable-next-line:max-line-length
-        'Vous pouvez me demander des informations sur la partie en cours tels que l\'état de celle-ci, le lieu dans lequelle vous êtes et le temps restant'
+        'Vous pouvez me demander des informations sur la partie en cours telles que son état, le lieu dans lequelle vous êtes et le temps restant'
       ]
     },
     navigation: {
@@ -264,7 +264,7 @@ export const replies = {
           'Je lance l\'application coffre'
         ],
         parametres: [
-          'Je lance l\'application parametres'
+          'Je lance l\'application paramètres'
         ],
         horloge: [
           'Je lance l\'application horloge'
@@ -287,7 +287,7 @@ export const replies = {
           'Je quitte l\'application coffre'
         ],
         parametres: [
-          'Je quitte l\'application parametres'
+          'Je quitte l\'application paramètres'
         ],
         horloge: [
           'Je quitte l\'application horloge'
@@ -296,7 +296,7 @@ export const replies = {
           'Je vous redirige vers le menu principal'
         ],
         session: [
-          'Cloture de votre session en cours, à bientôt !... Terminé'
+          'Clôture de votre session en cours, à bientôt !... Terminé'
         ],
         default: [
           'Je quitte l\'application qui est en cours d\'utilisation'
@@ -304,11 +304,11 @@ export const replies = {
       },
       session: {
         fermer: [
-          'Cloture de votre session en cours, à bientôt !... Terminé'
+          'Clôture de votre session en cours, à bientôt !... Terminé'
         ],
         default: [
           'Merci de préciser une action concernant la session',
-          'Vous possédez une session en cours, precisez "fermer la session" pour vous deconnecter'
+          'Vous possédez une session en cours, précisez "fermer la session" pour vous déconnecter'
         ]
       },
       default: [
@@ -336,7 +336,7 @@ export const replies = {
     remerciement: {
       default: [
         'A votre service !',
-        'Derien',
+        'De rien',
         'Au plaisir'
       ]
     },

@@ -11,6 +11,10 @@ namespace oneroom_api.Model
         [Url]
         public string VisionEndpoint { get; set; }
         public string VisionKey { get; set; }
+        // skincolor
+        [Url]
+        public string VisionEndpointSkinColor { get; set; }
+        public string VisionKeySkinColor { get; set; }
         // in millisec
         public double RefreshRate { get; set; }
         // value to confirm a player

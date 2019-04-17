@@ -11,17 +11,6 @@ export class EndPointGetterService {
     return localStorage.getItem('endpointCognitive');
   }
 
-  getEndPointUrlWithId() {
-    // game
-    let game;
-    if (localStorage.getItem('gameData')) {
-      game = JSON.parse(localStorage.getItem('gameData'));
-    } else {
-      return null;
-    }
-    return localStorage.getItem('endpoint') + '/Games/' + game.gameId;
-  }
-
   getFaceSubscriptionKey() {
     return localStorage.getItem('subscriptionKey');
   }
