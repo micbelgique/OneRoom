@@ -1,11 +1,19 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { MatSnackBar } from '@angular/material';
+import { trigger, state, transition, animate, style } from '@angular/animations';
 
 @Component({
   selector: 'app-challenge',
   templateUrl: './challenge.component.html',
-  styleUrls: ['./challenge.component.css']
+  styleUrls: ['./challenge.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0', display: 'none'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class ChallengeComponent implements OnInit {
 
@@ -13,8 +21,10 @@ export class ChallengeComponent implements OnInit {
   challenge: Challenge;
   // list of challenges available
   challenges: Challenge[];
+  // Challenge currently expended
+  expandedChallenge: Challenge | null;
   // column order
-  displayedColumns: string[] = ['id', 'title', 'appName', 'toolName', 'config', 'delete'];
+  displayedColumns: string[] = ['id', 'title', 'appName', 'order', 'timeBox', 'delete'];
 
   constructor(private challengeService: ChallengeService,
               private snackBar: MatSnackBar) { }
@@ -28,6 +38,7 @@ export class ChallengeComponent implements OnInit {
   refreshChallenges() {
     this.challengeService.getChallenges().subscribe((challenges) => {
         this.challenges = challenges;
+        console.log(this.challenges);
       },
       (err) => {
         console.log(err);
