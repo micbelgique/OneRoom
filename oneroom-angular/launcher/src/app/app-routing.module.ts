@@ -12,6 +12,7 @@ import { ChatbotAppSharedModule } from 'projects/chatbot/src/app/app.module';
 import { PhoneSharedModule } from 'projects/phone/src/app/app.module';
 import { NotepadSharedModule } from 'projects/notepad/src/app/app.module';
 import { BatterySharedModule } from 'projects/battery/src/app/app.module';
+import { RadioSharedModule } from 'projects/radio/src/app/app.module';
 import { ClockAppSharedModule } from 'projects/clock/src/app/app.module';
 
 const routes: Routes = [
@@ -31,6 +32,8 @@ const routes: Routes = [
     loadChildren: '../../projects/notepad/src/app/app.module#NotepadSharedModule'},
   { path: 'battery',
     loadChildren: '../../projects/battery/src/app/app.module#BatterySharedModule'},
+  { path: 'radio',
+    loadChildren: '../../projects/radio/src/app/app.module#RadioSharedModule'},
   { path: 'clock',
     loadChildren: '../../projects/clock/src/app/app.module#ClockAppSharedModule'},
   { path: 'nav', component: NavComponent },
@@ -51,6 +54,7 @@ const routes: Routes = [
     PhoneSharedModule.forRoot(),
     NotepadSharedModule.forRoot(),
     BatterySharedModule.forRoot(),
+    RadioSharedModule.forRoot()
     ClockAppSharedModule.forRoot()
   ],
   exports: [RouterModule]

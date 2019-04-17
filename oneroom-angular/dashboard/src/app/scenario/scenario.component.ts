@@ -32,7 +32,7 @@ export class ScenarioComponent implements OnInit {
 
   createScenario() {
     this.scenarioService.createScenario(this.scenario).subscribe( () => {
-      this.snackBar.open('Challenge created', 'Ok', {
+      this.snackBar.open('Scenario created', 'Ok', {
         duration: 3000
       });
       this.scenario = new Scenario();
@@ -42,7 +42,7 @@ export class ScenarioComponent implements OnInit {
 
   deleteScenario(scenario: Scenario) {
     this.scenarioService.deleteScenario(scenario.scenarioId).subscribe( (s: Scenario) => {
-        this.snackBar.open('Game removed', 'Ok', {
+        this.snackBar.open('Scenario removed', 'Ok', {
           duration: 1000
         });
         this.refreshScenario();

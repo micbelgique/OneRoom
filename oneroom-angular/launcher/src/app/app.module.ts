@@ -17,9 +17,10 @@ import { ProfilAppSharedModule } from 'projects/profil/src/app/app.module';
 import { TranslatorAppSharedModule } from 'projects/translator/src/app/app.module';
 import { ChatbotAppSharedModule } from 'projects/chatbot/src/app/app.module';
 import { PhoneSharedModule } from 'projects/phone/src/app/app.module';
-import { ClockAppSharedModule } from 'projects/clock/src/app/app.module';
 import { NotepadSharedModule } from 'projects/notepad/src/app/app.module';
 import { BatterySharedModule } from 'projects/battery/src/app/app.module';
+import { RadioSharedModule } from 'projects/radio/src/app/app.module';
+import { ClockAppSharedModule } from 'projects/clock/src/app/app.module';
 
 import {
   MatButtonModule,
@@ -65,6 +66,7 @@ import {
     PhoneSharedModule,
     NotepadSharedModule,
     BatterySharedModule,
+    RadioSharedModule,
     ClockAppSharedModule,
     // other
     BrowserAnimationsModule,
