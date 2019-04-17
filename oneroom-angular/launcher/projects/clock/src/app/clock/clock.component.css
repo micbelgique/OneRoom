@@ -1,0 +1,9 @@
+
+.content {
+  background: linear-gradient(45deg, #1870ed 0, #f18f88 100%);
+  font-family: 'Montserrat', 'sans-serif';
+  height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

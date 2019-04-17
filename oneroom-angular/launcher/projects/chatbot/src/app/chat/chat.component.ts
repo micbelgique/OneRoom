@@ -120,7 +120,7 @@ export class ChatComponent implements OnInit {
       return;
     }
 
-    const obs$ = this.luisService.luis(this.question, this.luisEndpoint, this.luisKey);
+    const obs$ = this.luisService.query(this.question, this.luisEndpoint, this.luisKey);
     obs$.subscribe(
       (res) => {
         console.log(res);

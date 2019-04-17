@@ -1285,6 +1285,134 @@
           }
         }
       }
+    },
+    "clock": {
+      "root": "projects/clock/",
+      "sourceRoot": "projects/clock/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/clock",
+            "index": "projects/clock/src/index.html",
+            "main": "projects/clock/src/main.ts",
+            "polyfills": "projects/clock/src/polyfills.ts",
+            "tsConfig": "projects/clock/tsconfig.app.json",
+            "assets": [
+              "projects/clock/src/favicon.ico",
+              "projects/clock/src/assets"
+            ],
+            "styles": [
+              "projects/clock/src/styles.css"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/clock/src/environments/environment.ts",
+                  "with": "projects/clock/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "clock:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "clock:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "clock:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/clock/src/test.ts",
+            "polyfills": "projects/clock/src/polyfills.ts",
+            "tsConfig": "projects/clock/tsconfig.spec.json",
+            "karmaConfig": "projects/clock/karma.conf.js",
+            "styles": [
+              "projects/clock/src/styles.css"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/clock/src/favicon.ico",
+              "projects/clock/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/clock/tsconfig.app.json",
+              "projects/clock/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "clock-e2e": {
+      "root": "projects/clock-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/clock-e2e/protractor.conf.js",
+            "devServerTarget": "clock:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "clock:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/clock-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "launcher"
