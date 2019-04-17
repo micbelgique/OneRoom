@@ -37,7 +37,9 @@
 }
 
 .app-mat-icon.material-icons {
-  font-size: 5vw;
+  font-size: 6vw;
   display: inline-block;
   text-align: center;
 }
+
+/* actual time */

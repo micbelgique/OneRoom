@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FaceService, FaceCandidate, Candidate } from '../cognitive/face.service';
-import { PersonGroupPersonService, PersistedPerson, Person } from '../cognitive/person-group-person.service';
-import { PersonGroupService, Group } from '../cognitive/person-group.service';
-import { Face } from '../cognitive/face/model/face';
+import { FaceService } from '../cognitive/face/face.service';
+import { Person } from '../cognitive/face/face-models';
+import { PersonGroupService, Group } from '../cognitive/face/person-group.service';
+import { Face } from '../cognitive/face/face-models';
 import { Observable, Subject } from 'rxjs';
+import { PersonGroupPersonService } from '../cognitive/face/person-group-person.service';
 
 export class PersonGroup {
   group: Group;

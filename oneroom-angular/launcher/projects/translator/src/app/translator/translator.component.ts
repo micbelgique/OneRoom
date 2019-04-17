@@ -2,6 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import MediaStreamRecorder from 'msr';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'projects/translator/src/environments/environment';
+import { TextToSpeechService, SpeechToTextService, TranslateService } from '@oneroomic/facecognitivelibrary';
+
+class Lang {
+  constructor(public name, public locale) {}
+}
 
 @Component({
   selector: 'app-translator',
@@ -14,7 +19,6 @@ export class TranslatorComponent implements OnInit {
   @ViewChild('player')
   player;
   private lastBlob: Blob;
-  private headers;
   untranslated: string;
   translated: string;
   languageOne: string;
@@ -24,22 +28,37 @@ export class TranslatorComponent implements OnInit {
     audio: true,
     video: false
   };
+  lang: Lang[] = [];
 
-  constructor(private http: HttpClient) {
+  private translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
+  private translateKey = '14d3566a4d5b48e98d63ac050434d641';
+  private textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
+  private textToSpeechKey = environment.googleSubTextKey;
+  private speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
+  private speechToTextKey = environment.googleSubKeySpeech;
+
+  constructor(
+    private textToSpeechService: TextToSpeechService,
+    private speechToTextService: SpeechToTextService,
+    private translateService: TranslateService) {
+    this.lang.push(new Lang('Français', 'fr-FR'));
+    this.lang.push(new Lang('Anglais', 'en-US'));
+    this.lang.push(new Lang('Japonais', 'ja-JP'));
+    this.lang.push(new Lang('Italien', 'it-IT'));
+    this.lang.push(new Lang('Allemand', 'de-DE'));
+    this.lang.push(new Lang('Chinois', 'zh-HK'));
+    this.lang.push(new Lang('Néerlandais', 'nl-NL'));
+    this.lang.push(new Lang('Vietnamien', 'vi-VN'));
   }
 
   ngOnInit() {
     this.languageOne = 'fr-FR';
-    this.languageTwo = 'en';
+    this.languageTwo = 'en-US';
 
     this.recording = false;
-    this.headers = new HttpHeaders({
-      'Ocp-Apim-Subscription-Key': '14d3566a4d5b48e98d63ac050434d641',
-      'Content-Type': 'application/json'
-    });
+
     navigator.getUserMedia(this.mediaConstraints,
       (stream) => {
-        console.log('user media');
         this.audioRecorder = new MediaStreamRecorder(stream);
         this.audioRecorder.stream = stream;
         this.audioRecorder.mimeType = 'audio/wav';
@@ -66,68 +85,34 @@ export class TranslatorComponent implements OnInit {
     this.audioRecorder.stop();
     this.speechToText();
   }
+
   speechToText() {
-    let arrayBuffer;
     const fileReader = new FileReader();
     fileReader.onload = (event: any) => {
-      arrayBuffer = event.target.result;
-      const url = 'https://speech.googleapis.com/v1/speech:recognize?key=' + environment.googleSubKeySpeech;
-      const audio = this.arrayBufferToBase64(arrayBuffer);
-      const body = {
-        config : {
-          audioChannelCount: 2,
-          languageCode: this.languageOne
-        },
-        audio : {
-          content: audio
-        }
-      };
-      this.http.post<any>(url, body).subscribe((result) => {
-        console.log(result);
+      this.speechToTextService.speechToTextGoogle(event.target.result, this.speechToTextEndpoint, this.speechToTextKey, this.languageOne)
+      .subscribe((result) => {
         this.untranslated = result.results[0].alternatives[0].transcript;
       });
     };
     fileReader.readAsArrayBuffer(this.lastBlob);
   }
+
   translate() {
-    const body = [{Text: this.untranslated}];
-    // tslint:disable-next-line:max-line-length
-    this.http.post<any>('https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=' + this.languageOne + '&to=' + this.languageTwo, body, {headers: this.headers}).subscribe(
+    this.translateService.translate(this.untranslated, this.languageOne, this.languageTwo, this.translateEndpoint, this.translateKey)
+    .subscribe(
       (result) => {
         this.translated = result[0].translations[0].text;
-        this.textToSpeechGoogle(this.translated);
+        this.talk(this.translated);
       }
     );
   }
-  textToSpeechGoogle(text: string) {
-    const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=' + environment.googleSubTextKey;
-    const body = {
-      input: {
-        text
-      },
-      voice: {
-        languageCode: this.languageTwo,
-        ssmlGender: 'NEUTRAL'
-      },
-      audioConfig: {
-        audioEncoding: 'MP3'
-      }
-    };
-    const httpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    this.http.post<any>(url, body, {headers: httpHeaders}).subscribe((result) => {
+
+  talk(text: string) {
+    this.textToSpeechService.textToSpeechGoogle(text, this.textToSpeechEndpoint, this.textToSpeechKey, this.languageTwo, 'NEUTRAL')
+    .subscribe((result) => {
       this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
     });
   }
-  arrayBufferToBase64( buffer ) {
-    let binary = '';
-    const bytes = new Uint8Array( buffer );
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
-    }
-    return window.btoa( binary );
-}
+
 }
 

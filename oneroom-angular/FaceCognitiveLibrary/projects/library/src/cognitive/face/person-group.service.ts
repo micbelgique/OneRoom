@@ -1,19 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EndPointGetterService } from '../utilities/end-point-getter.service';
+import { EndPointGetterService } from '../../utilities/end-point-getter.service';
+import { TrainingStatus } from './face-models';
 
 export class Group {
   personGroupId: string;
   name: string;
   userData: string;
-}
-
-export class TrainingStatus {
-  status: string;
-  createdDateTime: Date;
-  lastActionDateTime: Date;
-  message: string;
 }
 
 @Injectable({

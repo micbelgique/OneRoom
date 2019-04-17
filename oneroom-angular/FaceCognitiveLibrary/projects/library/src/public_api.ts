@@ -1,37 +1,27 @@
 
 /*
- * Public API Surface of face-cognitive-library
- */
+* Public API Surface of face-cognitive-library
+*/
 
 export * from './lib/library.component';
 export * from './lib/library.module';
 export * from './lib/library.service';
-export * from './cognitive/face/model/accessory';
-export * from './cognitive/face/model/blur';
-export * from './cognitive/face/model/emotion';
-export * from './cognitive/face/model/exposure';
-export * from './cognitive/face/model/face';
-export * from './cognitive/face/model/face-attribute';
-export * from './cognitive/face/model/face-rectangle';
-export * from './cognitive/face/model/facial-hair';
-export * from './cognitive/face/model/hair';
-export * from './cognitive/face/model/hair-color';
-export * from './cognitive/face/model/head-pose';
-export * from './cognitive/face/model/makeup';
-export * from './cognitive/face/model/noise';
-export * from './cognitive/face/model/occlusion';
-export * from './cognitive/face-list.service';
-export * from './cognitive/face.service';
-export * from './cognitive/person-group-person.service';
-export { Group } from './cognitive/person-group.service';
-export * from './cognitive/person-group.service';
+
 export * from './utilities/end-point-getter.service';
 export * from './utilities/face-process.service';
-export * from './cognitive/vision/model/image-prediction';
-export * from './cognitive/vision/model/prediction';
-export * from './cognitive/vision/model/region';
-
+// Custom Vision
+export * from './cognitive/vision/custom-vision-models';
 export * from './cognitive/vision/custom-vision-prediction.service';
-
-export * from './cognitive/vision/visioncomputer.service';
-export * from './cognitive/vision/hairlength.service';
+// Face
+export * from './cognitive/face/face-models';
+export * from './cognitive/face/face-list.service';
+export * from './cognitive/face/face.service';
+export * from './cognitive/face/person-group-person.service';
+export { Group } from './cognitive/face/person-group.service';
+export * from './cognitive/face/person-group.service';
+// Voice
+export * from './cognitive/voice/speech-to-text.service';
+export * from './cognitive/voice/text-to-speech.service';
+// text
+export * from './cognitive/text/luis.service';
+export * from './cognitive/text/translate.service';

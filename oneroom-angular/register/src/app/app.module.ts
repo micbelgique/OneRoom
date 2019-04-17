@@ -22,7 +22,6 @@ import {
   MatDialogModule,
   MatSelectModule
 } from '@angular/material';
-import { FaceService, PersonGroupService, FaceProcessService, PersonGroupPersonService } from '@oneroomic/facecognitivelibrary';
 import { HttpClientModule } from '@angular/common/http';
 import { SettingsComponent } from './settings/settings.component';
 import { FormsModule } from '@angular/forms';

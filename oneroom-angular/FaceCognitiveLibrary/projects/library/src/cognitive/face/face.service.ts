@@ -1,34 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Face } from './face/model/face';
+import { Face, FaceSimilar, Group, FaceCandidate, FaceConfidence } from './face-models';
 import { Observable } from 'rxjs';
-import { EndPointGetterService } from '../public_api';
+import { EndPointGetterService } from '../../public_api';
 
-export class FaceSimilar {
-  persistedFaceId: string;
-  confidence: number;
-  faceId: string;
-}
-
-export class Group {
-  groups: string[][];
-  messyGroup: string[];
-}
-
-export class Candidate {
-  personId: string;
-  confidence: number;
-}
-
-export class FaceCandidate {
-  faceId: string;
-  candidates: Candidate[];
-}
-
-export class FaceConfidence {
-  isIdentical: boolean;
-  confidence: number;
-}
 
 @Injectable({
   providedIn: 'root'
