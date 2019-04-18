@@ -66,12 +66,12 @@
       <mat-card-content>
           <p>Taux de rafraichissement de la détection faciale</p>
           <mat-form-field style="width: 100%">
-            <input matInput placeholder="Refresh rate (ms)" type='number' [disabled]='this.game.config.refreshRate > 0' [(ngModel)]="this.game.config.refreshRate" value='{{refreshRate}}'>
+            <input matInput placeholder="Refresh rate (ms)" type='number' min='1000' [(ngModel)]="this.game.config.refreshRate" value='{{this.game.config.refreshRate}}'>
           </mat-form-field>
       </mat-card-content>
       <mat-card-actions>
         <div style="text-align: center">
-          <button style="width: 40%; margin:5px" mat-raised-button (click)='saveRefreshRate()' color="primary" i18n="@@settingsConfigure" >Sauver</button>
+          <button style="width: 40%; margin:5px" mat-raised-button (click)='saveConfiguration()' color="primary" i18n="@@settingsConfigure" >Sauver</button>
         </div>
       </mat-card-actions>
     </mat-expansion-panel>
@@ -89,16 +89,16 @@
           <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Appels API</mat-slide-toggle>
           <br><br>
           <mat-form-field style="width: 100%">
-              <input matInput placeholder="Cognitive endPoint" type='url' [disabled]='this.game.config.faceEndpoint !== null' [(ngModel)]="endPointCognitive" value='{{endPointCognitive}}'>
+              <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="this.game.config.faceEndpoint" value='{{this.game.config.faceEndpoint}}'>
           </mat-form-field>
           <br><br>
           <mat-form-field style="width: 100%">
-            <input matInput placeholder="Subscription Key" type='url' [disabled]='this.game.config.faceKey !== null' [(ngModel)]="subscriptionKey" value='{{subscriptionKey}}'>
+            <input matInput placeholder="Subscription Key" type='url' [(ngModel)]="this.game.config.faceKey" value='{{this.game.config.faceKey}}'>
           </mat-form-field>
     </mat-card-content>
     <mat-card-actions>
           <div style="text-align: center">
-            <button style="width: 40%; margin:5px" mat-raised-button (click)='saveFaceSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='saveConfiguration()' color="primary" i18n="@@settingsSave">Sauver</button>
           </div>
     </mat-card-actions>
   </mat-expansion-panel>

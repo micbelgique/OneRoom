@@ -53,7 +53,14 @@ namespace oneroom_api
 
             // global cors policy
             app.UseCors(x => x
-                .WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://localhost:4203")
+                .WithOrigins(
+                "http://localhost:4200", 
+                "http://localhost:4201", 
+                "http://localhost:4202", 
+                "http://localhost:4203",
+                "https://waoneroomlauncher.azurewebsites.net",
+                "https://waoneroomdashboard.azurewebsites.net",
+                "https://waoneroomleaderboard.azurewebsites.net")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());

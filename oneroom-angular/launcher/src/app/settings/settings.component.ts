@@ -120,16 +120,16 @@ export class SettingsComponent implements OnInit {
       // Face
       localStorage.setItem('endpointCognitive', this.game.config.faceEndpoint);
       localStorage.setItem('subscriptionKey', this.game.config.faceKey);
+      // refresh rate
+      if (this.game.config.refreshRate < 1000) {
+        this.game.config.refreshRate = 1000;
+      }
+
+      localStorage.setItem('refreshRate', '' + this.game.config.refreshRate);
+
       this.toast.open('Settings updated', 'Ok', {
         duration: 2000
       });
-      // refresh rate
-      if (this.game.config.refreshRate >= 1000) {
-        localStorage.setItem('refreshRate', '' + this.game.config.refreshRate);
-        this.toast.open('Refresh Rate updated', 'Ok', {
-          duration: 2000
-        });
-      }
     }
 
 
