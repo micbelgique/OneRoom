@@ -4,9 +4,9 @@ namespace oneroom_api.Utilities
 {
     public static class ChallengesUtilities
     {
-        public static ChallengeDTO ToDTO(this Challenge challenge)
+        public static ChallengeDto ToDto(this Challenge challenge)
         {
-            return new ChallengeDTO()
+            return new ChallengeDto()
             {
                 ChallengeId = challenge.ChallengeId,
                 Title = challenge.Title,
@@ -20,9 +20,9 @@ namespace oneroom_api.Utilities
             };
         }
 
-        public static ChallengeTeamDTO ToTeamDTO(this Challenge challenge, bool completed)
+        public static ChallengeTeamDto ToTeamDto(this Challenge challenge, bool completed)
         {
-            return new ChallengeTeamDTO()
+            return new ChallengeTeamDto()
             {
                 ChallengeId = challenge.ChallengeId,
                 Title = challenge.Title,
@@ -37,19 +37,19 @@ namespace oneroom_api.Utilities
             };
         }
 
-        public static Challenge FromDTO(this ChallengeDTO challengeDTO)
+        public static Challenge FromDto(this ChallengeDto challengeDto)
         {
             return new Challenge()
             {
-                ChallengeId = challengeDTO.ChallengeId,
-                Title = challengeDTO.Title,
-                Description = challengeDTO.Description,
-                AppName = challengeDTO.AppName,
-                Order = challengeDTO.Order,
-                TimeBox = challengeDTO.TimeBox,
-                Hints = challengeDTO.Hints,
-                Answers = challengeDTO.Answers,
-                Config = challengeDTO.Config
+                ChallengeId = challengeDto.ChallengeId,
+                Title = challengeDto.Title,
+                Description = challengeDto.Description,
+                AppName = challengeDto.AppName,
+                Order = challengeDto.Order,
+                TimeBox = challengeDto.TimeBox,
+                Hints = challengeDto.Hints,
+                Answers = challengeDto.Answers,
+                Config = challengeDto.Config
             };
         }
     }

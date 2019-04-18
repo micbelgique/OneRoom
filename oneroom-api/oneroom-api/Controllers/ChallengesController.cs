@@ -5,6 +5,7 @@ using oneroom_api.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using oneroom_api.data;
 
 namespace oneroom_api.Controllers
 {
@@ -21,24 +22,24 @@ namespace oneroom_api.Controllers
 
         // GET: api/Challenges
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
-        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallenges()
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDto>>>))]
+        public async Task<ActionResult<IEnumerable<ChallengeDto>>> GetChallenges()
         {
-            return await _context.Challenges.Select(c => c.ToDTO())
+            return await _context.Challenges.Select(c => c.ToDto())
                                             .ToListAsync();
         }
 
         // GET: api/Scenarios/5/Challenges
         [HttpGet("~/api/Scenarios/{ScenarioId}/Challenges")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDTO>>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<ChallengeDto>>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<IEnumerable<ChallengeDTO>>> GetChallengesByScenario(int scenarioId)
+        public async Task<ActionResult<IEnumerable<ChallengeDto>>> GetChallengesByScenario(int scenarioId)
         {
             if (!ScenarioExists(scenarioId)) return NotFound("There is no scenario with id:" + scenarioId);
 
-            List<ChallengeDTO> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
+            List<ChallengeDto> challenges = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                                      .Where(c => c.ScenarioChallenges.Any(sc => sc.ScenarioId == scenarioId))
-                                                                     .Select(c => c.ToDTO())
+                                                                     .Select(c => c.ToDto())
                                                                      .ToListAsync();
 
             return challenges;
@@ -46,9 +47,9 @@ namespace oneroom_api.Controllers
 
         // GET: api/Challenges/5
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ChallengeDTO>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ChallengeDto>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<ChallengeDTO>> GetChallenge(int id)
+        public async Task<ActionResult<ChallengeDto>> GetChallenge(int id)
         {
             Challenge challenge = await _context.Challenges.FindAsync(id);
 
@@ -57,7 +58,7 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            return challenge.ToDTO();
+            return challenge.ToDto();
         }
 
         // PUT: api/Challenges/5
@@ -95,13 +96,13 @@ namespace oneroom_api.Controllers
 
         // POST: api/Challenges
         [HttpPost]
-        [ProducesResponseType(201, Type = typeof(Task<ActionResult<ChallengeDTO>>))]
-        public async Task<ActionResult<ChallengeDTO>> PostChallenge(ChallengeDTO challengeDTO)
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<ChallengeDto>>))]
+        public async Task<ActionResult<ChallengeDto>> PostChallenge(ChallengeDto challengeDto)
         {
-            Challenge challenge = _context.Challenges.Add(challengeDTO.FromDTO()).Entity;
+            Challenge challenge = _context.Challenges.Add(challengeDto.FromDto()).Entity;
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDTO());
+            return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDto());
         }
 
         // POST: api/Scenarios/5/Challenges
@@ -127,10 +128,10 @@ namespace oneroom_api.Controllers
 
         // DELETE: api/Challenges/5
         [HttpDelete("{id}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ChallengeDTO>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ChallengeDto>>))]
         [ProducesResponseType(404)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<ChallengeDTO>> DeleteChallenge(int id)
+        public async Task<ActionResult<ChallengeDto>> DeleteChallenge(int id)
         {
             Challenge challenge = await _context.Challenges.Include(c => c.ScenarioChallenges)
                                                      .SingleOrDefaultAsync(c => c.ChallengeId == id);
@@ -144,7 +145,7 @@ namespace oneroom_api.Controllers
             _context.Challenges.Remove(challenge);
             await _context.SaveChangesAsync();
 
-            return challenge.ToDTO();
+            return challenge.ToDto();
         }
 
         // DELETE: api/Scenarios/5/Challenges

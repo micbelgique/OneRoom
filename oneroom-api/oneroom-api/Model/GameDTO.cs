@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace oneroom_api.Model
 {
-    public class GameDTO
+    public class GameDto
     {
         public int GameId { get; set; }
         public string GroupName { get; set; }
@@ -12,6 +12,6 @@ namespace oneroom_api.Model
         public List<Team> Teams { get; set; } = new List<Team>();
         public State State { get; set; } = State.REGISTER;
         public Configuration Config { get; set; } = new Configuration();
-        public ScenarioDTO Scenario { get; set; }
+        public ScenarioDto Scenario { get; set; }
     }
 }

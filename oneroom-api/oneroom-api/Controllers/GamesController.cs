@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.data;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
@@ -29,27 +30,26 @@ namespace oneroom_api.Controllers
 
         // GET: api/Games
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<GameDTO>>>))]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<IEnumerable<GameDto>>>))]
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
         {
             // return config to select it
             return await _context.Games.Include(g => g.Config)
                                        .Include(g => g.Scenario)
-                                       .Select(g => g.ToDTO())
+                                       .Select(g => g.ToDto())
                                        .ToListAsync();
         }
 
         // GET: api/Games/groupName
         [HttpGet("{groupName}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<GameDTO>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<GameDto>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<GameDTO>> GetGame(string groupName)
+        public async Task<ActionResult<GameDto>> GetGame(string groupName)
         {
-            var game = await _context.Games.Include(g => g.Users)
-                                           .Include(g => g.Teams)
+            var game = await _context.Games.Include(g => g.Teams)
                                            .Include(g => g.Config)
                                            .Include(g => g.Scenario)
-                                           .Select(g => g.ToDTO())
+                                           .Select(g => g.ToDto())
                                            .SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
 
             if (game == null)
