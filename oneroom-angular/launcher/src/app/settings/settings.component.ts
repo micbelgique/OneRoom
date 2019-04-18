@@ -33,17 +33,17 @@ export class SettingsComponent implements OnInit {
     // Custom vision
     callCustomVisionStatus = true;
 
-
+  /*
     @HostListener('window:keyup', ['$event'])
     keyEvent(event: KeyboardEvent) {
     if ( event.keyCode === KEY_CODE.UP_ARROW) {
       this.router.navigateByUrl('/lock');
+      }
     }
-  }
+  */
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
-      private router: Router,
       private hubService: LeaderboardService
       ) {}
 
@@ -54,8 +54,8 @@ export class SettingsComponent implements OnInit {
       // game
       if (localStorage.getItem('gameData')) {
         this.game = JSON.parse(localStorage.getItem('gameData'));
+        console.log(this.game);
 
-        // DISABLE CONFIG WHEN GAME LAUNCHED
         // join group signalr
         this.hubServiceSub = this.hubService.run().subscribe(
           () => this.hubService.joinGroup(this.game.gameId.toString())
@@ -78,6 +78,8 @@ export class SettingsComponent implements OnInit {
         this.game.groupName = null;
         this.callCustomVisionStatus = false;
         this.callFaceStatus = false;
+        localStorage.removeItem('user');
+        localStorage.removeItem('teamData');
       }
       // coordinator
       if (localStorage.getItem('endpoint')) {
@@ -134,22 +136,26 @@ export class SettingsComponent implements OnInit {
 
 
     getGame() {
+      console.log(this.game.groupName);
       const resGame$ = this.gameService.getGame(this.game.groupName);
       resGame$.subscribe( (game: Game) => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('teamData');
-        localStorage.removeItem('gameData');
+        console.log(game);
+        this.toast.open('Game fetched', 'Ok', {
+          duration: 2000
+        });
         this.game = game;
         localStorage.setItem('gameData', JSON.stringify(game));
         localStorage.setItem('gameId', game.gameId.toString());
         localStorage.setItem('groupName', game.groupName);
-        this.toast.open('Game fetched', 'Ok', {
-          duration: 2000
-        });
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('teamData');
+
         if (game.config) {
           console.log(game.config);
           this.saveConfiguration();
         }
+
       });
     }
 
@@ -170,6 +176,7 @@ export class SettingsComponent implements OnInit {
 
      /* Update the game state to disable configuration modifications */
      refreshGameState(game: Game) {
+      console.log(game);
       const res$ = this.gameService.getStateGame(game.groupName);
       res$.subscribe(
         (state) => {

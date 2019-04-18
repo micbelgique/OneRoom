@@ -23,16 +23,15 @@ export class AppComponent implements OnInit {
   opened = false;
   sidenavEmitter = new Subject<boolean>();
 
+  /*
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    /*if ( event.keyCode === KEY_CODE.UP_ARROW) {
-      this.router.navigateByUrl('/settings');
-    }*/
-    if (this.router.url !== '/' && this.router.url !== '/lock' && event.keyCode === KEY_CODE.CTRL) {
+    if (this.router.url !== '/' && this.router.url !== '/lock' && event.keyCode === KEY_CODE.CTRL && !this.isLogged()) {
       // display assistant
       this.toggleAction();
     }
-  }
+
+  }*/
 
   constructor(public router: Router) {}
 
@@ -49,6 +48,6 @@ export class AppComponent implements OnInit {
   }
 
   isLogged() {
-    return  !(localStorage.getItem('user') === undefined);
+    return  !(localStorage.getItem('user') === null);
   }
 }
