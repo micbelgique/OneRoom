@@ -2,7 +2,7 @@
 
 namespace oneroom_api.Model
 {
-    public class ChallengeDTO
+    public class ChallengeDto
     {
         public int ChallengeId { get; set; }
         public string Title { get; set; }

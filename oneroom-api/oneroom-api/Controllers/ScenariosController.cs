@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.data;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
 
@@ -21,20 +22,20 @@ namespace oneroom_api.Controllers
 
         // GET: api/Scenarios
         [HttpGet]
-        [ProducesResponseType(200,Type = typeof(Task<ActionResult<IEnumerable<ScenarioDTO>>>))]
-        public async Task<ActionResult<IEnumerable<ScenarioDTO>>> GetScenarios()
+        [ProducesResponseType(200,Type = typeof(Task<ActionResult<IEnumerable<ScenarioDto>>>))]
+        public async Task<ActionResult<IEnumerable<ScenarioDto>>> GetScenarios()
         {
             return await _context.Scenarios.Include(s => s.ScenarioChallenges)
                                               .ThenInclude(sc =>  sc.Challenge)
-                                           .Select(s => s.ToDTO())
+                                           .Select(s => s.ToDto())
                                            .ToListAsync();
         }
 
         // GET: api/Scenarios/5
         [HttpGet("{id}")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ScenarioDTO>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ScenarioDto>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<ScenarioDTO>> GetScenario(int id)
+        public async Task<ActionResult<ScenarioDto>> GetScenario(int id)
         {
             var scenario = await _context.Scenarios.Include(s => s.ScenarioChallenges)
                                                       .ThenInclude(sc => sc.Challenge)
@@ -45,7 +46,7 @@ namespace oneroom_api.Controllers
                 return NotFound();
             }
 
-            return scenario.ToDTO();
+            return scenario.ToDto();
         }
 
         // POST: api/Scenarios

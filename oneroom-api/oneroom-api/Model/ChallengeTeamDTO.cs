@@ -1,6 +1,6 @@
 ﻿namespace oneroom_api.Model
 {
-    public class ChallengeTeamDTO : ChallengeDTO
+    public class ChallengeTeamDto : ChallengeDto
     {
         public bool Completed { get; set; }
     }

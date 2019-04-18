@@ -21,11 +21,6 @@ namespace oneroom_api.Model
 
         // Scenario of the Game
         public Scenario Scenario { get; set; }
-
-        public Game()
-        {
-
-        }
     }
     public enum State
     {

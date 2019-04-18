@@ -4,9 +4,9 @@ namespace oneroom_api.Utilities
 {
     public static class GameUtilities
     {
-        public static GameDTO ToDTO(this Game game)
+        public static GameDto ToDto(this Game game)
         {
-            return new GameDTO()
+            return new GameDto()
             {
                 GameId = game.GameId,
                 GroupName = game.GroupName,
@@ -15,7 +15,7 @@ namespace oneroom_api.Utilities
                 Teams = game.Teams,
                 State = game.State,
                 Config = game.Config,
-                Scenario = game.Scenario?.ToDTO()
+                Scenario = game.Scenario?.ToDto()
 
             };
         }

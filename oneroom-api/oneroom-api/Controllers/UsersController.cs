@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using oneroom_api.data;
 
 namespace oneroom_api.Controllers
 {
@@ -230,7 +231,7 @@ namespace oneroom_api.Controllers
 
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(gameId.ToString()).DeleteUser(user);
-            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(game.Teams.ConvertAll<TeamDTO>(t => t.ToDTO()));
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(game.Teams.ConvertAll(t => t.ToDto()));
 
             return user;
         }

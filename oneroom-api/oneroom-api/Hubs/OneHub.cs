@@ -19,7 +19,7 @@ namespace oneroom_api.Hubs
         // 
         Task DeleteUser(User u);
         //
-        Task UpdateTeams( IEnumerable<TeamDTO> teams);
+        Task UpdateTeams( IEnumerable<TeamDto> teams);
         //
         Task DeleteTeams(int gameId);
         // All clients receive automatic configuration when changed
