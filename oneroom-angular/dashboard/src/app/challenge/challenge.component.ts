@@ -16,7 +16,10 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
   ],
 })
 export class ChallengeComponent implements OnInit {
-
+  currentAnswer = '';
+  currentHint = '';
+  currentKey = '';
+  currentValue = '';
   // challenge to add
   challenge: Challenge;
   // list of challenges available
@@ -32,7 +35,29 @@ export class ChallengeComponent implements OnInit {
   ngOnInit() {
     this.challenges = [];
     this.challenge = new Challenge();
+    this.challenge.answers = [];
+    this.challenge.hints = [];
     this.refreshChallenges();
+  }
+  addAnswer() {
+    this.challenge.answers.push(this.currentAnswer);
+    this.currentAnswer = '';
+  }
+  addHint() {
+    this.challenge.hints.push(this.currentHint);
+    this.currentHint = '';
+  }
+  addConfig() {
+    this.challenge.config[this.currentKey] = this.currentValue;
+  }
+  removeConfig() {
+    this.challenge.config;
+  }
+  removeHint() {
+    this.challenge.hints.pop();
+  }
+  removeAnswer() {
+    this.challenge.answers.pop();
   }
 
   refreshChallenges() {

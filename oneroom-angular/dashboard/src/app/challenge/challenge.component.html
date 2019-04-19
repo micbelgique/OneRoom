@@ -27,22 +27,41 @@
       </mat-form-field>
 
       <!-- answers : List -->
+      <div *ngFor="let item of challenge.answers">
+        <mat-form-field style="width: 100%">
+          <input matInput placeholder="Réponses" type='text' [(ngModel)]="item" disabled>
+        </mat-form-field>
+      </div>
       <mat-form-field style="width: 100%">
-        <input matInput placeholder="Réponses" type='text'>
+        <input matInput placeholder="Réponse" type='text' [(ngModel)]="currentAnswer" >
       </mat-form-field>
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeAnswer()' color="warn" >Retirer une réponse</button>
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='addAnswer()' color="primary" >Ajouter une réponse</button>
 
       <!-- Hints : List -->
+      <div *ngFor="let item of challenge.hints">
+        <mat-form-field style="width: 100%">
+          <input matInput placeholder="Indice" type='text' [(ngModel)]="item" disabled>
+        </mat-form-field>
+      </div>
       <mat-form-field style="width: 100%">
-        <input matInput placeholder="Indices" type='text'>
+        <input matInput placeholder="indice" type='text' [(ngModel)]="currentHint" >
       </mat-form-field>
 
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeHint()' color="warn" >Retirer une indice</button>
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='addHint()' color="primary" >Ajouter un indice</button>
+
       <!-- Config : dictionary -->
-      <mat-form-field style="width: 45%;margin: 2%">
-        <input matInput placeholder="Clé" type='text' >
-      </mat-form-field>
-      <mat-form-field style="width: 45%;margin: 2%">
-        <input matInput placeholder="Valeur" type='text'>
-      </mat-form-field>
+      <div *ngFor="let item of nbrOfConfig">
+        <mat-form-field style="width: 45%;margin: 2%">
+          <input matInput placeholder="Clé" type='text' >
+        </mat-form-field>
+        <mat-form-field style="width: 45%;margin: 2%">
+          <input matInput placeholder="Valeur" type='text'>
+        </mat-form-field>
+      </div>
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeConfig()' color="warn" >Retirer une configuration</button>
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
 
     </mat-card-content>
     <mat-card-actions>
