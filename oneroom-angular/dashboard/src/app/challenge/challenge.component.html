@@ -52,16 +52,22 @@
       <button style="width: 49%; margin:5px" mat-raised-button (click)='addHint()' color="primary" >Ajouter un indice</button>
 
       <!-- Config : dictionary -->
-      <div *ngFor="let item of nbrOfConfig">
+      <div *ngFor="let item of challenge.config | keyvalue">
         <mat-form-field style="width: 45%;margin: 2%">
-          <input matInput placeholder="Clé" type='text' >
+          <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
         </mat-form-field>
         <mat-form-field style="width: 45%;margin: 2%">
-          <input matInput placeholder="Valeur" type='text'>
+          <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
         </mat-form-field>
+        <button style="width: 100%; margin:5px" mat-raised-button (click)='removeConfig(item.key)' color="warn" >Retirer une configuration</button>
       </div>
-      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeConfig()' color="warn" >Retirer une configuration</button>
-      <button style="width: 49%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
+      <mat-form-field style="width: 45%;margin: 2%">
+        <input matInput placeholder="Clé" type='text' [(ngModel)]="currentKey">
+      </mat-form-field>
+      <mat-form-field style="width: 45%;margin: 2%">
+        <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentValue'>
+      </mat-form-field>
+      <button style="width: 100%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
 
     </mat-card-content>
     <mat-card-actions>

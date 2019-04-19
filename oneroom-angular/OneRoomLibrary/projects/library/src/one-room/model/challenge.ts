@@ -9,6 +9,6 @@ export class Challenge {
   timeBox: number;
   hints: string[] = [];
   answers: string[] = [];
-  config: ConfigDictionary = { };
+  config: Map<string, string> = new Map();
   completed: boolean;
 }
