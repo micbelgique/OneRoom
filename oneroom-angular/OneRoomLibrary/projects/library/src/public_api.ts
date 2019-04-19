@@ -9,7 +9,7 @@ export * from './one-room/abstracts/signalr/signalr.abstract.service';
 export * from './one-room/abstracts/signalr/signalr.core.service';
 export * from './one-room/face.service';
 export * from './one-room/game.service';
-export * from './one-room/leaderboard.service';
+export * from './one-room/hub.service';
 export * from './one-room/model/face';
 export * from './one-room/model/game';
 export * from './one-room/model/gender.enum';

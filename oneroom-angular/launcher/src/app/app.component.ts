@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
   constructor(public router: Router) {}
 
   ngOnInit(): void {
+    console.log('init');
   }
 
   toggleAction() {

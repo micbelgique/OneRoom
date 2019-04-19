@@ -12,7 +12,7 @@ import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name
 export class NavComponent implements OnInit {
 
   user: User;
-  teams: Team[];
+  teams: Team[] = [];
   teamUser: Team;
   game: Game;
   private updateTeam;

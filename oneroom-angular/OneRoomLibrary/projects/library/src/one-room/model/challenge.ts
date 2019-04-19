@@ -7,8 +7,8 @@ export class Challenge {
   appName: string;
   order: number;
   timeBox: number;
-  hints: string[];
-  answers: string[];
+  hints: string[] = [];
+  answers: string[] = [];
   config: ConfigDictionary = { };
   completed: boolean;
 }

@@ -20,7 +20,7 @@ interface MonitoringMethods extends SignalrMethods {
 @Injectable({
   providedIn: 'root'
 })
-export class LeaderboardService extends SignalRCoreService<MonitoringMethods> {
+export class HubService extends SignalRCoreService<MonitoringMethods> {
 
   // tslint:disable-next-line:variable-name
   private _refreshGameState = new EventEmitter<number>();

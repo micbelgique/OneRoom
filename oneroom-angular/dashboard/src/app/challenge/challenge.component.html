@@ -26,6 +26,24 @@
         <input matInput placeholder="Time Box" type='text' [(ngModel)]="challenge.timeBox" value='{{challenge.timeBox}}'>
       </mat-form-field>
 
+      <!-- answers : List -->
+      <mat-form-field style="width: 100%">
+        <input matInput placeholder="Réponses" type='text'>
+      </mat-form-field>
+
+      <!-- Hints : List -->
+      <mat-form-field style="width: 100%">
+        <input matInput placeholder="Indices" type='text'>
+      </mat-form-field>
+
+      <!-- Config : dictionary -->
+      <mat-form-field style="width: 45%;margin: 2%">
+        <input matInput placeholder="Clé" type='text' >
+      </mat-form-field>
+      <mat-form-field style="width: 45%;margin: 2%">
+        <input matInput placeholder="Valeur" type='text'>
+      </mat-form-field>
+
     </mat-card-content>
     <mat-card-actions>
       <div style="text-align: center">
