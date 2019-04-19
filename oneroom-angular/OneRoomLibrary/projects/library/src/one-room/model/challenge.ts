@@ -1,3 +1,4 @@
+import { Dictionary } from './dictionary';
 
 export class Challenge {
   challengeId: number;
@@ -8,7 +9,7 @@ export class Challenge {
   timeBox: number;
   hints: string[] = [];
   answers: string[] = [];
-  config: Map<string, string> = new Map();
-  data: Map<string, string> = new Map();
+  config: Dictionary = {};
+  data: Dictionary = {};
   completed: boolean;
 }

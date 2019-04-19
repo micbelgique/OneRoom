@@ -64,7 +64,7 @@
 
       <!-- Config : dictionary -->
       <h3>Configuration</h3>
-      <div *ngFor="let item of challenge.config | keyvalue">
+      <div *ngFor="let item of mapConfig | keyvalue">
         <mat-form-field style="width: 45%;margin: 2%">
           <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
         </mat-form-field>
@@ -83,7 +83,7 @@
 
       <!-- Data : dictionary -->
       <h3>Data</h3>
-      <div *ngFor="let item of challenge.data | keyvalue">
+      <div *ngFor="let item of mapData | keyvalue">
           <mat-form-field style="width: 45%;margin: 2%">
             <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
           </mat-form-field>

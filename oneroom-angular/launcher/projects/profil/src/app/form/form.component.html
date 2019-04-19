@@ -18,7 +18,7 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <label>Moustache</label>
+  <label>Moustache {{this.user.moustacheLevel * 100}}%</label>
   <mat-slider (change)=saveProfile()
         class="example-margin"
         [invert]="false"
@@ -30,7 +30,7 @@
         [(ngModel)]="user.moustacheLevel"
         [vertical]="false">
   </mat-slider>
-  <label>Barbe</label>
+  <label>Barbe {{this.user.beardLevel * 100}}%</label>
   <mat-slider (change)=saveProfile()
         class="example-margin"
         [invert]="false"
@@ -42,7 +42,7 @@
         [(ngModel)]="user.beardLevel"
         [vertical]="false">
   </mat-slider>
-  <label>Calvitie</label>
+  <label>Calvitie {{this.user.baldLevel * 100}}%</label>
   <mat-slider (change)=saveProfile()
         class="example-margin"
         [invert]="false"

@@ -18,9 +18,10 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
 export class ChallengeComponent implements OnInit {
   currentAnswer = '';
   currentHint = '';
+  mapConfig = new Map<string, string>();
   currentKey = '';
   currentValue = '';
-
+  mapData = new Map<string, string>();
   currentKeyData = '';
   currentValueData = '';
 
@@ -40,6 +41,8 @@ export class ChallengeComponent implements OnInit {
               private snackBar: MatSnackBar) { }
 
   ngOnInit() {
+    this.mapConfig.clear();
+    this.mapData.clear();
     this.challenges = [];
     this.challenge = new Challenge();
     this.challenge.answers = [];
@@ -56,22 +59,20 @@ export class ChallengeComponent implements OnInit {
     this.currentHint = '';
   }
   addConfig() {
-    this.challenge.config.set(this.currentKey, this.currentValue);
+    this.mapConfig.set(this.currentKey, this.currentValue);
     this.currentKey = '';
     this.currentValue = '';
-    console.log(this.challenge.config);
   }
   removeConfig(key: string) {
-    this.challenge.config.delete(key);
+    this.mapConfig.delete(key);
   }
   addData() {
-    this.challenge.data.set(this.currentKeyData, this.currentValueData);
+    this.mapData.set(this.currentKeyData, this.currentValueData);
     this.currentKeyData = '';
     this.currentValueData = '';
-    console.log(this.challenge.data);
   }
   removeData(key: string) {
-    this.challenge.data.delete(key);
+    this.mapData.delete(key);
   }
   removeHint() {
     this.challenge.hints.pop();
@@ -92,6 +93,20 @@ export class ChallengeComponent implements OnInit {
   }
 
   createChallenge() {
+    this.mapConfig.forEach((value, key) => {
+      this.challenge.config[key] = value;
+    });
+    this.mapData.forEach((value, key) => {
+      this.challenge.data[key] = value;
+    });
+    // clear entries
+    this.mapConfig.clear();
+    this.mapData.clear();
+
+    console.log(this.challenge.data);
+    console.log(this.challenge.config);
+
+    //
     this.challengeService.createChallenge(this.challenge).subscribe( () => {
       this.snackBar.open('Challenge created', 'Ok', {
         duration: 3000
