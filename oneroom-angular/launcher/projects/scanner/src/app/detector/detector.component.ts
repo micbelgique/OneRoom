@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
-import { User, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
+import { User, HubService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
@@ -66,7 +66,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private hubService: LeaderboardService,
+    private hubService: HubService,
     private predictionService: CustomVisionPredictionService,
     private bottomSheet: MatBottomSheet,
     private sanitizer: DomSanitizer) {

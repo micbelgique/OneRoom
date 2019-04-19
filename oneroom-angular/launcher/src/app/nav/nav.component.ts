@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import { User, UserService, Team, TeamService, LeaderboardService, Game } from '@oneroomic/oneroomlibrary';
+import { User, UserService, Team, TeamService, HubService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
 
@@ -24,7 +24,7 @@ export class NavComponent implements OnInit {
     private modal: MatDialog,
     private userService: UserService,
     private teamService: TeamService,
-    private hubService: LeaderboardService
+    private hubService: HubService
   ) { }
 
   ngOnInit() {

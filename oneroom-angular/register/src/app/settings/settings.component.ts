@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, LeaderboardService } from '@oneroomic/oneroomlibrary';
+import { Game, GameService, HubService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-settings',
@@ -28,7 +28,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     private toast: MatSnackBar,
     private gameService: GameService,
-    private hubService: LeaderboardService) {
+    private hubService: HubService) {
     }
 
   ngOnInit() {
