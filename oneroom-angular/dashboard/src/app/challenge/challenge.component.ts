@@ -1,4 +1,4 @@
-import { Component, OnInit, ɵConsole } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { MatSnackBar } from '@angular/material';
 import { trigger, state, transition, animate, style } from '@angular/animations';
@@ -20,6 +20,10 @@ export class ChallengeComponent implements OnInit {
   currentHint = '';
   currentKey = '';
   currentValue = '';
+
+  currentKeyData = '';
+  currentValueData = '';
+
   config = [];
   // challenge to add
   challenge: Challenge;
@@ -59,6 +63,15 @@ export class ChallengeComponent implements OnInit {
   }
   removeConfig(key: string) {
     this.challenge.config.delete(key);
+  }
+  addData() {
+    this.challenge.data.set(this.currentKeyData, this.currentValueData);
+    this.currentKeyData = '';
+    this.currentValueData = '';
+    console.log(this.challenge.data);
+  }
+  removeData(key: string) {
+    this.challenge.data.delete(key);
   }
   removeHint() {
     this.challenge.hints.pop();

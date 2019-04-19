@@ -7,6 +7,7 @@
     </mat-expansion-panel-header>
     <mat-card-content>
       <div style="text-align: center">
+
       <mat-form-field style="width: 90%">
         <input matInput placeholder="Titre" type='text' [(ngModel)]="challenge.title" value='{{challenge.title}}'>
       </mat-form-field>
@@ -32,31 +33,37 @@
       </mat-form-field>
 
       <!-- answers : List -->
+      <h3>Answers</h3>
       <div *ngFor="let item of challenge.answers">
-        <mat-form-field style="width: 100%">
+        <mat-form-field style="width: 90%">
           <input matInput placeholder="Réponses" type='text' [(ngModel)]="item" disabled>
         </mat-form-field>
       </div>
-      <mat-form-field style="width: 100%">
+      <mat-form-field style="width: 90%">
         <input matInput placeholder="Réponse" type='text' [(ngModel)]="currentAnswer" >
       </mat-form-field>
-      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeAnswer()' color="warn" >Retirer une réponse</button>
+
       <button style="width: 49%; margin:5px" mat-raised-button (click)='addAnswer()' color="primary" >Ajouter une réponse</button>
 
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeAnswer()' color="warn" >Retirer une réponse</button>
+
       <!-- Hints : List -->
+      <h3>Indices</h3>
       <div *ngFor="let item of challenge.hints">
-        <mat-form-field style="width: 100%">
+        <mat-form-field style="width: 90%">
           <input matInput placeholder="Indice" type='text' [(ngModel)]="item" disabled>
         </mat-form-field>
       </div>
-      <mat-form-field style="width: 100%">
+      <mat-form-field style="width: 90%">
         <input matInput placeholder="indice" type='text' [(ngModel)]="currentHint" >
       </mat-form-field>
 
-      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeHint()' color="warn" >Retirer une indice</button>
       <button style="width: 49%; margin:5px" mat-raised-button (click)='addHint()' color="primary" >Ajouter un indice</button>
 
+      <button style="width: 49%; margin:5px" mat-raised-button (click)='removeHint()' color="warn" >Retirer une indice</button>
+
       <!-- Config : dictionary -->
+      <h3>Configuration</h3>
       <div *ngFor="let item of challenge.config | keyvalue">
         <mat-form-field style="width: 45%;margin: 2%">
           <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
@@ -73,6 +80,25 @@
         <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentValue'>
       </mat-form-field>
       <button style="width: 100%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
+
+      <!-- Data : dictionary -->
+      <h3>Data</h3>
+      <div *ngFor="let item of challenge.data | keyvalue">
+          <mat-form-field style="width: 45%;margin: 2%">
+            <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
+          </mat-form-field>
+          <mat-form-field style="width: 45%;margin: 2%">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
+          </mat-form-field>
+          <button style="width: 100%; margin:5px" mat-raised-button (click)='removeData(item.key)' color="warn" >Retirer une configuration</button>
+        </div>
+        <mat-form-field style="width: 45%;margin: 2%">
+          <input matInput placeholder="Clé" type='text' [(ngModel)]="currentKeyData">
+        </mat-form-field>
+        <mat-form-field style="width: 45%;margin: 2%">
+          <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentValueData'>
+        </mat-form-field>
+        <button style="width: 100%; margin:5px" mat-raised-button (click)='addData()' color="primary" >Ajouter une configuration</button>
 
     </div>
     </mat-card-content>

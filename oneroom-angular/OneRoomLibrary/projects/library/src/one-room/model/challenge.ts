@@ -1,4 +1,3 @@
-import { ConfigDictionary } from './config-dictionary';
 
 export class Challenge {
   challengeId: number;
@@ -10,5 +9,6 @@ export class Challenge {
   hints: string[] = [];
   answers: string[] = [];
   config: Map<string, string> = new Map();
+  data: Map<string, string> = new Map();
   completed: boolean;
 }

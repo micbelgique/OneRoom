@@ -20,7 +20,6 @@ export * from './one-room/model/challenge';
 export * from './one-room/model/scenario';
 export * from './one-room/model/configuration';
 export * from './one-room/model/game-state.enum';
-export * from './one-room/model/config-dictionary';
 export * from './one-room/team.service';
 export * from './one-room/user.service';
 export * from './one-room/challenge.service';
