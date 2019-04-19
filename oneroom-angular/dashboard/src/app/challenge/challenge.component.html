@@ -6,23 +6,28 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-card-content>
-      <mat-form-field style="width: 100%">
+      <div style="text-align: center">
+      <mat-form-field style="width: 90%">
         <input matInput placeholder="Titre" type='text' [(ngModel)]="challenge.title" value='{{challenge.title}}'>
       </mat-form-field>
 
-      <mat-form-field style="width: 100%">
+      <mat-form-field style="width: 90%">
           <textarea matInput placeholder="Description" type='text' [(ngModel)]="challenge.description" value='{{challenge.description}}'></textarea>
-        </mat-form-field>
-
-      <mat-form-field style="width: 100%">
-        <input matInput placeholder="App Name" type='text' [(ngModel)]="challenge.appName" value='{{challenge.appName}}'>
       </mat-form-field>
 
-      <mat-form-field style="width: 100%">
+      <mat-form-field style="width: 90%">
+          <mat-select i18n="@@settingsConfiguration" [(ngModel)]="challenge.appName" placeholder="App name" >
+            <mat-option *ngFor="let app of this.appSelections; let i = index" [value]="app">
+              {{app}}
+            </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field style="width: 90%">
         <input matInput placeholder="Order" type='text' [(ngModel)]="challenge.order" value='{{challenge.order}}'>
       </mat-form-field>
 
-      <mat-form-field style="width: 100%">
+      <mat-form-field style="width: 90%">
         <input matInput placeholder="Time Box" type='text' [(ngModel)]="challenge.timeBox" value='{{challenge.timeBox}}'>
       </mat-form-field>
 
@@ -69,6 +74,7 @@
       </mat-form-field>
       <button style="width: 100%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
 
+    </div>
     </mat-card-content>
     <mat-card-actions>
       <div style="text-align: center">

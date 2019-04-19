@@ -100,6 +100,11 @@ namespace oneroom_api.data
                 .HasConversion(
                     co => JsonConvert.SerializeObject(co),
                     co => JsonConvert.DeserializeObject<Dictionary<string, string>>(co));
+            modelBuilder.Entity<Challenge>()
+               .Property(ch => ch.Data)
+               .HasConversion(
+                   co => JsonConvert.SerializeObject(co),
+                   co => JsonConvert.DeserializeObject<Dictionary<string, string>>(co));
         }
 
     }

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
@@ -18,7 +18,8 @@ export enum KEY_CODE {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+
   title = 'launcher';
   opened = false;
   sidenavEmitter = new Subject<boolean>();
@@ -50,5 +51,9 @@ export class AppComponent implements OnInit {
 
   isLogged() {
     return  !(localStorage.getItem('user') === null);
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroying');
   }
 }

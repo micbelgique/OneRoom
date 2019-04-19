@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, HubService, GameState } from '@oneroomic/oneroomlibrary';
+import { Game, GameService, HubService, GameState, ChallengeService } from '@oneroomic/oneroomlibrary';
 
 export enum KEY_CODE {
   UP_ARROW = 38,
@@ -43,7 +43,8 @@ export class SettingsComponent implements OnInit {
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
-      private hubService: HubService
+      private hubService: HubService,
+      private challengeService: ChallengeService
       ) {}
 
     ngOnInit() {
@@ -72,6 +73,11 @@ export class SettingsComponent implements OnInit {
         });
 
         this.refreshGameState(this.game);
+        //
+        if (this.game.scenario.scenarioId) {
+          this.getChallenges(this.game.scenario.scenarioId);
+        }
+
       } else {
         this.game = new Game();
         this.game.groupName = null;
@@ -150,6 +156,10 @@ export class SettingsComponent implements OnInit {
         localStorage.removeItem('user');
         localStorage.removeItem('teamData');
 
+        if (this.game.scenario.scenarioId) {
+          this.getChallenges(this.game.scenario.scenarioId);
+        }
+
         if (game.config) {
           console.log(game.config);
           this.saveConfiguration();
@@ -188,6 +198,17 @@ export class SettingsComponent implements OnInit {
         (err) => {
           console.log(err);
         }
+      );
+    }
+
+    getChallenges(scenarioId: number) {
+      console.log(scenarioId);
+      const res$ = this.challengeService.getChallengesByScenario(scenarioId);
+      res$.subscribe(
+        (challenges) => {
+          console.log(challenges);
+        },
+        (err) => console.log(err)
       );
     }
 

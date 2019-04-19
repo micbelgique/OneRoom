@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { stringify } from '@angular/core/src/render3/util';
 
 export interface Tile {
   color: string;

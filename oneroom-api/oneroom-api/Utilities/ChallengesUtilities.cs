@@ -16,7 +16,8 @@ namespace oneroom_api.Utilities
                 TimeBox = challenge.TimeBox,
                 Hints = challenge.Hints,
                 Answers = challenge.Answers,
-                Config = challenge.Config
+                Config = challenge.Config,
+                Data = challenge.Data
             };
         }
 
@@ -33,6 +34,7 @@ namespace oneroom_api.Utilities
                 Hints = challenge.Hints,
                 Answers = challenge.Answers,
                 Config = challenge.Config,
+                Data = challenge.Data,
                 Completed = completed
             };
         }
@@ -49,7 +51,8 @@ namespace oneroom_api.Utilities
                 TimeBox = challengeDto.TimeBox,
                 Hints = challengeDto.Hints,
                 Answers = challengeDto.Answers,
-                Config = challengeDto.Config
+                Config = challengeDto.Config,
+                Data = challengeDto.Data
             };
         }
     }

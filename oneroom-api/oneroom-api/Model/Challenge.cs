@@ -35,8 +35,10 @@ namespace oneroom_api.Model
         public int TimeBox { get; set; }
         public List<string> Hints { get; set; } = new List<string>();
         public List<string> Answers { get; set; } = new List<string>();
+        // dictionary config
         public Dictionary<string, string> Config { get; set; } = new Dictionary<string, string>();
-
+        // dictionary various data
+        public Dictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
         public List<ScenarioChallenge> ScenarioChallenges { get; set; } = new List<ScenarioChallenge>();
         public List<TeamChallenge> TeamChallenges { get; set; } = new List<TeamChallenge>();
 
