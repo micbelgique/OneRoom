@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {User, Team, UserService, TeamService, LeaderboardService, Game, GameService, GameState} from '@oneroomic/oneroomlibrary';
+import {User, Team, UserService, TeamService, HubService, Game, GameService, GameState} from '@oneroomic/oneroomlibrary';
 import { timer } from 'rxjs';
 
 @Component({
@@ -44,7 +44,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private teamService: TeamService,
     private gameService: GameService,
-    private hubService: LeaderboardService
+    private hubService: HubService
     ) { }
 
   ngOnInit() {

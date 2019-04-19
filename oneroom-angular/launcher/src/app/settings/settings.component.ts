@@ -1,7 +1,6 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, LeaderboardService, GameState } from '@oneroomic/oneroomlibrary';
-import { Router } from '@angular/router';
+import { Game, GameService, HubService, GameState } from '@oneroomic/oneroomlibrary';
 
 export enum KEY_CODE {
   UP_ARROW = 38,
@@ -44,7 +43,7 @@ export class SettingsComponent implements OnInit {
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
-      private hubService: LeaderboardService
+      private hubService: HubService
       ) {}
 
     ngOnInit() {
