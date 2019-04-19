@@ -1,14 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Game, GameService, HubService, GameState, ChallengeService } from '@oneroomic/oneroomlibrary';
-
-export enum KEY_CODE {
-  UP_ARROW = 38,
-  DOWN_ARROW = 40,
-  RIGHT_ARROW = 39,
-  LEFT_ARROW = 37,
-  SPACE = 32
-}
+import { Game, GameService, HubService, GameState, ChallengeService, Challenge } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-settings',
@@ -32,14 +24,6 @@ export class SettingsComponent implements OnInit {
     // Custom vision
     callCustomVisionStatus = true;
 
-  /*
-    @HostListener('window:keyup', ['$event'])
-    keyEvent(event: KeyboardEvent) {
-    if ( event.keyCode === KEY_CODE.UP_ARROW) {
-      this.router.navigateByUrl('/lock');
-      }
-    }
-  */
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
@@ -141,7 +125,6 @@ export class SettingsComponent implements OnInit {
 
 
     getGame() {
-      console.log(this.game.groupName);
       const resGame$ = this.gameService.getGame(this.game.groupName);
       resGame$.subscribe( (game: Game) => {
         console.log(game);
@@ -205,7 +188,9 @@ export class SettingsComponent implements OnInit {
       console.log(scenarioId);
       const res$ = this.challengeService.getChallengesByScenario(scenarioId);
       res$.subscribe(
-        (challenges) => {
+        (challenges: Challenge[]) => {
+          // saves all challenges from game
+          localStorage.setItem('challengesData', JSON.stringify(challenges));
           console.log(challenges);
         },
         (err) => console.log(err)
