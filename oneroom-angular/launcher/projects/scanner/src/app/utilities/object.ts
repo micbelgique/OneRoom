@@ -4,9 +4,8 @@ export class Objects {
   hint: string;
   image = null;
 
-  constructor(label, description, hint) {
+  constructor(label, description) {
     this.label = label;
     this.description = description;
-    this.hint = hint;
-  }
+s  }
 }
