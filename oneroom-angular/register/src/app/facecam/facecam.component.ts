@@ -5,7 +5,7 @@ import { Group, FaceProcessService, CustomVisionPredictionService, ImagePredicti
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
-import { User, UserService, FaceService, LeaderboardService, GameService, Game, Face, GlassesType, GameState } from '@oneroomic/oneroomlibrary';
+import { User, UserService, FaceService, GameService, Game, Face, GlassesType, GameState, HubService } from '@oneroomic/oneroomlibrary';
 // patch electron
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -86,7 +86,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private faceService: FaceService,
     private customVisionPredictionService: CustomVisionPredictionService,
-    private hubService: LeaderboardService,
+    private hubService: HubService,
     private gameService: GameService) {
       this.opencam();
       this.loadModels();

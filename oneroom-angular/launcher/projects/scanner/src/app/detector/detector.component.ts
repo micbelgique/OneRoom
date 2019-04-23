@@ -6,6 +6,7 @@ import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Objects } from '../utilities/object';
+import { Dictionary } from '@oneroomic/oneroomlibrary/one-room/model/dictionary';
 
 @Component({
   selector: 'app-detector',
@@ -58,7 +59,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   // detection overlay objects detected
   objectsOverlay: Objects[] = [];
-  objectsDictionary: Objects[] = [];
+  objectsDictionary: Dictionary;
 
   // tslint:disable-next-line:max-line-length
   private customVisionEndpoint = 'https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15';
@@ -118,6 +119,15 @@ export class DetectorComponent implements OnInit, OnDestroy {
     // game context
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
+      // TODO retrieve challenge info
+    }
+
+    if (localStorage.getItem('challengesData')) {
+      const challenge: Challenge = JSON.parse(localStorage.getItem('challengesData')).filter(c => c.appName === 'scanner')[0];
+      console.log(challenge);
+      this.objectsDictionary = challenge.data;
+      this.customVisionEndpoint = challenge.config['customVisionEndpoint'];
+      this.customVisionKey = challenge.config['customVisionKey'];
       // TODO retrieve challenge info
     }
   }

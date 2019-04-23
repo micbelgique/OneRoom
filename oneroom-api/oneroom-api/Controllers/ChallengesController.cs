@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using oneroom_api.data;
+using System;
+using Microsoft.AspNetCore.SignalR;
+using oneroom_api.Hubs;
 
 namespace oneroom_api.Controllers
 {
@@ -14,10 +17,12 @@ namespace oneroom_api.Controllers
     public class ChallengesController : ControllerBase
     {
         private readonly OneRoomContext _context;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public ChallengesController(OneRoomContext context)
+        public ChallengesController(OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             _context = context;
+            _hubClients = hubClients;
         }
 
         // GET: api/Challenges
@@ -103,6 +108,31 @@ namespace oneroom_api.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetChallenge", new { id = challenge.ChallengeId }, challenge.ToDto());
+        }
+
+        // POST: api/Games/5/Teams/6/Challenges
+        [HttpPost("~/api/Games/{GameId}/Teams/{TeamId}/Challenge/{ChallengeId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult> SetChallengeCompleted(int GameId, int TeamId, int ChallengeId)
+        {
+            Team team = await _context.Teams.Include(t => t.TeamChallenges)
+                                            .SingleOrDefaultAsync(t => t.GameId == GameId && t.TeamId == TeamId);
+
+            if (team == null) return NotFound("There is no team with id:" + TeamId + ". Or the game with id:" + GameId + " doesn't exist.");
+
+            try
+            {
+                team.TeamChallenges.SingleOrDefault(tc => tc.ChallengeId == ChallengeId).Completed = true;                
+            } catch (NullReferenceException)
+            {
+                return NotFound("There is no challenge with id:" + ChallengeId);
+            }
+
+            await _context.SaveChangesAsync();
+            await _hubClients.Clients.Group(GameId.ToString()).HasCompletedChallenge(TeamId, ChallengeId);
+
+            return NoContent();
         }
 
         // POST: api/Scenarios/5/Challenges

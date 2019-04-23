@@ -114,7 +114,7 @@ export class ChallengeComponent implements OnInit {
 
   public deleteChallenge(challenge: Challenge) {
     this.challengeService.deleteChallenge(challenge.challengeId).subscribe( (c: Challenge) => {
-        this.snackBar.open('Game removed', 'Ok', {
+        this.snackBar.open('Challenge removed', 'Ok', {
           duration: 1000
         });
         this.refreshChallenges();
