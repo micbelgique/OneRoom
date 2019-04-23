@@ -78,7 +78,7 @@ namespace oneroom_api.Controllers
 
             if (game.Scenario == null) return BadRequest("The game doesn't contains any Scenario");
 
-            if (game.Scenario.ScenarioChallenges.Count > 0) return BadRequest("The Scenario doesn't contains any Challenges");
+            if (game.Scenario.ScenarioChallenges.Count == 0) return BadRequest("The Scenario doesn't contains any Challenges");
 
             if (game.Users.Count(u => u.Recognized >= game.Config.MinimumRecognized) < numOfTeams) return BadRequest("There isn't enough players to create " + numOfTeams + " teams");
 

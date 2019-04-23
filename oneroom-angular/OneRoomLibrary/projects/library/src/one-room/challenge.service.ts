@@ -47,4 +47,9 @@ export class ChallengeService {
     };
     return this.http.delete<boolean>(this.EPGetter.getEndPointUrl() + '/Scenarios/' + ScenarioId + '/Challenges', httpOptions);
   }
+
+  // Challenges in Teams
+  setCompleted(teamId: number, challengeId: number): Observable<Challenge[]> {
+    return this.http.get<Challenge[]>(this.EPGetter.getEndPointUrl() + '/Teams/' + teamId + '/Challenge/' + challengeId );
+  }
 }

@@ -15,6 +15,7 @@ interface MonitoringMethods extends SignalrMethods {
   CreateUser: SignalrMethod;
   DeleteUser: SignalrMethod;
   HighlightUser: SignalrMethod;
+  HasCompletedChallenge: SignalrMethod;
 }
 
 @Injectable({
@@ -58,6 +59,10 @@ export class HubService extends SignalRCoreService<MonitoringMethods> {
   private _finishGame = new EventEmitter<any>();
   public finishGame = this._finishGame.asObservable();
 
+  // tslint:disable-next-line:variable-name
+  private _hasCompletedChallenge = new EventEmitter<{teamId: number, challengeId: number}>();
+  public hasCompletedChallenge = this._finishGame.asObservable();
+
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;
   protected connectionTryDelay = 10000;
@@ -71,7 +76,8 @@ export class HubService extends SignalRCoreService<MonitoringMethods> {
     CreateUser: (result) => this._createUser.emit(result),
     DeleteUser: (result) => this._deleteUser.emit(result),
     HighlightUser: (userId) => this._highlightUser.emit(userId),
-    FinishGame: (teamId) => this._finishGame.emit(teamId)
+    FinishGame: (teamId) => this._finishGame.emit(teamId),
+    HasCompletedChallenge: (teamId, challengeId) => this._hasCompletedChallenge.emit({teamId, challengeId}),
   };
 
   constructor() {
