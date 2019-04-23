@@ -3,7 +3,7 @@ import * as faceapi from 'face-api.js';
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatSnackBar } from '@angular/material';
-import { FaceProcessService, Group } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService } from '@oneroomic/facecognitivelibrary';
 import { UserService, Game } from '@oneroomic/oneroomlibrary';
 import {Router} from '@angular/router';
 

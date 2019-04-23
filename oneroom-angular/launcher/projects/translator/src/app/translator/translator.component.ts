@@ -3,6 +3,7 @@ import MediaStreamRecorder from 'msr';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'projects/translator/src/environments/environment';
 import { TextToSpeechService, SpeechToTextService, TranslateService } from '@oneroomic/facecognitivelibrary';
+import { Challenge } from '@oneroomic/oneroomlibrary';
 
 class Lang {
   constructor(public name, public locale) {}
@@ -29,13 +30,13 @@ export class TranslatorComponent implements OnInit {
     video: false
   };
   lang: Lang[] = [];
-
-  private translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
-  private translateKey = '14d3566a4d5b48e98d63ac050434d641';
-  private textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
-  private textToSpeechKey = environment.googleSubTextKey;
-  private speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
-  private speechToTextKey = environment.googleSubKeySpeech;
+  private challenge: Challenge;
+  private translateEndpoint = '';
+  private translateKey = '';
+  private textToSpeechEndpoint = '';
+  private textToSpeechKey = '';
+  private speechToTextEndpoint = '';
+  private speechToTextKey = '';
 
   constructor(
     private textToSpeechService: TextToSpeechService,
@@ -54,6 +55,23 @@ export class TranslatorComponent implements OnInit {
 
 
   ngOnInit() {
+    // tslint:disable-next-line:max-line-length
+    if (localStorage.getItem('challengesData')) {
+      this.challenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'traduction');
+      this.translateEndpoint = this.challenge.config.translateEndpoint;
+      this.translateKey = this.challenge.config.translateKey;
+      this.speechToTextEndpoint = this.challenge.config.speechToTextEndpoint;
+      this.speechToTextKey = this.challenge.config.speechToTextKey;
+      this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
+      this.textToSpeechKey = this.challenge.config.textToSpeechKey;
+    } else {
+      this.translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
+      this.translateKey = '14d3566a4d5b48e98d63ac050434d641';
+      this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
+      this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
+      this.textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
+      this.textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
+    }
     this.languageOne = 'fr-FR';
     this.languageTwo = 'en-US';
 
