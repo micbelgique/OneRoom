@@ -102,10 +102,6 @@ export class ChallengeComponent implements OnInit {
     // clear entries
     this.mapConfig.clear();
     this.mapData.clear();
-
-    console.log(this.challenge.data);
-    console.log(this.challenge.config);
-
     //
     this.challengeService.createChallenge(this.challenge).subscribe( () => {
       this.snackBar.open('Challenge created', 'Ok', {
