@@ -94,7 +94,7 @@ export class ScenarioComponent implements OnInit {
   addChallengesToScenario( scenario: Scenario, challenges: Challenge[]) {
     if (challenges.length > 0) {
       this.challengeService.addChallengeToScenario( scenario.scenarioId, challenges).subscribe(() => {
-        this.snackBar.open('Challenges added', 'Ok', {
+        this.snackBar.open('Challenge(s) added', 'Ok', {
           duration: 1000
         });
         },
@@ -109,7 +109,7 @@ export class ScenarioComponent implements OnInit {
     if (challenges.length > 0) {
       console.log(challenges);
       this.challengeService.deleteChallengeFromScenario( scenario.scenarioId, challenges).subscribe(() => {
-        this.snackBar.open('Challenges deleted', 'Ok', {
+        this.snackBar.open('Challenge(s) deleted', 'Ok', {
           duration: 1000
         });
         },

@@ -103,8 +103,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
       // TODO retrieve challenge info
     }
 
-    if (localStorage.getItem('challengeData')) {
-      const challenge: Challenge = JSON.parse(localStorage.getItem('challengeData')).filter(c => c.appName === 'scanner')[0];
+    if (localStorage.getItem('challengesData')) {
+      const challenge: Challenge = JSON.parse(localStorage.getItem('challengesData')).filter(c => c.appName === 'scanner')[0];
+      console.log(challenge);
       this.objectsDictionary = challenge.data;
       this.customVisionEndpoint = challenge.config['customVisionEndpoint'];
       this.customVisionKey = challenge.config['customVisionKey'];
