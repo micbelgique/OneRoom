@@ -24,6 +24,8 @@ export class SettingsComponent implements OnInit {
     // Custom vision
     callCustomVisionStatus = true;
 
+    challenges: Challenge[] = [];
+
     constructor(
       private toast: MatSnackBar,
       private gameService: GameService,
@@ -38,7 +40,6 @@ export class SettingsComponent implements OnInit {
       // game
       if (localStorage.getItem('gameData')) {
         this.game = JSON.parse(localStorage.getItem('gameData'));
-        console.log(this.game);
 
         // join group signalr
         this.hubServiceSub = this.hubService.run().subscribe(
@@ -101,7 +102,7 @@ export class SettingsComponent implements OnInit {
 
     saveCoordinatorSettings(): void {
       localStorage.setItem('endpoint', this.endPoint);
-      this.toast.open('Settings updated', 'Ok', {
+      this.toast.open('Endpoint mis à jour', 'Ok', {
         duration: 2000
       });
       this.loadGames();
@@ -118,7 +119,7 @@ export class SettingsComponent implements OnInit {
 
       localStorage.setItem('refreshRate', '' + this.game.config.refreshRate);
 
-      this.toast.open('Settings updated', 'Ok', {
+      this.toast.open('Configuration mise à jour', 'Ok', {
         duration: 2000
       });
     }
@@ -155,12 +156,12 @@ export class SettingsComponent implements OnInit {
       const status = localStorage.getItem('cognitiveStatus');
       if (status === 'true') {
         localStorage.setItem('cognitiveStatus', 'false');
-        this.toast.open('Calls face disabled', 'Ok', {
+        this.toast.open('Appels face désactivé', 'Ok', {
           duration: 2000
         });
       } else {
         localStorage.setItem('cognitiveStatus', 'true');
-        this.toast.open('Calls face enabled', 'Ok', {
+        this.toast.open('Appels face activé', 'Ok', {
           duration: 2000
         });
       }
@@ -190,7 +191,11 @@ export class SettingsComponent implements OnInit {
       res$.subscribe(
         (challenges: Challenge[]) => {
           // saves all challenges from game
+          this.challenges = challenges;
           localStorage.setItem('challengesData', JSON.stringify(challenges));
+          this.toast.open('Challenges configurés', 'Ok', {
+            duration: 2000
+          });
           console.log(challenges);
         },
         (err) => console.log(err)

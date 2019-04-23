@@ -49,7 +49,9 @@ export class TranslatorComponent implements OnInit {
     this.lang.push(new Lang('Chinois', 'zh-HK'));
     this.lang.push(new Lang('Néerlandais', 'nl-NL'));
     this.lang.push(new Lang('Vietnamien', 'vi-VN'));
+    this.lang.push(new Lang('Espagnol', 'es-ES'));
   }
+
 
   ngOnInit() {
     this.languageOne = 'fr-FR';

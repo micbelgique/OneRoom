@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Challenge, Team, Game } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-lockscreen',
@@ -10,31 +11,53 @@ import { Router } from '@angular/router';
 export class LockscreenComponent implements OnInit {
 
   password: string;
+  background = 'white';
+  hint = '';
 
-  constructor(private httpClient: HttpClient, private router: Router) {
+  game: Game;
+  challenge: Challenge;
+  team: Team;
+
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
+    this.background = 'white';
+    this.hint = '';
+
+    if ( localStorage.getItem('gameData') ) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+    }
+
+    if (localStorage.getItem('challengesData')) {
+      let challenges = JSON.parse(localStorage.getItem('challengesData'));
+      challenges = challenges.filter( c => c.appName === 'coffre');
+      if (challenges.length > 0) {
+        this.challenge = challenges[0];
+        if (this.challenge.hints.length > 0) {
+          this.hint = this.challenge.hints[0];
+        }
+      }
+    }
+
+    if (localStorage.getItem('teamData')) {
+      this.team = JSON.parse(localStorage.getItem('teamData'));
+    }
+
   }
 
   unlock() {
-    if (localStorage.getItem('gameData') && localStorage.getItem('teamData')) {
-      // tslint:disable-next-line:max-line-length
-      const endpoint = localStorage.getItem('endpoint') + '/Vault/' + JSON.parse(localStorage.getItem('gameData')).gameId + '/' + JSON.parse(localStorage.getItem('teamData')).teamId;
-      // tslint:disable-next-line:max-line-length
-      const res$ = this.httpClient.post<boolean>(endpoint, this.password, {headers: new HttpHeaders({'Content-Type': 'application/json'})});
-      res$.subscribe(
-      (res: boolean) => {
-        if (res === true) {
-          console.log('success');
-          this.router.navigateByUrl('/vault/main');
-        } else {
-          console.log('fail');
-        }
-      },
-      () => {
-        console.log('fail');
-      });
+    if (this.team && this.challenge && this.game) {
+      if (this.challenge.answers.indexOf(this.password) !== -1) {
+        // success
+        this.background = '#66bb6a';
+        setTimeout(() =>  this.router.navigateByUrl('/vault/main'), 2000);
+      } else {
+        // fail
+        this.background = '#ef5350';
+      }
+    } else {
+      console.log('Game, équipe, challenge non configuré');
     }
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { User, Game, Team, GameState } from '@oneroomic/oneroomlibrary';
+import { User, Game, Team, GameState, Challenge } from '@oneroomic/oneroomlibrary';
 import { environment } from '../../environments/environment';
 import { replies } from '../utilities/reply-fr';
 import { Subject } from 'rxjs';
@@ -62,6 +62,9 @@ export class ChatComponent implements OnInit {
   user: User;
   game: Game;
   team: Team;
+  challenges: Challenge[] = [];
+  challenge: Challenge;
+  dialog = false;
 
   // audio response
   @ViewChild('player')
@@ -87,6 +90,13 @@ export class ChatComponent implements OnInit {
     }
     if ( localStorage.getItem('teamData')) {
       this.team = JSON.parse(localStorage.getItem('teamData'));
+    }
+    if (localStorage.getItem('challengesData')) {
+      this.challenges = JSON.parse(localStorage.getItem('challengesData'));
+      const idx = this.challenges.map(c => c.appName).indexOf('chatbot');
+      if ( idx !== -1 ) {
+        this.challenge = this.challenges[idx];
+      }
     }
     // selection of bot
     this.currentBot = this.bots[0];
@@ -116,6 +126,7 @@ export class ChatComponent implements OnInit {
   }
 
   askStephane() {
+
     if (this.question === null || this.question === '' || this.question.length < 3) {
       return;
     }
@@ -156,6 +167,23 @@ export class ChatComponent implements OnInit {
 
   processResponse(response: any): string {
     let responseChatbot = '';
+
+    if (this.question.includes(this.challenge.data.trigger)) {
+      // asking question
+      this.dialog = true;
+      return this.challenge.data.question;
+    }
+
+    console.log(this.question);
+    console.log(this.challenge.answers);
+    if (this.dialog === true && this.challenge.answers[0] === this.question) {
+      // success
+      this.dialog = false;
+      return 'Bonne réponse, voici le code du cadenas de la porte';
+    } else if (this.dialog === true) {
+      return 'Mauvaise réponse ! Réessayer';
+    }
+
     // retrieve target action for the intent
     const intent = response.topScoringIntent.intent;
     const targetAction = response.entities.filter(e => e.type.indexOf('Actions') > -1);
@@ -677,7 +705,13 @@ export class ChatComponent implements OnInit {
     // histoire
     if (responseChatbot.includes('%game::story%')) {
       // tslint:disable-next-line:max-line-length
-      responseChatbot = responseChatbot.replace('%game::story%', 'Bienvenue dans une expérience unique, vous allez être confronter à différentes énigmes, pour les résoudre faites preuve de créativité et de bon sens, vous êtes enfermez dans cette pièce, pour en sortir, trouvez la clé, vous avez des outils votre disposition. C\'est tout pour le moment, bonne chance...');
+      let scenario = 'Aucun scénario configuré';
+      if ( this.game.scenario.description ) {
+        scenario = this.game.scenario.description;
+      }
+      responseChatbot = responseChatbot.replace('%game::story%', scenario);
+      // tslint:disable-next-line:max-line-length
+      // Bienvenue dans une expérience unique, vous allez être confronter à différentes énigmes, pour les résoudre faites preuve de créativité et de bon sens, vous êtes enfermez dans cette pièce, pour en sortir, trouvez la clé, vous avez des outils votre disposition. C\'est tout pour le moment, bonne chance...
     }
     // lieu
     if (responseChatbot.includes('%game::place%')) {
@@ -690,7 +724,16 @@ export class ChatComponent implements OnInit {
     }
     // indice
     if (responseChatbot.includes('%game::hint%')) {
-      responseChatbot = responseChatbot.replace('%game::hint%', '...');
+      // tslint:disable-next-line:max-line-length
+      const challengesNotCompleted = this.challenges.sort( (c1, c2) => Number(c1.order) - Number(c2.order) ); // filter(c => c.completed === false)
+      if (challengesNotCompleted.length > 0) {
+        const idx = Math.floor(Math.random() * challengesNotCompleted.length);
+        // tslint:disable-next-line:no-unused-expression
+        const hint = challengesNotCompleted[idx].hints[Math.floor(Math.random() * challengesNotCompleted[idx].hints.length)];
+        responseChatbot = responseChatbot.replace('%game::hint%', hint);
+      } else {
+        responseChatbot = responseChatbot.replace('%game::hint%', 'Aucun challenge en cours');
+      }
     }
     // nom bot
     if (responseChatbot.includes('%bot::name%')) {

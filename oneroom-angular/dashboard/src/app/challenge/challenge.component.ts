@@ -35,7 +35,7 @@ export class ChallengeComponent implements OnInit {
   // column order
   displayedColumns: string[] = ['id', 'title', 'appName', 'order', 'timeBox', 'delete'];
   // apps available for challenges
-  appSelections = ['scanner', 'traducteur', 'coffre'];
+  appSelections = ['scanner', 'traducteur', 'coffre', 'chatbot'];
 
   constructor(private challengeService: ChallengeService,
               private snackBar: MatSnackBar) { }

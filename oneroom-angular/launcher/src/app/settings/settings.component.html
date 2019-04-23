@@ -104,6 +104,61 @@
   </mat-expansion-panel>
 </mat-accordion>
 
+<div *ngIf="this.challenges.length > 0">
+<h2 style="text-align: center">Challenges</h2>
+
+<mat-accordion *ngFor="let challenge of this.challenges" class="example-headers-align">
+    <mat-expansion-panel [expanded]=false>
+      <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title>[{{challenge.appName}}] {{challenge.title}}</div>
+          </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+            <h3>Ordre</h3>
+            <p>
+              {{challenge.order}}
+            </p>
+            <h3>Durée estimée</h3>
+            <p>
+              {{challenge.timeBox}}
+            </p>
+            <h3>Description</h3>
+            <p>
+              {{challenge.description}}
+            </p>
+            <h3>Indices</h3>
+            <ul>
+              <li *ngFor="let hint of challenge.hints">{{hint}}</li>
+            </ul>
+            <h3>Réponses</h3>
+            <ul>
+              <li *ngFor="let answer of challenge.answers">{{answer}}</li>
+            </ul>
+            <h3>Configuration</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let config of ( challenge.config | keyvalue )">
+                <td style="font-weight: bold">{{config.key}}</td>
+                <td>{{config.value}}</td>
+              </tr>
+            </table>
+            <h3>Data</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let data of ( challenge.data | keyvalue )">
+                <td style="font-weight: bold">{{data.key}}</td>
+                <td>{{data.value}}</td>
+              </tr>
+            </table>
+      </mat-card-content>
+      <mat-card-actions>
+            <div style="text-align: center">
+              <button style="width: 40%; margin:5px" mat-raised-button color="warn" i18n="@@settingsDelete">Delete</button>
+            </div>
+      </mat-card-actions>
+    </mat-expansion-panel>
+  </mat-accordion>
+
 </div>
 
+</div>
 </div>
