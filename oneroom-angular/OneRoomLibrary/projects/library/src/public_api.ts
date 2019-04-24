@@ -24,3 +24,4 @@ export * from './one-room/team.service';
 export * from './one-room/user.service';
 export * from './one-room/challenge.service';
 export * from './one-room/scenario.service';
+export * from './one-room/model/dictionary';

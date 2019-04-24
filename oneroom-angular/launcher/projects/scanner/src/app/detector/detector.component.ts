@@ -6,7 +6,6 @@ import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Objects } from '../utilities/object';
-import { Dictionary } from '@oneroomic/oneroomlibrary/one-room/model/dictionary';
 
 @Component({
   selector: 'app-detector',
@@ -59,7 +58,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   // detection overlay objects detected
   objectsOverlay: Objects[] = [];
-  objectsDictionary: Dictionary;
+  objectsDictionary: Objects[] = [];
 
   // tslint:disable-next-line:max-line-length
   private customVisionEndpoint = 'https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15';
@@ -72,25 +71,35 @@ export class DetectorComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     private sanitizer: DomSanitizer,
     private toast: MatSnackBar) {
+
+      // todo : remove in the future
+      this.objectsDictionary.push(
+        new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !'),
+        new Objects('plant', 'Du vert pour un environnement plus agréable, c est l idéal !'),
+        // 3225882695
+        new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants'),
+        new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps'),
+        new Objects('can', 'J adore ajouter de la poudre de lait dans mon café, quand elle est vide, je m en sert comme poubelle'),
+        new Objects('headset', 'Listening to music is my favorite thing to do'),
+        new Objects('calculator', 'A basic calculator')
+      );
+
       if (localStorage.getItem('challengesData')) {
-        this.challenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName = 'scanner');
-        // tslint:disable-next-line:forin
-        for (const key in this.challenge.data) {
-          this.objectsDictionary.push(new Objects(key, this.challenge.data[key]));
+        const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'scanner');
+        if (filteredChallenge.length > 0) {
+          this.challenge = filteredChallenge[0];
+          this.objectsDictionary = [];
+          // tslint:disable-next-line:no-string-literal
+          this.customVisionEndpoint = filteredChallenge.config['customVisionEndpoint'];
+          // tslint:disable-next-line:no-string-literal
+          this.customVisionKey = filteredChallenge.config['customVisionKey'];
+          // tslint:disable-next-line:forin
+          for (const key in this.challenge.data) {
+            this.objectsDictionary.push(new Objects(key, this.challenge.data[key]));
+          }
         }
-      } else {
-        this.objectsDictionary.push(
-          new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !'),
-          new Objects('plant', 'Du vert pour un environnement plus agréable, c est l idéal !'),
-          // 3225882695
-          new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants'),
-          new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps'),
-          new Objects('can', 'J adore ajouter de la poudre de lait dans mon café, quand elle est vide, je m en sert comme poubelle'),
-          new Objects('headset', 'Listening to music is my favorite thing to do'),
-          new Objects('calculator', 'A basic calculator')
-        );
       }
-      // TODO : get from challenge in API
+
       this.stream = null;
       this.opencam();
     }
@@ -115,20 +124,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
       if (this.refreshRate < 250) {
         this.refreshRate = 3000;
       }
-    }
-    // game context
-    if (localStorage.getItem('gameData')) {
-      const game: Game = JSON.parse(localStorage.getItem('gameData'));
-      // TODO retrieve challenge info
-    }
-
-    if (localStorage.getItem('challengesData')) {
-      const challenge: Challenge = JSON.parse(localStorage.getItem('challengesData')).filter(c => c.appName === 'scanner')[0];
-      console.log(challenge);
-      this.objectsDictionary = challenge.data;
-      this.customVisionEndpoint = challenge.config['customVisionEndpoint'];
-      this.customVisionKey = challenge.config['customVisionKey'];
-      // TODO retrieve challenge info
     }
   }
 
@@ -290,9 +285,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
                 if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
                   const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
-                  if (this.challenge.answers.indexOf(p.tagName) !== -1) {
+                  /*if (this.challenge.answers.indexOf(p.tagName) !== -1) {
                     this.toast.open('challenge terminé');
-                  }
+                  }*/
                   const obj = this.objectsDictionary[idx];
 
                   const croppedCanvas = this.crop(canvas,

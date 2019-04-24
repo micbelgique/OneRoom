@@ -56,21 +56,26 @@ export class TranslatorComponent implements OnInit {
 
   ngOnInit() {
     // tslint:disable-next-line:max-line-length
+
+    // endpoints
+    this.translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
+    this.translateKey = '14d3566a4d5b48e98d63ac050434d641';
+    this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
+    this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
+    this.textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
+    this.textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
+
     if (localStorage.getItem('challengesData')) {
-      this.challenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'traduction');
-      this.translateEndpoint = this.challenge.config.translateEndpoint;
-      this.translateKey = this.challenge.config.translateKey;
-      this.speechToTextEndpoint = this.challenge.config.speechToTextEndpoint;
-      this.speechToTextKey = this.challenge.config.speechToTextKey;
-      this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
-      this.textToSpeechKey = this.challenge.config.textToSpeechKey;
-    } else {
-      this.translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
-      this.translateKey = '14d3566a4d5b48e98d63ac050434d641';
-      this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
-      this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
-      this.textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
-      this.textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
+      const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'traducteur');
+      if (filteredChallenge.length > 0) {
+        this.challenge = filteredChallenge[0];
+        this.translateEndpoint = this.challenge.config.translateEndpoint;
+        this.translateKey = this.challenge.config.translateKey;
+        this.speechToTextEndpoint = this.challenge.config.speechToTextEndpoint;
+        this.speechToTextKey = this.challenge.config.speechToTextKey;
+        this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
+        this.textToSpeechKey = this.challenge.config.textToSpeechKey;
+      }
     }
     this.languageOne = 'fr-FR';
     this.languageTwo = 'en-US';
