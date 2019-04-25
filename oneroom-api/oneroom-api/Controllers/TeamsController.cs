@@ -138,7 +138,7 @@ namespace oneroom_api.Controllers
                                                    .ToListAsync();
             if (!teams.Any())
             {
-                return NotFound();
+                return NotFound("There is no teams left to delete");
             }
             _context.Teams.RemoveRange(teams);
             await _context.SaveChangesAsync();

@@ -164,13 +164,13 @@ namespace oneroom_api.Controllers
         public async Task<ActionResult<ChallengeDto>> DeleteChallenge(int id)
         {
             Challenge challenge = await _context.Challenges.Include(c => c.ScenarioChallenges)
-                                                     .SingleOrDefaultAsync(c => c.ChallengeId == id);
+                                                           .SingleOrDefaultAsync(c => c.ChallengeId == id);
             if (challenge == null)
             {
-                return NotFound();
+                return NotFound("There is no challenge with id:" + id);
             }
 
-            if (challenge.ScenarioChallenges.Count() != 0) return Conflict("This Challenge is still used in at least one Game!");
+            if (challenge.ScenarioChallenges.Count() != 0) return Conflict("The Challenge \"" + challenge.Title + "\" is still used in at least one scenario!");
 
             _context.Challenges.Remove(challenge);
             await _context.SaveChangesAsync();

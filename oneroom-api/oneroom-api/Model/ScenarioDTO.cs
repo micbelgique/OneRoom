@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace oneroom_api.Model
+﻿namespace oneroom_api.Model
 {
     public class ScenarioDto
     {

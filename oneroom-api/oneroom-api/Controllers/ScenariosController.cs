@@ -51,23 +51,23 @@ namespace oneroom_api.Controllers
 
         // POST: api/Scenarios
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ScenarioDto>>))]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<Scenario>> PostScenario(Scenario scenario)
+        public async Task<ActionResult<ScenarioDto>> PostScenario(Scenario scenario)
         {
             var sc = await _context.Scenarios.FindAsync(scenario.ScenarioId);
             if (sc != null) return Conflict("Scenario already exist");
             _context.Scenarios.Add(scenario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetScenario", new { id = scenario.ScenarioId }, scenario);
+            return CreatedAtAction("GetScenario", new { id = scenario.ScenarioId }, scenario.ToDto());
         }
 
         // POST: api/Games/5/Scenario
         [HttpPost("~/api/Games/{GameId}/Scenario")]
-        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<ScenarioDto>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Scenario>> SetScenarioToGame( int gameId, Scenario scenario)
+        public async Task<ActionResult<ScenarioDto>> SetScenarioToGame( int gameId, Scenario scenario)
         {
             var game = await _context.Games.SingleOrDefaultAsync(g => g.GameId == gameId);
             if (game == null)
@@ -87,35 +87,39 @@ namespace oneroom_api.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetScenario", new { id = scenarioContext.ScenarioId }, scenarioContext);
+            return CreatedAtAction("GetScenario", new { id = scenarioContext.ScenarioId }, scenarioContext.ToDto());
         }
 
         // DELETE: api/Scenarios/5
         [HttpDelete("{id}")]
-        [ProducesResponseType(200,Type = typeof(Task<ActionResult<Scenario>>))]
+        [ProducesResponseType(200,Type = typeof(Task<ActionResult<ScenarioDto>>))]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Scenario>> DeleteScenario(int id)
+        public async Task<ActionResult<ScenarioDto>> DeleteScenario(int id)
         {
-            var scenario = await _context.Scenarios.FindAsync(id);
+            var scenario = await _context.Scenarios.Include(s => s.Games)
+                                                   .SingleOrDefaultAsync(s => s.ScenarioId == id);
+
             if (scenario == null)
             {
-                return NotFound();
+                return NotFound("There is no scenario with id:" + id);
             }
+
+            if (scenario.Games.Count() != 0) return Conflict("The Scenario \"" + scenario.Title + "\" is still used in at least one game!");
 
             _context.Scenarios.Remove(scenario);
             await _context.SaveChangesAsync();
 
-            return scenario;
+            return scenario.ToDto();
         }
 
         // DELETE: api/Games/5/Scenario
         [HttpDelete("~/api/Games/{GameId}/Scenario")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<Scenario>> DeleteScenarioFromGame( int gameId)
+        public async Task<ActionResult> DeleteScenarioFromGame( int gameId)
         {
             var game = await _context.Games.Include(g => g.Scenario)
-                                         .SingleOrDefaultAsync(g => g.GameId == gameId);
+                                           .SingleOrDefaultAsync(g => g.GameId == gameId);
             if (game?.Scenario == null)
             {
                 return NotFound();
