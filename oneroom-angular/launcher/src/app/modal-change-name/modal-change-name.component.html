@@ -7,10 +7,10 @@
             <input matInput [(ngModel)]="data.user">
           </mat-form-field>
       </div>
-      <div *ngIf="data.team">
+      <div *ngIf="data.team || data.scenario">
           <button mat-button matStepperNext>Next</button>
       </div>
-      <div *ngIf="!data.team" mat-dialog-actions>
+      <div *ngIf="!data.team && !data.scenario" mat-dialog-actions>
         <button mat-button (click)="onNoClick()">No Thanks</button>
         <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
       </div>
@@ -26,4 +26,12 @@
       <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
     </div>
   </mat-step>
+  <mat-step *ngIf="data.scenario">
+    <p>Introduction:</p>
+    <p>
+      {{data.scenario}}
+    </p>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+    </mat-step>
 </mat-horizontal-stepper>

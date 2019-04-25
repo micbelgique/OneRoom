@@ -60,7 +60,8 @@ export class NavComponent implements OnInit {
       data: {
         user: this.user.name,
         team: this.teamUser === undefined ? null : this.teamUser.teamName,
-        color: this.teamUser === undefined ? null : this.teamUser.teamColor
+        color: this.teamUser === undefined ? null : this.teamUser.teamColor,
+        scenario: this.game.scenario.description === undefined ? null : this.game.scenario.description,
       },
       height: '40%',
       width: '40%'
