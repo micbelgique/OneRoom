@@ -8,5 +8,6 @@ export class Objects {
     this.label = label;
     this.description = description;
     this.hint = '';
+    this.image = null;
   }
 }

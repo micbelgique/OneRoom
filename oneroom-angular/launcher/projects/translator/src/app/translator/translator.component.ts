@@ -1,13 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import MediaStreamRecorder from 'msr';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { environment } from 'projects/translator/src/environments/environment';
 import { TextToSpeechService, SpeechToTextService, TranslateService } from '@oneroomic/facecognitivelibrary';
 import { Challenge } from '@oneroomic/oneroomlibrary';
-
-class Lang {
-  constructor(public name, public locale) {}
-}
+import { Lang } from '../utilities/lang';
 
 @Component({
   selector: 'app-translator',
