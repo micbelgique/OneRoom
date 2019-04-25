@@ -29,7 +29,7 @@ namespace oneroom_api
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
 
             // Enable signalR
-            services.AddSignalR();
+            services.AddSignalR().AddAzureSignalR("Endpoint=https://ssoneroom.service.signalr.net;AccessKey=NendT4wILx8KQMWbSgFDdr0g6NdikqWIuyOQnISqJi8=;Version=1.0;");
             
             // Register the Swagger services
             services.AddSwaggerDocument();
@@ -67,7 +67,7 @@ namespace oneroom_api
             app.UseMvc();
 
             // use signalR with routes
-            app.UseSignalR(route =>
+            app.UseAzureSignalR(route =>
             {
                 route.MapHub<OneHub>("/LeaderBoardHub");
             });
