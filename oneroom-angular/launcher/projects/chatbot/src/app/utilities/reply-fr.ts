@@ -343,7 +343,8 @@ export const replies = {
     salutation: {
       default: [
         'Salut %user::name%',
-        'Hello l\'ami'
+        'Hello l\'ami',
+        'Bonjour %user::name%'
       ]
     },
     default: [

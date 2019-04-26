@@ -3,8 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpTransportType } from '@aspnet/signalr';
 import { SignalRCoreService } from './abstracts/signalr/signalr.core.service';
 import { SignalrMethod, SignalrMethods } from './abstracts/signalr/signalr.abstract.service';
-import { User } from './model/user';
-import { Team } from './model/team';
+import { User, Team } from './models';
 
 interface MonitoringMethods extends SignalrMethods {
   UpdateGameState: SignalrMethod;
@@ -68,34 +67,64 @@ export class HubService extends SignalRCoreService<MonitoringMethods> {
   protected connectionTryDelay = 10000;
 
   protected methods: MonitoringMethods = {
-    UpdateGameState: (gameId) => this._refreshGameState.emit(gameId),
-    UpdateUsers: (Users) => this._refreshUserList.emit(Users),
-    UpdateTeams: (result) => this._refreshTeamList.emit(result),
-    DeleteTeams: (result) => this._deleteTeamList.emit(result),
-    UpdateUser: (result) => this._refreshUser.emit(result),
-    CreateUser: (result) => this._createUser.emit(result),
-    DeleteUser: (result) => this._deleteUser.emit(result),
-    HighlightUser: (userId) => this._highlightUser.emit(userId),
-    FinishGame: (teamId) => this._finishGame.emit(teamId),
-    HasCompletedChallenge: (teamId, challengeId) => this._hasCompletedChallenge.emit({teamId, challengeId}),
+    UpdateGameState: (gameId) => {
+      console.log('update game state');
+      this._refreshGameState.emit(gameId);
+    },
+    UpdateUsers: (Users) => {
+      console.log('update users');
+      this._refreshUserList.emit(Users);
+    },
+    UpdateTeams: (result) => {
+      console.log('update teams');
+      this._refreshTeamList.emit(result);
+    },
+    DeleteTeams: (result) => {
+      console.log('delete teams');
+      this._deleteTeamList.emit(result);
+    },
+    UpdateUser: (result) => {
+      console.log('update user');
+      this._refreshUser.emit(result);
+    },
+    CreateUser: (result) => {
+      console.log('create user');
+      this._createUser.emit(result);
+    },
+    DeleteUser: (result) => {
+      console.log('delete user');
+      this._deleteUser.emit(result);
+    },
+    HighlightUser: (userId) => {
+      console.log('highlight user');
+      this._highlightUser.emit(userId);
+    },
+    FinishGame: (teamId) => {
+      console.log('finish game');
+      this._finishGame.emit(teamId);
+    },
+    HasCompletedChallenge: (teamId, challengeId) => {
+      console.log('challenge completed');
+      this._hasCompletedChallenge.emit({teamId, challengeId});
+    }
   };
 
   constructor() {
     super();
   }
 
-  public joinGroup(groupName: string): Observable<any> {
+  public joinGroup(gameId: string): Observable<any> {
     if (localStorage.getItem('endpoint')) {
       this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
     }
-    return this.send('JoinGroupAsync', groupName);
+    return this.send('JoinGroupAsync', gameId);
   }
 
-  public leaveGroup(groupName: string): Observable<any> {
+  public leaveGroup(gameId: string): Observable<any> {
     if (localStorage.getItem('endpoint')) {
       this.baseUrl = localStorage.getItem('endpoint').replace('/api', '');
     }
-    return this.send('LeaveGroupAsync', groupName);
+    return this.send('LeaveGroupAsync', gameId);
   }
 
   public run(): Observable<any> {

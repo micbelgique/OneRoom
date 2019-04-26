@@ -2,8 +2,8 @@
   <div style='text-align: center'>
     <mat-form-field>
       <mat-select placeholder="Game" >
-        <mat-option *ngFor="let game of games" [value]="game.gameId" (click)="loadTeams(game.gameId)">
-          {{game.groupName}}
+        <mat-option *ngFor="let g of games" [value]="g.gameId" (click)="loadTeams(g)">
+          {{g.groupName}}
         </mat-option>
       </mat-select>
     </mat-form-field>

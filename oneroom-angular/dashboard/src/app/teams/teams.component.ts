@@ -42,13 +42,12 @@ export class TeamsComponent implements OnInit {
       );
   }
 
-  loadTeams(idGame: number = null) {
-    if (idGame !== null) {
-      localStorage.setItem('gameId', '' + idGame);
-    }
-    this.teamService.getTeamsByGame(idGame).subscribe(
+  loadTeams(game: Game) {
+    // set localstorage game
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.teamService.getTeamsByGame(game.gameId).subscribe(
         (teams) => {
-          this.snackBar.open(teams.length + ' teams retrived', 'Ok', {
+          this.snackBar.open(teams.length + ' équipe(s)', 'Ok', {
             duration: 1000
           });
           this.teams = teams;

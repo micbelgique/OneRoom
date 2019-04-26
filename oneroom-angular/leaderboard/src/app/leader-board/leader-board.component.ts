@@ -14,7 +14,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   game: Game;
   errorMessage: string;
   refreshBtn = true;
-  title: string;
   minimumRecognized: number;
 
   // winner teams
@@ -50,18 +49,23 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.users = [];
     this.teams = [];
-    this.title = localStorage.getItem('groupName');
-    this.game = JSON.parse(localStorage.getItem('gameData'));
-    // minimum face
-    if (localStorage.getItem('minimumRecognized')) {
-      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
+
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+      this.minimumRecognized = Number(this.game.config.minimumRecognized);
     } else {
-      this.minimumRecognized = 3;
+      this.game = new Game();
     }
 
     this.detectedUserId = '';
     // attach to event from hub
-    this.hubServiceSub = this.hubService.run().subscribe( () => this.hubService.joinGroup(this.game.gameId.toString()));
+    this.hubServiceSub = this.hubService.run().subscribe( () => {
+      this.hubService.joinGroup(this.game.gameId.toString()).subscribe(
+        () => console.log('successfully connected to hub'),
+        (err) => console.log(err)
+      );
+    }
+    );
     this.userNotifySub = this.hubService.refreshUser.subscribe( (result) => {
       this.updateUser(result);
     });
@@ -122,7 +126,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private updateUser(user: User) {
-    console.log(user);
     const u = this.users.findIndex(e => e.userId === user.userId);
     this.users[u] = user;
   }
@@ -134,7 +137,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private createUser(user: User) {
-    console.log(user);
     this.users.push(user);
   }
   private deleteUser(user: User) {

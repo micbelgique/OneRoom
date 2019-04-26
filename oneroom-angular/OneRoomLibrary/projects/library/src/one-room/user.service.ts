@@ -2,33 +2,29 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
-import { User } from './model/user';
+import { User } from './models';
 import { EndPointGetterService } from '../utilities/end-point-getter.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+
   private headers: HttpHeaders;
 
   constructor(private http: HttpClient, private EPGetter: EndPointGetterService) {
     this.headers = new HttpHeaders({
       'Content-Type' : 'application/json'
-      // 'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
-      // 'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      // 'Access-Control-Allow-Headers': '*',
     });
 
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers })
-      .pipe(catchError(this.handleError));
+    return this.http.get<User[]>(this.EPGetter.getEndPointUrlWithId() + '/Users', { headers: this.headers });
   }
 
-  getUser(userID: string) {
-    return this.http.get<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userID, { headers: this.headers })
-      .pipe(catchError(this.handleError));
+  getUser(userID: string): Observable<User> {
+    return this.http.get<User>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userID, { headers: this.headers });
   }
 
   addUser(user: User): Observable<boolean> {
@@ -49,19 +45,7 @@ export class UserService {
   }
 
   mergeUser(user1: string, user2: string): Observable<User> {
-    // tslint:disable-next-line:max-line-length
-    return this.http.put<User>(this.EPGetter.getEndPointUrlWithId() + '/Users?userId1=' + user1 + '&userId2=' + user2, null, { headers: this.headers });
+    return this.http.put<User>(this.EPGetter.getEndPointUrlWithId() + '/Users?userId1=' + user1 + '&userId2=' + user2,
+      null, { headers: this.headers });
   }
-
-  private handleError(err: HttpErrorResponse) {
-    let errorMessage = '';
-    if (err.error instanceof ErrorEvent) {
-      errorMessage = 'An error occured:' + err.error.message;
-    } else {
-      errorMessage = 'server returnerd code ' + err.status + ' error message is: ' + err.message;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
-  }
-
 }

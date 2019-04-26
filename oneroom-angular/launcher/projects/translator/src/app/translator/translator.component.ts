@@ -111,16 +111,21 @@ export class TranslatorComponent implements OnInit {
     fileReader.onload = (event: any) => {
       this.speechToTextService.speechToTextGoogle(event.target.result, this.speechToTextEndpoint, this.speechToTextKey, this.languageOne)
       .subscribe((result) => {
+        console.log('speechtotext');
+        console.log(result);
         this.untranslated = result.results[0].alternatives[0].transcript;
       });
     };
     fileReader.readAsArrayBuffer(this.lastBlob);
+
   }
 
   translate() {
     this.translateService.translate(this.untranslated, this.languageOne, this.languageTwo, this.translateEndpoint, this.translateKey)
     .subscribe(
       (result) => {
+        console.log('translate');
+        console.log(result);
         this.translated = result[0].translations[0].text;
         this.talk(this.translated);
       }
@@ -130,6 +135,8 @@ export class TranslatorComponent implements OnInit {
   talk(text: string) {
     this.textToSpeechService.textToSpeechGoogle(text, this.textToSpeechEndpoint, this.textToSpeechKey, this.languageTwo, 'NEUTRAL')
     .subscribe((result) => {
+      console.log('talk');
+      console.log(result);
       this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
     });
   }
