@@ -50,6 +50,7 @@ export class ChallengeService {
 
   // Challenges in Teams
   setCompleted(teamId: number, challengeId: number): Observable<Challenge[]> {
-    return this.http.get<Challenge[]>(this.EPGetter.getEndPointUrl() + '/Teams/' + teamId + '/Challenge/' + challengeId );
+    // tslint:disable-next-line:max-line-length
+    return this.http.post<Challenge[]>(this.EPGetter.getEndPointUrlWithId() + '/Teams/' + teamId + '/Challenge/' + challengeId, null);
   }
 }
