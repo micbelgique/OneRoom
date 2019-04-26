@@ -29,7 +29,7 @@ namespace oneroom_api
                     options.UseSqlServer(Configuration.GetConnectionString("OneRoomContext")));
 
             // Enable signalR
-            services.AddSignalR().AddAzureSignalR("Endpoint=https://ssoneroom.service.signalr.net;AccessKey=NendT4wILx8KQMWbSgFDdr0g6NdikqWIuyOQnISqJi8=;Version=1.0;");
+            services.AddSignalR().AddAzureSignalR(Configuration.GetConnectionString("AzureSignalR"));
             
             // Register the Swagger services
             services.AddSwaggerDocument();
