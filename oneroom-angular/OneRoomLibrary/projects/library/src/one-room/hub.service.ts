@@ -60,8 +60,8 @@ export class HubService extends SignalRCoreService<MonitoringMethods> {
   public finishGame = this._finishGame.asObservable();
 
   // tslint:disable-next-line:variable-name
-  private _hasCompletedChallenge = new EventEmitter<{teamId: number, challengeId: number}>();
-  public hasCompletedChallenge = this._finishGame.asObservable();
+  private _hasCompletedChallenge = new EventEmitter<any>();
+  public hasCompletedChallenge = this._hasCompletedChallenge.asObservable();
 
   protected url = '/LeaderBoardHub';
   protected transport = HttpTransportType.LongPolling;

@@ -90,8 +90,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.deleteTeamList(result);
     });
     this.finishGameSub = this.hubService.hasCompletedChallenge.subscribe((result) => {
-      console.log(result);
-      this.finishGame(result);
+      this.finishGame(result.teamId);
     });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
