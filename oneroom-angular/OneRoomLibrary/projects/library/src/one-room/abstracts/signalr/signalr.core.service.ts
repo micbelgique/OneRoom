@@ -3,7 +3,7 @@ import { SignalRAbstractService, SignalrMethods } from './signalr.abstract.servi
 export abstract class SignalRCoreService<T extends SignalrMethods> extends SignalRAbstractService<T> {
 
     protected baseUrl;
-    protected connectionTryDelay = 3000;
+    protected connectionTryDelay = 5000;
 
     constructor() {
         super();

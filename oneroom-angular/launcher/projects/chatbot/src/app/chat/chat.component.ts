@@ -131,15 +131,22 @@ export class ChatComponent implements OnInit {
       return;
     }
 
-    const obs$ = this.luisService.query(this.question, this.luisEndpoint, this.luisKey);
+    // add to message list
+    this.messages.push({
+      name: this.question,
+      color: this.userColor
+    } as MessageStyle);
+
+    const query = this.question;
+
+    // clear input
+    this.question = '';
+
+    const obs$ = this.luisService.query(query, this.luisEndpoint, this.luisKey);
     obs$.subscribe(
       (res) => {
         console.log(res);
-        // add to message list
-        this.messages.push({
-          name: res.query,
-          color: this.userColor
-        } as MessageStyle);
+
         // process response
         const responseChatbot = this.processResponse(res);
         console.log(responseChatbot);
@@ -149,8 +156,6 @@ export class ChatComponent implements OnInit {
             color: this.currentBot.color
         } as MessageStyle);
 
-        // clear input
-        this.question = '';
         // voice return
         if (this.currentBot.silentMode === false) {
           // tslint:disable-next-line:max-line-length
@@ -166,6 +171,7 @@ export class ChatComponent implements OnInit {
   }
 
   processResponse(response: any): string {
+    console.log(response);
     let responseChatbot = '';
 
     if (this.question.includes(this.challenge.data.trigger)) {
@@ -174,9 +180,9 @@ export class ChatComponent implements OnInit {
       return this.challenge.data.question;
     }
 
-    console.log(this.question);
-    console.log(this.challenge.answers);
-    if (this.dialog === true && this.challenge.answers[0] === this.question) {
+    // console.log(this.question);
+    // console.log(this.challenge.answers);
+    if (this.dialog === true && this.challenge.answers[0].includes(this.question)) {
       // success
       this.dialog = false;
       return 'Bonne réponse, voici le code du cadenas de la porte';

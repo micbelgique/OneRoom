@@ -101,6 +101,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
       const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'scanner');
       if (filteredChallenge.length > 0) {
         this.challenge = filteredChallenge[0];
+        console.log( this.challenge);
         this.objectsDictionary = [];
         // tslint:disable-next-line:no-string-literal
         this.customVisionEndpoint = this.challenge.config.customVisionEndpoint;

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SpeechToTextResponse } from './voice-models';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class SpeechToTextService {
   constructor(private httpClient: HttpClient) { }
 
   /* Transform audio content in array buffer to text using google */
-  speechToTextGoogle(arrayBuffer, endpoint, key, languageCode): Observable<any> {
+  speechToTextGoogle(arrayBuffer, endpoint, key, languageCode): Observable<SpeechToTextResponse> {
     const url = endpoint + '?key=' + key;
     const audio = this.arrayBufferToBase64(arrayBuffer);
     const body = {
@@ -23,7 +24,7 @@ export class SpeechToTextService {
       }
       };
 
-    return this.httpClient.post<any>(url, body);
+    return this.httpClient.post<SpeechToTextResponse>(url, body);
   }
 
   /* transform array buffer into base 64 encoding */

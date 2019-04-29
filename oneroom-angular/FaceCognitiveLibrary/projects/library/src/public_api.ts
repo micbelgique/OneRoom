@@ -22,6 +22,8 @@ export * from './cognitive/face/person-group.service';
 // Voice
 export * from './cognitive/voice/speech-to-text.service';
 export * from './cognitive/voice/text-to-speech.service';
+export * from './cognitive/voice/voice-models';
 // text
 export * from './cognitive/text/luis.service';
 export * from './cognitive/text/translate.service';
+export * from './cognitive/text/text-models';

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Team } from './model/team';
+import { Team } from './models';
 import { EndPointGetterService } from '../utilities/end-point-getter.service';
 
 @Injectable({
@@ -13,9 +13,7 @@ export class TeamService {
 
   constructor(private http: HttpClient, private EPGetter: EndPointGetterService) {
     this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': '*',
+      'Content-Type' : 'application/json'
     });
   }
 
@@ -31,7 +29,7 @@ export class TeamService {
     return this.http.get<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams/' + teamId, { headers: this.headers });
   }
 
-  createTeam(numOfTeam: number) {
+  createTeam(numOfTeam: number): Observable<any> {
     return this.http.post(this.EPGetter.getEndPointUrlWithId() + '/teams/' + numOfTeam, { headers: this.headers });
   }
 

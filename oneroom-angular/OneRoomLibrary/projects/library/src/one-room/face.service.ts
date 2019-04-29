@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { Face } from './model/face';
+import { Face } from './models';
 import { EndPointGetterService } from '../utilities/end-point-getter.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +13,11 @@ export class FaceService {
 
   constructor(private http: HttpClient, private EPGetter: EndPointGetterService) {
     this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200/welcome',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': '*',
+      'Content-Type' : 'application/json'
     });
   }
 
-  addFace(userId: string, face: Face) {
+  addFace(userId: string, face: Face): Observable<boolean> {
     return this.http.post<boolean>(this.EPGetter.getEndPointUrlWithId() + '/Users/' + userId + '/Faces', face, { headers: this.headers });
   }
 

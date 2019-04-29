@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { Game } from './model/game';
+import { Game, GameState } from './models';
 import { Observable } from 'rxjs';
 import { EndPointGetterService } from '../utilities/end-point-getter.service';
-import { GameState } from './model/game-state.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +14,7 @@ export class GameService {
 
   constructor(private http: HttpClient, private EPGetter: EndPointGetterService) {
     this.headers = new HttpHeaders({
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': '*',
+      'Content-Type' : 'application/json'
     });
   }
   getStateGame(groupName: string): Observable<number> {
@@ -32,14 +29,15 @@ export class GameService {
   }
 
   switchState(groupName: string, newState: GameState): Observable<number> {
-    return this.http.post<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/SwitchState/' + newState, null);
+    return this.http.post<number>(this.EPGetter.getEndPointUrl() + '/Games/' + groupName + '/SwitchState/' + newState,
+      null, { headers: this.headers });
   }
 
-  createGame(game: Game) {
+  createGame(game: Game): Observable<any> {
     return this.http.post(this.EPGetter.getEndPointUrl() + '/Games/', game, { headers: this.headers });
   }
 
-  deleteGame(groupName: string) {
+  deleteGame(groupName: string): Observable<any> {
     return this.http.delete(this.EPGetter.getEndPointUrl() + '/Games/' + groupName, { headers: this.headers });
   }
 

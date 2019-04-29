@@ -157,46 +157,40 @@
   <ng-container matColumnDef="expandedDetail">
     <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
       <div class="challenge-element-detail" [@detailExpand]="element == expandedChallenge ? 'expanded' : 'collapsed'">
-        <mat-grid-list cols="3" style="display: block;">
-          <mat-grid-tile [colspan]="3" [rowspan]="1">
-            <div>
-              <h3>Description</h3>
-              <div class="challenge-element-description">
-                {{element.description}}
-              </div>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h3>Hints</h3>
-              <mat-list>
-                <mat-list-item *ngFor="let hint of element.hints">
-                    {{hint}}
-                </mat-list-item>
-              </mat-list>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h3>Answers</h3>
-              <mat-list>
-                <mat-list-item *ngFor="let answer of element.answers">
-                    {{answer}}
-                </mat-list-item>
-              </mat-list>
-            </div>
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <div>
-              <h3>Config</h3>
-              <mat-list>
-                <mat-list-item *ngFor="let config of element.config | keyvalue">
-                    {{config.key}}:{{config.value}}
-                </mat-list-item>
-              </mat-list>
-            </div>
-          </mat-grid-tile>
-        </mat-grid-list>
+        <h3>Ordre</h3>
+            <p>
+              {{element.order}}
+            </p>
+            <h3>Durée estimée</h3>
+            <p>
+              {{element.timeBox}}
+            </p>
+            <h3>Description</h3>
+            <p>
+              {{element.description}}
+            </p>
+            <h3>Indices</h3>
+            <ul>
+              <li *ngFor="let hint of element.hints">{{hint}}</li>
+            </ul>
+            <h3>Réponses</h3>
+            <ul>
+              <li *ngFor="let answer of element.answers">{{answer}}</li>
+            </ul>
+            <h3>Configuration</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let config of ( element.config | keyvalue )">
+                <td style="font-weight: bold">{{config.key}}</td>
+                <td>{{config.value}}</td>
+              </tr>
+            </table>
+            <h3>Data</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let data of ( element.data | keyvalue )">
+                <td style="font-weight: bold">{{data.key}}</td>
+                <td>{{data.value}}</td>
+              </tr>
+            </table>
       </div>
     </td>
   </ng-container>

@@ -38,18 +38,17 @@ export class TeamsComponent implements OnInit {
     );
   }
 
-  loadTeams(idGame: number = null) {
-    if (idGame !== null) {
-      localStorage.setItem('gameData', JSON.stringify(this.games.find(g => g.gameId === idGame)));
-    }
-    this.teamService.getTeamsByGame(idGame).subscribe( (teams) => {
-        this.notifierService.notify( 'success', teams.length + ' teams retrived' );
-        this.teams = teams;
-      },
-      (err) => {
-        this.notifierService.notify( 'error', err.error );
-      }
-    );
+  loadTeams(game: Game) {
+    // set localstorage game
+    localStorage.setItem('gameData', JSON.stringify(game));
+    this.teamService.getTeamsByGame(game.gameId).subscribe(
+        (teams) => {
+          this.notifierService.notify( 'success', teams.length + ' teams retrived' );
+          this.teams = teams;
+        },
+        (err) => {
+          this.notifierService.notify( 'error', err.error );
+        });
   }
 
   createTeam() {
