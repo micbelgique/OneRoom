@@ -43,27 +43,12 @@ export class TeamsComponent implements OnInit {
     localStorage.setItem('gameData', JSON.stringify(game));
     this.teamService.getTeamsByGame(game.gameId).subscribe(
         (teams) => {
-          this.snackBar.open(teams.length + ' équipe(s)', 'Ok', {
-            duration: 1000
-          });
+          this.notifierService.notify( 'success', teams.length + ' teams retrived' );
           this.teams = teams;
         },
         (err) => {
-          console.log(err);
-        }
-      );
-  loadTeams(idGame: number = null) {
-    if (idGame !== null) {
-      localStorage.setItem('gameData', JSON.stringify(this.games.find(g => g.gameId === idGame)));
-    }
-    this.teamService.getTeamsByGame(idGame).subscribe( (teams) => {
-        this.notifierService.notify( 'success', teams.length + ' teams retrived' );
-        this.teams = teams;
-      },
-      (err) => {
-        this.notifierService.notify( 'error', err.error );
-      }
-    );
+          this.notifierService.notify( 'error', err.error );
+        });
   }
 
   createTeam() {
