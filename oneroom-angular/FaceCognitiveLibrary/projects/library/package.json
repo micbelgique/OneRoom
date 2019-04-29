@@ -1,6 +1,6 @@
 {
   "name": "@oneroomic/facecognitivelibrary",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "This library is made to communicate with various API",
   "keywords" : [
     "microsoft cognitives", "google", "text to speech", "speech to text", "face", "custom vision", "luis", "translate"
