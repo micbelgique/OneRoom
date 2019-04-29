@@ -201,5 +201,4 @@ export class SettingsComponent implements OnInit {
         (err) => console.log(err)
       );
     }
-
 }

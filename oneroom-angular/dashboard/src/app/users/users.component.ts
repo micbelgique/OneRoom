@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material';
 import { User } from '@oneroomic/oneroomlibrary/one-room/model/user';
 import { Game } from '@oneroomic/oneroomlibrary/one-room/model/game';
 import { UserService, GameService, TeamService } from '@oneroomic/oneroomlibrary';
 import { PersonGroupPersonService } from '@oneroomic/facecognitivelibrary';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-users',
@@ -17,13 +17,11 @@ export class UsersComponent implements OnInit {
   // column order
   displayedColumns: string[] = ['avatar', 'name', 'recognized', 'delete'];
 
-  constructor(
-    private userService: UserService,
-    private gameService: GameService,
-    private toast: MatSnackBar,
-    private personService: PersonGroupPersonService,
-    private teamService: TeamService
-  ) { }
+  constructor(private userService: UserService,
+              private gameService: GameService,
+              private notifierService: NotifierService,
+              private personService: PersonGroupPersonService,
+              private teamService: TeamService) { }
 
   ngOnInit() {
     this.users = [];
@@ -32,34 +30,28 @@ export class UsersComponent implements OnInit {
   }
 
   loadGames() {
-    this.gameService.getGames().subscribe(
-        (games) => {
-          this.toast.open(games.length + ' games found', 'Ok', {
-            duration: 1000
-          });
-          this.games = games;
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
+    this.gameService.getGames().subscribe( (games) => {
+        this.notifierService.notify( 'success', games.length + ' games found' );
+        this.games = games;
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   loadUsers(game: Game = null) {
     if (game !== null) {
       localStorage.setItem('gameData', JSON.stringify(game));
     }
-    this.userService.getUsers().subscribe(
-        (users) => {
-          this.toast.open(users.length + ' players retrived', 'Ok', {
-            duration: 1000
-          });
-          this.users = users;
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
+    this.userService.getUsers().subscribe((users) => {
+        this.notifierService.notify( 'success', users.length + ' players retrived' );
+        this.users = users;
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   deleteUser(idUser) {
@@ -68,37 +60,28 @@ export class UsersComponent implements OnInit {
       this.personService.set(game.config.faceEndpoint, game.config.faceKey);
 
       // delete face
-      const faceUser$ = this.personService.delete(game.groupName, idUser);
-      faceUser$.subscribe(
-            (suc) => {
-              this.toast.open('Player deleted', 'Ok', {
-                duration: 1000
-              });
-              console.log(suc);
-            },
-            () => {
-              console.log('error');
-            }
-      );
-
-      // delete oneroom
-      this.userService.deleteUser(idUser).subscribe(
-      () => {
-          this.loadUsers();
-          // TODO : recreate team from api
-          const res$ = this.teamService.deleteTeams();
-          res$.subscribe( x => {
-            this.toast.open('Teams deleted', 'Ok', {
-              duration: 1000
-            });
-            // recreating teams
-          },
-          (err) => {
-            // teams don't exist
-          });
+      this.personService.delete(game.groupName, idUser).subscribe(() => {
+          this.notifierService.notify( 'warning', 'Player deleted' );
         },
         (err) => {
           console.log(err);
+          this.notifierService.notify( 'error', err.error.error.message );
+        }
+      );
+
+      // delete oneroom
+      this.userService.deleteUser(idUser).subscribe(() => {
+          this.loadUsers();
+          // TODO : recreate team from api
+          this.teamService.deleteTeams().subscribe( () => {
+            this.notifierService.notify( 'warning', 'Teams deleted' );
+          },
+          (err) => {
+            this.notifierService.notify( 'error', err.error );
+          });
+        },
+        (err) => {
+          this.notifierService.notify( 'error', err.error );
         }
       );
     }

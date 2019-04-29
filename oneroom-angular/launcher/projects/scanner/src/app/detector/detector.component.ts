@@ -96,18 +96,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
       }
     }
 
-    // todo : remove in the future
-    this.objectsDictionary.push(
-      new Objects('cup', 'J aime boire du café pendant que je code, pratique pour rester concentrer !'),
-      new Objects('plant', 'Du vert pour un environnement plus agréable, c est l idéal !'),
-      // 3225882695
-      new Objects('phone', 'J ai besoin d appeler un client japonais pour regenerer mes identifiants'),
-      new Objects('glasses', 'Mes lunettes de lectures, je ne les utilise pas tout le temps'),
-      new Objects('can', 'J adore ajouter de la poudre de lait dans mon café, quand elle est vide, je m en sert comme poubelle'),
-      new Objects('headset', 'Listening to music is my favorite thing to do'),
-      new Objects('calculator', 'A basic calculator')
-    );
-
     // set objects retrieved from challenge
     if (localStorage.getItem('challengesData')) {
       const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'scanner');
@@ -116,9 +104,9 @@ export class DetectorComponent implements OnInit, OnDestroy {
         console.log( this.challenge);
         this.objectsDictionary = [];
         // tslint:disable-next-line:no-string-literal
-        this.customVisionEndpoint = filteredChallenge.config['customVisionEndpoint'];
+        this.customVisionEndpoint = this.challenge.config.customVisionEndpoint;
         // tslint:disable-next-line:no-string-literal
-        this.customVisionKey = filteredChallenge.config['customVisionKey'];
+        this.customVisionKey = this.challenge.config.customVisionKey;
         // tslint:disable-next-line:forin
         for (const key in this.challenge.data) {
           this.objectsDictionary.push(new Objects(key, this.challenge.data[key]));

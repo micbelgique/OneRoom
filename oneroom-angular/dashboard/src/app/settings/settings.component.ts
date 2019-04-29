@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-// import { PersonGroupService } from '../services/cognitive/person-group.service';
-import { MatSnackBar } from '@angular/material';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
-// import { LeaderboardService } from '../services/OnePoint/leaderboard.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +11,7 @@ export class SettingsComponent implements OnInit {
   // coordinator
   endPoint: string;
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private notifierService: NotifierService) {}
 
   ngOnInit() {
     // coordinator
@@ -24,9 +20,7 @@ export class SettingsComponent implements OnInit {
 
   saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
-    this.snackBar.open('Settings updated', 'Ok', {
-      duration: 2000
-    });
+    this.notifierService.notify( 'success', 'Settings updated' );
   }
 
 }

@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ChallengeService, ScenarioService, Scenario, Challenge } from '@oneroomic/oneroomlibrary';
-import { MatSnackBar } from '@angular/material';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-scenario',
   templateUrl: './scenario.component.html',
   styleUrls: ['./scenario.component.css']
 })
+
 export class ScenarioComponent implements OnInit {
 
   scenario: Scenario;
@@ -19,7 +20,7 @@ export class ScenarioComponent implements OnInit {
 
   constructor(private scenarioService: ScenarioService,
               private challengeService: ChallengeService,
-              private snackBar: MatSnackBar) { }
+              private notifierService: NotifierService) { }
 
   ngOnInit() {
     this.scenario = new Scenario();
@@ -32,21 +33,25 @@ export class ScenarioComponent implements OnInit {
 
   createScenario() {
     this.scenarioService.createScenario(this.scenario).subscribe( () => {
-      this.snackBar.open('Scenario created', 'Ok', {
-        duration: 3000
-      });
-      this.scenario = new Scenario();
-      this.refreshScenario();
-    });
+        this.notifierService.notify( 'success', 'Scenario created' );
+        this.scenario = new Scenario();
+        this.refreshScenario();
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   deleteScenario(scenario: Scenario) {
     this.scenarioService.deleteScenario(scenario.scenarioId).subscribe( (s: Scenario) => {
-        this.snackBar.open('Scenario removed', 'Ok', {
-          duration: 1000
-        });
+        this.notifierService.notify( 'warning', 'Scenario removed' );
         this.refreshScenario();
-      });
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   refreshScenario() {
@@ -55,7 +60,7 @@ export class ScenarioComponent implements OnInit {
         scenarios.forEach(s => this.getChallengesIdByScenario(s));
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -65,7 +70,7 @@ export class ScenarioComponent implements OnInit {
         this.challenges = challenges;
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -75,7 +80,7 @@ export class ScenarioComponent implements OnInit {
         scenario.challengesId = challenges.map(c => c.challengeId);
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -94,12 +99,10 @@ export class ScenarioComponent implements OnInit {
   addChallengesToScenario( scenario: Scenario, challenges: Challenge[]) {
     if (challenges.length > 0) {
       this.challengeService.addChallengeToScenario( scenario.scenarioId, challenges).subscribe(() => {
-        this.snackBar.open('Challenge(s) added', 'Ok', {
-          duration: 1000
-        });
+          this.notifierService.notify( 'succes', 'Challenge(s) added' );
         },
         (err) => {
-          console.log(err);
+          this.notifierService.notify( 'error', err.error );
         }
       );
     }
@@ -109,12 +112,10 @@ export class ScenarioComponent implements OnInit {
     if (challenges.length > 0) {
       console.log(challenges);
       this.challengeService.deleteChallengeFromScenario( scenario.scenarioId, challenges).subscribe(() => {
-        this.snackBar.open('Challenge(s) deleted', 'Ok', {
-          duration: 1000
-        });
+          this.notifierService.notify( 'warning', 'Challenge(s) deleted' );
         },
         (err) => {
-          console.log(err);
+          this.notifierService.notify( 'error', err.error );
         }
       );
     }

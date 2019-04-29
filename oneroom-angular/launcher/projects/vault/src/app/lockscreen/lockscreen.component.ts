@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Challenge, Team, Game } from '@oneroomic/oneroomlibrary';
+import { Challenge, Team, Game, ChallengeService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-lockscreen',
@@ -18,7 +18,10 @@ export class LockscreenComponent implements OnInit {
   challenge: Challenge;
   team: Team;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private challengeService: ChallengeService
+    ) {
   }
 
   ngOnInit() {
@@ -51,6 +54,11 @@ export class LockscreenComponent implements OnInit {
       if (this.challenge.answers.indexOf(this.password) !== -1) {
         // success
         this.background = '#66bb6a';
+        this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+          () => {
+            console.log('challenge completed');
+          }
+        );
         setTimeout(() =>  this.router.navigateByUrl('/vault/main'), 2000);
       } else {
         // fail

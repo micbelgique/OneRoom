@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
-import { MatSnackBar } from '@angular/material';
 import { trigger, state, transition, animate, style } from '@angular/animations';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-challenge',
@@ -15,15 +15,16 @@ import { trigger, state, transition, animate, style } from '@angular/animations'
     ]),
   ],
 })
+
 export class ChallengeComponent implements OnInit {
   currentAnswer = '';
   currentHint = '';
-  mapConfig = new Map<string, string>();
-  currentKey = '';
-  currentValue = '';
-  mapData = new Map<string, string>();
-  currentKeyData = '';
-  currentValueData = '';
+
+  currentConfigKey = '';
+  currentConfigValue = '';
+
+  currentDataKey = '';
+  currentDataValue = '';
 
   config = [];
   // challenge to add
@@ -38,86 +39,98 @@ export class ChallengeComponent implements OnInit {
   appSelections = ['scanner', 'traducteur', 'coffre', 'chatbot'];
 
   constructor(private challengeService: ChallengeService,
-              private snackBar: MatSnackBar) { }
+              private notifierService: NotifierService) { }
 
   ngOnInit() {
-    this.mapConfig.clear();
-    this.mapData.clear();
     this.challenges = [];
     this.challenge = new Challenge();
     this.challenge.answers = [];
     this.challenge.hints = [];
     this.refreshChallenges();
-    console.log(this.challenge.config);
   }
+
   addAnswer() {
-    this.challenge.answers.push(this.currentAnswer);
-    this.currentAnswer = '';
+    if (this.currentAnswer.trim() !== '') {
+      this.challenge.answers.push(this.currentAnswer);
+      this.currentAnswer = '';
+    } else {
+      this.notifierService.notify( 'error', 'La réponse doit contenir au moins un caractère' );
+    }
   }
+
+  removeAnswer(i: number) {
+    this.challenge.answers.splice(i, 1);
+  }
+
   addHint() {
-    this.challenge.hints.push(this.currentHint);
-    this.currentHint = '';
+    if (this.currentHint.trim() !== '') {
+      this.challenge.hints.push(this.currentHint);
+      this.currentHint = '';
+    } else {
+      this.notifierService.notify( 'error', 'Un indice doit contenir au moins un caractère' );
+    }
   }
+
+  removeHint(i: number) {
+    this.challenge.hints.splice(i, 1);
+  }
+
   addConfig() {
-    this.mapConfig.set(this.currentKey, this.currentValue);
-    this.currentKey = '';
-    this.currentValue = '';
+    if (this.currentConfigKey.trim() !== '' && this.currentConfigValue.trim() !== '') {
+      this.challenge.config[this.currentConfigKey] = this.currentConfigValue;
+      this.currentConfigKey = '';
+      this.currentConfigValue = '';
+    } else {
+      this.notifierService.notify( 'error', 'La clé et la valeur de la config doivent contenir au moins un caractère' );
+    }
   }
+
   removeConfig(key: string) {
-    this.mapConfig.delete(key);
+    delete this.challenge.config[key];
   }
+
   addData() {
-    this.mapData.set(this.currentKeyData, this.currentValueData);
-    this.currentKeyData = '';
-    this.currentValueData = '';
+    if (this.currentDataKey.trim() !== '' && this.currentDataValue.trim() !== '') {
+      this.challenge.data[this.currentDataKey] = this.currentDataValue;
+      this.currentDataKey = '';
+      this.currentDataValue = '';
+    } else {
+      this.notifierService.notify( 'error', 'La clé et la valeur des données doivent contenir au moins un caractère' );
+    }
   }
+
   removeData(key: string) {
-    this.mapData.delete(key);
-  }
-  removeHint() {
-    this.challenge.hints.pop();
-  }
-  removeAnswer() {
-    this.challenge.answers.pop();
+    delete this.challenge.data[key];
   }
 
   refreshChallenges() {
     this.challengeService.getChallenges().subscribe((challenges) => {
         this.challenges = challenges;
-        console.log(this.challenges);
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
 
   createChallenge() {
-    this.mapConfig.forEach((value, key) => {
-      this.challenge.config[key] = value;
-    });
-    this.mapData.forEach((value, key) => {
-      this.challenge.data[key] = value;
-    });
-    // clear entries
-    this.mapConfig.clear();
-    this.mapData.clear();
-    //
     this.challengeService.createChallenge(this.challenge).subscribe( () => {
-      this.snackBar.open('Challenge created', 'Ok', {
-        duration: 3000
-      });
-      this.challenge = new Challenge();
-      this.refreshChallenges();
-    });
+        this.notifierService.notify( 'success', 'Challenge created' );
+        this.challenge = new Challenge();
+        this.refreshChallenges();
+      }, (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   public deleteChallenge(challenge: Challenge) {
     this.challengeService.deleteChallenge(challenge.challengeId).subscribe( (c: Challenge) => {
-        this.snackBar.open('Challenge removed', 'Ok', {
-          duration: 1000
-        });
+        this.notifierService.notify( 'warning', 'Challenge removed' );
         this.refreshChallenges();
-      });
+      }, (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 }

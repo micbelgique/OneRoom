@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-// import { TeamService } from '../services/OnePoint/team.service';
-import { MatSnackBar } from '@angular/material';
 import { Team, Game, GameService, TeamService } from '@oneroomic/oneroomlibrary';
-// import { GameService } from '../services/OnePoint/game.service';
-// import { Game } from '../services/OnePoint/model/game';
-// import { Team } from '../services/OnePoint/model/team';
+import { NotifierService } from 'angular-notifier';
+
 
 @Component({
   selector: 'app-teams',
@@ -19,7 +16,9 @@ export class TeamsComponent implements OnInit {
   // column order
   displayedColumns: string[] = ['Name', 'Color', 'Users'];
 
-  constructor(private snackBar: MatSnackBar, private gameService: GameService, private teamService: TeamService) { }
+  constructor(private gameService: GameService,
+              private teamService: TeamService,
+              private notifierService: NotifierService) { }
 
   ngOnInit() {
     this.teams = [];
@@ -29,17 +28,14 @@ export class TeamsComponent implements OnInit {
   }
 
   loadGames() {
-    this.gameService.getGames().subscribe(
-        (games) => {
-          this.snackBar.open(games.length + ' games found', 'Ok', {
-            duration: 1000
-          });
-          this.games = games;
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
+    this.gameService.getGames().subscribe( (games) => {
+        this.notifierService.notify( 'success', games.length + ' games found' );
+        this.games = games;
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   loadTeams(game: Game) {
@@ -56,26 +52,40 @@ export class TeamsComponent implements OnInit {
           console.log(err);
         }
       );
+  loadTeams(idGame: number = null) {
+    if (idGame !== null) {
+      localStorage.setItem('gameData', JSON.stringify(this.games.find(g => g.gameId === idGame)));
+    }
+    this.teamService.getTeamsByGame(idGame).subscribe( (teams) => {
+        this.notifierService.notify( 'success', teams.length + ' teams retrived' );
+        this.teams = teams;
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   createTeam() {
-    const res$ = this.teamService.createTeam(this.nbTeams);
-    res$.subscribe( (teams: Team[]) => {
-      this.snackBar.open('Teams Created', 'Ok', {
-        duration: 3000
-      });
-      this.teams = teams;
-    });
+    this.teamService.createTeam(this.nbTeams).subscribe( (teams: Team[]) => {
+        this.notifierService.notify( 'success', 'Teams Created' );
+        this.teams = teams;
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   deleteTeams() {
-    const res$ = this.teamService.deleteTeams();
-    res$.subscribe( x => {
-      this.snackBar.open('Teams deleted', 'Ok', {
-        duration: 3000
-      });
-      this.teams = [];
-    });
+    this.teamService.deleteTeams().subscribe( () => {
+        this.notifierService.notify( 'warning', 'Teams deleted' );
+        this.teams = [];
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   getTeamColor(color: string) {

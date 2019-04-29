@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material';
 import { Game, Configuration, GameService, GameState, ScenarioService, Scenario } from '@oneroomic/oneroomlibrary';
 import { PersonGroupService } from '@oneroomic/facecognitivelibrary';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-games',
@@ -22,13 +22,12 @@ export class GamesComponent implements OnInit {
 
   scenarios: Scenario[];
 
-  constructor(
-    private scenarioService: ScenarioService,
-    private gameService: GameService,
-    private groupService: PersonGroupService,
-    private snackBar: MatSnackBar) {
-      this.gameStates = Object.keys(GameState).filter(key => !isNaN(Number(GameState[key])));
-    }
+  constructor(private scenarioService: ScenarioService,
+              private gameService: GameService,
+              private groupService: PersonGroupService,
+              private notifierService: NotifierService) {
+    this.gameStates = Object.keys(GameState).filter(key => !isNaN(Number(GameState[key])));
+  }
 
   ngOnInit() {
     this.games = [];
@@ -55,17 +54,17 @@ export class GamesComponent implements OnInit {
         });
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
 
   refreshScenario() {
-    this.scenarioService.getScenarios().subscribe((scenarios) => {
+    this.scenarioService.getScenarios().subscribe( (scenarios) => {
         this.scenarios = scenarios;
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -74,12 +73,10 @@ export class GamesComponent implements OnInit {
     localStorage.setItem('gameData', JSON.stringify(game));
     this.scenarioService.setScenarioInGame(this.scenarios.find(s => s.scenarioId === game.scenarioId)).subscribe((scenario) => {
         game.scenario = scenario;
-        this.snackBar.open('Scenario link to the game', 'Ok', {
-          duration: 3000
-        });
+        this.notifierService.notify( 'success', 'Scenario link to the game' );
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -89,12 +86,10 @@ export class GamesComponent implements OnInit {
     this.scenarioService.deleteScenarioFromGame().subscribe(() => {
         game.scenario = null;
         game.scenarioId = null;
-        this.snackBar.open('Scenario unlink to the game', 'Ok', {
-          duration: 3000
-        });
+        this.notifierService.notify( 'warning', 'Scenario unlink to the game' );
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -103,62 +98,58 @@ export class GamesComponent implements OnInit {
     // set correct endpoint and key
     this.groupService.set(this.game.config.faceEndpoint, this.game.config.faceKey);
     // creating game coordinator
-    const resGame$ = this.gameService.createGame(this.game);
-    resGame$.subscribe( (game: Game) => {
-      this.snackBar.open('Game Initialized', 'Ok', {
-        duration: 3000
-      });
-      console.log(game);
-      // creating group face
-      const res$ = this.groupService.create(this.game.groupName, this.game.groupName + '_name');
-      res$.subscribe( x => {
-        this.game = new Game();
-        this.snackBar.open('Group ' + this.game.groupName + ' created', 'Ok', {
-        duration: 3000
-        });
-      });
-      this.refreshGames();
-    });
+    this.gameService.createGame(this.game).subscribe( () => {
+        this.notifierService.notify( 'success', 'Game Initialized' );
+        // creating group face
+        this.groupService.create(this.game.groupName, this.game.groupName + '_name').subscribe( () => {
+            this.game = new Game();
+            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
+          },
+          (err) => {
+            this.notifierService.notify( 'error', err.error );
+          }
+        );
+        this.refreshGames();
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error.title ? err.error.title : err.error );
+      }
+    );
   }
 
   deleteGame(game: Game) {
     // set correct endpoint and key
     this.groupService.set(game.config.faceEndpoint, game.config.faceKey);
     // deleting game
-    const resGame$ = this.gameService.deleteGame(game.groupName);
-    resGame$.subscribe( (g: Game) => {
-        this.snackBar.open('Game removed', 'Ok', {
-          duration: 1000
-        });
+    this.gameService.deleteGame(game.groupName).subscribe( () => {
+        this.notifierService.notify( 'warning', 'Group  removed');
         // deleting face game
-        const res$ = this.groupService.delete(game.groupName);
-        res$.subscribe( x => {
-          console.log(x);
-          this.snackBar.open('Group ' + game.groupName + ' deleted', 'Ok', {
-            duration: 1000
-          });
-        });
+        this.groupService.delete(game.groupName).subscribe( () => {
+            this.notifierService.notify( 'warning', 'Group ' + game.groupName + ' deleted');
+          },
+          (err) => {
+            this.notifierService.notify( 'error', err.error );
+          }
+        );
         this.refreshGames();
         this.game.groupName = '';
-      });
-
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.error );
+      }
+    );
   }
 
   changeStateGame(gameName = null, newState) {
     if (gameName === null) {
       return;
     }
-    const res$ = this.gameService.switchState(gameName, newState);
-    res$.subscribe(
-      (res) => {
-        this.snackBar.open('State updated', 'Ok', {
-          duration: 3000
-        });
-        console.log('new state: ' + this.resolveGameState(res));
+    this.gameService.switchState(gameName, newState).subscribe( () => {
+        this.notifierService.notify( 'success', 'State updated');
         this.refreshGames();
       },
       (err) => {
-        console.log(err);
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -167,19 +158,21 @@ export class GamesComponent implements OnInit {
     // set correct endpoint and key
     this.groupService.set(game.config.faceEndpoint, game.config.faceKey);
     // deleting face group
-    const res$ = this.groupService.delete(game.groupName);
-    res$.subscribe( x => {
-      this.snackBar.open('Group ' + game.groupName + ' deleted', 'Ok', {
-        duration: 1000
-      });
-      // recreating group face
-      const res2$ = this.groupService.create(game.groupName, game.groupName + '_name');
-      res2$.subscribe( () => {
-        this.snackBar.open('Group ' + game.groupName + ' recreated', 'Ok', {
-          duration: 1000
-        });
-      });
-    });
+    this.groupService.delete(game.groupName).subscribe( () => {
+        this.notifierService.notify( 'warning', 'Group ' + game.groupName + ' deleted');
+        // recreating group face
+        this.groupService.create(game.groupName, game.groupName + '_name').subscribe( () => {
+            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
+          },
+          (err) => {
+            this.notifierService.notify( 'error', err.error );
+          }
+        );
+      },
+      (err) => {
+        this.notifierService.notify( 'error', err.statusText );
+      }
+    );
   }
 
   fillConfig(existingConfig: Configuration) {
