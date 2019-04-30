@@ -48,7 +48,12 @@
 
       <ng-container matColumnDef="Description">
         <th mat-header-cell *matHeaderCellDef> Description </th>
-        <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+        <td mat-cell *matCellDef="let element">
+          <mat-form-field class="example-full-width">
+              <input matInput [(ngModel)]="element.description" placeholder="Description for each team">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="saveTeam(element)">Save</button>
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

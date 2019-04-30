@@ -162,6 +162,19 @@ namespace oneroom_api.Controllers
             return teamDb;
         }
 
+        [HttpPut("UpdateDescription")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Team>> UpdateDescriptionTeam([FromBody] Team team, int gameId)
+        {
+            var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId)
+                .FirstOrDefaultAsync();
+            if (teamDb == null) return NotFound();
+            _context.Entry(team).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return team;
+        }
+
         public static void SpreadPlayers(Game game)
         {
             int nbTeams = game.Teams.Count();
