@@ -14,7 +14,7 @@ export class TeamsComponent implements OnInit {
   teams: Team[] = [];
   games: Game[];
   // column order
-  displayedColumns: string[] = ['Name', 'Color', 'Users'];
+  displayedColumns: string[] = ['Name', 'Color', 'Users', 'Description'];
 
   constructor(private gameService: GameService,
               private teamService: TeamService,
