@@ -181,6 +181,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<DateTime>("CreationDate");
 
+                    b.Property<string>("Description");
+
                     b.Property<int>("GameId");
 
                     b.Property<string>("TeamColor");
