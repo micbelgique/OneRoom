@@ -55,8 +55,8 @@ export class LockscreenComponent implements OnInit {
         // success
         this.background = '#66bb6a';
         this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
-          (result) => {
-            console.log(result);
+          () => {
+            console.log('challenge completed');
           }
         );
         setTimeout(() =>  this.router.navigateByUrl('/vault/main'), 2000);
