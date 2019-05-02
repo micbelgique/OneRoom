@@ -88,7 +88,7 @@ namespace oneroom_api.Utilities
 
         public static void GenerateAvatar(this User u)
         {
-            const string avataaarsEndPoint = "https://avataaars.io/?avatarStyle=Transparent";
+            const string avataaarsEndPoint = "https://avataaars.io/?";
 
             // Construct a stirng builder with a base url for a male avatar or a female one
             StringBuilder urlAvatar = new StringBuilder(avataaarsEndPoint);

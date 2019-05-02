@@ -1,6 +1,6 @@
 <div>
   <h1 *ngIf='this.displayTimer' class='gradient' style='display:block; margin:0; text-align: center; color:white '>{{ this.time }} SECONDES RESTANTES</h1>
-  <mat-grid-list cols="4" rowHeight="2:1">
+  <!-- <mat-grid-list cols="4" rowHeight="2:1">
 
     <ng-container *ngTemplateOutlet="teams.length ? TeamsHandle : UserCard; context: {$implicit: this}"></ng-container>
 
@@ -41,6 +41,28 @@
       <span i18n="@@leaderboardRecognized" style="font-size:1vw;">aperçu {{ user.recognized }} fois</span>
     </ng-template>
 
+  </mat-grid-list> -->
+  <mat-grid-list cols="1" rowHeight="7:1">
+    <div *ngFor="let t of teams" >
+      <mat-grid-tile>
+          <mat-card [ngClass]='hasFinished(t?.teamId)' style="padding: 0px;">
+            <div [style.background-color]='getTeamColor(t?.teamColor)' style="width: calc(2%); border-top-left-radius: inherit; border-bottom-left-radius: inherit;"></div>
+            <div style="padding: 30px; position: relative;">
+              <mat-card-title style="font-size:2vw;">{{t.teamName.toUpperCase()}}</mat-card-title>
+              <div style="position: absolute; right: 30px; top: 30px; height: 100px; width: auto;">
+                  <ng-container *ngFor="let c of t.challenges">
+                      <div class="circle" style="width: 100px;"></div>
+                  </ng-container>
+                </div>
+              <div style="position: absolute; bottom: 30px; height: auto;">
+                <ng-container *ngFor="let u of t.users">
+                  <img style="width: calc(5%);" src="{{ u.urlAvatar + '&avatarStyle=Circle' }}" alt="Avataaars">
+                </ng-container>
+              </div>
+            </div>
+          </mat-card>
+      </mat-grid-tile>
+    </div>
   </mat-grid-list>
 </div>
 

@@ -65,3 +65,11 @@ mat-card div {
       background-position: 15% 100%
   }
 }
+
+.circle {
+  margin: 5%;
+  border-color: green;
+  border-style: solid;
+  border-width: 2px 2px 2px 2px;
+  border-radius: 50%;
+}
