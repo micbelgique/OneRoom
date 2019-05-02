@@ -45,7 +45,6 @@ export class TeamsComponent implements OnInit {
     this.teamService.getTeamsByGame(idGame).subscribe( (teams) => {
         this.notifierService.notify( 'success', teams.length + ' teams retrived' );
         this.teams = teams;
-        console.log(this.teams);
       },
       (err) => {
         this.notifierService.notify( 'error', err.error );
@@ -75,7 +74,7 @@ export class TeamsComponent implements OnInit {
     );
   }
   saveTeam(element: Team) {
-    this.teamService.editTeam(element).subscribe( () => {
+    this.teamService.updateDescription(element).subscribe( () => {
       console.log(element);
       this.notifierService.notify( 'success', 'team updatetd');
     });

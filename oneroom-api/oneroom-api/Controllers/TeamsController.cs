@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using NJsonSchema;
 using oneroom_api.data;
 
 namespace oneroom_api.Controllers
@@ -158,7 +159,7 @@ namespace oneroom_api.Controllers
             teamDb.TeamColor = team.TeamColor;
             _context.Entry(teamDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.ToList().ConvertAll(t => t.ToDto()));
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.Include(t => t.Users).ToList().ConvertAll(t => t.ToDto()));
             return teamDb;
         }
 
@@ -170,9 +171,25 @@ namespace oneroom_api.Controllers
             var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId)
                 .FirstOrDefaultAsync();
             if (teamDb == null) return NotFound();
-            _context.Entry(team).State = EntityState.Modified;
+            teamDb.Description = team.Description;
+            _context.Entry(teamDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return team;
+            await _hubClients.Clients.Group(gameId.ToString()).UpdateTeams(_context.Teams.Include(t => t.Users).ToList().ConvertAll(t => t.ToDto()));
+            return teamDb;
+        }
+
+        [HttpPut("ChangeStateDescription")]
+        [ProducesResponseType(200, Type = typeof(Task<ActionResult<Team>>))]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Team>> ChangeStateDescription([FromBody] Team team, int gameId)
+        {
+            var teamDb = await _context.Teams.Where(g => g.TeamId == team.TeamId && g.GameId == gameId)
+                .FirstOrDefaultAsync();
+            if (teamDb == null) return NotFound();
+            teamDb.DescriptionAlreadyShowed = true;
+            _context.Entry(teamDb).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return teamDb;
         }
 
         public static void SpreadPlayers(Game game)

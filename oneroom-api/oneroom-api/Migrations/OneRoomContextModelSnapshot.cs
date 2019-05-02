@@ -183,6 +183,8 @@ namespace oneroom_api.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<bool>("DescriptionAlreadyShowed");
+
                     b.Property<int>("GameId");
 
                     b.Property<string>("TeamColor");

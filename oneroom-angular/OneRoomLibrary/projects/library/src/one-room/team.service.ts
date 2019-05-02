@@ -38,7 +38,12 @@ export class TeamService {
   editTeam(team: Team): Observable<Team> {
     return this.http.put<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams', team, {headers: this.headers});
   }
-
+  updateDescription(team: Team): Observable<Team> {
+    return this.http.put<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams/UpdateDescription', team, {headers: this.headers});
+  }
+  changeStateDescription(team: Team): Observable<Team> {
+    return this.http.put<Team>(this.EPGetter.getEndPointUrlWithId() + '/teams/ChangeStateDescription', team, { headers: this.headers});
+  }
   deleteTeams(): Observable<Team[]> {
     return this.http.delete<Team[]>(this.EPGetter.getEndPointUrlWithId() + '/teams', { headers: this.headers });
   }
