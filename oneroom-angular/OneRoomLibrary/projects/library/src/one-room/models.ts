@@ -106,10 +106,11 @@ export enum SkinColorType {
   BLACK = 'black'
 }
 
-
 export class Team {
   teamId: number;
   teamName: string;
+  description: string;
+  descriptionAlreadyShowed: boolean;
   teamColor: string;
   creationDate: Date;
   users: User[];

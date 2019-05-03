@@ -122,6 +122,7 @@ export class FaceProcessService {
           if (faces.length === 0) {
             this.result$.next(null);
           }
+          console.log(faces);
           // Simple message with an action.
           this.identifyFaces(faces, group, stream, 0.6);
           /*for (const face of faces) {
@@ -140,49 +141,54 @@ export class FaceProcessService {
   */
   private identifyFaces(faces: Face[], group: Group, stream: Blob, minConfidence = 0.5) {
      // 2. Identify person
-     const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 10, minConfidence);
-     identify$.subscribe(
-     (faceCandidates) => {
-       for (const candidate of faceCandidates) {
-         const idxFace = faces.map(f => f.faceId).indexOf(candidate.faceId);
-         if (candidate.candidates.length === 1) {
-          this.addFace(group, candidate.candidates[0].personId, stream, faces[idxFace]);
-         } else if (candidate.candidates.length > 1) {
-          console.log('Possible duplicates');
-          let keepId = null;
-          let maxConfidence = 0;
-          candidate.candidates.forEach(c => {
-            if (c.confidence > maxConfidence) {
-              maxConfidence = c.confidence;
-              keepId = c.personId;
-            } else if (c.confidence > 0.80) {
-              // delete possible duplicate
-              const del$ = this.personService.delete(group.personGroupId, c.personId);
-              del$.subscribe(
-                () => {
-                  console.log('Duplicate deleted');
-                  // emit person ID deleted
-                  this.resForDuplicate$.next({keepId, delId: c.personId});
-                },
-                () => console.log('Error deleting duplicate')
-              );
-            }
-          });
-          // optimise results
-          // this.duplicatePersons.push(candidate.candidates.map( (c) => { if (c.confidence > 0.80) { return c.personId; } }));
-          // adds face and retrain
-          this.addFace(group, keepId, stream, faces[idxFace]);
-         } else {
-          this.createPerson(group, stream, faces[idxFace]);
-         }
-       }
-     },
-     (error) => {
-       // 3. Create person group not trained
-       for (const f of faces) {
-        this.createPerson(group, stream, f);
-       }
-     });
+    if (faces.length === 0) {
+      this.result$.next(null);
+    } else {
+      const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 10, minConfidence);
+      identify$.subscribe(
+      (faceCandidates) => {
+        for (const candidate of faceCandidates) {
+          const idxFace = faces.map(f => f.faceId).indexOf(candidate.faceId);
+          if (candidate.candidates.length === 1) {
+           this.addFace(group, candidate.candidates[0].personId, stream, faces[idxFace]);
+          } else if (candidate.candidates.length > 1) {
+           console.log('Possible duplicates');
+           let keepId = null;
+           let maxConfidence = 0;
+           candidate.candidates.forEach(c => {
+             if (c.confidence > maxConfidence) {
+               maxConfidence = c.confidence;
+               keepId = c.personId;
+             } else if (c.confidence > 0.80) {
+               // delete possible duplicate
+               const del$ = this.personService.delete(group.personGroupId, c.personId);
+               del$.subscribe(
+                 () => {
+                   console.log('Duplicate deleted');
+                   // emit person ID deleted
+                   this.resForDuplicate$.next({keepId, delId: c.personId});
+                 },
+                 () => console.log('Error deleting duplicate')
+               );
+             }
+           });
+           // optimise results
+           // this.duplicatePersons.push(candidate.candidates.map( (c) => { if (c.confidence > 0.80) { return c.personId; } }));
+           // adds face and retrain
+           this.addFace(group, keepId, stream, faces[idxFace]);
+          } else {
+           this.createPerson(group, stream, faces[idxFace]);
+          }
+        }
+      },
+      (error) => {
+        // 3. Create person group not trained
+        for (const f of faces) {
+         this.createPerson(group, stream, f);
+        }
+      });
+    }
+
   }
 
   /*
@@ -211,7 +217,7 @@ export class FaceProcessService {
   /*
    Add Face to an existant person
   */
-  private addFace(group: Group, personId: string, stream: Blob, face: Face) {
+  private addFace(group: Group, personId: string, stream: Blob, face: Face, isFirstFace = false) {
           // person identified matching the face
           // 4. Add Face to person
           // tslint:disable-next-line:max-line-length
@@ -233,7 +239,9 @@ export class FaceProcessService {
               this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
             }
 
-            this.train(group.personGroupId);
+            if (isFirstFace) {
+              this.train(group.personGroupId);
+            }
           },
           () => {
             console.log('ERROR : Adding face');
@@ -251,7 +259,7 @@ export class FaceProcessService {
 
     person$.subscribe(
           (data) => {
-            this.addFace(group, data.personId, stream, face);
+            this.addFace(group, data.personId, stream, face, true);
           },
           () => {
               console.log('ERROR : Create person');
@@ -263,18 +271,28 @@ export class FaceProcessService {
     Train the group : must be done every time a new person is added
   */
   private train(groupId) {
-    // 5. train group
-    const train$ = this.groupService.train(groupId);
-    train$.subscribe(
-    () => {
-      this.result$.next(this.result);
-    },
-    () => {
-      // 6. training status
-      const trainStatus$ = this.groupService.getTrainingStatus(groupId);
-      trainStatus$.subscribe();
-      this.result$.next(null);
-    });
+    // checking if training is running
+    const status = this.groupService.getTrainingStatus(groupId);
+
+    status.subscribe(
+      (res) => {
+        if (res.status === 'notstarted' || res.status === 'succeeded' || res.status === 'failed') {
+          // 5. train group
+          const train$ = this.groupService.train(groupId);
+          train$.subscribe(
+          (result) => {
+            console.log('training');
+            console.log(result);
+            this.result$.next(this.result);
+          },
+          () => {
+            // 6. training status
+            this.result$.next(null);
+          });
+        }
+      }
+    );
+
   }
 
   // list person with their face
