@@ -11,6 +11,7 @@ namespace oneroom_api.Utilities
                 TeamId = team.TeamId,
                 TeamName = team.TeamName,
                 Description = team.Description,
+                DescriptionAlreadyShowed = team.DescriptionAlreadyShowed,
                 TeamColor = team.TeamColor,
                 CreationDate = team.CreationDate,
                 Users = team.Users,

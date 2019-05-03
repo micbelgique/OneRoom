@@ -44,6 +44,7 @@ import {
   MatTooltipModule,
   MatStepperModule
 } from '@angular/material';
+import { DescriptionTeamModalComponent } from './description-team-modal/description-team-modal.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import {
     LockscreenComponent,
     SettingsComponent,
     ModalChangeNameComponent,
-    ControlComponent
+    ControlComponent,
+    DescriptionTeamModalComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +104,8 @@ import {
     MatStepperModule
   ],
   entryComponents: [
-    ModalChangeNameComponent
+    ModalChangeNameComponent,
+    DescriptionTeamModalComponent
   ],
   providers: [
   ],

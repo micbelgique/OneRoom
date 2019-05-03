@@ -18,6 +18,7 @@ namespace oneroom_api.Model
         // unique name to identify team
         public string TeamName { get; set; }
         public string Description { get; set; }
+        public bool DescriptionAlreadyShowed { get; set; } = false;
         // unique color to identify team
         public string TeamColor { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;

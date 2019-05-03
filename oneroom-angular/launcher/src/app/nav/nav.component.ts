@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import { User, UserService, Team, TeamService, HubService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog } from '@angular/material';
 import { ModalChangeNameComponent } from '../modal-change-name/modal-change-name.component';
+import { DescriptionTeamModalComponent } from '../description-team-modal/description-team-modal.component';
 
 @Component({
   selector: 'app-nav',
@@ -55,6 +56,20 @@ export class NavComponent implements OnInit {
     localStorage.removeItem('notes');
     this.route.navigate(['/lock']);
   }
+  openDescriptionModal() {
+    console.log(this.teamUser);
+    const mod = this.modal.open(DescriptionTeamModalComponent, {data: {
+      description: this.teamUser.description},
+    height: '40%',
+    width: '40%'
+  });
+    mod.afterClosed().subscribe( () => {
+      this.teamUser.descriptionAlreadyShowed = true;
+      this.teamService.changeStateDescription(this.teamUser).subscribe(() =>
+        console.log('updated')
+      );
+    });
+  }
   openModal() {
     const mod = this.modal.open(ModalChangeNameComponent, {
       data: {
@@ -95,6 +110,9 @@ export class NavComponent implements OnInit {
       if (item.users.some(x => x.userId === this.user.userId)) {
         this.teamUser = item;
         localStorage.setItem('teamData', JSON.stringify(item));
+        if (!this.teamUser.descriptionAlreadyShowed && this.teamUser.description) {
+          this.openDescriptionModal();
+        }
        }
     }
   }

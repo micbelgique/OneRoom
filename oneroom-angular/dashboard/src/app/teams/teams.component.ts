@@ -14,7 +14,7 @@ export class TeamsComponent implements OnInit {
   teams: Team[] = [];
   games: Game[];
   // column order
-  displayedColumns: string[] = ['Name', 'Color', 'Users'];
+  displayedColumns: string[] = ['Name', 'Color', 'Users', 'Description'];
 
   constructor(private gameService: GameService,
               private teamService: TeamService,
@@ -71,6 +71,12 @@ export class TeamsComponent implements OnInit {
         this.notifierService.notify( 'error', err.error );
       }
     );
+  }
+  saveTeam(element: Team) {
+    this.teamService.updateDescription(element).subscribe( () => {
+      console.log(element);
+      this.notifierService.notify( 'success', 'team updatetd');
+    });
   }
 
   getTeamColor(color: string) {
