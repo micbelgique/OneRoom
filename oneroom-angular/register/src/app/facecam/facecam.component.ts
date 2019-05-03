@@ -3,9 +3,10 @@ import * as faceapi from 'face-api.js';
 // tslint:disable-next-line:max-line-length
 import { Group, FaceProcessService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { MatSnackBar, MatDialog } from '@angular/material';
-import { Subject } from 'rxjs';
+import { Subject, timer } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, GameService, Game, Face, GlassesType, GameState, HubService } from '@oneroomic/oneroomlibrary';
+import { FaceMatcher } from 'face-api.js';
 // patch electron
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -79,6 +80,12 @@ export class FacecamComponent implements OnInit, OnDestroy {
   private faceCallsDisabled = false;
   private customVisionCallsDisabled = false;
 
+  private faceMatcher: FaceMatcher;
+  private descriptors: Float32Array[];
+  private captureStorage = [];
+  private timerData;
+  private timerLock;
+
   constructor(
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -99,6 +106,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
     this.stateContainer = false;
     this.lock = false;
 
+    this.descriptors = [];
+    this.timerData = setInterval(
+      val => {
+      console.log('sending data');
+      // send data to face
+      this.sendData();
+    }, 30000);
     // last video source
 
     if (localStorage.getItem('videoSource')) {
@@ -157,11 +171,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   private async loadModels() {
-    this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.60});
+    this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.85});
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/')
-        ).then(
+        ).then( async () => await faceapi.loadFaceRecognitionModel('assets/models/')).then(
           async () => {
             this.modelsReady = true;
           }
@@ -184,27 +198,80 @@ export class FacecamComponent implements OnInit, OnDestroy {
     }
   }
 
+  sendData() {
+      this.lock = true;
+      console.log('sendData()');
+      // lock capture
+      this.timerLock = setTimeout(
+        (val) => {
+          this.lock = false;
+          console.log('disabling lock in ' + 1000 * this.captureStorage.length + ' seconds');
+        }
+      , 1500 * this.captureStorage.length);
+      // send processing
+      let count = 0;
+      this.captureStorage.forEach(
+        (canvas) => {
+          console.log('sending pictures : ' + this.captureStorage.length);
+          this.imageCapture(canvas);
+          count++;
+        }
+      );
+
+      console.log(this.captureStorage.length);
+      this.captureStorage = [];
+      console.log(this.captureStorage.length);
+
+  }
+
   public async detectFaces() {
         this.clearOverlay();
 
-        const fullFaceDescriptions = await faceapi.detectAllFaces(this.video.nativeElement, this.options)
-                                    .withFaceLandmarks();
+        if (this.lock === false) {
+
+        const fullFaceDescriptions = await faceapi
+                                    .detectAllFaces(this.video.nativeElement, this.options)
+                                    .withFaceLandmarks()
+                                    .withFaceDescriptors();
+
         if (fullFaceDescriptions.length > 0) {
 
           const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
           await faceapi.drawDetection(this.overlay.nativeElement, detectionsArray, { withScore: false });
+          const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement);
 
-          if (this.lock === false) {
-              this.lock = true;
-              const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement);
-              this.imageCapture(imgData);
+          if (this.faceMatcher) {
+            fullFaceDescriptions.map(f => f.descriptor).forEach(
+              fd => {
+                const res = this.faceMatcher.findBestMatch(fd);
+                console.log(res.label);
+                if (res.label === 'unknown') {
+                  // store image
+                  // this.imageCapture(imgData);
+                  if (this.descriptors.length > 10) {
+                    // send data
+                    this.sendData();
+                  } else {
+                    this.captureStorage.push(imgData);
+                    this.descriptors.push(fd);
+                    this.faceMatcher = new faceapi.FaceMatcher(this.descriptors);
+                  }
+                }
+              }
+            );
+          } else {
+            this.faceMatcher = new faceapi.FaceMatcher(fullFaceDescriptions.map(f => f.descriptor));
+            this.captureStorage.push(imgData);
           }
+
         }
 
         if (this.displayStream === 'none') {
           this.displayStream = 'block';
           this.isLoading = false;
         }
+
+      }
   }
 
   // clear canvas overlay
@@ -323,8 +390,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const can = canvas;
+
     try {
-      canvas.toBlob((blob) => {
+      can.toBlob((blob) => {
         const stream = blob;
         const res$ = this.faceProcess.byImg(stream, this.group);
         // traitement face API
@@ -408,11 +477,9 @@ export class FacecamComponent implements OnInit, OnDestroy {
                       this.getSkinColor(faceBlob).subscribe(
                         (sc) => {
                           f.skinColor = sc;
-                          console.log(sc);
                           this.getHairLength(faceBlob).subscribe(
                             (hl) => {
                               f.hairLength = hl;
-                              console.log(hl);
                               u.faces.push(f);
                               // save user
                               this.saveUsers(u);
@@ -441,7 +508,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
       );
 
         // Optimisation
-        this.faceProcess.resForDuplicate$.subscribe(
+        /*this.faceProcess.resForDuplicate$.subscribe(
         (result) => {
           console.log(result);
           this.userService.mergeUser(result.keepId, result.delId).subscribe(
@@ -452,7 +519,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
           // d$.subscribe(
           //   () => console.log('user deleted')
           // );
-        });
+        });*/
 
     });
   } catch (e) {
@@ -559,7 +626,6 @@ private saveUsers(user: User) {
     }
 
     private stopCaptureStream() {
-      clearInterval(this.detectId);
       // stop camera capture
       if (this.stream) {
         this.stream.getTracks().forEach(
@@ -567,6 +633,11 @@ private saveUsers(user: User) {
           track.stop();
         });
       }
+
+      clearInterval(this.detectId);
+      clearInterval(this.timerData);
+      clearTimeout(this.timerLock);
+      console.log('disabling interval');
     }
 
     ngOnDestroy(): void {
