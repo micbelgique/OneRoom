@@ -35,7 +35,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private teamCreateSub;
   private teamDeleteSub;
   private hubServiceSub;
-  private finishGameSub;
+  private challengeSub;
 
   private hightlightUserSub;
   private detectedUserId;
@@ -50,6 +50,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.users = [];
     this.teams = [];
+    this.sortedData = this.teams.slice();
     this.title = localStorage.getItem('groupName');
     this.game = JSON.parse(localStorage.getItem('gameData'));
     // minimum face
@@ -89,8 +90,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
       this.deleteTeamList(result);
     });
-    this.finishGameSub = this.hubService.hasCompletedChallenge.subscribe((result) => {
-      this.finishGame(result.teamId);
+    this.challengeSub = this.hubService.hasCompletedChallenge.subscribe((result) => {
+      this.challengeCompleted(result.teamId, result.challengeId);
     });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
@@ -117,13 +118,20 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       error => this.errorMessage = error as any
     );
   }
-  private finishGame(teamId) {
-    this.winners.push(teamId);
+
+  private challengeCompleted(teamId, challengeId) {
+    this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed = true;
+    this.sortTeam();
+  }
+
+  private sortTeam( isAsc: boolean = false) {
+    // tslint:disable-next-line:max-line-length
+    this.teams.sort((a, b) => (a.challenges.filter(c => c.completed).length < b.challenges.filter(c => c.completed).length ? -1 : 1) * (isAsc ? 1 : -1));
   }
 
   private updateUser(user: User) {
     console.log(user);
-    const u = this.users.findIndex(e => e.userId === user.userId);
+    const u = this.users.findIndex(e => e.userId === user.userId)
     this.users[u] = user;
   }
 
@@ -144,6 +152,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private getTeams() {
     this.teamService.getTeams().subscribe((result) => {
       this.teams = result;
+      this.sortTeam();
     });
   }
 
@@ -165,11 +174,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   hasFinished(teamId: number): string {
-    if (this.winners.indexOf(teamId) !== -1) {
-      return 'gradient';
-    } else {
-      return '';
-    }
+    return this.teams.find(t => t.teamId === teamId).challenges.every( c => c.completed === true);
   }
 
   truncateName(name: string) {
@@ -230,9 +235,12 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.hightlightUserSub) {
       this.hightlightUserSub.unsubscribe();
     }
-    /*if (!this.hubService.connected.isStopped) {
+    if (this.challengeSub) {
+      this.challengeSub.unsubscribe();
+    }
+    if (!this.hubService.connected.isStopped) {
       this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
-    }*/
+    }
   }
 }
