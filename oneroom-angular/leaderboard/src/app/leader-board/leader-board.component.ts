@@ -122,6 +122,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private challengeCompleted(teamId, challengeId) {
     this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed = true;
     this.sortTeam();
+    this.playAudio();
+  }
+
+  playAudio() {
+    let audio = new Audio();
+    audio.src = '../assets/sounds/notification.mp3';
+    audio.load();
+    audio.play();
   }
 
   private sortTeam( isAsc: boolean = false) {
