@@ -25,17 +25,14 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.games = [];
-    if (localStorage.getItem('minimumRecognized')) {
-      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
-    } else {
-      this.minimumRecognized = 3;
-    }
+    this.game = new Game();
 
-    if (localStorage.getItem('gameData')) {
-      this.game = JSON.parse(localStorage.getItem('gameData'));
+    if (localStorage.getItem('groupName')) {
+      this.getGame(localStorage.getItem('groupName'));
     } else {
       this.game = new Game();
       this.game.groupName = null;
+      this.minimumRecognized = 3;
     }
 
     if (localStorage.getItem('endpoint')) {
@@ -72,13 +69,11 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  getGame() {
-    this.gameService.getGame(this.game.groupName).subscribe( (game: Game) => {
+  getGame(groupName: string) {
+    this.gameService.getGame(groupName).subscribe( (game: Game) => {
       this.game = game;
       localStorage.setItem('gameData', JSON.stringify(game));
-      localStorage.setItem('gameId', game.gameId.toString());
       localStorage.setItem('groupName', game.groupName);
-      localStorage.setItem('minimumRecognized', '' + game.config.minimumRecognized);
       this.minimumRecognized = game.config.minimumRecognized;
       this.toast.open('Game fetched', 'Ok', {
         duration: 3000

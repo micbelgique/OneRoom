@@ -14,8 +14,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   game: Game;
   errorMessage: string;
   refreshBtn = true;
-  title: string;
   minimumRecognized: number;
+  cols = 4;
+  rows = 2;
 
   // winner teams
   private winners: number[] = [];
@@ -23,7 +24,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   // timer 30 min
   timeLeft = 30 * 60;
   time = 1;
-  displayTimer = false;
 
   private timeSubscription;
   private userSub;
@@ -36,6 +36,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private teamDeleteSub;
   private hubServiceSub;
   private challengeSub;
+  private gameStateSub;
+  private timesub;
 
   private hightlightUserSub;
   private detectedUserId;
@@ -50,15 +52,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.users = [];
     this.teams = [];
-    this.sortedData = this.teams.slice();
-    this.title = localStorage.getItem('groupName');
-    this.game = JSON.parse(localStorage.getItem('gameData'));
-    // minimum face
-    if (localStorage.getItem('minimumRecognized')) {
-      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
-    } else {
-      this.minimumRecognized = 3;
-    }
+    this.game = new Game();
+    // Set game and minimum face
+    this.getGame(localStorage.getItem('groupName'));
 
     this.detectedUserId = '';
     // attach to event from hub
@@ -78,14 +74,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamCreateSub = this.hubService.refreshTeamList.subscribe((result) => {
       this.refreshTeamList(result);
     });
-    this.hubService.refreshGameState.subscribe((newState) => {
-      this.gameService.getStateGame(this.game.groupName).subscribe((state) => {
-        if (state === GameState.LAUNCH) {
-          this.setTimer();
-        } else {
-          this.displayTimer = false;
-        }
-      });
+    this.gameStateSub = this.hubService.refreshGameState.subscribe((newState) => {
+      this.switchState(newState);
     });
     this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
       this.deleteTeamList(result);
@@ -135,6 +125,25 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private sortTeam( isAsc: boolean = false) {
     // tslint:disable-next-line:max-line-length
     this.teams.sort((a, b) => (a.challenges.filter(c => c.completed).length < b.challenges.filter(c => c.completed).length ? -1 : 1) * (isAsc ? 1 : -1));
+    this.sortChallenge();// No matter which challenge is completed, always sort to view the completed before the not completed
+  }
+
+  private sortChallenge( isAsc: boolean = false) {
+    // tslint:disable-next-line:max-line-length
+    this.teams.forEach(t => t.challenges.sort((a, b) => (a.completed < b.completed ? -1 : 1) * (isAsc ? 1 : -1)));
+  }
+
+  private switchState(state: GameState) {
+    this.game.state = state;
+    if (this.game.state === GameState.LAUNCH) {
+      // Set the presentation to TeamView
+      this.cols = 1;
+      this.rows = 7;
+      this.setTimer();
+    } else if (this.game.state === GameState.REGISTER) {
+      this.cols = 4;
+      this.rows = 2;
+    }
   }
 
   private updateUser(user: User) {
@@ -169,7 +178,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
   private deleteTeamList(idGame: number) {
     if (idGame === this.game.gameId) {
-    this.teams = [];
+      this.teams = [];
     }
   }
 
@@ -181,8 +190,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  hasFinished(teamId: number): string {
-    return this.teams.find(t => t.teamId === teamId).challenges.every( c => c.completed === true);
+  hasFinished(teamId: number) {
+    return this.teams && teamId ? this.teams.find(t => t.teamId === teamId).challenges.every( c => c.completed === true) : false;
   }
 
   truncateName(name: string) {
@@ -194,19 +203,32 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   setTimer() {
-    this.displayTimer = true;
-    const timers = timer(1000, 1000);
-    const abc = timers.subscribe(val => {
-      if (this.time > 0) {
-        this.time = this.timeLeft - val;
-      }
-    });
+    if (!this.timesub) {
+      this.timesub = timer(1000, 1000).subscribe(val => {
+        if (this.time > 0) {
+          this.time = this.timeLeft - val;
+        }
+      });
+    }
   }
 
   getTeamColor(color: string) {
     if (color) {
       return 'rgb(' + color + ')';
     }
+  }
+
+  getGame(groupName: string) {
+    this.gameService.getGame(groupName).subscribe( (game: Game) => {
+      this.game = game;
+      if (game.state === GameState.LAUNCH) {
+        // Set the presentation to TeamView
+        this.cols = 1;
+        this.rows = 7;
+        this.setTimer();
+      }
+      this.minimumRecognized = game.config.minimumRecognized;
+    });
   }
 
   ngOnDestroy() {
@@ -245,6 +267,12 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
     if (this.challengeSub) {
       this.challengeSub.unsubscribe();
+    }
+    if (this.gameStateSub) {
+      this.gameStateSub.unsubscribe();
+    }
+    if (this.timesub) {
+      this.timesub.unsubscribe();
     }
     if (!this.hubService.connected.isStopped) {
       this.hubService.leaveGroup(this.game.gameId.toString());

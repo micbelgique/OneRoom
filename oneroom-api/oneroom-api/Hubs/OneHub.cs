@@ -25,7 +25,7 @@ namespace oneroom_api.Hubs
         // All clients receive automatic configuration when changed
         Task UpdateConfigurations();
         // When game state changed
-        Task UpdateGameState(int gameId);
+        Task UpdateGameState(State state);
         // when game deleted or updated
         Task UpdateGame(int gameId);
         // Wwhen a challenge is completed by a team

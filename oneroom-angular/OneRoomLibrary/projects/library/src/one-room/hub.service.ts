@@ -68,7 +68,7 @@ export class HubService extends SignalRCoreService<MonitoringMethods> {
   protected connectionTryDelay = 10000;
 
   protected methods: MonitoringMethods = {
-    UpdateGameState: (gameId) => this._refreshGameState.emit(gameId),
+    UpdateGameState: (state) => this._refreshGameState.emit(state),
     UpdateUsers: (Users) => this._refreshUserList.emit(Users),
     UpdateTeams: (result) => this._refreshTeamList.emit(result),
     DeleteTeams: (result) => this._deleteTeamList.emit(result),

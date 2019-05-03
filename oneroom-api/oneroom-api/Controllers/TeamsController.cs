@@ -133,17 +133,20 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<List<Team>>> DeleteTeams(int gameId)
         {
-            List<Team> teams = await _context.Teams.Where(t => t.GameId == gameId)
-                                                   .Include(t => t.Users)
-                                                   .ToListAsync();
-            if (!teams.Any())
+            Game game = await _context.Games.Include(g => g.Teams)
+                                            .SingleOrDefaultAsync(g => g.GameId == gameId);
+            if (!game.Teams.Any())
             {
                 return NotFound("There is no teams left to delete");
             }
-            _context.Teams.RemoveRange(teams);
+            if( game.State > State.REGISTER)
+            {
+                return BadRequest("The game state does not allow to remove the teams");
+            }
+            _context.Teams.RemoveRange(game.Teams);
             await _context.SaveChangesAsync();
             await _hubClients.Clients.Group(gameId.ToString()).DeleteTeams(gameId);
-            return teams;
+            return game.Teams;
         }
 
         [HttpPut]
