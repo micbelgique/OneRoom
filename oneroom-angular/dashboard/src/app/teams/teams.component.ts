@@ -75,7 +75,7 @@ export class TeamsComponent implements OnInit {
   }
 
   saveTeam(element: Team) {
-    this.teamService.editTeam(element).subscribe( () => {
+    this.teamService.updateDescription(element).subscribe( () => {
       this.notifierService.notify( 'success', 'team updatetd');
     });
   }
