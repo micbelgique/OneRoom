@@ -39,6 +39,11 @@ mat-card div {
   animation: gradientBg 5s linear infinite;
 }
 
+mat-card-title.gradient {
+  -webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
 @-webkit-keyframes gradientBg {
   0% {
       background-position: 100% 0%
@@ -64,4 +69,13 @@ mat-card div {
   100% {
       background-position: 15% 100%
   }
+}
+
+.circle {
+  margin-left: 10px;
+  border-color: green;
+  border-style: solid;
+  border-width: 2px 2px 2px 2px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }

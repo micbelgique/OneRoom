@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using oneroom_api.data;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 // TODO : add put and send signal to update config if changed
@@ -46,7 +46,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<GameDto>> GetGame(string groupName)
         {
-            var game = await _context.Games.Include(g => g.Teams)
+            GameDto game = await _context.Games.Include(g => g.Teams)
                                            .Include(g => g.Config)
                                            .Include(g => g.Scenario)
                                            .Select(g => g.ToDto())
@@ -66,7 +66,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<State>> GetStateGame(string groupName)
         {
-            var game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
+            Game game = await (from e in _context.Games where e.GroupName == groupName select e).FirstOrDefaultAsync();
             if (game != null)
                 return game.State;
             else
@@ -75,30 +75,33 @@ namespace oneroom_api.Controllers
 
         // POST api/Games/groupName/NextState
         [HttpPost("{groupName}/SwitchState/{newState}")]
-        [ProducesResponseType(200, Type =typeof(Task<State>))]
+        [ProducesResponseType(200, Type = typeof(Task<State>))]
         [ProducesResponseType(404)]
         public async Task<ActionResult<State>> SwitchState(string groupName, State newState)
         {
-            var game = await _context.Games.Where( e => e.GroupName == groupName).Include(g => g.Teams).FirstOrDefaultAsync();
+            Game game = await _context.Games.Where(e => e.GroupName == groupName)
+                                            .Include(g => g.Teams)
+                                                .ThenInclude(t => t.Users)
+                                            .FirstOrDefaultAsync();
             if (game != null)
             {
-                game.State = newState;
-
                 if (newState.Equals(State.REGISTER))
                 {
-                    var teams = await _context.Teams.Where(t => t.GameId == game.GameId)
-                                            .Include(t => t.Users)
-                                            .ToListAsync();
-                    if (teams.Count() != 0)
+                    if (game.Teams.Count() != 0)
                     {
-                        _context.Teams.RemoveRange(teams);
+                        _context.Teams.RemoveRange(game.Teams);
                     }
                 }
+                else if (game.Teams.Count() == 0)
+                {
+                    return BadRequest("Please create the teams before switching states");
+                }
 
+                game.State = newState;
                 _context.Entry(game).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 // update state clients
-                await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGameState(game.GameId);
+                await _hubClients.Clients.Group(game.GameId.ToString()).UpdateGameState(game.State);
 
                 if (newState.Equals(State.REGISTER))
                     await _hubClients.Clients.Group(game.GameId.ToString()).DeleteTeams(game.GameId);
@@ -116,11 +119,11 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(409)]
         public async Task<ActionResult<Game>> CreateGame(Game game)
         {
-            if(game == null)
+            if (game == null)
             {
                 return BadRequest();
             }
-            
+
             _context.Games.Add(game);
 
             try
@@ -141,7 +144,7 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<Game>> DeleteGame(string groupName)
         {
-            var game = await _context.Games.SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
+            Game game = await _context.Games.SingleOrDefaultAsync(g => g.GroupName.Equals(groupName));
             if (game == null)
             {
                 return NotFound();
