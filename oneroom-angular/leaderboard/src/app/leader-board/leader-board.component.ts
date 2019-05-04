@@ -56,10 +56,10 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
       this.minimumRecognized = Number(this.game.config.minimumRecognized);
+      this.getGame(this.game.groupName);
     } else {
       this.game = new Game();
     }
-    this.getGame(localStorage.getItem('groupName'));
 
     this.detectedUserId = '';
     // attach to event from hub

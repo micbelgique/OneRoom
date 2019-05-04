@@ -27,8 +27,9 @@ export class SettingsComponent implements OnInit {
     this.games = [];
     this.game = new Game();
 
-    if (localStorage.getItem('groupName')) {
-      this.getGame(localStorage.getItem('groupName'));
+    if (localStorage.getItem('gameData')) {
+      this.game = JSON.parse(localStorage.getItem('gameData'));
+      this.getGame(this.game.groupName);
     } else {
       this.game = new Game();
       this.game.groupName = null;
