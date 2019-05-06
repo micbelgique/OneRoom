@@ -1,3 +1,26 @@
-<p>
-  home works!
-</p>
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=false>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          <div mat-card-title i18n="@@settingsGroup">Lier une Team</div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+        <div style='text-align: center'>
+            <mat-form-field>
+                <mat-select placeholder="Team" [(ngModel)]="team.teamName">
+                    <mat-option *ngFor="let team of teams" [value]="team.teamName">
+                  {{team.teamName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <div style="text-align: center">
+        <button style="width: 40%; margin:5px" mat-raised-button color="primary" i18n="@@settingsCreate" (click)="getTeam(this.team.teamName)" >Sauver</button>
+      </div>
+    </mat-card-actions>
+  </mat-expansion-panel>
+</mat-accordion>
+
