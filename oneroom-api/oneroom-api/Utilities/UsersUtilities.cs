@@ -11,7 +11,7 @@ namespace oneroom_api.Utilities
         // recalculate user stats based on the 10 last faces
         public static void OptimizeResults(this User u)
         {
-            if(u.Faces.Count > 0)
+            if(u.Faces.Count > 0 && !u.IsFirstConnected)
             {
                 // pick faces
                 var faces = u.Faces.OrderByDescending(f => f.CreationDate).ToList();
