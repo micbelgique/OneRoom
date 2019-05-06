@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Team, TeamService, User } from '@oneroomic/oneroomlibrary';
+import { Team, TeamService, User, GlassesType } from '@oneroomic/oneroomlibrary';
 import { HairColorType } from '@oneroomic/oneroomlibrary/one-room/model/hair-color-type.enum';
 
 @Component({
@@ -45,10 +45,25 @@ export class HomeComponent implements OnInit {
         this.UserWanted.hairColor = 'blond';
         if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'black').length >= 1) {
           this.UserWanted.skinColor = 'black';
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'black')[0].beardLevel;
+          if (this.team.users.filter(
+            u => u.hairColor === 'blond' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
+              this.UserWanted.glassesType = 'ReadingGlasses';
+          }
         } else if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'azian').length >= 1) {
           this.UserWanted.skinColor = 'azian';
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'azian')[0].beardLevel;
+          if (this.team.users.filter(
+            u => u.hairColor === 'blond' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
+              this.UserWanted.glassesType = 'ReadingGlasses';
+          }
         } else {
           this.UserWanted.skinColor = 'caucasian';
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'caucasian')[0].beardLevel;
+          if (this.team.users.filter(
+            u => u.hairColor === 'blond' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
+              this.UserWanted.glassesType = 'ReadingGlasses';
+          }
         }
         console.log(this.UserWanted);
         break;
@@ -56,10 +71,25 @@ export class HomeComponent implements OnInit {
       this.UserWanted.hairColor = 'brown';
       if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'black').length >= 1) {
         this.UserWanted.skinColor = 'black';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'black')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'brown' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'azian').length >= 1) {
         this.UserWanted.skinColor = 'azian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'azian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'brown' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else {
         this.UserWanted.skinColor = 'caucasian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'caucasian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'brown' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       }
       console.log(this.UserWanted);
       break;
@@ -67,10 +97,25 @@ export class HomeComponent implements OnInit {
       this.UserWanted.hairColor = 'red';
       if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'black').length >= 1) {
         this.UserWanted.skinColor = 'black';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'black')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'red' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'azian').length >= 1) {
         this.UserWanted.skinColor = 'azian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'azian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'red' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else {
         this.UserWanted.skinColor = 'caucasian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'caucasian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'red' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       }
       console.log(this.UserWanted);
       break;
@@ -78,10 +123,25 @@ export class HomeComponent implements OnInit {
       this.UserWanted.hairColor = 'white';
       if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'black').length >= 1) {
         this.UserWanted.skinColor = 'black';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'black')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'white' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'azian').length >= 1) {
         this.UserWanted.skinColor = 'azian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'azian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'white' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       } else {
         this.UserWanted.skinColor = 'caucasian';
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'caucasian')[0].beardLevel;
+        if (this.team.users.filter(
+          u => u.hairColor === 'white' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
+            this.UserWanted.glassesType = 'ReadingGlasses';
+        }
       }
       console.log(this.UserWanted);
       break;
