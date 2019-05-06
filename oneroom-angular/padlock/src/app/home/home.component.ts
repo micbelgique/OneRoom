@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Team, TeamService } from '@oneroomic/oneroomlibrary';
+import { Team, TeamService, User } from '@oneroomic/oneroomlibrary';
+import { HairColorType } from '@oneroomic/oneroomlibrary/one-room/model/hair-color-type.enum';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +11,7 @@ export class HomeComponent implements OnInit {
 
   teams: Team[];
   team = new Team();
+  UserWanted = new User();
   constructor(
     private teamService: TeamService
   ) { }
@@ -26,7 +28,48 @@ export class HomeComponent implements OnInit {
     );
   }
   getTeam(teamName: string) {
+    this.team = null;
     this.team = this.teams.filter(t => t.teamName === teamName)[0];
-    console.log(this.team);
+    this.generateUserForTeam();
+  }
+  generateUserForTeam() {
+    const result = [
+      this.team.users.filter(u => u.hairColor === 'blond').length,
+      this.team.users.filter(u => u.hairColor === 'brown').length,
+      this.team.users.filter(u => u .hairColor === 'red').length,
+      this.team.users.filter(u => u.hairColor === 'white').length
+    ];
+    const best = this.findMinResult(result);
+    switch (best) {
+      case 0:
+        this.UserWanted.hairColor = 'blond';
+        console.log(this.UserWanted);
+        break;
+      case 1:
+      this.UserWanted.hairColor = 'brown';
+      console.log(this.UserWanted);
+      break;
+      case 2:
+      this.UserWanted.hairColor = 'red';
+      console.log(this.UserWanted);
+      break;
+      case 3:
+      this.UserWanted.hairColor = 'white';
+      console.log(this.UserWanted);
+      break;
+      default:
+        break;
+    }
+  }
+  findMinResult(res: number[]): number {
+    let result = Math.max(...res);
+    let resultPos = -1;
+    for (let index = 0; index < res.length; index++) {
+      if (res[index] > 0 && result >= res[index]) {
+        result = res[index];
+        resultPos = index;
+      }
+    }
+    return resultPos;
   }
 }
