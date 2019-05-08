@@ -149,6 +149,7 @@ export class GamesComponent implements OnInit {
         this.refreshGames();
       },
       (err) => {
+        console.log(err);
         this.notifierService.notify( 'error', err.error );
       }
     );

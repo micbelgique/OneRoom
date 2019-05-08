@@ -72,9 +72,9 @@ export class TeamsComponent implements OnInit {
       }
     );
   }
+
   saveTeam(element: Team) {
     this.teamService.updateDescription(element).subscribe( () => {
-      console.log(element);
       this.notifierService.notify( 'success', 'team updatetd');
     });
   }

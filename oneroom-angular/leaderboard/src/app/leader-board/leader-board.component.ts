@@ -15,6 +15,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   errorMessage: string;
   refreshBtn = true;
   minimumRecognized: number;
+  cols = 4;
+  rows = 2;
 
   // winner teams
   private winners: number[] = [];
@@ -22,7 +24,6 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   // timer 30 min
   timeLeft = 30 * 60;
   time = 1;
-  displayTimer = false;
 
   private timeSubscription;
   private userSub;
@@ -34,7 +35,9 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private teamCreateSub;
   private teamDeleteSub;
   private hubServiceSub;
-  private finishGameSub;
+  private challengeSub;
+  private gameStateSub;
+  private timesub;
 
   private hightlightUserSub;
   private detectedUserId;
@@ -53,6 +56,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
       this.minimumRecognized = Number(this.game.config.minimumRecognized);
+      this.getGame(this.game.groupName);
     } else {
       this.game = new Game();
     }
@@ -81,20 +85,14 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     this.teamCreateSub = this.hubService.refreshTeamList.subscribe((result) => {
       this.refreshTeamList(result);
     });
-    this.hubService.refreshGameState.subscribe((newState) => {
-      this.gameService.getStateGame(this.game.groupName).subscribe((state) => {
-        if (state === GameState.LAUNCH) {
-          this.setTimer();
-        } else {
-          this.displayTimer = false;
-        }
-      });
+    this.gameStateSub = this.hubService.refreshGameState.subscribe((newState) => {
+      this.switchState(newState);
     });
     this.teamDeleteSub = this.hubService.deleteTeamList.subscribe((result) => {
       this.deleteTeamList(result);
     });
-    this.finishGameSub = this.hubService.hasCompletedChallenge.subscribe((result) => {
-      this.finishGame(result.teamId);
+    this.challengeSub = this.hubService.hasCompletedChallenge.subscribe((result) => {
+      this.challengeCompleted(result.teamId, result.challengeId);
     });
     this.hightlightUserSub = this.hubService.highlightUser.subscribe((userId: number) => {
       this.detectedUserId = userId;
@@ -121,8 +119,42 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       error => this.errorMessage = error as any
     );
   }
-  private finishGame(teamId) {
-    this.winners.push(teamId);
+
+  private challengeCompleted(teamId, challengeId) {
+    this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed = true;
+    this.sortTeam();
+    this.playAudio();
+  }
+
+  playAudio() {
+    let audio = new Audio();
+    audio.src = '../assets/sounds/notification.mp3';
+    audio.load();
+    audio.play();
+  }
+
+  private sortTeam( isAsc: boolean = false) {
+    // tslint:disable-next-line:max-line-length
+    this.teams.sort((a, b) => (a.challenges.filter(c => c.completed).length < b.challenges.filter(c => c.completed).length ? -1 : 1) * (isAsc ? 1 : -1));
+    this.sortChallenge();// No matter which challenge is completed, always sort to view the completed before the not completed
+  }
+
+  private sortChallenge( isAsc: boolean = false) {
+    // tslint:disable-next-line:max-line-length
+    this.teams.forEach(t => t.challenges.sort((a, b) => (a.completed < b.completed ? -1 : 1) * (isAsc ? 1 : -1)));
+  }
+
+  private switchState(state: GameState) {
+    this.game.state = state;
+    if (this.game.state === GameState.LAUNCH) {
+      // Set the presentation to TeamView
+      this.cols = 1;
+      this.rows = 7;
+      this.setTimer();
+    } else if (this.game.state === GameState.REGISTER) {
+      this.cols = 4;
+      this.rows = 2;
+    }
   }
 
   private updateUser(user: User) {
@@ -146,6 +178,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private getTeams() {
     this.teamService.getTeams().subscribe((result) => {
       this.teams = result;
+      this.sortTeam();
     });
   }
 
@@ -154,7 +187,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
   private deleteTeamList(idGame: number) {
     if (idGame === this.game.gameId) {
-    this.teams = [];
+      this.teams = [];
     }
   }
 
@@ -166,12 +199,8 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  hasFinished(teamId: number): string {
-    if (this.winners.indexOf(teamId) !== -1) {
-      return 'gradient';
-    } else {
-      return '';
-    }
+  hasFinished(teamId: number) {
+    return this.teams && teamId ? this.teams.find(t => t.teamId === teamId).challenges.every( c => c.completed === true) : false;
   }
 
   truncateName(name: string) {
@@ -183,19 +212,32 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   setTimer() {
-    this.displayTimer = true;
-    const timers = timer(1000, 1000);
-    const abc = timers.subscribe(val => {
-      if (this.time > 0) {
-        this.time = this.timeLeft - val;
-      }
-    });
+    if (!this.timesub) {
+      this.timesub = timer(1000, 1000).subscribe(val => {
+        if (this.time > 0) {
+          this.time = this.timeLeft - val;
+        }
+      });
+    }
   }
 
   getTeamColor(color: string) {
     if (color) {
       return 'rgb(' + color + ')';
     }
+  }
+
+  getGame(groupName: string) {
+    this.gameService.getGame(groupName).subscribe( (game: Game) => {
+      this.game = game;
+      if (game.state === GameState.LAUNCH) {
+        // Set the presentation to TeamView
+        this.cols = 1;
+        this.rows = 7;
+        this.setTimer();
+      }
+      this.minimumRecognized = game.config.minimumRecognized;
+    });
   }
 
   ngOnDestroy() {
@@ -232,9 +274,18 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
     if (this.hightlightUserSub) {
       this.hightlightUserSub.unsubscribe();
     }
-    /*if (!this.hubService.connected.isStopped) {
+    if (this.challengeSub) {
+      this.challengeSub.unsubscribe();
+    }
+    if (this.gameStateSub) {
+      this.gameStateSub.unsubscribe();
+    }
+    if (this.timesub) {
+      this.timesub.unsubscribe();
+    }
+    if (!this.hubService.connected.isStopped) {
       this.hubService.leaveGroup(this.game.gameId.toString());
       this.hubService.stopService();
-    }*/
+    }
   }
 }

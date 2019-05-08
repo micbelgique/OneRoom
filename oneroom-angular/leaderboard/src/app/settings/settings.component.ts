@@ -25,17 +25,15 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.games = [];
-    if (localStorage.getItem('minimumRecognized')) {
-      this.minimumRecognized = Number(localStorage.getItem('minimumRecognized'));
-    } else {
-      this.minimumRecognized = 3;
-    }
+    this.game = new Game();
 
     if (localStorage.getItem('gameData')) {
       this.game = JSON.parse(localStorage.getItem('gameData'));
+      this.getGame(this.game.groupName);
     } else {
       this.game = new Game();
       this.game.groupName = null;
+      this.minimumRecognized = 3;
     }
 
     if (localStorage.getItem('endpoint')) {
@@ -70,8 +68,8 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  getGame() {
-    this.gameService.getGame(this.game.groupName).subscribe( (game: Game) => {
+  getGame(groupName: string) {
+    this.gameService.getGame(groupName).subscribe( (game: Game) => {
       this.game = game;
       localStorage.setItem('gameData', JSON.stringify(game));
       this.minimumRecognized = game.config.minimumRecognized;
