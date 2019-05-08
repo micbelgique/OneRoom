@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Team, TeamService, User, GlassesType } from '@oneroomic/oneroomlibrary';
-import { HairColorType } from '@oneroomic/oneroomlibrary/one-room/model/hair-color-type.enum';
+import { Team, TeamService, User, GlassesType, Gender } from '@oneroomic/oneroomlibrary';
+import { HairColorType, SkinColorType } from '@oneroomic/oneroomlibrary/one-room/models';
 
 @Component({
   selector: 'app-home',
@@ -36,118 +36,186 @@ export class HomeComponent implements OnInit {
     const result = [
       this.team.users.filter(u => u.hairColor === 'blond').length,
       this.team.users.filter(u => u.hairColor === 'brown').length,
-      this.team.users.filter(u => u .hairColor === 'red').length,
+      this.team.users.filter(u => u.hairColor === 'red').length,
       this.team.users.filter(u => u.hairColor === 'white').length
     ];
     const best = this.findMinResult(result);
     switch (best) {
       case 0:
-        this.UserWanted.hairColor = 'blond';
-        if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'black').length >= 1) {
-          this.UserWanted.skinColor = 'black';
-          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'black')[0].beardLevel;
+        this.UserWanted.hairColor = HairColorType.BLOND;
+        if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK).length >= 1) {
+          this.UserWanted.skinColor = SkinColorType.BLACK;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK)[0].beardLevel;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK)[0].hairLength;
+          this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK)[0].gender;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK)[0].baldLevel;
           if (this.team.users.filter(
-            u => u.hairColor === 'blond' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
-              this.UserWanted.glassesType = 'ReadingGlasses';
+            u => u.hairColor === 'blond' && u.skinColor === SkinColorType.BLACK && u.glassesType === GlassesType.ReadingGlasses)) {
+              this.UserWanted.glassesType = GlassesType.ReadingGlasses;
           }
-        } else if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'azian').length >= 1) {
-          this.UserWanted.skinColor = 'azian';
-          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'azian')[0].beardLevel;
+        } else if (this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor ===  SkinColorType.AZIAN).length >= 1) {
+          this.UserWanted.skinColor =  SkinColorType.AZIAN;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.AZIAN)[0].beardLevel;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.AZIAN)[0].hairLength;
+          this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.AZIAN)[0].gender;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.AZIAN)[0].baldLevel;
           if (this.team.users.filter(
-            u => u.hairColor === 'blond' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
-              this.UserWanted.glassesType = 'ReadingGlasses';
+            u => u.hairColor === 'blond' && u.skinColor === SkinColorType.AZIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+              this.UserWanted.glassesType = GlassesType.ReadingGlasses;
           }
         } else {
-          this.UserWanted.skinColor = 'caucasian';
-          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === 'caucasian')[0].beardLevel;
+          this.UserWanted.skinColor = SkinColorType.CAUCASIAN;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.CAUCASIAN)[0].beardLevel;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.CAUCASIAN)[0].hairLength;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.CAUCASIAN)[0].gender;
+          // tslint:disable-next-line:max-line-length
+          this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'blond' && u.skinColor === SkinColorType.CAUCASIAN)[0].baldLevel;
           if (this.team.users.filter(
-            u => u.hairColor === 'blond' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
-              this.UserWanted.glassesType = 'ReadingGlasses';
+            u => u.hairColor === 'blond' && u.skinColor === SkinColorType.CAUCASIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+              this.UserWanted.glassesType = GlassesType.ReadingGlasses;
           }
         }
-        console.log(this.UserWanted);
         break;
       case 1:
-      this.UserWanted.hairColor = 'brown';
-      if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'black').length >= 1) {
-        this.UserWanted.skinColor = 'black';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'black')[0].beardLevel;
+      this.UserWanted.hairColor = HairColorType.OTHER;
+      if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.BLACK;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'brown' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'brown' && u.skinColor === SkinColorType.BLACK && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
-      } else if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'azian').length >= 1) {
-        this.UserWanted.skinColor = 'azian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'azian')[0].beardLevel;
+      } else if (this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.AZIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'brown' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'brown' && u.skinColor === SkinColorType.AZIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       } else {
-        this.UserWanted.skinColor = 'caucasian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === 'caucasian')[0].beardLevel;
+        this.UserWanted.skinColor = SkinColorType.CAUCASIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.CAUCASIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.CAUCASIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.CAUCASIAN)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'brown' && u.skinColor === SkinColorType.CAUCASIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'brown' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'brown' && u.skinColor === SkinColorType.CAUCASIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       }
-      console.log(this.UserWanted);
       break;
       case 2:
-      this.UserWanted.hairColor = 'red';
-      if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'black').length >= 1) {
-        this.UserWanted.skinColor = 'black';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'black')[0].beardLevel;
+      this.UserWanted.hairColor = HairColorType.RED;
+      if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.BLACK;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK)[0].gender;
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'red' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'red' && u.skinColor === SkinColorType.BLACK && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
-      } else if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'azian').length >= 1) {
-        this.UserWanted.skinColor = 'azian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'azian')[0].beardLevel;
+      } else if (this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.AZIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN)[0].gender;
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'red' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'red' && u.skinColor === SkinColorType.AZIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       } else {
-        this.UserWanted.skinColor = 'caucasian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === 'caucasian')[0].beardLevel;
+        this.UserWanted.skinColor = SkinColorType.CAUCASIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.CAUCASIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.CAUCASIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.CAUCASIAN)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'red' && u.skinColor === SkinColorType.CAUCASIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'red' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'red' && u.skinColor === SkinColorType.CAUCASIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       }
-      console.log(this.UserWanted);
       break;
       case 3:
-      this.UserWanted.hairColor = 'white';
-      if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'black').length >= 1) {
-        this.UserWanted.skinColor = 'black';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'black')[0].beardLevel;
+      this.UserWanted.hairColor = HairColorType.WHITE;
+      if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.BLACK;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'white' && u.skinColor === 'black' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'white' && u.skinColor === SkinColorType.BLACK && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
-      } else if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'azian').length >= 1) {
-        this.UserWanted.skinColor = 'azian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'azian')[0].beardLevel;
+      } else if (this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN).length >= 1) {
+        this.UserWanted.skinColor = SkinColorType.AZIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'white' && u.skinColor === 'azian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'white' && u.skinColor === SkinColorType.AZIAN && u.glassesType === GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       } else {
-        this.UserWanted.skinColor = 'caucasian';
-        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === 'caucasian')[0].beardLevel;
+        this.UserWanted.skinColor = SkinColorType.CAUCASIAN;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.beardLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.CAUCASIAN)[0].beardLevel;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.hairLength = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.CAUCASIAN)[0].hairLength;
+        this.UserWanted.gender = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.CAUCASIAN)[0].gender;
+        // tslint:disable-next-line:max-line-length
+        this.UserWanted.baldLevel = this.team.users.filter(u => u.hairColor === 'white' && u.skinColor === SkinColorType.CAUCASIAN)[0].baldLevel;
         if (this.team.users.filter(
-          u => u.hairColor === 'white' && u.skinColor === 'caucasian' && u.glassesType === 'ReadingGlasses')) {
-            this.UserWanted.glassesType = 'ReadingGlasses';
+          u => u.hairColor === 'white' && u.skinColor === SkinColorType.CAUCASIAN && GlassesType.ReadingGlasses)) {
+            this.UserWanted.glassesType = GlassesType.ReadingGlasses;
         }
       }
-      console.log(this.UserWanted);
       break;
       default:
         break;
     }
+    console.log(this.generateAvatar(this.UserWanted));
   }
   findMinResult(res: number[]): number {
     let result = Math.max(...res);
@@ -159,5 +227,65 @@ export class HomeComponent implements OnInit {
       }
     }
     return resultPos;
+  }
+  generateAvatar(user: User): string {
+    let avataaarsEndPoint = 'https://avataaars.io/?';
+    avataaarsEndPoint += '&accessoriesType=Sunglasses';
+    switch (user.skinColor) {
+    case SkinColorType.CAUCASIAN:
+      avataaarsEndPoint += '&skinColor=Pale';
+      break;
+    case SkinColorType.BLACK:
+      avataaarsEndPoint += '&skinColor=DarkBrown';
+      break;
+    case SkinColorType.AZIAN:
+      avataaarsEndPoint += '&skinColor=Yellow';
+      break;
+    default:
+      avataaarsEndPoint += '&skinColor=Light';
+      break;
+    }
+    if (user.glassesType === GlassesType.ReadingGlasses) {
+      avataaarsEndPoint += '&accessoriesType=Prescription02';
+    }
+    avataaarsEndPoint += '&clotheType=GraphicShirt&clotheColor=Black&graphicType=Pizza';
+    if (user.gender === Gender.MALE) {
+      if (user.beardLevel > 0.75) {
+        avataaarsEndPoint += '&facialHairType=BeardMajestic';
+      } else if (user.beardLevel > 0.5) {
+        avataaarsEndPoint += '&facialHairType=BeardMedium';
+      } else if (user.beardLevel > 0.25) {
+        avataaarsEndPoint += '&facialHairType=BeardLight';
+      } else {
+        if (user.moustacheLevel > 0.5) {
+          avataaarsEndPoint += '&facialHairType=MoustacheMagnum';
+        } else if (user.moustacheLevel > 0.25) {
+          avataaarsEndPoint += '&facialHairType=MoustacheFancy';
+        } else {
+          avataaarsEndPoint += '&facialHairType=Blank';
+        }
+      }
+      switch (user.hairColor) {
+        case 'other':
+        case 'unknown':
+          avataaarsEndPoint += '&facialHairColor=Black';
+          break;
+        case 'blond':
+          avataaarsEndPoint += '&facialHairColor=BlondeGolden';
+          break;
+        case 'red':
+          avataaarsEndPoint += '&facialHairColor=Auburn';
+          break;
+        case 'white':
+          avataaarsEndPoint += '&facialHairColor=SilverGray';
+          break;
+      default:
+        avataaarsEndPoint += ('&facialHairColor=' + user.hairColor);
+        break;
+      }
+  } else {
+    avataaarsEndPoint += '&facialHairType=Blank';
+  }
+    return avataaarsEndPoint;
   }
 }
