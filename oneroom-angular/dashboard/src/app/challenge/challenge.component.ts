@@ -46,7 +46,7 @@ export class ChallengeComponent implements OnInit {
     traducteur: ['translateEndpoint', 'translateKey', 'speechToTextEndpoint', 'speechToTextKey', 'textToSpeechEndpoint', 'textToSpeechKey'],
     coffre: [],
     chatbot: ['luisEndpoint', 'luisKey', 'textToSpeechEndpoint', 'textToSpeechKey'],
-    voice: ['language', 'gender']
+    voice: ['language', 'gender', 'loop']
   };
 
   myControl = new FormControl();

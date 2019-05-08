@@ -89,8 +89,9 @@ namespace oneroom_api.Controllers
                 {
                     Say.LanguageEnum language;
                     Say.VoiceEnum gender;
+                    double loop;
                     
-                    switch (teamChallenge.Config.GetValueOrDefault("language").ToLower())
+                    switch (teamChallenge.Config.GetValueOrDefault("language"))
                     {
                             case "japanese":
                                 language = Say.LanguageEnum.JaJp; break;
@@ -108,7 +109,7 @@ namespace oneroom_api.Controllers
                                 language = Say.LanguageEnum.FrFr; break;
                     }
 
-                    switch(teamChallenge.Config.GetValueOrDefault("gender").ToLower())
+                    switch(teamChallenge.Config.GetValueOrDefault("gender"))
                     {
                             case "male":
                                 gender = Say.VoiceEnum.Woman; break;
@@ -118,7 +119,22 @@ namespace oneroom_api.Controllers
                                 gender = Say.VoiceEnum.Alice; break;
                     }
 
-                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language);
+                    if (teamChallenge.Config.ContainsKey("loop"))
+                    {
+                        try
+                        {
+                            loop = Convert.ToDouble(teamChallenge.Config.GetValueOrDefault("loop"));
+
+                        }catch(Exception)
+                        {
+                            loop = 3;
+                        }
+
+                    } else {
+                        loop = 3;
+                    }
+
+                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language, loop: (int) loop);
                 }
                 
                 return TwiML(response);
