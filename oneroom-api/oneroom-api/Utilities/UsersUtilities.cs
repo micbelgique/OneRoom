@@ -11,7 +11,7 @@ namespace oneroom_api.Utilities
         // recalculate user stats based on the 10 last faces
         public static void OptimizeResults(this User u)
         {
-            if(u.Faces.Count > 0)
+            if(u.Faces.Count > 0 && !u.IsFirstConnected)
             {
                 // pick faces
                 var faces = u.Faces.OrderByDescending(f => f.CreationDate).ToList();
@@ -19,7 +19,7 @@ namespace oneroom_api.Utilities
                 // average age
                 u.Age = Math.Floor(faces.Average(f => f.Age));
 
-                // pick greater occurence gender
+                // pick greater occurence genderve 
                 var male = faces.Count(f => f.IsMale);
                 var female = faces.Count() - male;
                 u.Gender = male > female ? Gender.Male : Gender.Female;
@@ -242,6 +242,13 @@ namespace oneroom_api.Utilities
                             break;
                     }
                 }
+            } else
+            {
+                u.UrlAvatar.Split("&").ToList()
+                           .FindAll(s => s.Contains("clotheType") || s.Contains("clotheColor") || s.Contains("graphicType"))
+                           .ForEach(
+                                e => urlAvatar.Append("&" + e)
+                           );
             }
 
             // Set Facial Hair And Facial Hair Color

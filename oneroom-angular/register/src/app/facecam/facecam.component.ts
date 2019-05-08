@@ -480,9 +480,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
                           this.getHairLength(faceBlob).subscribe(
                             (hl) => {
                               f.hairLength = hl;
-                              u.faces.push(f);
-                              // save user
-                              this.saveUsers(u);
+                              if ( u.faces.map( ff => ff.faceId).indexOf(f.faceId) === -1 ) {
+                                u.faces.push(f);
+                                // save user
+                                this.saveUsers(u);
+                              }
                               this.lock = false;
                             },
                             (err) => {

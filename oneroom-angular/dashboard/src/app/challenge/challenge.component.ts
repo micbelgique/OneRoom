@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { trigger, state, transition, animate, style } from '@angular/animations';
 import { NotifierService } from 'angular-notifier';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-challenge',
@@ -36,7 +39,20 @@ export class ChallengeComponent implements OnInit {
   // column order
   displayedColumns: string[] = ['id', 'title', 'appName', 'order', 'timeBox', 'delete'];
   // apps available for challenges
-  appSelections = ['scanner', 'traducteur', 'coffre', 'chatbot'];
+  appSelections = ['scanner', 'traducteur', 'coffre', 'chatbot', 'voice'];
+
+  appPlaceholderConfig = {
+    scanner: ['customVisionEndpoint', 'customVisionKey'],
+    traducteur: ['translateEndpoint', 'translateKey', 'speechToTextEndpoint', 'speechToTextKey', 'textToSpeechEndpoint', 'textToSpeechKey'],
+    coffre: [],
+    chatbot: ['luisEndpoint', 'luisKey', 'textToSpeechEndpoint', 'textToSpeechKey'],
+    voice: ['language', 'gender', 'loop']
+  };
+
+  myControl = new FormControl();
+  filteredOptions: Observable<string[]>;
+
+  placeholderConfig: string[];
 
   constructor(private challengeService: ChallengeService,
               private notifierService: NotifierService) { }
@@ -46,7 +62,27 @@ export class ChallengeComponent implements OnInit {
     this.challenge = new Challenge();
     this.challenge.answers = [];
     this.challenge.hints = [];
+
+    this.filteredOptions = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        this.currentConfigKey = value;
+        console.log('value changed to : ' + value);
+        this.placeholderConfig = this.appPlaceholderConfig[this.challenge.appName];
+        if (!this.placeholderConfig) {
+          this.placeholderConfig = [];
+        }
+        return this.filter(value, this.placeholderConfig);
+      })
+    );
+
     this.refreshChallenges();
+  }
+
+  appSelected() {
+    this.placeholderConfig = this.appPlaceholderConfig[this.challenge.appName];
+    // remove previous config
+    this.challenge.config = {};
   }
 
   addAnswer() {
@@ -108,7 +144,7 @@ export class ChallengeComponent implements OnInit {
         this.challenges = challenges;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -119,7 +155,7 @@ export class ChallengeComponent implements OnInit {
         this.challenge = new Challenge();
         this.refreshChallenges();
       }, (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -129,8 +165,14 @@ export class ChallengeComponent implements OnInit {
         this.notifierService.notify( 'warning', 'Challenge removed' );
         this.refreshChallenges();
       }, (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
+  }
+
+  private filter(value: string, array: string[]): string[] {
+    const filterValue = value.toLowerCase();
+
+    return array.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 }

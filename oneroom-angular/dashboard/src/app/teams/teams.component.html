@@ -27,6 +27,11 @@
     </form>
     <table mat-table [dataSource]="teams" class="mat-elevation-z8">
 
+      <ng-container matColumnDef="Id">
+        <th mat-header-cell *matHeaderCellDef> Matricule </th>
+        <td mat-cell *matCellDef="let element"> {{element.teamId}} </td>
+      </ng-container>
+
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef> Nom d'équipe </th>
         <td mat-cell *matCellDef="let element"> {{element.teamName.toUpperCase()}} </td>

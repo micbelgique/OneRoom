@@ -22,7 +22,8 @@ import {
   MatSnackBarModule,
   MatDialogModule,
   MatTableModule,
-  MatSelectModule
+  MatSelectModule,
+  MatAutocompleteModule
 } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -71,6 +72,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatSnackBarModule,
     MatDialogModule,
     MatSelectModule,
+    MatAutocompleteModule,
     RouterModule.forRoot([
       { path: 'settings', component: SettingsComponent },
       { path: 'teams', component: TeamsComponent },
