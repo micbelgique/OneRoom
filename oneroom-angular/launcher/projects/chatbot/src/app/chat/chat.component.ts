@@ -95,7 +95,12 @@ export class ChatComponent implements OnInit {
       this.challenges = JSON.parse(localStorage.getItem('challengesData'));
       const idx = this.challenges.map(c => c.appName).indexOf('chatbot');
       if ( idx !== -1 ) {
+        // config endpoints and keys
         this.challenge = this.challenges[idx];
+        this.luisEndpoint = this.challenge.config.luisEndpoint;
+        this.luisKey = this.challenge.config.luisKey;
+        this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
+        this.textToSpeechKey =  this.challenge.config.textToSpeechKey;
       }
     }
     // selection of bot

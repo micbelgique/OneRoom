@@ -35,7 +35,7 @@ export class UsersComponent implements OnInit {
         this.games = games;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -49,7 +49,7 @@ export class UsersComponent implements OnInit {
         this.users = users;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -64,8 +64,7 @@ export class UsersComponent implements OnInit {
           this.notifierService.notify( 'warning', 'Player deleted' );
         },
         (err) => {
-          console.log(err);
-          this.notifierService.notify( 'error', err.error.error.message );
+          this.notifierService.notify( 'error', err.message );
         }
       );
 
@@ -77,11 +76,11 @@ export class UsersComponent implements OnInit {
             this.notifierService.notify( 'warning', 'Teams deleted' );
           },
           (err) => {
-            this.notifierService.notify( 'error', err.error );
+            this.notifierService.notify( 'error', err.message );
           });
         },
         (err) => {
-          this.notifierService.notify( 'error', err.error );
+          this.notifierService.notify( 'error', err.message );
         }
       );
     }
