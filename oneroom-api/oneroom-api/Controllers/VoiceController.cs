@@ -87,8 +87,38 @@ namespace oneroom_api.Controllers
                 
                 if (teamChallenge != null && teamChallenge.Answers.Count > 0)
                 {
-                    // TODO : retrieve info from data and config
-                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: Say.VoiceEnum.Man, language: Say.LanguageEnum.JaJp);
+                    Say.LanguageEnum language;
+                    Say.VoiceEnum gender;
+                    
+                    switch (teamChallenge.Config.GetValueOrDefault("language").ToLower())
+                    {
+                            case "japanese":
+                                language = Say.LanguageEnum.JaJp; break;
+                            case "english":
+                                language = Say.LanguageEnum.EnUs; break;
+                            case "italian":
+                                language = Say.LanguageEnum.ItIt; break;
+                            case "spanish":
+                                language = Say.LanguageEnum.EsEs; break;
+                            case "german":
+                                language = Say.LanguageEnum.DeDe; break;
+                            case "chinese":
+                                language = Say.LanguageEnum.ZhCn; break;
+                            default:
+                                language = Say.LanguageEnum.FrFr; break;
+                    }
+
+                    switch(teamChallenge.Config.GetValueOrDefault("gender").ToLower())
+                    {
+                            case "male":
+                                gender = Say.VoiceEnum.Woman; break;
+                            case "female":
+                                gender = Say.VoiceEnum.Man; break;
+                            default: 
+                                gender = Say.VoiceEnum.Alice; break;
+                    }
+
+                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language);
                 }
                 
                 return TwiML(response);
