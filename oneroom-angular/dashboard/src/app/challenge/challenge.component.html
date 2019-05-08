@@ -18,7 +18,7 @@
 
         <mat-form-field style="width: 90%">
             <mat-select i18n="@@settingsConfiguration" [(ngModel)]="challenge.appName" placeholder="App name" >
-              <mat-option *ngFor="let app of this.appSelections; let i = index" [value]="app">
+              <mat-option *ngFor="let app of this.appSelections; let i = index" [value]="app" (click)=this.appSelected()>
                 {{app}}
               </mat-option>
           </mat-select>
@@ -41,10 +41,9 @@
           <mat-icon style="cursor: pointer" (click)='removeAnswer(i)'>clear</mat-icon>
         </div>
         <div>
-          <mat-form-field style="width: 80%">
-            <input matInput placeholder="Réponse" type='text' [(ngModel)]="currentAnswer" >
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="Réponse" type='text' [(ngModel)]="currentAnswer" (keydown.enter)=addAnswer() >
           </mat-form-field>
-          <button style="width: 10%; margin:5px" mat-raised-button (click)='addAnswer()' color="primary" >Ajouter une réponse</button>
         </div>
 
         <!-- Hints : List -->
@@ -56,60 +55,67 @@
           <mat-icon style="cursor: pointer" (click)='removeHint(i)'>clear</mat-icon>
         </div>
         <div>
-          <mat-form-field style="width: 80%">
-            <input matInput placeholder="indice" type='text' [(ngModel)]="currentHint" >
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="indice" type='text' [(ngModel)]="currentHint" (keydown.enter)=addHint()>
           </mat-form-field>
-          <button style="width: 10%; margin:5px" mat-raised-button (click)='addHint()' color="primary" >Ajouter un indice</button>
         </div>
 
         <!-- Config : dictionary -->
         <h3>Configuration</h3>
+        <p>Les données de configuration requise pour le choix de l'app: {{challenge.appName}} seront autocomplétées lors de la saisie, pour valider appuyez sur enter après avoir encodé la valeur correspondant à la clé</p>
         <div *ngFor="let item of challenge.config | keyvalue">
-          <mat-form-field style="width: 40%; margin: 2%">
-            <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
+          <mat-form-field style="width: 40%;">
+                <input matInput placeholder="Clé" type='text' [(ngModel)]='item.key' disabled>
           </mat-form-field>
-          <mat-form-field style="width: 40%; margin: 2%">
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%;">
             <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
           </mat-form-field>
           <mat-icon style="cursor: pointer" (click)='removeConfig(item.key)'>clear</mat-icon>
         </div>
         <div>
-          <mat-form-field style="width: 41%; margin: 2%">
-            <input matInput placeholder="Clé" type='text' [(ngModel)]="currentConfigKey">
+          <mat-form-field style="width: 40%;" >
+                <input type="text" placeholder="clé" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field style="width: 41%; margin: 2%">
-            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentConfigValue'>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%;">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentConfigValue' (keydown.enter)=addConfig()>
           </mat-form-field>
-          <button style="width: 100%; margin:5px" mat-raised-button (click)='addConfig()' color="primary" >Ajouter une configuration</button>
         </div>
-
 
         <!-- Data : dictionary -->
         <h3>Data</h3>
+        <p>Les données requise pour le choix de l'app: {{challenge.appName}}, pour valider appuyez sur enter après avoir encodé la valeur correspondant à la clé</p>
         <div *ngFor="let item of challenge.data | keyvalue">
-          <mat-form-field style="width: 40%; margin: 2%">
+          <mat-form-field style="width: 40%;">
             <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
           </mat-form-field>
-          <mat-form-field style="width: 40%; margin: 2%">
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%">
             <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
           </mat-form-field>
           <mat-icon style="cursor: pointer" (click)='removeData(item.key)'>clear</mat-icon>
         </div>
         <div>
-          <mat-form-field style="width: 41%; margin: 2%">
+          <mat-form-field style="width: 40%">
             <input matInput placeholder="Clé" type='text' [(ngModel)]="currentDataKey">
           </mat-form-field>
-          <mat-form-field style="width: 41%; margin: 2%">
-            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentDataValue'>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentDataValue' (keydown.enter)=addData()>
           </mat-form-field>
-          <button style="width: 100%; margin:5px" mat-raised-button (click)='addData()' color="primary" >Ajouter une configuration</button>
         </div>
       </div>
     </mat-card-content>
 
     <mat-card-actions>
       <div style="text-align: center">
-        <button style="width: 40%; margin:5px" mat-raised-button (click)='createChallenge()' color="primary" i18n="@@settingsCreate" >Create</button>
+        <button style="width: 45%;" mat-raised-button (click)='createChallenge()' color="primary" i18n="@@settingsCreate" >Create</button>
       </div>
     </mat-card-actions>
 

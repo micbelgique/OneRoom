@@ -38,7 +38,7 @@ export class ScenarioComponent implements OnInit {
         this.refreshScenario();
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -49,7 +49,7 @@ export class ScenarioComponent implements OnInit {
         this.refreshScenario();
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -60,7 +60,7 @@ export class ScenarioComponent implements OnInit {
         scenarios.forEach(s => this.getChallengesIdByScenario(s));
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -70,7 +70,7 @@ export class ScenarioComponent implements OnInit {
         this.challenges = challenges;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -80,7 +80,7 @@ export class ScenarioComponent implements OnInit {
         scenario.challengesId = challenges.map(c => c.challengeId);
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -102,7 +102,7 @@ export class ScenarioComponent implements OnInit {
           this.notifierService.notify( 'succes', 'Challenge(s) added' );
         },
         (err) => {
-          this.notifierService.notify( 'error', err.error );
+          this.notifierService.notify( 'error', err.message );
         }
       );
     }
@@ -115,7 +115,7 @@ export class ScenarioComponent implements OnInit {
           this.notifierService.notify( 'warning', 'Challenge(s) deleted' );
         },
         (err) => {
-          this.notifierService.notify( 'error', err.error );
+          this.notifierService.notify( 'error', err.message );
         }
       );
     }

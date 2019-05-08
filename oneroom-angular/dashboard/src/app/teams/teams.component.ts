@@ -14,7 +14,7 @@ export class TeamsComponent implements OnInit {
   teams: Team[] = [];
   games: Game[];
   // column order
-  displayedColumns: string[] = ['Name', 'Color', 'Users', 'Description'];
+  displayedColumns: string[] = ['Id', 'Name', 'Color', 'Users', 'Description'];
 
   constructor(private gameService: GameService,
               private teamService: TeamService,
@@ -33,7 +33,7 @@ export class TeamsComponent implements OnInit {
         this.games = games;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -47,7 +47,7 @@ export class TeamsComponent implements OnInit {
           this.teams = teams;
         },
         (err) => {
-          this.notifierService.notify( 'error', err.error );
+          this.notifierService.notify( 'error', err.message );
         });
   }
 
@@ -57,7 +57,7 @@ export class TeamsComponent implements OnInit {
         this.teams = teams;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -68,7 +68,7 @@ export class TeamsComponent implements OnInit {
         this.teams = [];
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
