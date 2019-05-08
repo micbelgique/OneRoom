@@ -33,7 +33,7 @@ namespace oneroom_api.Controllers
         {
             var response = new VoiceResponse();
 
-            response.Say("Bonjour, pour vous mettre en relation avec votre correspondant, il est nécéssaire de vous identifier, quel est votre matricule ?",
+            response.Say("Bonjour, pour vous mettre en relation avec votre correspondant, il est nécéssaire de vous identifier, quel est votre matricule d'équipe ?",
                 voice: Say.VoiceEnum.Man, language: Say.LanguageEnum.FrFr);
 
             var url = this.Configuration.GetValue<string>("HostUrl");
@@ -68,7 +68,7 @@ namespace oneroom_api.Controllers
         {
             var response = new VoiceResponse();
 
-            // lazy loading disabled
+            // lazy loading disabled for challenges
             _context.Challenges.Load();
 
             var team = _context.Teams
