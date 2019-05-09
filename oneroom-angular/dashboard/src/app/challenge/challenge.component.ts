@@ -144,7 +144,7 @@ export class ChallengeComponent implements OnInit {
         this.challenges = challenges;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -155,7 +155,7 @@ export class ChallengeComponent implements OnInit {
         this.challenge = new Challenge();
         this.refreshChallenges();
       }, (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -165,7 +165,7 @@ export class ChallengeComponent implements OnInit {
         this.notifierService.notify( 'warning', 'Challenge removed' );
         this.refreshChallenges();
       }, (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
