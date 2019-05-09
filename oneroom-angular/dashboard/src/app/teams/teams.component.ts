@@ -33,7 +33,7 @@ export class TeamsComponent implements OnInit {
         this.games = games;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -47,7 +47,7 @@ export class TeamsComponent implements OnInit {
           this.teams = teams;
         },
         (err) => {
-          this.notifierService.notify( 'error', err.message );
+          this.notifierService.notify( 'error', err.error );
         });
   }
 
@@ -57,7 +57,7 @@ export class TeamsComponent implements OnInit {
         this.teams = teams;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }
@@ -68,7 +68,7 @@ export class TeamsComponent implements OnInit {
         this.teams = [];
       },
       (err) => {
-        this.notifierService.notify( 'error', err.message );
+        this.notifierService.notify( 'error', err.error );
       }
     );
   }

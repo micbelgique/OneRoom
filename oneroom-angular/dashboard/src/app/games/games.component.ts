@@ -102,8 +102,8 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'success', 'Game Initialized' );
         // creating group face
         this.groupService.create(this.game.groupName, this.game.groupName + '_name').subscribe( () => {
-            this.game = new Game();
             this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
+            this.game = new Game();
           },
           (err) => {
             this.notifierService.notify( 'error', err.error );
@@ -163,7 +163,7 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'warning', 'Group ' + game.groupName + ' deleted');
         // recreating group face
         this.groupService.create(game.groupName, game.groupName + '_name').subscribe( () => {
-            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
+            this.notifierService.notify( 'success', 'Group ' + game.groupName + ' created' );
           },
           (err) => {
             this.notifierService.notify( 'error', err.error );

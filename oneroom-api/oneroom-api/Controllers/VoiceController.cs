@@ -141,7 +141,10 @@ namespace oneroom_api.Controllers
 
                     response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language, loop: (int) loop);
                     // Set challenge completed
-                    SetChallengeCompletedAsync(team, teamChallenge.ChallengeId);
+                    team.TeamChallenges.SingleOrDefault(tc => tc.ChallengeId == teamChallenge.ChallengeId).Completed = true;
+
+                    _context.SaveChangesAsync();
+                    _hubClients.Clients.Group(team.GameId.ToString()).HasCompletedChallenge(team.TeamId, teamChallenge.ChallengeId);
                 }
                 
                 return TwiML(response);
@@ -157,14 +160,6 @@ namespace oneroom_api.Controllers
                 );
 
             return TwiML(response);
-        }
-
-        public async void SetChallengeCompletedAsync(Team team, int challengeId)
-        {
-            team.TeamChallenges.SingleOrDefault(tc => tc.ChallengeId == challengeId).Completed = true;
-
-            await _context.SaveChangesAsync();
-            await _hubClients.Clients.Group(team.GameId.ToString()).HasCompletedChallenge(team.TeamId, challengeId);
         }
     }
 }
