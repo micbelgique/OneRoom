@@ -201,7 +201,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   sendData() {
       this.lock = true;
-      console.log('sendData()');
+      this.notifierService.notify('default', 'Envoi de ' + this.captureStorage.length + ' image(s)');
       // lock capture
       this.timerLock = setTimeout(
         (val) => {
@@ -210,17 +210,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
           this.faceMatcher = null;
           this.faceProcess.cleanResult();
         }
-      , 1500 * this.captureStorage.length);
+      , 1500 * this.captureStorage.length + 100);
 
-      console.log('disabling lock in ' + this.captureStorage.length + ' seconds');
-
-      // send processing
-      let count = 0;
-      console.log('sending pictures : ' + this.captureStorage.length);
       this.captureStorage.forEach(
         (canvas) => {
           this.imageCapture(canvas);
-          count++;
         }
       );
 
@@ -406,6 +400,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
           u.name = 'user_' + Math.random();
           u.userId = element.person.personId;
           u.faces = [];
+          console.log(element.faces);
           element.faces.forEach(face => {
                   const f = new Face();
                   f.faceId = face.faceId;
@@ -476,7 +471,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                           this.getHairLength(faceBlob).subscribe(
                             (hl) => {
                               f.hairLength = hl;
-                              if ( u.faces.map( ff => ff.faceId).indexOf(f.faceId) === -1 ) {
+                              if (u.faces.map( ff => ff.faceId).indexOf(f.faceId) === -1 ) {
                                 console.log('face added to list');
                                 u.faces.push(f);
                                 // save user
@@ -580,7 +575,6 @@ private saveUsers(user: User) {
         if (error.status === 409 && error.ok === false) {
           this.notifierService.notify( 'info', 'Un utilisateur a été reconnu');
           if (user.faces[user.faces.length - 1]) {
-            console.log(user.faces);
             const face = user.faces[user.faces.length - 1];
             const face$ = this.faceService.addFace(user.userId, face);
             face$.subscribe(

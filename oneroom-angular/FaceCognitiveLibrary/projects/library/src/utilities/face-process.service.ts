@@ -234,6 +234,7 @@ export class FaceProcessService {
             if ( idx > -1) {
                 // person already exists in array
                 if (this.result.persons[idx].faces.map(f => f.faceId).indexOf(face.faceId) === -1) {
+                  console.log('adding face with id : ' + face.faceId + 'to person with id : ' + personId);
                   this.result.persons[idx].faces.push(face);
                   this.result.persons[idx].person.persistedFaceIds.push(data.persistedFaceId);
                 }
