@@ -85,6 +85,7 @@ export enum HairColorType {
   BLOND = 'blond',
   RED = 'red',
   WHITE = 'white',
+  BROWN = 'brown'
 }
 
 export enum HairlengthType {

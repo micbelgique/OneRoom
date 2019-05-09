@@ -3,7 +3,7 @@ import * as faceapi from 'face-api.js';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Team, TeamService, User, GlassesType, Gender, UserService } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatSnackBar } from '@angular/material';
-// import { GeneratorService } from '../services/generator.service';
+import { GeneratorService } from '../services/generator.service';
 import { Group, FaceProcessService } from '@oneroomic/facecognitivelibrary';
 
 @Component({
@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
 
   private lock = false;
   buttonLock = false;
+  private firstScan = true;
 
   // refresh rate
   refreshRate: number;
@@ -45,13 +46,14 @@ export class HomeComponent implements OnInit {
   teams: Team[];
   team = new Team();
   UserWanted = new User();
+  imgString: string;
   constructor(
     public dialog: MatDialog,
     private toast: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private teamService: TeamService,
-    // private generatorService: GeneratorService
+    private generatorService: GeneratorService
     ) { this.loadModels(); }
 
   ngOnInit() {
@@ -71,7 +73,7 @@ export class HomeComponent implements OnInit {
   private async loadModels() {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
-    this.unLock();
+    this.firstScanning();
   }
 
   initStreamDetection(videoSource = null) {
@@ -86,20 +88,12 @@ export class HomeComponent implements OnInit {
       }
   }
 
-  public unLock(videoSource = null) {
-    if (this.buttonLock === false) {
-      this.lock = false;
-      this.toast.open('Scan en cours', 'Ok', {
-        duration : 3000
-      });
-      this.initStreamDetection(videoSource);
-    } else {
-      this.toast.open('Scan interrompu', 'Ok', {
-        duration : 3000
-      });
-      this.stopCapture();
-    }
-    this.buttonLock = !this.buttonLock;
+  public firstScanning(videoSource = null) {
+    this.lock = false;
+    this.toast.open('Scan en cours', 'Ok', {
+      duration : 3000
+    });
+    this.initStreamDetection(videoSource);
   }
 
   public async detectFaces() {
@@ -131,7 +125,7 @@ export class HomeComponent implements OnInit {
     ctx.stroke();
   }
 
-  private opencam() {
+  opencam() {
     /* initialize lib */
     navigator.mediaDevices
               .enumerateDevices()
@@ -239,11 +233,21 @@ export class HomeComponent implements OnInit {
         console.log(result);
         this.lock = false;
       } else {
-        this.userService.getUser(result).subscribe(
-          (result1) => {
-            const teamWanted = this.teams.filter( t => t.users.filter(user => user.userId === result1.userId)[0] === result1);
-            console.log(teamWanted);
-          });
+        if (this.firstScan) {
+          this.userService.getUser(result).subscribe(
+            (result1) => {
+                let teamWanted;
+                // tslint:disable-next-line:prefer-for-of
+                for (let index = 0; index < this.teams.length; index++) {
+                  if (this.teams[index].users.filter(u => u.userId === result1.userId).length >= 1) {
+                    teamWanted = this.teams[index];
+                  }
+                }
+                this.getTeam(teamWanted.teamName);
+            });
+        } else {
+          this.unlock(result);
+        }
       }
     });
   } catch (e) {
@@ -314,6 +318,13 @@ export class HomeComponent implements OnInit {
   getTeam(teamName: string) {
     this.team = null;
     this.team = this.teams.filter(t => t.teamName === teamName)[0];
-    // this.UserWanted = this.generatorService.generateUserForTeam(this.team.users);
+    this.UserWanted = this.generatorService.generateUserForTeam(this.team.users);
+    const img = this.generatorService.generateAvatar(this.UserWanted);
+    this.stopCapture();
+    this.imgString = img;
+    this.firstScan = false;
+  }
+  unlock(result: any) {
+    console.log(result);
   }
 }
