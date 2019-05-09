@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { Game, GameService, HubService } from '@oneroomic/oneroomlibrary';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-settings',
@@ -26,7 +27,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private hubServiceSub;
 
   constructor(
-    private toast: MatSnackBar,
+    private notifierService: NotifierService,
     private gameService: GameService,
     private hubService: HubService) {
     }
@@ -80,9 +81,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   loadGames() {
     this.gameService.getGames().subscribe(
         (games) => {
-          this.toast.open(games.length + ' games found', 'Ok', {
-            duration: 1000
-          });
+          this.notifierService.notify('success', games.length + ' parties trouvées');
           this.games = games;
         },
         (err) => {
@@ -94,9 +93,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   saveCoordinatorSettings(): void {
     localStorage.setItem('endpoint', this.endPoint);
     this.loadGames();
-    this.toast.open('Settings updated', 'Ok', {
-      duration: 2000
-    });
+    this.notifierService.notify('success', 'Parametres mis à jour');
   }
 
   getGame() {
@@ -108,9 +105,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       }
       this.game = game;
       // localStorage.setItem('gameData', JSON.stringify(game));
-      this.toast.open('Game fetched', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('success', 'Partie récuperée');
       // join new group
       this.hubService.joinGroup(this.game.gameId.toString());
       if (game.config) {
@@ -136,23 +131,18 @@ export class SettingsComponent implements OnInit, OnDestroy {
     // skincolor
     localStorage.setItem('subscriptionKeyCustomVisionSkinColor', this.game.config.visionEndpointSkinColor);
     localStorage.setItem('endPointCustomVisionSkinColor', this.game.config.visionKeySkinColor);
-    this.toast.open('Configuration sauvée', 'Ok', {
-        duration: 2000
-    });
+
+    this.notifierService.notify('success', 'Configuration sauvée');
   }
 
   toggleFaceCalls() {
     const status = localStorage.getItem('cognitiveStatus');
     if (status === 'true') {
       localStorage.setItem('cognitiveStatus', 'false');
-      this.toast.open('Calls face disabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('success', 'Appels face désactivé');
     } else {
       localStorage.setItem('cognitiveStatus', 'true');
-      this.toast.open('Calls face enabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('success', 'Appels face activé');
     }
   }
 
@@ -160,14 +150,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const status = localStorage.getItem('customVisionStatus');
     if (status === 'true') {
       localStorage.setItem('customVisionStatus', 'false');
-      this.toast.open('Calls custom vision disabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('success', 'Appels custom vision désactivé');
     } else {
       localStorage.setItem('customVisionStatus', 'true');
-      this.toast.open('Calls custom vision enabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('success', 'Appels custom vision activé');
     }
   }
 
