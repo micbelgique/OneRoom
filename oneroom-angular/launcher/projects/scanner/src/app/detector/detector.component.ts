@@ -280,14 +280,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
                 if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
                   const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
 
-                  if (this.challenge.answers.indexOf(p.tagName) !== -1) {
-                    console.log('object found');
-                    this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
-                      () => {
-                        console.log('challenge completed');
-                      }
-                    );
-                  }
                   const obj = this.objectsDictionary[idx];
 
                   const croppedCanvas = this.crop(canvas,
@@ -330,6 +322,14 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   openBottomSheet(o: Objects) {
     this.bottomSheet.open(BottomSheetDetailComponent, { data: o });
+    if (this.challenge.answers.indexOf(o.label) !== -1 && this.team) {
+      console.log('object found');
+      this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+        () => {
+          console.log('challenge completed');
+        }
+      );
+    }
   }
 
   private stopCaptureStream() {
