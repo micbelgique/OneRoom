@@ -3,7 +3,7 @@ import * as faceapi from 'face-api.js';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Team, TeamService, User, GlassesType, Gender, UserService } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatSnackBar } from '@angular/material';
-import { GeneratorService } from '../services/generator.service';
+// import { GeneratorService } from '../services/generator.service';
 import { Group, FaceProcessService } from '@oneroomic/facecognitivelibrary';
 
 @Component({
@@ -51,27 +51,27 @@ export class HomeComponent implements OnInit {
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private teamService: TeamService,
-    private generatorService: GeneratorService
+    // private generatorService: GeneratorService
     ) { this.loadModels(); }
 
   ngOnInit() {
     if (localStorage.getItem('camId')) {
       this.videoSource = localStorage.getItem('camId');
-    } else {
-      // init lock
-      this.lock = false;
-      // refreshRate
-      this.refreshRate = 1500;
-      if (localStorage.getItem('refreshRate')) {
-        this.refreshRate = Number(localStorage.getItem('refreshRate'));
-      }
-      this.opencam();
     }
+    // init lock
+    this.lock = false;
+    // refreshRate
+    this.refreshRate = 1500;
+    if (localStorage.getItem('refreshRate')) {
+      this.refreshRate = Number(localStorage.getItem('refreshRate'));
+    }
+    this.opencam();
     this.getTeams();
   }
   private async loadModels() {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
+    this.unLock();
   }
 
   initStreamDetection(videoSource = null) {
@@ -242,8 +242,7 @@ export class HomeComponent implements OnInit {
         this.userService.getUser(result).subscribe(
           (result1) => {
             const teamWanted = this.teams.filter( t => t.users.filter(user => user.userId === result1.userId)[0] === result1);
-            localStorage.setItem('user', JSON.stringify(result1));
-            this.route.navigate(['/nav']);
+            console.log(teamWanted);
           });
       }
     });
@@ -315,6 +314,6 @@ export class HomeComponent implements OnInit {
   getTeam(teamName: string) {
     this.team = null;
     this.team = this.teams.filter(t => t.teamName === teamName)[0];
-    this.UserWanted = this.generatorService.generateUserForTeam(this.team.users);
+    // this.UserWanted = this.generatorService.generateUserForTeam(this.team.users);
   }
 }

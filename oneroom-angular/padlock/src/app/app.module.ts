@@ -15,6 +15,8 @@ import {
   MatFormFieldModule,
   MatCardModule,
   MatSelectModule,
+  MatProgressBarModule,
+  MatDialogModule,
 } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -37,7 +39,9 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     MatCardModule,
     MatSelectModule,
-    HttpClientModule
+    HttpClientModule,
+    MatProgressBarModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
