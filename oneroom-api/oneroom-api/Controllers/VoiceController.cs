@@ -117,9 +117,9 @@ namespace oneroom_api.Controllers
                     switch(teamChallenge.Config.GetValueOrDefault("gender"))
                     {
                             case "male":
-                                gender = Say.VoiceEnum.Woman; break;
-                            case "female":
                                 gender = Say.VoiceEnum.Man; break;
+                            case "female":
+                                gender = Say.VoiceEnum.Woman; break;
                             default: 
                                 gender = Say.VoiceEnum.Alice; break;
                     }
