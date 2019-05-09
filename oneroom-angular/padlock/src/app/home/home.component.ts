@@ -4,7 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Team, TeamService, User, GlassesType, Gender, UserService } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { GeneratorService } from '../services/generator.service';
-import { Group, FaceProcessService } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService, FaceService } from '@oneroomic/facecognitivelibrary';
 
 @Component({
   selector: 'app-home',
@@ -51,6 +51,7 @@ export class HomeComponent implements OnInit {
     public dialog: MatDialog,
     private toast: MatSnackBar,
     private faceProcess: FaceProcessService,
+    private faceService: FaceService,
     private userService: UserService,
     private teamService: TeamService,
     private generatorService: GeneratorService
@@ -227,29 +228,33 @@ export class HomeComponent implements OnInit {
     }, 2500);
     // traitement face API
     // return an observable;
-    this.faceProcess.detectOnly(stream.blob, group).subscribe(
-    (result) => {
-      if (result === null) {
-        console.log(result);
-        this.lock = false;
-      } else {
-        if (this.firstScan) {
-          this.userService.getUser(result).subscribe(
-            (result1) => {
-                let teamWanted;
-                // tslint:disable-next-line:prefer-for-of
-                for (let index = 0; index < this.teams.length; index++) {
-                  if (this.teams[index].users.filter(u => u.userId === result1.userId).length >= 1) {
-                    teamWanted = this.teams[index];
-                  }
-                }
-                this.getTeam(teamWanted.teamName);
-            });
-        } else {
+    if (this.firstScan) {
+      this.faceProcess.detectOnly(stream.blob, group).subscribe(
+        (result) => {
+          if (result === null) {
+            console.log(result);
+            this.lock = false;
+          } else {
+              this.userService.getUser(result).subscribe(
+                (result1) => {
+                    let teamWanted;
+                    // tslint:disable-next-line:prefer-for-of
+                    for (let index = 0; index < this.teams.length; index++) {
+                      if (this.teams[index].users.filter(u => u.userId === result1.userId).length >= 1) {
+                        teamWanted = this.teams[index];
+                      }
+                    }
+                    this.getTeam(teamWanted.teamName);
+                });
+          }
+        });
+    } else {
+      this.faceService.detect(stream.blob).subscribe(
+        (result) => {
           this.unlock(result);
         }
-      }
-    });
+      )
+    }
   } catch (e) {
     console.log('Error : ' + e.message);
     // unlock capture
@@ -326,5 +331,27 @@ export class HomeComponent implements OnInit {
   }
   unlock(result: any) {
     console.log(result);
+    if (result.faceAttributes.glasses === this.UserWanted.glassesType.toString().toLocaleLowerCase()) {
+      if (result.faceAttributes.hair.hairColor[0] === this.UserWanted.hairColor.toLocaleLowerCase()) {
+        if (result.faceAttributes.gender === this.UserWanted.gender) {
+          this.toast.open('Le code est ***', 'OK', {
+            duration : 3000
+          });
+        } else {
+          this.toast.open('mauvais utilisateur!', 'OK', {
+            duration : 3000,
+          });
+        }
+      } else {
+        this.toast.open('mauvais utilisateur!', 'OK', {
+          duration : 3000,
+        });
+      }
+    } else {
+      this.toast.open('mauvais utilisateur!', 'OK', {
+        duration : 3000,
+      });
+    }
+    this.stopCapture();
   }
 }
