@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using oneroom_api.data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.Model;
+using Microsoft.AspNetCore.SignalR;
+using oneroom_api.Hubs;
 
 namespace oneroom_api.Controllers
 {
@@ -20,11 +23,13 @@ namespace oneroom_api.Controllers
 
         public IConfiguration Configuration { get; }
         private readonly OneRoomContext _context;
+        private readonly IHubContext<OneHub, IActionClient> _hubClients;
 
-        public VoiceController(IConfiguration configuration, OneRoomContext context)
+        public VoiceController(IConfiguration configuration, OneRoomContext context, IHubContext<OneHub, IActionClient> hubClients)
         {
             Configuration = configuration;
             _context = context;
+            _hubClients = hubClients;
         }
 
 
@@ -135,6 +140,11 @@ namespace oneroom_api.Controllers
                     }
 
                     response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language, loop: (int) loop);
+                    // Set challenge completed
+                    team.TeamChallenges.SingleOrDefault(tc => tc.ChallengeId == teamChallenge.ChallengeId).Completed = true;
+
+                    _context.SaveChangesAsync();
+                    _hubClients.Clients.Group(team.GameId.ToString()).HasCompletedChallenge(team.TeamId, teamChallenge.ChallengeId);
                 }
                 
                 return TwiML(response);
