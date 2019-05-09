@@ -127,7 +127,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   playAudio() {
-    let audio = new Audio();
+    const audio = new Audio();
     audio.src = '../assets/sounds/notification.mp3';
     audio.load();
     audio.play();
@@ -136,7 +136,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private sortTeam( isAsc: boolean = false) {
     // tslint:disable-next-line:max-line-length
     this.teams.sort((a, b) => (a.challenges.filter(c => c.completed).length < b.challenges.filter(c => c.completed).length ? -1 : 1) * (isAsc ? 1 : -1));
-    this.sortChallenge();// No matter which challenge is completed, always sort to view the completed before the not completed
+    this.sortChallenge(); // No matter which challenge is completed, always sort to view the completed before the not completed
   }
 
   private sortChallenge( isAsc: boolean = false) {

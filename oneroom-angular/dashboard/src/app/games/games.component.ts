@@ -54,7 +54,7 @@ export class GamesComponent implements OnInit {
         });
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -64,7 +64,7 @@ export class GamesComponent implements OnInit {
         this.scenarios = scenarios;
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -76,7 +76,7 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'success', 'Scenario link to the game' );
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -89,7 +89,7 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'warning', 'Scenario unlink to the game' );
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -102,17 +102,17 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'success', 'Game Initialized' );
         // creating group face
         this.groupService.create(this.game.groupName, this.game.groupName + '_name').subscribe( () => {
-            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
             this.game = new Game();
+            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
           },
           (err) => {
-            this.notifierService.notify( 'error', err.error );
+            this.notifierService.notify( 'error', err.message );
           }
         );
         this.refreshGames();
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error.title ? err.error.title : err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -128,14 +128,14 @@ export class GamesComponent implements OnInit {
             this.notifierService.notify( 'warning', 'Group ' + game.groupName + ' deleted');
           },
           (err) => {
-            this.notifierService.notify( 'error', err.error );
+            this.notifierService.notify( 'error', err.message );
           }
         );
         this.refreshGames();
         this.game.groupName = '';
       },
       (err) => {
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -149,8 +149,7 @@ export class GamesComponent implements OnInit {
         this.refreshGames();
       },
       (err) => {
-        console.log(err);
-        this.notifierService.notify( 'error', err.error );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }
@@ -163,15 +162,15 @@ export class GamesComponent implements OnInit {
         this.notifierService.notify( 'warning', 'Group ' + game.groupName + ' deleted');
         // recreating group face
         this.groupService.create(game.groupName, game.groupName + '_name').subscribe( () => {
-            this.notifierService.notify( 'success', 'Group ' + game.groupName + ' created' );
+            this.notifierService.notify( 'success', 'Group ' + this.game.groupName + ' created' );
           },
           (err) => {
-            this.notifierService.notify( 'error', err.error );
+            this.notifierService.notify( 'error', err.message );
           }
         );
       },
       (err) => {
-        this.notifierService.notify( 'error', err.statusText );
+        this.notifierService.notify( 'error', err.message );
       }
     );
   }

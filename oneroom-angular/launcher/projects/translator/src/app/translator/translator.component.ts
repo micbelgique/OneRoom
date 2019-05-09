@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import MediaStreamRecorder from 'msr';
 import { TextToSpeechService, SpeechToTextService, TranslateService } from '@oneroomic/facecognitivelibrary';
-import { Challenge } from '@oneroomic/oneroomlibrary';
+import { Challenge, ChallengeService, Team } from '@oneroomic/oneroomlibrary';
 import { Lang } from '../utilities/lang';
 
 @Component({
@@ -25,7 +25,10 @@ export class TranslatorComponent implements OnInit {
     video: false
   };
   lang: Lang[] = [];
+
   private challenge: Challenge;
+  private team: Team;
+
   private translateEndpoint = '';
   private translateKey = '';
   private textToSpeechEndpoint = '';
@@ -36,7 +39,8 @@ export class TranslatorComponent implements OnInit {
   constructor(
     private textToSpeechService: TextToSpeechService,
     private speechToTextService: SpeechToTextService,
-    private translateService: TranslateService) {
+    private translateService: TranslateService,
+    private challengeService: ChallengeService) {
     this.lang.push(new Lang('Français', 'fr-FR'));
     this.lang.push(new Lang('Anglais', 'en-US'));
     this.lang.push(new Lang('Japonais', 'ja-JP'));
@@ -71,6 +75,9 @@ export class TranslatorComponent implements OnInit {
         this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
         this.textToSpeechKey = this.challenge.config.textToSpeechKey;
       }
+    }
+    if (localStorage.getItem('teamData')) {
+      this.team = JSON.parse(localStorage.getItem('teamData'));
     }
     this.languageOne = 'fr-FR';
     this.languageTwo = 'en-US';
@@ -128,6 +135,16 @@ export class TranslatorComponent implements OnInit {
         console.log(result);
         this.translated = result[0].translations[0].text;
         this.talk(this.translated);
+        // remove all chars
+        const num = this.translated.replace(/[^0-9]/g, '');
+        if (this.challenge.answers.includes(num) && this.team) {
+          console.log('code found');
+          this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+            () => {
+              console.log('challenge completed');
+            }
+          );
+        }
       }
     );
   }

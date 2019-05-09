@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
-import { User, HubService, Challenge } from '@oneroomic/oneroomlibrary';
+import { User, HubService, Challenge, ChallengeService, Team } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatBottomSheet } from '@angular/material';
 import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
@@ -14,6 +14,7 @@ import { Objects } from '../utilities/object';
 })
 export class DetectorComponent implements OnInit, OnDestroy {
 
+  private team: Team;
   private challenge: Challenge;
   /* input stream devices */
   /* selector devices */
@@ -67,6 +68,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private hubService: HubService,
+    private challengeService: ChallengeService,
     private predictionService: CustomVisionPredictionService,
     private bottomSheet: MatBottomSheet,
     private sanitizer: DomSanitizer) {
@@ -112,6 +114,10 @@ export class DetectorComponent implements OnInit, OnDestroy {
           this.objectsDictionary.push(new Objects(key, this.challenge.data[key]));
         }
       }
+    }
+
+    if (localStorage.getItem('teamData')) {
+      this.team = JSON.parse(localStorage.getItem('teamData'));
     }
   }
 
@@ -273,9 +279,7 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
                 if (this.objectsOverlay.map(o => o.label).indexOf(p.tagName) === -1) {
                   const idx = this.objectsDictionary.map(o => o.label).indexOf(p.tagName);
-                  /*if (this.challenge.answers.indexOf(p.tagName) !== -1) {
-                    this.toast.open('challenge terminé');
-                  }*/
+
                   const obj = this.objectsDictionary[idx];
 
                   const croppedCanvas = this.crop(canvas,
@@ -318,6 +322,14 @@ export class DetectorComponent implements OnInit, OnDestroy {
 
   openBottomSheet(o: Objects) {
     this.bottomSheet.open(BottomSheetDetailComponent, { data: o });
+    if (this.challenge.answers.indexOf(o.label) !== -1 && this.team) {
+      console.log('object found');
+      this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+        () => {
+          console.log('challenge completed');
+        }
+      );
+    }
   }
 
   private stopCaptureStream() {
