@@ -7,6 +7,7 @@ import { Subject, timer } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, GameService, Game, Face, GlassesType, GameState, HubService } from '@oneroomic/oneroomlibrary';
 import { FaceMatcher } from 'face-api.js';
+import { NotifierService } from 'angular-notifier';
 // patch electron
 faceapi.env.monkeyPatch({
   Canvas: HTMLCanvasElement,
@@ -88,13 +89,13 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private faceProcess: FaceProcessService,
     private userService: UserService,
     private faceService: FaceService,
     private customVisionPredictionService: CustomVisionPredictionService,
     private hubService: HubService,
-    private gameService: GameService) {
+    private gameService: GameService,
+    private notifierService: NotifierService) {
       this.opencam();
       this.loadModels();
     }
@@ -205,22 +206,23 @@ export class FacecamComponent implements OnInit, OnDestroy {
       this.timerLock = setTimeout(
         (val) => {
           this.lock = false;
-          console.log('disabling lock in ' + 1000 * this.captureStorage.length + ' seconds');
+          this.captureStorage = [];
+          this.faceMatcher = null;
+          this.faceProcess.cleanResult();
         }
       , 1500 * this.captureStorage.length);
+
+      console.log('disabling lock in ' + this.captureStorage.length + ' seconds');
+
       // send processing
       let count = 0;
+      console.log('sending pictures : ' + this.captureStorage.length);
       this.captureStorage.forEach(
         (canvas) => {
-          console.log('sending pictures : ' + this.captureStorage.length);
           this.imageCapture(canvas);
           count++;
         }
       );
-
-      console.log(this.captureStorage.length);
-      this.captureStorage = [];
-      console.log(this.captureStorage.length);
 
   }
 
@@ -371,22 +373,16 @@ export class FacecamComponent implements OnInit, OnDestroy {
   imageCapture(canvas) {
 
     if (!this.faceCallsDisabled) {
-      this.snackBar.open('Face calls disabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('warning', 'Les appels vers face api sont désactivés' );
       return;
     }
     if (!this.customVisionCallsDisabled) {
-      this.snackBar.open('Custom vision calls disabled', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('warning', 'Les appels vers custom vision api sont désactivés' );
       return;
     }
 
     if (this.group === null || this.game === null) {
-      this.snackBar.open('Game not set', 'Ok', {
-        duration: 2000
-      });
+      this.notifierService.notify('warning', 'La partie n\'a pas été configurée');
       return;
     }
 
@@ -481,6 +477,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                             (hl) => {
                               f.hairLength = hl;
                               if ( u.faces.map( ff => ff.faceId).indexOf(f.faceId) === -1 ) {
+                                console.log('face added to list');
                                 u.faces.push(f);
                                 // save user
                                 this.saveUsers(u);
@@ -574,16 +571,14 @@ private saveUsers(user: User) {
     const user$ = this.userService.addUser(user);
     user$.subscribe(
       () => {
-        this.snackBar.open('User created', 'Ok', {
-          duration: 2000
-        });
+        console.log('user saved');
+        this.notifierService.notify( 'success', 'Un nouvel utilisateur a été créé');
         this.lock = false;
       }
     , (error) => {
+        console.log('user recognized');
         if (error.status === 409 && error.ok === false) {
-          this.snackBar.open('User recognized', 'Ok', {
-            duration: 2000
-          });
+          this.notifierService.notify( 'info', 'Un utilisateur a été reconnu');
           if (user.faces[user.faces.length - 1]) {
             console.log(user.faces);
             const face = user.faces[user.faces.length - 1];

@@ -36,9 +36,14 @@ export class FaceProcessService {
     private personService: PersonGroupPersonService,
     private groupService: PersonGroupService) {}
 
+  cleanResult() {
+    this.result = new PersonGroup();
+  }
 
   byImg(stream: Blob, group: Group, createGroupIfNotExists = false ): Observable<PersonGroup> {
-    this.result = new PersonGroup();
+    if (!this.result) {
+      this.cleanResult();
+    }
     // 0. Create group or not if exists
     const getGroup$ = this.groupService.get(group.personGroupId);
     getGroup$.subscribe(
@@ -119,10 +124,10 @@ export class FaceProcessService {
         (faces) => {
           // data
           console.log('face detected : ' + faces.length);
+          console.log(faces.map(f => f.faceId));
           if (faces.length === 0) {
             this.result$.next(null);
           }
-          console.log(faces);
           // Simple message with an action.
           this.identifyFaces(faces, group, stream, 0.6);
           /*for (const face of faces) {
@@ -228,19 +233,25 @@ export class FaceProcessService {
             const idx = this.result.persons.map(per => per.person.personId).indexOf(personId);
             if ( idx > -1) {
                 // person already exists in array
-                this.result.persons[idx].faces.push(face);
-                this.result.persons[idx].person.persistedFaceIds.push(data.persistedFaceId);
+                if (this.result.persons[idx].faces.map(f => f.faceId).indexOf(face.faceId) === -1) {
+                  this.result.persons[idx].faces.push(face);
+                  this.result.persons[idx].person.persistedFaceIds.push(data.persistedFaceId);
+                }
             } else {
-              const p = new PersonGroupPerson();
-              p.person = new Person();
-              p.person.personId = personId;
-              this.result.persons.push(p);
-              this.result.persons[this.result.persons.length - 1].faces.push(face);
-              this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
+              if (this.result.persons.map(per => per.person.personId).indexOf(personId) === -1) {
+                const p = new PersonGroupPerson();
+                p.person = new Person();
+                p.person.personId = personId;
+                this.result.persons.push(p);
+                this.result.persons[this.result.persons.length - 1].faces.push(face);
+                this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
+              }
             }
 
             if (isFirstFace) {
               this.train(group.personGroupId);
+            } else {
+              this.result$.next(this.result);
             }
           },
           () => {

@@ -39,7 +39,7 @@ namespace oneroom_api.Controllers
 
                     if (usr.Faces.Select(f => f.FaceId).Contains(face.FaceId))
                     {
-                        return Conflict("face already exists"+ face.FaceId);
+                        return Conflict("face already exists for this user : "+ face.FaceId);
                     }
                     usr.Faces.Add(face);
                     _context.Entry(usr).State = EntityState.Modified;
