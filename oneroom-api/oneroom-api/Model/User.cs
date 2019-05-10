@@ -13,6 +13,7 @@ namespace oneroom_api.Model
         public DateTime RecognizedDate { get; set; } = DateTime.Now;
         [Required]
         public string Name { get; set; }
+        public string OriginalUrlAvatar { get; set; }
         public string UrlAvatar { get; set; }
         public List<Face> Faces { get; set; } = new List<Face>();
         public int GameId { get; set; }
