@@ -206,7 +206,6 @@ export class GeneratorService {
   }
   generateAvatar(user: User): string {
     let avataaarsEndPoint = 'https://avataaars.io/?';
-    avataaarsEndPoint += '&accessoriesType=Sunglasses';
     switch (user.skinColor) {
     case SkinColorType.CAUCASIAN:
       avataaarsEndPoint += '&skinColor=Pale';

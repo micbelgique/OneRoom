@@ -1,10 +1,11 @@
 import * as faceapi from 'face-api.js';
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Team, TeamService, User, GlassesType, Gender, UserService } from '@oneroomic/oneroomlibrary';
+import { Team, TeamService, User, GlassesType, Gender, UserService, Game } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { GeneratorService } from '../services/generator.service';
-import { Group, FaceProcessService, FaceService } from '@oneroomic/facecognitivelibrary';
+import { Group, FaceProcessService, FaceService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -47,6 +48,7 @@ export class HomeComponent implements OnInit {
   team = new Team();
   UserWanted = new User();
   imgString: string;
+  game: Game;
   constructor(
     public dialog: MatDialog,
     private toast: MatSnackBar,
@@ -54,10 +56,12 @@ export class HomeComponent implements OnInit {
     private faceService: FaceService,
     private userService: UserService,
     private teamService: TeamService,
-    private generatorService: GeneratorService
+    private generatorService: GeneratorService,
+    private customVisionPredictionService: CustomVisionPredictionService
     ) { this.loadModels(); }
 
   ngOnInit() {
+    this.game = JSON.parse(localStorage.getItem('gameData'));
     if (localStorage.getItem('camId')) {
       this.videoSource = localStorage.getItem('camId');
     }
@@ -76,14 +80,11 @@ export class HomeComponent implements OnInit {
         async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
     this.firstScanning();
   }
-
   initStreamDetection(videoSource = null) {
       this.startStream(videoSource);
-      console.log('starting scan');
       if (!this.detectId) {
         // detection interval: default 3000
         this.detectId = setInterval( () => {
-          console.log('Scanning for faces');
           this.detectFaces();
         }, 1000);
       }
@@ -237,7 +238,7 @@ export class HomeComponent implements OnInit {
           } else {
               this.userService.getUser(result).subscribe(
                 (result1) => {
-                    let teamWanted;
+                    let teamWanted: Team;
                     // tslint:disable-next-line:prefer-for-of
                     for (let index = 0; index < this.teams.length; index++) {
                       if (this.teams[index].users.filter(u => u.userId === result1.userId).length >= 1) {
@@ -251,7 +252,15 @@ export class HomeComponent implements OnInit {
     } else {
       this.faceService.detect(stream.blob).subscribe(
         (result) => {
-          this.unlock(result);
+          this.getHairLength(stream.blob).subscribe(
+            (hl) => {
+              this.getSkinColor(stream.blob).subscribe(
+                (sc) => {
+                  this.unlock(result, hl, sc);
+                }
+              );
+            }
+          );
         }
       )
     }
@@ -316,7 +325,6 @@ export class HomeComponent implements OnInit {
     this.teamService.getTeams().subscribe(
       (result) => {
         this.teams = result;
-        console.log(this.teams);
       }
     );
   }
@@ -329,14 +337,70 @@ export class HomeComponent implements OnInit {
     this.imgString = img;
     this.firstScan = false;
   }
-  unlock(result: any) {
-    console.log(result);
-    if (result.faceAttributes.glasses === this.UserWanted.glassesType.toString().toLocaleLowerCase()) {
-      if (result.faceAttributes.hair.hairColor[0] === this.UserWanted.hairColor.toLocaleLowerCase()) {
-        if (result.faceAttributes.gender === this.UserWanted.gender) {
-          this.toast.open('Le code est ***', 'OK', {
-            duration : 3000
-          });
+  // detection hair length with custom vision
+  private getHairLength(stream) {
+    const sub = new Subject<string>();
+    // tslint:disable-next-line:max-line-length
+    this.customVisionPredictionService.predictImageWithNoStore(stream, this.game.config.visionEndpoint, this.game.config.visionKey).subscribe(
+      (result: ImagePrediction) => {
+        if (result.predictions.length > 0) {
+          sub.next(result.predictions[0].tagName);
+        } else {
+          sub.next(null);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    return sub;
+  }
+
+  // detection skin color with custom vision
+  private getSkinColor(stream) {
+    const sub = new Subject<string>();
+    // tslint:disable-next-line:max-line-length
+    this.customVisionPredictionService.predictImageWithNoStore(stream, this.game.config.visionEndpointSkinColor, this.game.config.visionKeySkinColor).subscribe(
+        (result: ImagePrediction) => {
+        if (result.predictions.length > 0) {
+          sub.next(result.predictions[0].tagName);
+        } else {
+          sub.next(null);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    return sub;
+  }
+  unlock(result: any, hairLength: any, skinColor: any) {
+    const userResult = new User();
+    userResult.glassesType = result[0].faceAttributes.glasses === 'ReadingGlasses' ? GlassesType.ReadingGlasses : GlassesType.NoGlasses;
+    userResult.gender = result[0].faceAttributes.gender;
+    userResult.hairColor = result[0].faceAttributes.hair.hairColor[0].color;
+    userResult.skinColor = skinColor;
+    userResult.hairLength = hairLength;
+    userResult.baldLevel = result[0].faceAttributes.hair.bald;
+    console.log(userResult);
+    if (userResult.glassesType === this.UserWanted.glassesType) {
+      if (userResult.hairColor === this.UserWanted.hairColor) {
+        if (userResult.gender === this.UserWanted.gender) {
+          if (userResult.hairLength === this.UserWanted.hairLength) {
+            if (userResult.skinColor === this.UserWanted.skinColor) {
+              this.toast.open('Le code est ***', 'OK', {
+                duration : 3000
+              });
+            } else {
+              this.toast.open('mauvais utilisateur!', 'OK', {
+                duration : 3000,
+              });
+            }
+          } else {
+            this.toast.open('mauvais utilisateur!', 'OK', {
+              duration : 3000,
+            });
+          }
         } else {
           this.toast.open('mauvais utilisateur!', 'OK', {
             duration : 3000,
