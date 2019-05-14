@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { GameService, Game } from '@oneroomic/oneroomlibrary';
+import { GameService, Game, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 
 @Component({
   selector: 'app-settings',
@@ -18,9 +18,12 @@ export class SettingsComponent implements OnInit {
   // current game
   game: Game;
 
+  challenges: Challenge[];
+
   constructor(
     private toast: MatSnackBar,
-    private gameService: GameService) {}
+    private gameService: GameService,
+    private challengeService: ChallengeService) {}
 
   ngOnInit() {
     this.games = [];
@@ -40,6 +43,9 @@ export class SettingsComponent implements OnInit {
       this.loadGames();
     } else {
       this.endPoint = '';
+    }
+    if (this.game.scenario.scenarioId) {
+      this.getChallenges(this.game.scenario.scenarioId);
     }
   }
 
@@ -73,6 +79,24 @@ export class SettingsComponent implements OnInit {
       this.toast.open('Game fetched', 'Ok', {
         duration: 3000
       });
+      this.getChallenges(game.scenario.scenarioId);
     });
   }
+  getChallenges(scenarioId: number) {
+    console.log(scenarioId);
+    const res$ = this.challengeService.getChallengesByScenario(scenarioId);
+    res$.subscribe(
+      (challenges: Challenge[]) => {
+        // saves all challenges from game
+        this.challenges = challenges;
+        localStorage.setItem('challengesData', JSON.stringify(challenges));
+        this.toast.open('Challenges configurés', 'Ok', {
+          duration: 2000
+        });
+        console.log(challenges);
+      },
+      (err) => console.log(err)
+    );
+  }
+
 }

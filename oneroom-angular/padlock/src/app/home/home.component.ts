@@ -1,7 +1,7 @@
 import * as faceapi from 'face-api.js';
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Team, TeamService, User, GlassesType, Gender, UserService, Game } from '@oneroomic/oneroomlibrary';
+import { Team, TeamService, User, GlassesType, Gender, UserService, Game, Challenge, ChallengeService } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { GeneratorService } from '../services/generator.service';
 import { Group, FaceProcessService, FaceService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
@@ -46,6 +46,7 @@ export class HomeComponent implements OnInit {
 
   teams: Team[];
   team = new Team();
+  challenge: Challenge;
   UserWanted = new User();
   imgString: string;
   game: Game;
@@ -57,7 +58,8 @@ export class HomeComponent implements OnInit {
     private userService: UserService,
     private teamService: TeamService,
     private generatorService: GeneratorService,
-    private customVisionPredictionService: CustomVisionPredictionService
+    private customVisionPredictionService: CustomVisionPredictionService,
+    private challengeService: ChallengeService
     ) { this.loadModels(); }
 
   ngOnInit() {
@@ -74,6 +76,12 @@ export class HomeComponent implements OnInit {
     }
     this.opencam();
     this.getTeams();
+    if (localStorage.getItem('challengesData')) {
+      const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'padlock');
+      if (filteredChallenge.length > 0) {
+        this.challenge = filteredChallenge[0];
+      }
+    }
   }
   private async loadModels() {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
@@ -262,7 +270,7 @@ export class HomeComponent implements OnInit {
             }
           );
         }
-      )
+      );
     }
   } catch (e) {
     console.log('Error : ' + e.message);
@@ -391,6 +399,11 @@ export class HomeComponent implements OnInit {
               this.toast.open('Le code est ***', 'OK', {
                 duration : 3000
               });
+              this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+                (res) => {
+                  console.log(res);
+                }
+              )
             } else {
               this.toast.open('mauvais utilisateur!', 'OK', {
                 duration : 3000,
