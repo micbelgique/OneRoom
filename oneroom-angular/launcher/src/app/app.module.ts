@@ -45,6 +45,7 @@ import {
   MatStepperModule
 } from '@angular/material';
 import { DescriptionTeamModalComponent } from './description-team-modal/description-team-modal.component';
+import { BrowserAppSharedModule } from 'projects/browser/src/app/app.module';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DescriptionTeamModalComponent } from './description-team-modal/descript
     BatterySharedModule,
     RadioSharedModule,
     ClockAppSharedModule,
+    BrowserAppSharedModule,
     // other
     BrowserAnimationsModule,
     MatButtonModule,
