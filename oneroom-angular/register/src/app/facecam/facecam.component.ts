@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import * as faceapi from 'face-api.js';
 // tslint:disable-next-line:max-line-length
 import { Group, FaceProcessService, CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
-import { MatSnackBar, MatDialog } from '@angular/material';
-import { Subject, timer } from 'rxjs';
+import { MatDialog } from '@angular/material';
+import { Subject } from 'rxjs';
 // tslint:disable-next-line:max-line-length
 import { User, UserService, FaceService, GameService, Game, Face, GlassesType, GameState, HubService } from '@oneroomic/oneroomlibrary';
 import { FaceMatcher } from 'face-api.js';
@@ -87,6 +87,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
   private timerData;
   private timerLock;
 
+  private observableLock;
+
   constructor(
     public dialog: MatDialog,
     private faceProcess: FaceProcessService,
@@ -113,7 +115,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
       console.log('sending data');
       // send data to face
       this.sendData();
-    }, 30000);
+    }, 5000);
     // last video source
 
     if (localStorage.getItem('videoSource')) {
@@ -208,7 +210,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
           this.lock = false;
           this.captureStorage = [];
           this.faceMatcher = null;
-          this.faceProcess.cleanResult();
         }
       , 1500 * this.captureStorage.length + 100);
 
@@ -281,6 +282,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     navigator.mediaDevices
               .enumerateDevices()
               .then((d) => {
+                this.selectors = [];
                 this.selectors = this.getCaptureDevices(d);
                 // init stream
                 this.initStreamDetection();
@@ -384,115 +386,69 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
     try {
       can.toBlob((blob) => {
-        const stream = blob;
-        const res$ = this.faceProcess.byImg(stream, this.group);
+        const res$ = this.faceProcess.byImg(blob, this.group);
         // traitement face API
         res$.subscribe(
         (data) => {
-          if (data === null) {
-            // nothing detected
-            console.log('lock disabled');
-            this.lock = false;
-            return;
-          }
-          data.persons.forEach(element => {
-          const u = new User();
-          u.name = 'user_' + Math.random();
-          u.userId = element.person.personId;
-          u.faces = [];
-          console.log(element.faces);
-          element.faces.forEach(face => {
-                  const f = new Face();
-                  f.faceId = face.faceId;
-                  f.age = face.faceAttributes.age;
-                  f.baldLevel = face.faceAttributes.hair.bald;
-                  f.beardLevel = face.faceAttributes.facialHair.beard;
-                  f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
-                  GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
-                  GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
-                  GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
-                  // check haircolor
-                  if (face.faceAttributes.hair.hairColor.length > 0) {
-                    f.hairColor = face.faceAttributes.hair.hairColor[0].color;
-                  } else {
-                    f.hairColor = '';
-                  }
-                  f.isMale = face.faceAttributes.gender === 'male';
-                  f.moustacheLevel = face.faceAttributes.facialHair.moustache;
-                  f.smileLevel = face.faceAttributes.smile;
-                  let emotion = 0;
-                  let emotionType = '';
-                  if (face.faceAttributes.emotion.anger < face.faceAttributes.emotion.contempt) {
-                    emotion = face.faceAttributes.emotion.contempt;
-                    emotionType = 'contempt';
-                  } else {
-                    emotion = face.faceAttributes.emotion.anger;
-                    emotionType = 'anger';
-                  }
-                  if (emotion < face.faceAttributes.emotion.disgust) {
-                    emotion =  face.faceAttributes.emotion.disgust;
-                    emotionType = 'disgust';
-                  }
-                  if (emotion < face.faceAttributes.emotion.fear) {
-                    emotion = face.faceAttributes.emotion.fear;
-                    emotionType = 'fear';
-                  }
-                  if (emotion < face.faceAttributes.emotion.happiness) {
-                    emotion = face.faceAttributes.emotion.happiness;
-                    emotionType = 'happiness';
-                  }
-                  if (emotion < face.faceAttributes.emotion.neutral) {
-                    emotion = face.faceAttributes.emotion.neutral;
-                    emotionType = 'neutral';
-                  }
-                  if (emotion < face.faceAttributes.emotion.sadness) {
-                    emotion = face.faceAttributes.emotion.sadness;
-                    emotionType = 'sadness';
-                  }
-                  if (emotion < face.faceAttributes.emotion.surprise) {
-                    emotion = face.faceAttributes.emotion.surprise;
-                    emotionType = 'surprise';
-                  }
-                  f.emotionDominant = emotionType;
+          if (this.observableLock === false) {
+            this.observableLock = true;
+            if (data === null) {
+              // nothing detected
+              console.log('lock disabled');
+              this.lock = false;
+              return;
+            }
+            console.log('Person in array: ' + data.persons.length);
+            data.persons.forEach(element => {
+            const u = new User();
+            u.name = 'user_' + Math.random();
+            u.userId = element.person.personId;
+            u.faces = [];
+            console.log('Face in array: ' + element.faces.length);
+            element.faces.forEach(face => {
+                    // adapt results for our api
+                    const f = this.processFaceAttributes(face);
+                    // crop face for skin and hairlength
+                    const faceCanvas = this.crop(canvas,
+                      face.faceRectangle.left / 1.5,
+                      face.faceRectangle.top / 1.5,
+                      face.faceRectangle.width * 1.5,
+                      face.faceRectangle.height * 1.5);
 
-                  // crop face for skin and hairlength
-                  const faceCanvas = this.crop(canvas,
-                    face.faceRectangle.left / 1.5,
-                    face.faceRectangle.top / 1.5,
-                    face.faceRectangle.width * 1.5,
-                    face.faceRectangle.height * 1.5);
-
-                  faceCanvas.toBlob(
-                    (faceBlob) => {
-                      // call to custom vision
-                      this.getSkinColor(faceBlob).subscribe(
-                        (sc) => {
-                          f.skinColor = sc;
-                          this.getHairLength(faceBlob).subscribe(
-                            (hl) => {
-                              f.hairLength = hl;
-                              if (u.faces.map( ff => ff.faceId).indexOf(f.faceId) === -1 ) {
-                                console.log('face added to list');
-                                u.faces.push(f);
-                                // save user
-                                this.saveUsers(u);
+                    faceCanvas.toBlob(
+                      (faceBlob) => {
+                        // call to custom vision
+                        this.getSkinColor(faceBlob).subscribe(
+                          (sc) => {
+                            f.skinColor = sc;
+                            this.getHairLength(faceBlob).subscribe(
+                              (hl) => {
+                                f.hairLength = hl;
+                                u.faces = Array.from(new Set(u.faces));
+                                if (u.faces.map(ff => ff.faceId).indexOf(f.faceId) === -1 ) {
+                                  console.log('face added to list');
+                                  u.faces.push(f);
+                                  // save user
+                                  this.saveUsers(u, f);
+                                }
+                                this.lock = false;
+                              },
+                              (err) => {
+                                this.lock = false;
                               }
-                              this.lock = false;
-                            },
-                            (err) => {
-                              this.lock = false;
-                            }
-                          );
-                        },
-                        (err) => {
-                          this.lock = false;
-                        }
-                      );
-                    }
-                  );
+                            );
+                          },
+                          (err) => {
+                            this.lock = false;
+                          }
+                        );
+                      }
+                    );
 
+            });
+            this.faceProcess.cleanResult();
           });
-        });
+          }
         },
         () => {
           console.log('Error occured : 429');
@@ -516,6 +472,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         });*/
 
     });
+      this.observableLock = false;
   } catch (e) {
     console.log('Error : ' + e.message);
     // unlock capture
@@ -523,6 +480,61 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 }
 
+private processFaceAttributes(face) {
+  const f = new Face();
+  f.faceId = face.faceId;
+  f.age = face.faceAttributes.age;
+  f.baldLevel = face.faceAttributes.hair.bald;
+  f.beardLevel = face.faceAttributes.facialHair.beard;
+  f.glassesType = face.faceAttributes.glasses === 'NoGlasses' ?
+                  GlassesType.NoGlasses : face.faceAttributes.glasses === 'ReadingGlasses' ?
+                  GlassesType.ReadingGlasses : face.faceAttributes.glasses === 'SunGlasses' ?
+                  GlassesType.Sunglasses : GlassesType.SwimmingGoggles ;
+                  // check haircolor
+  if (face.faceAttributes.hair.hairColor.length > 0) {
+                    f.hairColor = face.faceAttributes.hair.hairColor[0].color;
+                  } else {
+                    f.hairColor = '';
+                  }
+  f.isMale = face.faceAttributes.gender === 'male';
+  f.moustacheLevel = face.faceAttributes.facialHair.moustache;
+  f.smileLevel = face.faceAttributes.smile;
+  let emotion = 0;
+  let emotionType = '';
+  if (face.faceAttributes.emotion.anger < face.faceAttributes.emotion.contempt) {
+                    emotion = face.faceAttributes.emotion.contempt;
+                    emotionType = 'contempt';
+                  } else {
+                    emotion = face.faceAttributes.emotion.anger;
+                    emotionType = 'anger';
+                  }
+  if (emotion < face.faceAttributes.emotion.disgust) {
+                    emotion =  face.faceAttributes.emotion.disgust;
+                    emotionType = 'disgust';
+                  }
+  if (emotion < face.faceAttributes.emotion.fear) {
+                    emotion = face.faceAttributes.emotion.fear;
+                    emotionType = 'fear';
+                  }
+  if (emotion < face.faceAttributes.emotion.happiness) {
+                    emotion = face.faceAttributes.emotion.happiness;
+                    emotionType = 'happiness';
+                  }
+  if (emotion < face.faceAttributes.emotion.neutral) {
+                    emotion = face.faceAttributes.emotion.neutral;
+                    emotionType = 'neutral';
+                  }
+  if (emotion < face.faceAttributes.emotion.sadness) {
+                    emotion = face.faceAttributes.emotion.sadness;
+                    emotionType = 'sadness';
+                  }
+  if (emotion < face.faceAttributes.emotion.surprise) {
+                    emotion = face.faceAttributes.emotion.surprise;
+                    emotionType = 'surprise';
+                  }
+  f.emotionDominant = emotionType;
+  return f;
+}
 
 // detection hair length with custom vision
 private getHairLength(stream) {
@@ -561,31 +573,28 @@ private getSkinColor(stream) {
   return sub;
 }
 
-private saveUsers(user: User) {
-  // adding user
+private saveUsers(user: User, face: Face) {
+    console.log('saving user');
+    console.log(user.faces);
+    // adding user
     const user$ = this.userService.addUser(user);
     user$.subscribe(
       () => {
-        console.log('user saved');
         this.notifierService.notify( 'success', 'Un nouvel utilisateur a été créé');
         this.lock = false;
       }
     , (error) => {
-        console.log('user recognized');
         if (error.status === 409 && error.ok === false) {
           this.notifierService.notify( 'info', 'Un utilisateur a été reconnu');
-          if (user.faces[user.faces.length - 1]) {
-            const face = user.faces[user.faces.length - 1];
-            const face$ = this.faceService.addFace(user.userId, face);
-            face$.subscribe(
-                () => {
+          const face$ = this.faceService.addFace(user.userId, face);
+          face$.subscribe(
+              () => {
                   this.lock = false;
                 },
-                (err) => {
+              (err) => {
                   console.log(err);
                   this.lock = false;
-            });
-          }
+          });
         }
     });
 }

@@ -118,6 +118,7 @@ export class FaceProcessService {
   }
 
   private detect(stream: Blob, group: Group) {
+        console.log('1. detecting faces');
         // 1. Detect
         const detect$ = this.faceService.detect(stream);
         detect$.subscribe(
@@ -145,11 +146,12 @@ export class FaceProcessService {
     Identify multiple faces : use this to make less calls
   */
   private identifyFaces(faces: Face[], group: Group, stream: Blob, minConfidence = 0.5) {
+    console.log('2. identifying persons');
      // 2. Identify person
     if (faces.length === 0) {
       this.result$.next(null);
     } else {
-      const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 10, minConfidence);
+      const identify$ = this.faceService.identify(faces.map(f => f.faceId), group.personGroupId, 3, minConfidence);
       identify$.subscribe(
       (faceCandidates) => {
         for (const candidate of faceCandidates) {
@@ -165,16 +167,7 @@ export class FaceProcessService {
                maxConfidence = c.confidence;
                keepId = c.personId;
              } else if (c.confidence > 0.80) {
-               // delete possible duplicate
-               const del$ = this.personService.delete(group.personGroupId, c.personId);
-               del$.subscribe(
-                 () => {
-                   console.log('Duplicate deleted');
-                   // emit person ID deleted
-                   this.resForDuplicate$.next({keepId, delId: c.personId});
-                 },
-                 () => console.log('Error deleting duplicate')
-               );
+               this.deletePerson(group.personGroupId, c.personId, keepId);
              }
            });
            // optimise results
@@ -223,6 +216,7 @@ export class FaceProcessService {
    Add Face to an existant person
   */
   private addFace(group: Group, personId: string, stream: Blob, face: Face, isFirstFace = false) {
+          console.log('4. Adding face to person');
           // person identified matching the face
           // 4. Add Face to person
           // tslint:disable-next-line:max-line-length
@@ -232,26 +226,24 @@ export class FaceProcessService {
             // saving candidates info
             const idx = this.result.persons.map(per => per.person.personId).indexOf(personId);
             if ( idx > -1) {
-                // person already exists in array
-                if (this.result.persons[idx].faces.map(f => f.faceId).indexOf(face.faceId) === -1) {
-                  console.log('adding face with id : ' + face.faceId + 'to person with id : ' + personId);
-                  this.result.persons[idx].faces.push(face);
-                  this.result.persons[idx].person.persistedFaceIds.push(data.persistedFaceId);
-                }
+                const person = this.result.persons[idx];
+                person.faces.push(face);
+                person.person.persistedFaceIds.push(data.persistedFaceId);
             } else {
-              if (this.result.persons.map(per => per.person.personId).indexOf(personId) === -1) {
                 const p = new PersonGroupPerson();
                 p.person = new Person();
                 p.person.personId = personId;
+                p.faces.push(face);
+                p.person.persistedFaceIds.push(data.persistedFaceId);
                 this.result.persons.push(p);
-                this.result.persons[this.result.persons.length - 1].faces.push(face);
-                this.result.persons[this.result.persons.length - 1].person.persistedFaceIds.push(data.persistedFaceId);
-              }
             }
 
             if (isFirstFace) {
+              // new person added train model
               this.train(group.personGroupId);
             } else {
+              // no need to train emit result
+              console.log('Emitting result');
               this.result$.next(this.result);
             }
           },
@@ -265,6 +257,7 @@ export class FaceProcessService {
     Create person and adds a face to this person
   */
  private createPerson(group: Group, stream: Blob, face: Face) {
+    console.log('3. create person');
     // 3. Create person
     // tslint:disable-next-line:max-line-length
     const person$ = this.personService.create(group.personGroupId, group.name, group.userData);
@@ -283,28 +276,49 @@ export class FaceProcessService {
     Train the group : must be done every time a new person is added
   */
   private train(groupId) {
+    console.log('Checking training status');
     // checking if training is running
     const status = this.groupService.getTrainingStatus(groupId);
 
     status.subscribe(
       (res) => {
         if (res.status === 'notstarted' || res.status === 'succeeded' || res.status === 'failed') {
-          // 5. train group
-          const train$ = this.groupService.train(groupId);
-          train$.subscribe(
-          (result) => {
-            console.log('training');
-            console.log(result);
-            this.result$.next(this.result);
-          },
-          () => {
-            // 6. training status
-            this.result$.next(null);
-          });
+          this.trainGroup(groupId);
         }
+      },
+      (err) => {
+        this.trainGroup(groupId);
       }
     );
 
+  }
+
+  private trainGroup(groupId) {
+    console.log('5. Training');
+    // 5. train group
+    const train$ = this.groupService.train(groupId);
+    train$.subscribe(
+    (res) => {
+      console.log('training');
+      this.result$.next(this.result);
+    },
+    () => {
+      this.result$.next(null);
+    });
+  }
+
+  deletePerson(personGroupId, personId, keepId) {
+    console.log('Deleting person');
+    // delete possible duplicate
+    const del$ = this.personService.delete(personGroupId, personId);
+    del$.subscribe(
+      () => {
+        console.log('Deleted');
+        // emit person ID deleted
+        this.resForDuplicate$.next({keepId, delId: personId});
+      },
+      () => console.log('Error while deleting')
+    );
   }
 
   // list person with their face

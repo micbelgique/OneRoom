@@ -175,7 +175,7 @@ namespace oneroom_api.Controllers
 
                     // warn dashboard user is in front of the camera
                     await _hubClients.Clients.Group(gameId.ToString()).HighlightUser(user.UserId);
-                    return Conflict("user already exists");
+                    return Conflict(usr);
                 }
 
                 int count = await _context.Users.Where(u => u.GameId == gameId)
