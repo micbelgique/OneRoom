@@ -3,8 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  googleSubTextKey: 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA'
+  production: false
 };
 
 /*

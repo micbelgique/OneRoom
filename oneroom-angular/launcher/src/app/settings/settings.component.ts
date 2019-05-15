@@ -191,14 +191,10 @@ export class SettingsComponent implements OnInit {
       res$.subscribe(
         (challenges: Challenge[]) => {
           // saves all challenges from game
-          this.challenges = challenges;
+          this.challenges = challenges.sort( (c1, c2) => c1.order - c2.order);
           localStorage.setItem('challengesData', JSON.stringify(challenges));
-          this.toast.open('Challenges configurés', 'Ok', {
-            duration: 2000
-          });
-          console.log(challenges);
         },
-        (err) => console.log(err)
+          (err) => console.log(err)
       );
     }
 }
