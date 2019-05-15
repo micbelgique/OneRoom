@@ -71,6 +71,11 @@ namespace oneroom_api.Controllers
 
             _context.Entry(usr).State = EntityState.Modified;
 
+            // Save the original Avatar
+            if( usr.OriginalUrlAvatar == null )
+            {
+                usr.OriginalUrlAvatar = usr.UrlAvatar;
+            }
             usr.GenerateAvatar();
 
             try
