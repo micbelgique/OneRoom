@@ -79,3 +79,8 @@ mat-card-title.gradient {
   border-radius: 50%;
   flex-shrink: 0;
 }
+.backgroundOnePoint {
+  background-image: url("../../assets/2019.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+ }
