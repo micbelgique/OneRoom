@@ -174,6 +174,8 @@ export class FacecamComponent implements OnInit, OnDestroy {
   }
 
   private async loadModels() {
+    this.notifierService.notify( 'info', 'Chargement des modèles');
+
     this.options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.85});
 
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
@@ -181,6 +183,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
         ).then( async () => await faceapi.loadFaceRecognitionModel('assets/models/')).then(
           async () => {
             this.modelsReady = true;
+            this.notifierService.notify( 'info', 'Modèles prêt');
           }
         );
   }
@@ -203,8 +206,10 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   sendData() {
       this.lock = true;
-      this.notifierService.notify('default', 'Envoi de ' + this.captureStorage.length + ' image(s)');
-      // lock capture
+      if (this.captureStorage.length > 0) {
+        this.notifierService.notify('default', 'Envoi de ' + this.captureStorage.length + ' image(s)');
+      }
+       // lock capture
       this.timerLock = setTimeout(
         (val) => {
           this.lock = false;
@@ -246,7 +251,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
                   // store image
                   // this.imageCapture(imgData);
                   if (this.descriptors.length > 10) {
-                    // send data
+                    // send data if more than 10 persons
                     this.sendData();
                   } else {
                     this.captureStorage.push(imgData);
@@ -326,6 +331,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
               console.log('Camera init failed : ' + error.name);
               this.alertContainer = true;
               this.alertMessage = 'Could not access the camera. Error: ' + error.name;
+              this.notifierService.notify('error', 'Caméra inaccessible');
             });
     }
     return this.video;
@@ -347,6 +353,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
 
   /* handles all type of errors from usermedia API */
   private handleError(error) {
+    this.notifierService.notify('error', 'Erreur dans le chargement des medias disponibles');
     console.log('navigator.getUserMedia error: ', error);
   }
 
@@ -398,13 +405,11 @@ export class FacecamComponent implements OnInit, OnDestroy {
               this.lock = false;
               return;
             }
-            console.log('Person in array: ' + data.persons.length);
             data.persons.forEach(element => {
             const u = new User();
             u.name = 'user_' + Math.random();
             u.userId = element.person.personId;
             u.faces = [];
-            console.log('Face in array: ' + element.faces.length);
             element.faces.forEach(face => {
                     // adapt results for our api
                     const f = this.processFaceAttributes(face);
@@ -426,7 +431,6 @@ export class FacecamComponent implements OnInit, OnDestroy {
                                 f.hairLength = hl;
                                 u.faces = Array.from(new Set(u.faces));
                                 if (u.faces.map(ff => ff.faceId).indexOf(f.faceId) === -1 ) {
-                                  console.log('face added to list');
                                   u.faces.push(f);
                                   // save user
                                   this.saveUsers(u, f);
@@ -549,6 +553,7 @@ private getHairLength(stream) {
     },
     (err) => {
       console.log(err);
+      this.notifierService.notify('error', 'Custom vision : HairLength erreur');
     }
   );
   return sub;
@@ -568,6 +573,7 @@ private getSkinColor(stream) {
     },
     (err) => {
       console.log(err);
+      this.notifierService.notify('error', 'Custom vision : SkinColor erreur');
     }
   );
   return sub;
@@ -575,7 +581,6 @@ private getSkinColor(stream) {
 
 private saveUsers(user: User, face: Face) {
     console.log('saving user');
-    console.log(user.faces);
     // adding user
     const user$ = this.userService.addUser(user);
     user$.subscribe(
@@ -621,6 +626,7 @@ private saveUsers(user: User, face: Face) {
         },
         (err) => {
           console.log(err);
+          this.notifierService.notify('error', 'Echec lors de la récuperation du status de la partie');
         }
       );
     }

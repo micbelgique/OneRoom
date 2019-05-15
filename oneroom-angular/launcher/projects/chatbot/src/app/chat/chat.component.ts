@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { User, Game, Team, GameState, Challenge } from '@oneroomic/oneroomlibrary';
-import { environment } from '../../environments/environment';
 import { replies } from '../utilities/reply-fr';
 import { Subject } from 'rxjs';
-import { TextToSpeechService, LuisService } from '@oneroomic/facecognitivelibrary';
+import { TextToSpeechService, LuisService, SpeechToTextService } from '@oneroomic/facecognitivelibrary';
 import { Bot } from '../utilities/bot';
 import { MessageStyle } from '../utilities/message-style';
+import MediaStreamRecorder from 'msr';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-chat',
@@ -27,6 +28,14 @@ export class ChatComponent implements OnInit {
   isOpen: Subject<boolean>;
   @Output()
   close = new EventEmitter<boolean>();
+
+  recording = false;
+  private audioRecorder: MediaStreamRecorder;
+  private mediaConstraints = {
+    audio: true,
+    video: false
+  };
+  private lastBlob;
 
   private firstOpening = true;
 
@@ -57,20 +66,19 @@ export class ChatComponent implements OnInit {
   challenge: Challenge;
   dialog = false;
 
-  // audio response
-  @ViewChild('player')
-  player;
-
   // tslint:disable-next-line:max-line-length
   private luisEndpoint = 'https://centralus.api.cognitive.microsoft.com/luis/v2.0/apps/8d7cdfe9-46c3-4c10-b70d-341b65f5ed20';
   private luisKey = '3cf37cea3fb845ac82c53dedfd8e9f1f';
   private textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
-  private textToSpeechKey =  environment.googleSubTextKey;
+  private textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
+  private speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
+  private speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
 
   constructor(private router: Router,
               private textToSpeechService: TextToSpeechService,
-              private luisService: LuisService) {
-  }
+              private speechToTextService: SpeechToTextService,
+              private luisService: LuisService,
+              private toast: MatSnackBar) {}
 
   ngOnInit() {
     if (localStorage.getItem('user')) {
@@ -92,20 +100,23 @@ export class ChatComponent implements OnInit {
         this.luisKey = this.challenge.config.luisKey;
         this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
         this.textToSpeechKey =  this.challenge.config.textToSpeechKey;
+        // TODO : replace
+        this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
+        this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
       }
     }
     // selection of bot
     this.currentBot = this.bots[0];
-    // welcome message
-    const welcomeMessage: MessageStyle = {
-      name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
-      color: this.currentBot.color
-    };
-    this.messages.push(welcomeMessage);
     // when first opened play introduction
     this.isOpen.subscribe(
       (isOpen) => {
-        if (isOpen === true && this.firstOpening === true && this.messages.length === 1) {
+        if (isOpen === true && this.firstOpening === true && this.messages.length === 0) {
+          // welcome message
+          const welcomeMessage: MessageStyle = {
+            name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
+            color: this.currentBot.color
+          };
+          this.messages.push(welcomeMessage);
           // welcome message from bot
           // tslint:disable-next-line:max-line-length
           this.textToSpeechService.textToSpeechGoogle(welcomeMessage.name, this.textToSpeechEndpoint, this.textToSpeechKey, 'fr-FR', this.currentBot.gender).subscribe(
@@ -115,10 +126,60 @@ export class ChatComponent implements OnInit {
         }
       }
     );
+
+    // button speech
+
+    this.recording = false;
+
+    navigator.getUserMedia(this.mediaConstraints,
+      (stream) => {
+        this.audioRecorder = new MediaStreamRecorder(stream);
+        this.audioRecorder.stream = stream;
+        this.audioRecorder.mimeType = 'audio/wav';
+        this.audioRecorder.ondataavailable = (blob) => {
+          this.lastBlob = blob;
+        };
+    },
+      (error) => {
+        console.log(error);
+    });
+  }
+
+  start() {
+    this.recording = true;
+    // max length audio 15 sec
+    this.audioRecorder.start(15000);
+    this.toast.open('Je vous écoute', 'Ok', {
+      duration: 2000
+    });
+  }
+
+  stop() {
+    this.recording = false;
+    this.audioRecorder.stop();
+    this.speechToText();
+  }
+
+  speechToText() {
+    const fileReader = new FileReader();
+    fileReader.onload = (event: any) => {
+      this.speechToTextService.speechToTextGoogle(event.target.result, this.speechToTextEndpoint, this.speechToTextKey, 'fr-FR')
+      .subscribe((result) => {
+        console.log('speechtotext');
+        console.log(result);
+        this.question = result.results[0].alternatives[0].transcript;
+        this.askStephane();
+      });
+    };
+    fileReader.readAsArrayBuffer(this.lastBlob);
+
   }
 
   talk(audioBase64) {
-    this.player.nativeElement.src = 'data:audio/mpeg;base64,' + audioBase64;
+    const audio = new Audio();
+    audio.src = 'data:audio/mpeg;base64,' + audioBase64;
+    audio.load();
+    audio.play();
   }
 
   askStephane() {
@@ -155,7 +216,7 @@ export class ChatComponent implements OnInit {
         // voice return
         if (this.currentBot.silentMode === false) {
           // tslint:disable-next-line:max-line-length
-          this.textToSpeechService.textToSpeechGoogle(responseChatbot, this.textToSpeechEndpoint, environment.googleSubTextKey, 'fr-FR', this.currentBot.gender).subscribe(
+          this.textToSpeechService.textToSpeechGoogle(responseChatbot, this.textToSpeechEndpoint, this.textToSpeechKey, 'fr-FR', this.currentBot.gender).subscribe(
             (result) => this.talk(result.audioContent)
           );
         }
