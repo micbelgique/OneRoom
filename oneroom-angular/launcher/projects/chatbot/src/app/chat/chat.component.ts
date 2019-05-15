@@ -5,17 +5,8 @@ import { environment } from '../../environments/environment';
 import { replies } from '../utilities/reply-fr';
 import { Subject } from 'rxjs';
 import { TextToSpeechService, LuisService } from '@oneroomic/facecognitivelibrary';
-
-export interface MessageStyle {
-  name: string;
-  color: string;
-}
-
-export class Bot {
-  silentMode = false;
-
-  constructor(public name: string, public gender: string, public color: string) {}
-}
+import { Bot } from '../utilities/bot';
+import { MessageStyle } from '../utilities/message-style';
 
 @Component({
   selector: 'app-chat',
@@ -179,7 +170,7 @@ export class ChatComponent implements OnInit {
     console.log(response);
     let responseChatbot = '';
 
-    if (this.question.includes(this.challenge.data.trigger)) {
+    /*if (this.question.includes(this.challenge.data.trigger)) {
       // asking question
       this.dialog = true;
       return this.challenge.data.question;
@@ -193,7 +184,7 @@ export class ChatComponent implements OnInit {
       return 'Bonne réponse, voici le code du cadenas de la porte';
     } else if (this.dialog === true) {
       return 'Mauvaise réponse ! Réessayer';
-    }
+    }*/
 
     // retrieve target action for the intent
     const intent = response.topScoringIntent.intent;
