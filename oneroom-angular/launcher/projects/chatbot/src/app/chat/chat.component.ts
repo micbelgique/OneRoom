@@ -36,6 +36,7 @@ export class ChatComponent implements OnInit {
     video: false
   };
   private lastBlob;
+  private timeoutRecording;
 
   private firstOpening = true;
 
@@ -149,12 +150,17 @@ export class ChatComponent implements OnInit {
     this.recording = true;
     // max length audio 15 sec
     this.audioRecorder.start(15000);
+    this.timeoutRecording = setTimeout(() => {
+      // stop after 10 sec
+      this.stop();
+    }, 10000);
     this.toast.open('Je vous écoute', 'Ok', {
       duration: 2000
     });
   }
 
   stop() {
+    clearTimeout(this.timeoutRecording);
     this.recording = false;
     this.audioRecorder.stop();
     this.speechToText();
