@@ -112,6 +112,10 @@ export class ChatComponent implements OnInit {
     this.isOpen.subscribe(
       (isOpen) => {
         if (isOpen === true && this.firstOpening === true && this.messages.length === 0) {
+          this.messages = [];
+          if (localStorage.getItem('user')) {
+            this.user = JSON.parse(localStorage.getItem('user'));
+          }
           // welcome message
           const welcomeMessage: MessageStyle = {
             name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
