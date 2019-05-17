@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using oneroom_api.data;
 using oneroom_api.Hubs;
 using oneroom_api.Model;
 using oneroom_api.Utilities;
@@ -9,8 +10,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
-using NJsonSchema;
-using oneroom_api.data;
 
 namespace oneroom_api.Controllers
 {
@@ -140,7 +139,7 @@ namespace oneroom_api.Controllers
             {
                 return NotFound("There is no teams left to delete");
             }
-            if( game.State > State.REGISTER)
+            if (game.State > State.REGISTER)
             {
                 return BadRequest("The game state does not allow to remove the teams");
             }

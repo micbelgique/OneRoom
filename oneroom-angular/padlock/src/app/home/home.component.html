@@ -1,0 +1,18 @@
+<mat-card style="text-align: center">
+  <img *ngIf="this.imgString" [(src)]="imgString" style="height: 90vh;text-align: center">
+  <button mat-raised-button color="primary" style="width: 100%" (click)="this.firstScanning();">UnLock</button>
+</mat-card>
+<div class='content' style='display: none'>
+  <div [style.display]=this.displayStream style="text-align: center;">
+      <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
+        <div>
+          <select #devices (change)="this.startStream()" >
+              <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
+          </select>
+          <div id="overlayContainer" class="center">
+            <video id="stream" #webcam autoplay></video>
+            <canvas #canvas2 id="overlay" ></canvas>
+          </div>
+        </div>
+  </div>
+</div>
