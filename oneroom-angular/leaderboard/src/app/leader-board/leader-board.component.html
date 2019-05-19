@@ -15,12 +15,12 @@
         <mat-grid-tile>
           <mat-card style="padding: 0px;">
             <div [style.background-color]='getTeamColor(t?.teamColor)' style="width: calc(2%); border-top-left-radius: inherit; border-bottom-left-radius: inherit;"></div>
-            <div style="padding: 10px; position: relative;">
-              <mat-card-title [ngClass]="{'gradient' : hasFinished(t.teamId)}" style="font-size:2vw;">{{t.teamName.toUpperCase()}}</mat-card-title>
-              <div style="display: flex; justify-content:flex-end; position: absolute; right: 10px; top: 10px; height: calc(30%);" [style.width.%]="3.479*t.challenges.length">
-                  <ng-container *ngFor="let c of t.challenges">
-                      <div class="circle" [style.width.%]="100 / t.challenges.length" [style.background-color]="c.completed ? 'green': ''"></div>
-                  </ng-container>
+            <div style="padding: 10px; position: relative;"  [ngClass]="{'gradient' : hasFinished(t.teamId)}">
+                  <mat-card-title style="font-size:2vw;">{{t.teamName.toUpperCase()}}</mat-card-title>
+                  <div style="display: flex; justify-content:flex-end; position: absolute; right: 10px; top: 10px; height: calc(30%);" [style.width.%]="3.479*t.challenges.length">
+                      <ng-container *ngFor="let c of t.challenges">
+                          <div class="circle" [style.width.%]="100 / t.challenges.length" [style.background-color]="c.completed ? 'green': ''"></div>
+                      </ng-container>
                 </div>
               <div style="position: absolute; bottom: 10px; height: auto;">
                 <ng-container *ngFor="let u of t.users">
