@@ -85,11 +85,6 @@ export class LockscreenComponent implements OnInit {
   private async loadModels() {
     await faceapi.loadSsdMobilenetv1Model('assets/models/').then(
         async () => await faceapi.loadFaceLandmarkModel('assets/models/'));
-
-    /* FACE RECOGNITION
-                // async () => faceapi.loadFaceExpressionModel('assets/models/').then(
-         //  async () => await faceapi.loadFaceRecognitionModel('assets/models/')
-    */
   }
 
   initStreamDetection(videoSource = null) {
@@ -123,24 +118,13 @@ export class LockscreenComponent implements OnInit {
   public async detectFaces() {
         this.clearOverlay();
         const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.75});
-        // const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.65 });
         const fullFaceDescriptions = await faceapi.detectSingleFace(this.video.nativeElement, options)
-                                    // .withFaceExpressions();
                                     .withFaceLandmarks();
-                                    // .withFaceDescriptor();
-        // if (fullFaceDescriptions.length > 0) {
         if (fullFaceDescriptions !== undefined && fullFaceDescriptions !== null) {
-        // const detectionsArray = fullFaceDescriptions.map(fd => fd.detection);
-        // await faceapi.drawDetection(this.canvas2.nativeElement, fullFaceDescriptions.detection, { withScore: false });
-        // tslint:disable-next-line:max-line-length
-        // await faceapi.drawFaceExpressions(this.canvas2.nativeElement, ({ position: fullFaceDescriptions.detection.box, expressions: fullFaceDescriptions.expressions }));
-        // const landmarksArray = fullFaceDescriptions.map(fd => fd.landmarks);
-        // await faceapi.drawLandmarks(this.canvas2.nativeElement, fullFaceDescriptions.landmarks, { drawLines: true });
         if (this.lock === false) {
               this.toast.open('Visage détecté', 'Ok', {
                 duration : 1000
               });
-              // const imgData = this.capture();
               const imgData = faceapi.createCanvasFromMedia(this.video.nativeElement).toDataURL('image/png');
               this.lock = true;
               this.imageCapture(imgData);
@@ -234,51 +218,6 @@ export class LockscreenComponent implements OnInit {
     console.log('navigator.getUserMedia error: ', error);
   }
 
-  /* convert img|video element into blob to send using ajax */
-  private convertToBlob(img) {
-    if (img === null || img === undefined) {
-      return false;
-    }
-    // get image url data
-    const ImageURL = img.src;
-    // Split the base64 string in data and contentType
-    const block = ImageURL.split(';');
-    // Get the content type of the image
-    const contentType = block[0].split(':')[1];
-    // In this case "image/png"
-    // get the real base64 content of the file
-    const realData = block[1].split(',')[1];
-    // Convert it to a blob to upload
-    const blob = this.base64ToBlob(realData, contentType, null);
-    return blob;
-}
-
-  /* convert base 64 string into blob img */
-  private base64ToBlob(b64Data, contentType, sliceSize) {
-    contentType = contentType || '';
-    sliceSize = sliceSize || 512;
-
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-        const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-
-        byteArrays.push(byteArray);
-    }
-
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-}
-
   imageCapture(dataUrl) {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
@@ -299,8 +238,6 @@ export class LockscreenComponent implements OnInit {
       return;
     }
     console.log(group);
-    // group.name = 'mic_stage_2019';
-    // group.userData = 'Group de test en developpement pour oneroom';
     // timeout to unlock detection
     setTimeout(() => {
       this.lock = false;

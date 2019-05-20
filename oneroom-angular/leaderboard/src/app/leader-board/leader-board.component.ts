@@ -121,9 +121,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   }
 
   private challengeCompleted(teamId, challengeId) {
-    this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed = true;
-    this.sortTeam();
-    this.playAudio();
+    if (this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed !== true) {
+      this.teams.find( t => t.teamId === teamId).challenges.find(c => c.challengeId === challengeId).completed = true;
+      this.sortTeam();
+      this.playAudio();
+    }
   }
 
   playAudio() {

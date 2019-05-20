@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using Twilio.AspNet.Core;
-using Twilio.TwiML;
-using Twilio.TwiML.Voice;
-using Twilio.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using oneroom_api.data;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using oneroom_api.Model;
-using Microsoft.AspNetCore.SignalR;
 using oneroom_api.Hubs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Twilio.AspNet.Core;
+using Twilio.Http;
+using Twilio.TwiML;
+using Twilio.TwiML.Voice;
 
 namespace oneroom_api.Controllers
 {
@@ -57,19 +56,27 @@ namespace oneroom_api.Controllers
             var response = new VoiceResponse();
 
             var url = this.Configuration.GetValue<string>("HostUrl");
-
-            response.Gather(
-                    input: new List<Gather.InputEnum> { Gather.InputEnum.Speech },
-                    language: Gather.LanguageEnum.FrFr,
-                    action: new Uri($"{url}/api/voice/handleresponse"),
-                    method: HttpMethod.Get,
-                    speechTimeout: "auto"
-                );
+            var gather = new Gather(
+                input: new[] {Gather.InputEnum.Dtmf}.ToList(),
+                numDigits: 3,
+                action: new Uri($"{url}/api/voice/handleresponse"),
+                method: HttpMethod.Get,
+                timeout: 5
+            );
+            response.Append(gather);
+            //response.Append(new Gather(numDigits: 1, action: new Uri($"{url}/api/voice/handleresponse"),method:HttpMethod.Get));
+            //response.Gather(
+            //        input: new List<Gather.InputEnum> { Gather.InputEnum.Speech },
+            //        language: Gather.LanguageEnum.FrFr,
+            //        action: new Uri($"{url}/api/voice/handleresponse"),
+            //        method: HttpMethod.Get,
+            //        speechTimeout: "auto"
+            //    );
             return TwiML(response);
         }
 
         [HttpGet("handleresponse")]
-        public IActionResult HandleResponse([FromQuery] string SpeechResult)
+        public IActionResult HandleResponse([FromQuery] string Digits)
         {
             var response = new VoiceResponse();
 
@@ -78,50 +85,50 @@ namespace oneroom_api.Controllers
 
             var team = _context.Teams
                 .Include(t => t.TeamChallenges)
-                .Where(t => t.TeamId.ToString().Equals(SpeechResult))
+                .Where(t => t.TeamId.ToString().Equals(Digits))
                 .SingleOrDefault();
 
             if (team != null)
             {
                 response.Say($"Identification validée, {team.TeamName} {team.TeamId}, ligne sécurisée établie, transfert en cours", voice: Say.VoiceEnum.Man, language: Say.LanguageEnum.FrFr);
-                
+
                 var teamChallenge = team.TeamChallenges
                     .Select(tc => tc.Challenge)
                     .Where(c => c.AppName == "voice")
                     .FirstOrDefault();
-                
+
                 if (teamChallenge != null && teamChallenge.Answers.Count > 0)
                 {
                     Say.LanguageEnum language;
                     Say.VoiceEnum gender;
                     double loop;
-                    
+
                     switch (teamChallenge.Config.GetValueOrDefault("language"))
                     {
-                            case "japanese":
-                                language = Say.LanguageEnum.JaJp; break;
-                            case "english":
-                                language = Say.LanguageEnum.EnUs; break;
-                            case "italian":
-                                language = Say.LanguageEnum.ItIt; break;
-                            case "spanish":
-                                language = Say.LanguageEnum.EsEs; break;
-                            case "german":
-                                language = Say.LanguageEnum.DeDe; break;
-                            case "chinese":
-                                language = Say.LanguageEnum.ZhCn; break;
-                            default:
-                                language = Say.LanguageEnum.FrFr; break;
+                        case "japanese":
+                            language = Say.LanguageEnum.JaJp; break;
+                        case "english":
+                            language = Say.LanguageEnum.EnUs; break;
+                        case "italian":
+                            language = Say.LanguageEnum.ItIt; break;
+                        case "spanish":
+                            language = Say.LanguageEnum.EsEs; break;
+                        case "german":
+                            language = Say.LanguageEnum.DeDe; break;
+                        case "chinese":
+                            language = Say.LanguageEnum.ZhCn; break;
+                        default:
+                            language = Say.LanguageEnum.FrFr; break;
                     }
 
-                    switch(teamChallenge.Config.GetValueOrDefault("gender"))
+                    switch (teamChallenge.Config.GetValueOrDefault("gender"))
                     {
-                            case "male":
-                                gender = Say.VoiceEnum.Man; break;
-                            case "female":
-                                gender = Say.VoiceEnum.Woman; break;
-                            default: 
-                                gender = Say.VoiceEnum.Alice; break;
+                        case "male":
+                            gender = Say.VoiceEnum.Man; break;
+                        case "female":
+                            gender = Say.VoiceEnum.Woman; break;
+                        default:
+                            gender = Say.VoiceEnum.Alice; break;
                     }
 
                     if (teamChallenge.Config.ContainsKey("loop"))
@@ -130,28 +137,31 @@ namespace oneroom_api.Controllers
                         {
                             loop = Convert.ToDouble(teamChallenge.Config.GetValueOrDefault("loop"));
 
-                        }catch(Exception)
+                        }
+                        catch (Exception)
                         {
                             loop = 3;
                         }
 
-                    } else {
+                    }
+                    else
+                    {
                         loop = 3;
                     }
 
-                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language, loop: (int) loop);
+                    response.Say("" + teamChallenge.Answers.FirstOrDefault(), voice: gender, language: language, loop: (int)loop);
                     // Set challenge completed
                     team.TeamChallenges.SingleOrDefault(tc => tc.ChallengeId == teamChallenge.ChallengeId).Completed = true;
 
                     _context.SaveChangesAsync();
                     _hubClients.Clients.Group(team.GameId.ToString()).HasCompletedChallenge(team.TeamId, teamChallenge.ChallengeId);
                 }
-                
+
                 return TwiML(response);
             }
-            
-            response.Say($"Identification échouée, aucune équipe avec cet identifiant: '{SpeechResult}'.", voice: Say.VoiceEnum.Man, language: Say.LanguageEnum.FrFr);
-   
+
+            response.Say($"Identification échouée, aucune équipe avec cet identifiant: '{Digits}'.", voice: Say.VoiceEnum.Man, language: Say.LanguageEnum.FrFr);
+
             var url = this.Configuration.GetValue<string>("HostUrl");
 
             response.Redirect(

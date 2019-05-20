@@ -1,6 +1,6 @@
 {
   "name": "@oneroomic/oneroomlibrary",
-  "version": "0.0.73",
+  "version": "0.0.76",
   "description": "This library is made to communicate with the coordinator of the oneroom project",
   "keywords" : [
     "oneroom", "escape room", "escape game", "MIC", "onepoint"
