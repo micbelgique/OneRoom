@@ -1,52 +1,29 @@
 <div class='content'>
   <h1 style="text-align: center">Traducteur</h1>
-  <mat-grid-list cols="3" rowHeight="1:1">
-    <mat-grid-tile>
-        <mat-list>
-            <mat-list-item>
-              <mat-form-field>
-                <mat-label>Langue:</mat-label>
-                <mat-select [(value)]="this.languageOne">
-                  <mat-option *ngFor='let l of this.lang' value='{{l.locale}}'>{{l.name}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </mat-list-item>
-            <br>
-          <mat-list-item>
-              <mat-form-field>
-                <textarea class="text" style="width: 100%" matInput placeholder="Your text" [(ngModel)]="this.untranslated"></textarea>
-              </mat-form-field>
-          </mat-list-item>
-          <br>
-         </mat-list>
-    </mat-grid-tile>
-    <mat-grid-tile>
-        <mat-list-item style='text-align:center'>
-            <button mat-raised-button style='width:100%' (click)='start()' *ngIf=!this.recording color="warn" >Débuter capture</button>
-            <button mat-raised-button style='width:100%' (click)='stop()' *ngIf=this.recording color="warn">Arreter capture</button>
-            <br><br>
-            <audio #player controls autoplay playsinline></audio>
-            <br><br>
-            <button mat-raised-button style='width:100%' (click)='translate()' color="primary">traduire</button>
-        </mat-list-item>
-    </mat-grid-tile>
-    <mat-grid-tile >
-      <mat-list>
-      <mat-list-item>
-        <mat-form-field>
-          <mat-label>Langue:</mat-label>
-          <mat-select [(value)]="this.languageTwo">
-            <mat-option *ngFor='let l of this.lang' value='{{l.locale}}'>{{l.name}}</mat-option>
+  <mat-list>
+    <mat-list-item style="width: 100%">
+        <mat-label>Langue: </mat-label>
+        <mat-select style="width: 100%" [(value)]="this.languageOne">
+          <mat-option *ngFor='let l of this.lang' (click)=this.speechToText() value='{{l.locale}}'>{{l.name}}</mat-option>
         </mat-select>
-        </mat-form-field>
-      </mat-list-item>
-      <br>
-      <mat-list-item>
-        <mat-form-field>
-          <textarea matInput placeholder="Your text" [(ngModel)]="this.translated"></textarea>
-        </mat-form-field>
-      </mat-list-item>
-      </mat-list>
-    </mat-grid-tile>
-  </mat-grid-list>
+  </mat-list-item>
+  <mat-list-item style="width: 100%; height: 30vh">
+        <textarea class="text" style="width: 90%;height: 100%;" matInput placeholder="Your text" [(ngModel)]="this.untranslated"></textarea>
+        <button mat-fab style='width:5%; margin-right: 2%; margin-left: 2%' [disabled]="this.processing" (click)='start()' *ngIf="!this.recording" color="primary" ><mat-icon>mic_none</mat-icon></button>
+        <button mat-fab style='width:5%; margin-right: 2%; margin-left: 2%' (click)='stop()' *ngIf="this.recording" color="warn"><mat-icon>mic</mat-icon></button>
+  </mat-list-item>
+  <mat-list-item style='text-align:center'>
+    <audio style="display: none" #player controls autoplay playsinline></audio>
+    <button mat-raised-button style='width:100%' (click)='translate()' color="primary">traduire</button>
+  </mat-list-item>
+  <mat-list-item style="width: 100%">
+      <mat-label>Langue: </mat-label>
+      <mat-select style="width: 100%" [(value)]="this.languageTwo">
+        <mat-option *ngFor='let l of this.lang' (click)=this.translate() value='{{l.locale}}'>{{l.name}}</mat-option>
+    </mat-select>
+  </mat-list-item>
+  <mat-list-item style="width: 100%;  height: 30vh">
+      <textarea matInput style="width: 100%; height: 100%;" placeholder="Your text" [(ngModel)]="this.translated"></textarea>
+  </mat-list-item>
+ </mat-list>
 </div>

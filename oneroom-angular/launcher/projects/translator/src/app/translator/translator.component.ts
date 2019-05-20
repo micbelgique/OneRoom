@@ -12,6 +12,7 @@ import { Lang } from '../utilities/lang';
 export class TranslatorComponent implements OnInit {
 
   recording = false;
+  processing = false;
   @ViewChild('player')
   player;
   private lastBlob: Blob;
@@ -83,6 +84,7 @@ export class TranslatorComponent implements OnInit {
     this.languageTwo = 'en-US';
 
     this.recording = false;
+    this.processing = false;
 
     navigator.getUserMedia(this.mediaConstraints,
       (stream) => {
@@ -91,9 +93,9 @@ export class TranslatorComponent implements OnInit {
         this.audioRecorder.mimeType = 'audio/wav';
         this.audioRecorder.ondataavailable = (blob) => {
             this.lastBlob = blob;
-            this.player.nativeElement.controls = true;
-            this.player.nativeElement.srcObject = null;
-            this.player.nativeElement.src = URL.createObjectURL(blob);
+            // this.player.nativeElement.controls = true;
+            // this.player.nativeElement.srcObject = null;
+            // this.player.nativeElement.src = URL.createObjectURL(blob);
         };
     },
       (error) => {
@@ -108,31 +110,39 @@ export class TranslatorComponent implements OnInit {
   }
 
   stop() {
-    this.recording = false;
     this.audioRecorder.stop();
-    this.speechToText();
+    this.recording = false;
+    if (!this.processing) {
+      this.processing = true;
+      this.speechToText();
+    }
   }
 
   speechToText() {
+    if (this.lastBlob) {
     const fileReader = new FileReader();
     fileReader.onload = (event: any) => {
       this.speechToTextService.speechToTextGoogle(event.target.result, this.speechToTextEndpoint, this.speechToTextKey, this.languageOne)
-      .subscribe((result) => {
+      .subscribe(
+        (result) => {
         console.log('speechtotext');
-        console.log(result);
         this.untranslated = result.results[0].alternatives[0].transcript;
+        this.processing = false;
+        this.translate();
+      }, () => {
+        this.processing = false;
       });
     };
     fileReader.readAsArrayBuffer(this.lastBlob);
-
+    }
   }
 
   translate() {
+    if (this.untranslated && this.untranslated !== '') {
     this.translateService.translate(this.untranslated, this.languageOne, this.languageTwo, this.translateEndpoint, this.translateKey)
     .subscribe(
       (result) => {
         console.log('translate');
-        console.log(result);
         this.translated = result[0].translations[0].text;
         this.talk(this.translated);
         // remove all chars
@@ -147,13 +157,13 @@ export class TranslatorComponent implements OnInit {
         }
       }
     );
+    }
   }
 
   talk(text: string) {
     this.textToSpeechService.textToSpeechGoogle(text, this.textToSpeechEndpoint, this.textToSpeechKey, this.languageTwo, 'NEUTRAL')
     .subscribe((result) => {
       console.log('talk');
-      console.log(result);
       this.player.nativeElement.src = 'data:audio/mpeg;base64,' + result.audioContent;
     });
   }
