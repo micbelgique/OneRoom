@@ -1,5 +1,5 @@
 <div class="backgroundOnePoint">
-  <h1 *ngIf='game.state === 1' style='display:block; margin:0; text-align: center; color:white;background-color: black '>{{ this.time }} SECONDES RESTANTES</h1>
+  <h1 *ngIf='game.state === 1' style='display:block; margin:0; text-align: center; color:white;background-color: black '>{{ this.timeLeft }} SECONDES RESTANTES</h1>
   <mat-grid-list cols="{{cols}}" rowHeight="{{rows}}:1">
 
     <ng-container *ngTemplateOutlet="teams.length > 0 ? game.state >= 1 ? TeamView : TeamsHandle : UserCard; context: {$implicit: this}"></ng-container>

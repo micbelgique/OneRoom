@@ -41,7 +41,7 @@ export class ChatComponent implements OnInit {
 
   private firstOpening = true;
 
-  private audio = new Audio();
+  private audio;
 
   // chat colors
   private userColor = '#b0bec5';
@@ -85,6 +85,7 @@ export class ChatComponent implements OnInit {
               private toast: MatSnackBar) {}
 
   ngOnInit() {
+    this.audio = new Audio();
     if (localStorage.getItem('user')) {
       this.user = JSON.parse(localStorage.getItem('user'));
     }
@@ -114,24 +115,7 @@ export class ChatComponent implements OnInit {
     // when first opened play introduction
     this.isOpen.subscribe(
       (isOpen) => {
-        if (isOpen === true && this.firstOpening === true && this.messages.length === 0) {
-          this.messages = [];
-          if (localStorage.getItem('user')) {
-            this.user = JSON.parse(localStorage.getItem('user'));
-          }
-          // welcome message
-          const welcomeMessage: MessageStyle = {
-            name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
-            color: this.currentBot.color
-          };
-          this.messages.push(welcomeMessage);
-          // welcome message from bot
-          // tslint:disable-next-line:max-line-length
-          this.textToSpeechService.textToSpeechGoogle(welcomeMessage.name, this.textToSpeechEndpoint, this.textToSpeechKey, 'fr-FR', this.currentBot.gender).subscribe(
-            (result) => this.talk(result.audioContent)
-          );
-          this.firstOpening = false;
-        }
+        this.welcomeSpeech(isOpen);
       }
     );
 
@@ -152,6 +136,34 @@ export class ChatComponent implements OnInit {
       (error) => {
         console.log(error);
     });
+
+    // open itself at launch automatically
+    this.close.emit(true);
+  }
+
+  welcomeSpeech(isOpen) {
+    if (isOpen === true && this.firstOpening === true && this.messages.length === 0) {
+      this.processing = true;
+      this.messages = [];
+      if (localStorage.getItem('user')) {
+        this.user = JSON.parse(localStorage.getItem('user'));
+      }
+      // welcome message
+      // TODO : ADD SCENARIO AND GUIDANCE
+      // TODO : CHANGE NAME and TEAM name 
+      const welcomeMessage: MessageStyle = {
+        name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
+        color: this.currentBot.color
+      };
+      this.messages.push(welcomeMessage);
+      // welcome message from bot
+      // tslint:disable-next-line:max-line-length
+      this.textToSpeechService.textToSpeechGoogle(welcomeMessage.name, this.textToSpeechEndpoint, this.textToSpeechKey, 'fr-FR', this.currentBot.gender).subscribe(
+        (result) => this.talk(result.audioContent)
+      );
+      this.firstOpening = false;
+      this.processing = false;
+    }
   }
 
   start() {
@@ -193,9 +205,11 @@ export class ChatComponent implements OnInit {
   }
 
   talk(audioBase64) {
-    this.audio.src = 'data:audio/mpeg;base64,' + audioBase64;
-    this.audio.load();
-    this.audio.play();
+    if (this.audio) {
+      this.audio.src = 'data:audio/mpeg;base64,' + audioBase64;
+      this.audio.load();
+      this.audio.play();
+    }
     this.processing = false;
   }
 
