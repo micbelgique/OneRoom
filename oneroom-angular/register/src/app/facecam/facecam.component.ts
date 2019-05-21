@@ -149,22 +149,34 @@ export class FacecamComponent implements OnInit, OnDestroy {
       this.group.userData = this.game.groupName;
 
       // join new group
-      this.hubServiceSub = this.hubService.run().subscribe(
-        () => this.hubService.joinGroup(this.game.gameId.toString())
-      );
+      if (localStorage.getItem('endpoint')) {
+        this.hubServiceSub = this.hubService.run().subscribe(
+          () => this.hubService.joinGroup(this.game.gameId.toString()).subscribe(
+            () => {
+              // attach to hub and a game
+              this.notifierService.notify( 'success', 'Ce client est relié à une partie');
+            },
+            () => {
+              // failed to attach
+              this.notifierService.notify( 'error', 'Ce client n\'a pas réussi à se lier à une partie');
+            }
+          ),
+          () => this.notifierService.notify( 'error', 'Connexion au hub impossible')
+        );
 
-      // new game state
-      this.gameSub = this.hubService.refreshGameState.subscribe(
-      (gameId) => {
-        if (gameId === this.game.gameId) {
-          this.refreshGameState(this.game);
-        }
-      },
-      (err) => {
-        console.log(err);
-      });
+        // new game state
+        this.gameSub = this.hubService.refreshGameState.subscribe(
+          (gameId) => {
+          if (gameId === this.game.gameId) {
+            this.refreshGameState(this.game);
+          }
+          },
+          (err) => {
+          console.log(err);
+        });
 
-      this.refreshGameState(this.game);
+        this.refreshGameState(this.game);
+      }
     } else {
       this.game = null;
       this.group = null;
@@ -612,6 +624,7 @@ private saveUsers(user: User, face: Face) {
           console.log(state);
           if (state !== GameState.REGISTER) {
             this.stopCaptureStream();
+            this.notifierService.notify( 'info', 'Enregistrement des participants désormais cloturé !');
             this.stateMessage = 'Enregistrement des participants désormais cloturé !';
             this.stateContainer = true;
             this.displayStream = 'none';
