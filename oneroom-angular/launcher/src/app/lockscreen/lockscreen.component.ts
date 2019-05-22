@@ -221,7 +221,9 @@ export class LockscreenComponent implements OnInit {
   imageCapture(dataUrl) {
   // face api calls enabled ?
   if (localStorage.getItem('cognitiveStatus') === 'false') {
-    console.log('calls disabled');
+    this.toast.open('Appels Face désactivés', 'Ok', {
+      duration : 1000
+    });
     return;
   }
   try {
@@ -237,7 +239,6 @@ export class LockscreenComponent implements OnInit {
       this.lock = false;
       return;
     }
-    console.log(group);
     // timeout to unlock detection
     setTimeout(() => {
       this.lock = false;
@@ -246,8 +247,8 @@ export class LockscreenComponent implements OnInit {
     // return an observable;
     this.faceProcess.detectOnly(stream.blob, group).subscribe(
     (result) => {
+      console.log(result);
       if (result === null) {
-        console.log(result);
         this.lock = false;
       } else {
         this.userService.getUser(result).subscribe(
