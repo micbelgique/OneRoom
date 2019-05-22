@@ -47,10 +47,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   setSidenav($event) {
     this.opened = $event;
+    this.sidenavEmitter.next(this.opened);
   }
 
   isLogged() {
-    return  !(localStorage.getItem('user') === null);
+    return !(localStorage.getItem('user') === null);
   }
 
   ngOnDestroy(): void {

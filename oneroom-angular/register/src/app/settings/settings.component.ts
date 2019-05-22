@@ -44,6 +44,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.endPoint = localStorage.getItem('endpoint');
       // load available games from coordinator
       this.loadGames();
+      // attach to hub if endpoint is set
+      this.hubServiceSub = this.hubService.run().subscribe();
     } else {
       this.endPoint = '';
     }
@@ -74,8 +76,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.callFaceStatus = false;
       this.game.groupName = null;
     }
-
-    this.hubServiceSub = this.hubService.run().subscribe();
   }
 
   loadGames() {
@@ -94,6 +94,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     localStorage.setItem('endpoint', this.endPoint);
     this.loadGames();
     this.notifierService.notify('success', 'Parametres mis à jour');
+    this.hubServiceSub = this.hubService.run().subscribe();
   }
 
   getGame() {

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {User, Team, UserService, TeamService, HubService, Game, GameService, GameState} from '@oneroomic/oneroomlibrary';
-import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-leader-board',
@@ -22,8 +21,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private winners: number[] = [];
 
   // timer 30 min
-  timeLeft = 30 * 60;
-  time = 1;
+  timeLeft;
 
   private timeSubscription;
   private userSub;
@@ -148,10 +146,13 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   private switchState(state: GameState) {
     this.game.state = state;
+    localStorage.removeItem('timer');
+    clearInterval(this.timesub);
     if (this.game.state === GameState.LAUNCH) {
       // Set the presentation to TeamView
       this.cols = 1;
       this.rows = 7;
+      this.timesub = null;
       this.setTimer();
     } else if (this.game.state === GameState.REGISTER) {
       this.cols = 4;
@@ -180,6 +181,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
   private getTeams() {
     this.teamService.getTeams().subscribe((result) => {
       this.teams = result;
+      this.setTimer();
       this.sortTeam();
     });
   }
@@ -215,11 +217,24 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
 
   setTimer() {
     if (!this.timesub) {
-      this.timesub = timer(1000, 1000).subscribe(val => {
-        if (this.time > 0) {
-          this.time = this.timeLeft - val;
+      // calculate max amount of time needed
+      if (localStorage.getItem('timer') === null) {
+        this.timeLeft = 0;
+        this.teams[this.teams.length - 1].challenges.forEach( c => {
+          console.log(c.timeBox);
+          this.timeLeft += c.timeBox * 60;
+        });
+      } else {
+        this.timeLeft = Number(localStorage.getItem('timer'));
+        console.log(this.timeLeft);
+      }
+      this.timesub = setInterval(() => {
+        if (this.timeLeft > 0) {
+          this.timeLeft = this.timeLeft - 2;
+          console.log(this.timeLeft);
+          localStorage.setItem('timer', this.timeLeft + '');
         }
-      });
+      }, 2000);
     }
   }
 
@@ -236,7 +251,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
         // Set the presentation to TeamView
         this.cols = 1;
         this.rows = 7;
-        this.setTimer();
+        // this.setTimer();
       }
       this.minimumRecognized = game.config.minimumRecognized;
     });
@@ -283,7 +298,7 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
       this.gameStateSub.unsubscribe();
     }
     if (this.timesub) {
-      this.timesub.unsubscribe();
+      clearInterval(this.timesub);
     }
     if (!this.hubService.connected.isStopped) {
       this.hubService.leaveGroup(this.game.gameId.toString());

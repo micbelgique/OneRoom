@@ -104,6 +104,26 @@ namespace oneroom_api.Controllers
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<ChallengeDto>>))]
         public async Task<ActionResult<ChallengeDto>> PostChallenge(ChallengeDto challengeDto)
         {
+            if (challengeDto.TimeBox <= 0)
+            {
+                return BadRequest("TimeBox for a challenge must be greater than 0");
+            }
+
+            if (challengeDto.Hints.Count == 0)
+            {
+                return BadRequest("There must be at least one hint for a challenge");
+            }
+
+            if (challengeDto.Order < 0)
+            {
+                return BadRequest("The challenge order must be a positive value");
+            }
+
+            if (challengeDto.Answers.Count == 0)
+            {
+                return BadRequest("There must be at least one answer for a challenge");
+            }
+
             Challenge challenge = _context.Challenges.Add(challengeDto.FromDto()).Entity;
             await _context.SaveChangesAsync();
 

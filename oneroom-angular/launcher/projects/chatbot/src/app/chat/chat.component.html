@@ -4,9 +4,10 @@
   </mat-card>
 </div>
 <div style="height: 10vh;">
+  <mat-progress-bar *ngIf=this.processing mode="buffer"></mat-progress-bar>
   <mat-form-field style="width: 70%; margin-left: 5%">
-    <textarea [(ngModel)]=question (keyup.enter)=askStephane() matInput placeholder="Demander a Stéphane (enter pour envoyer)"></textarea>
+    <textarea [disabled]=this.processing [(ngModel)]=question (keyup.enter)=askStephane() matInput placeholder="Demander a Stéphane (enter pour envoyer)"></textarea>
   </mat-form-field>
-  <button mat-fab style='width:15%; margin-right: 5%; margin-left: 5%' (click)='start()' *ngIf=!this.recording color="primary" ><mat-icon>mic_none</mat-icon></button>
+  <button [disabled]=this.processing mat-fab style='width:15%; margin-right: 5%; margin-left: 5%' (click)='start()' *ngIf=!this.recording color="primary" ><mat-icon>mic_none</mat-icon></button>
   <button mat-fab style='width:15%; margin-right: 5%; margin-left: 5%' (click)='stop()' *ngIf=this.recording color="warn"><mat-icon>mic</mat-icon></button>
 </div>
