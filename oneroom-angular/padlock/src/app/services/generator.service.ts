@@ -220,6 +220,7 @@ export class GeneratorService {
       avataaarsEndPoint += '&skinColor=Light';
       break;
     }
+    console.log(user);
     if (user.glassesType === GlassesType.ReadingGlasses) {
       avataaarsEndPoint += '&accessoriesType=Prescription02';
     }

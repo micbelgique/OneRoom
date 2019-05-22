@@ -64,14 +64,6 @@ namespace oneroom_api.Controllers
                 timeout: 5
             );
             response.Append(gather);
-            //response.Append(new Gather(numDigits: 1, action: new Uri($"{url}/api/voice/handleresponse"),method:HttpMethod.Get));
-            //response.Gather(
-            //        input: new List<Gather.InputEnum> { Gather.InputEnum.Speech },
-            //        language: Gather.LanguageEnum.FrFr,
-            //        action: new Uri($"{url}/api/voice/handleresponse"),
-            //        method: HttpMethod.Get,
-            //        speechTimeout: "auto"
-            //    );
             return TwiML(response);
         }
 
