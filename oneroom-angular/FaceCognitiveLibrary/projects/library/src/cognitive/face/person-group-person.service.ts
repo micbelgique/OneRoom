@@ -27,7 +27,8 @@ export class PersonGroupPersonService {
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
       'Access-Control-Allow-Headers': '*',
       'Ocp-Apim-Subscription-Key' : this.subscriptionKey,
-      recognitionModel
+      recognitionModel,
+      returnRecognitionModel: 'true'
     });
   }
 
