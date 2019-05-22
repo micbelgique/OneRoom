@@ -40,8 +40,13 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log('init');
   }
 
-  toggleAction() {
-    this.opened = !this.opened;
+  toggleAction($event) {
+    if ($event === 'chatbot_close') {
+      console.log($event);
+      this.opened = false;
+    } else  {
+      this.opened = !this.opened;
+    }
     this.sidenavEmitter.next(this.opened);
   }
 

@@ -21,6 +21,7 @@ export class ControlComponent implements OnInit {
       if (event instanceof NavigationStart) {
         if (event.url === '/lock' || event.url === '/') {
           this.showActions = false;
+          this.actions.emit('chatbot_close');
         } else {
           this.showActions = true;
         }
