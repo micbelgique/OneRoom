@@ -247,6 +247,7 @@ export class HomeComponent implements OnInit {
               this.userService.getUser(result).subscribe(
                 (result1) => {
                     let teamWanted: Team;
+                    console.log(result1);
                     // tslint:disable-next-line:prefer-for-of
                     for (let index = 0; index < this.teams.length; index++) {
                       if (this.teams[index].users.filter(u => u.userId === result1.userId).length >= 1) {
@@ -332,6 +333,7 @@ export class HomeComponent implements OnInit {
   getTeams() {
     this.teamService.getTeams().subscribe(
       (result) => {
+        console.log(result);
         this.teams = result;
       }
     );
