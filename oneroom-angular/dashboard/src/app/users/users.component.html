@@ -9,6 +9,9 @@
     </mat-form-field>
   </div>
   <br>
+  <form class="example-container" style='text-align: right; margin: 1%;' *ngIf="this.users.length > 0">
+    <button mat-raised-button color="accent" i18n="@@settingsDelete" (click)='deleteUsers()'>Supprimer tous les users</button>
+  </form>
   <table mat-table [dataSource]="users" class="mat-elevation-z8">
 
       <ng-container matColumnDef="avatar">

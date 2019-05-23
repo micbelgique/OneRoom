@@ -23,7 +23,8 @@ import {
   MatDialogModule,
   MatTableModule,
   MatSelectModule,
-  MatAutocompleteModule
+  MatAutocompleteModule,
+  MatTooltipModule
 } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -72,6 +73,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     MatSnackBarModule,
     MatDialogModule,
     MatSelectModule,
+    MatTooltipModule,
     MatAutocompleteModule,
     RouterModule.forRoot([
       { path: 'settings', component: SettingsComponent },

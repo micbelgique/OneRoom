@@ -16,7 +16,7 @@ export class ScenarioComponent implements OnInit {
   challengesIdBefore: number[];
   challenges: Challenge[];
 
-  displayedColumns: string[] = ['id', 'name', 'description', 'challenge', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'challenge', 'delete'];
 
   constructor(private scenarioService: ScenarioService,
               private challengeService: ChallengeService,

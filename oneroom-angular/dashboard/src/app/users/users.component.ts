@@ -40,12 +40,14 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  loadUsers(game: Game = null) {
+  loadUsers(game: Game = null, notify = true) {
     if (game !== null) {
       localStorage.setItem('gameData', JSON.stringify(game));
     }
     this.userService.getUsers().subscribe((users) => {
-        this.notifierService.notify( 'success', users.length + ' players retrived' );
+        if (notify) {
+          this.notifierService.notify( 'success', users.length + ' players retrived' );
+        }
         this.users = users;
       },
       (err) => {
@@ -54,14 +56,16 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  deleteUser(idUser) {
+  deleteUser(idUser, notify = true) {
     if (localStorage.getItem('gameData')) {
       const game: Game = JSON.parse(localStorage.getItem('gameData'));
       this.personService.set(game.config.faceEndpoint, game.config.faceKey);
 
       // delete face
       this.personService.delete(game.groupName, idUser).subscribe(() => {
-          this.notifierService.notify( 'warning', 'Player deleted' );
+          if (notify) {
+            this.notifierService.notify( 'success', 'Player deleted' );
+          }
         },
         (err) => {
           this.notifierService.notify( 'error', err.error );
@@ -69,21 +73,37 @@ export class UsersComponent implements OnInit {
       );
 
       // delete oneroom
-      this.userService.deleteUser(idUser).subscribe(() => {
-          this.loadUsers();
+      this.userService.deleteUser(idUser).subscribe(
+        () => {
+          this.loadUsers(null, false);
+          // const idx = this.users.map(u => u.userId).indexOf(idUser);
+          // this.users.splice(idx, 1);
           // TODO : recreate team from api
-          this.teamService.deleteTeams().subscribe( () => {
-            this.notifierService.notify( 'warning', 'Teams deleted' );
+          /*this.teamService.deleteTeams().subscribe( () => {
+            if (notify) {
+              this.notifierService.notify( 'warning', 'Teams deleted' );
+            }
           },
           (err) => {
             this.notifierService.notify( 'error', err.error );
-          });
+          });*/
         },
         (err) => {
           this.notifierService.notify( 'error', err.error );
         }
       );
     }
+  }
+
+  deleteUsers() {
+    const count = this.users.length;
+    this.users.forEach( (u, idx) => {
+      this.deleteUser(u.userId, false);
+      console.log('deleting');
+      if (idx === count - 1) {
+        this.notifierService.notify( 'success', 'All users were deleted' );
+      }
+    });
   }
 
 }
