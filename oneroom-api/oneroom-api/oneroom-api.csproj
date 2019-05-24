@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-    <PackageReference Include="NSwag.AspNetCore" Version="12.1.0" />
+    <PackageReference Include="NSwag.Core" Version="12.3.1" />
     <PackageReference Include="Twilio.AspNet.Core" Version="5.20.1" />
   </ItemGroup>
 

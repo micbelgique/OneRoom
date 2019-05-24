@@ -32,7 +32,7 @@ namespace oneroom_api
             services.AddSignalR().AddAzureSignalR(Configuration.GetConnectionString("AzureSignalR"));
             
             // Register the Swagger services
-            services.AddSwaggerDocument();
+            //services.AddSwaggerDocument();
 
         }
 
@@ -73,8 +73,8 @@ namespace oneroom_api
             });
 
             // Register the Swagger generator and the Swagger UI middlewares
-            app.UseSwagger();
-            app.UseSwaggerUi3();
+            //app.UseSwagger();
+            //app.UseSwaggerUi3();
         }
     }
 }
