@@ -16,7 +16,7 @@
 
       <ng-container matColumnDef="avatar">
           <th mat-header-cell *matHeaderCellDef> Avatar </th>
-          <td mat-cell *matCellDef="let element"><img src='{{ element.urlAvatar }}' ></td>
+          <td mat-cell *matCellDef="let element" [matTooltip]=element.age><img src='{{ element.urlAvatar }}' ></td>
         </ng-container>
 
       <ng-container matColumnDef="name">
