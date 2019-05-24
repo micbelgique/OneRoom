@@ -58,12 +58,12 @@ export class TranslatorComponent implements OnInit {
     // tslint:disable-next-line:max-line-length
 
     // endpoints
-    this.translateEndpoint = 'https://api.cognitive.microsofttranslator.com/translate';
-    this.translateKey = '14d3566a4d5b48e98d63ac050434d641';
-    this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
-    this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
-    this.textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
-    this.textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
+    this.translateEndpoint = 'InsertYourTranslatorEndpoint';
+    this.translateKey = 'InsertYourTranslatorKey';
+    this.speechToTextEndpoint = 'InsertYourSpeechToTextEndpoint';
+    this.speechToTextKey = 'InsertYourSpeechToTextKey';
+    this.textToSpeechEndpoint = 'InsertYourTextToSpeechEndpoint';
+    this.textToSpeechKey = 'InsertYourTextToSpeechKeye';
 
     if (localStorage.getItem('challengesData')) {
       const filteredChallenge = JSON.parse(localStorage.getItem('challengesData')).filter(x => x.appName === 'traducteur');

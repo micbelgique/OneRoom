@@ -4,8 +4,6 @@
 
 export const environment = {
   production: false,
-  googleSubTextKey: 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA',
-  googleSubKeySpeech: 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w'
 };
 
 /*

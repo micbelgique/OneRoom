@@ -62,8 +62,8 @@ export class DetectorComponent implements OnInit, OnDestroy {
   objectsDictionary: Objects[] = [];
 
   // tslint:disable-next-line:max-line-length
-  private customVisionEndpoint = 'https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5ab1f20a-0826-4d7f-8c6c-093a37e2e93a/detect/iterations/Iteration15';
-  private customVisionKey = '8139b0c8c2a54b59861bbe5e7e089d2b';
+  private customVisionEndpoint = 'InsertYourCustomVisionEndpoint';
+  private customVisionKey = 'InsertYourCustomVisionKey';
 
   constructor(
     public dialog: MatDialog,

@@ -71,12 +71,12 @@ export class ChatComponent implements OnInit {
   dialog = false;
 
   // tslint:disable-next-line:max-line-length
-  private luisEndpoint = 'https://centralus.api.cognitive.microsoft.com/luis/v2.0/apps/8d7cdfe9-46c3-4c10-b70d-341b65f5ed20';
-  private luisKey = '3cf37cea3fb845ac82c53dedfd8e9f1f';
-  private textToSpeechEndpoint = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
-  private textToSpeechKey = 'AIzaSyDw7Iszaf27ChL3ztdso7lBssFBdLEeDJA';
-  private speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
-  private speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
+  private luisEndpoint = 'InsertYourLuisEndpoint';
+  private luisKey = 'InsertYourLuisKey';
+  private textToSpeechEndpoint = 'InsertYourTextToSpeechEndpoint';
+  private textToSpeechKey = 'InsertYourTextToSpeechKey';
+  private speechToTextEndpoint = 'InsertYourSpeechToTextEndpoint';
+  private speechToTextKey = 'InsertYourSpeechToTextKey';
 
   constructor(private router: Router,
               private textToSpeechService: TextToSpeechService,
@@ -106,8 +106,8 @@ export class ChatComponent implements OnInit {
         this.textToSpeechEndpoint = this.challenge.config.textToSpeechEndpoint;
         this.textToSpeechKey =  this.challenge.config.textToSpeechKey;
         // TODO : replace
-        this.speechToTextEndpoint = 'https://speech.googleapis.com/v1/speech:recognize';
-        this.speechToTextKey = 'AIzaSyD-o-DM6CuiRWwZxToT6Lc1TkuHotexC_w';
+        this.speechToTextEndpoint = 'InsertYourSpeechToTextEndpoint';
+        this.speechToTextKey = 'InsertYourSpeechToTextKey';
       }
     }
     // selection of bot
@@ -150,7 +150,7 @@ export class ChatComponent implements OnInit {
       }
       // welcome message
       // TODO : ADD SCENARIO AND GUIDANCE
-      // TODO : CHANGE NAME and TEAM name 
+      // TODO : CHANGE NAME and TEAM name
       const welcomeMessage: MessageStyle = {
         name: 'Bonjour ' + this.user.name + ', Je suis ' + this.currentBot.name +  ', le chatbot, que puis-je faire pour vous ?',
         color: this.currentBot.color
