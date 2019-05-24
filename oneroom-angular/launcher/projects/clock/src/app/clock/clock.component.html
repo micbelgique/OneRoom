@@ -1,0 +1,9 @@
+
+<div class="content" (click)=switchClock()>
+<div *ngIf=this.toggleClock >
+  <app-digital></app-digital>
+</div>
+<div *ngIf=!this.toggleClock>
+  <app-analog></app-analog>
+</div>
+</div>

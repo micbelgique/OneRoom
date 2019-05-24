@@ -1,0 +1,39 @@
+<mat-toolbar role="heading" >
+    <mat-toolbar-row>
+        <button mat-icon-button (click)="toggleMenu()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="example-spacer"></span>
+        <span><a [routerLink]="['/welcome']" routerLinkActive="router-link-active" > {{ title }}</a></span>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+<mat-sidenav-container style="margin:0" class="container-sidenav">
+    <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened">
+      <mat-list>
+        <mat-list-item>
+            <span i18n="@@menuSettings"><a [routerLink]="['/challenges']" routerLinkActive="router-link-active" >Challenges</a></span>
+        </mat-list-item>
+        <mat-list-item>
+          <span i18n="@@menuSettings"><a [routerLink]="['/scenario']" routerLinkActive="router-link-active" >Scénario</a></span>
+    </mat-list-item>
+        <mat-list-item>
+              <span i18n="@@menuSettings"><a [routerLink]="['/games']" routerLinkActive="router-link-active" >Games</a></span>
+        </mat-list-item>
+        <mat-list-item>
+            <span i18n="@@menuTeam"><a [routerLink]="['/teams']" routerLinkActive="router-link-active" >Teams</a></span>
+        </mat-list-item>
+        <mat-list-item>
+            <span i18n="@@menuSettings"><a [routerLink]="['/users']" routerLinkActive="router-link-active" >Utilisateurs</a></span>
+      </mat-list-item>
+        <mat-list-item>
+            <span i18n="@@menuSettings"><a [routerLink]="['/settings']" routerLinkActive="router-link-active" >Paramètres</a></span>
+        </mat-list-item>
+      </mat-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="content">
+        <router-outlet></router-outlet>
+        <notifier-container></notifier-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+

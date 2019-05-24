@@ -1,0 +1,12 @@
+<div [style.background-color]=this.background class='content'>
+  <div style="text-align: center;margin:20%">
+    <mat-form-field appearance="outline" color='primary'>
+      <mat-label>Mot de passe:</mat-label>
+      <input [(ngModel)]=this.password matInput type="password" placeholder="Mot de passe">
+      <mat-icon matSuffix>lock</mat-icon>
+      <mat-hint>{{this.hint}}</mat-hint>
+    </mat-form-field>
+    <br><br>
+    <button mat-stroked-button color="primary" (click)=unlock()>Déverrouiller</button>
+  </div>
+</div>

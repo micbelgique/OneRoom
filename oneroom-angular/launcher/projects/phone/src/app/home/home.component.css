@@ -1,0 +1,10 @@
+.num {
+  width: 100%;
+  height: 100%;
+}
+body {
+  height: 100vh;
+}
+#phone {
+  height: 94vh;
+}

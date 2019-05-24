@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>Hi {{data.user}}</h1>
+<mat-horizontal-stepper [linear]="true" #stepper>
+  <mat-step>
+      <div mat-dialog-content>
+          <p>Voulez vous changer votre nom?</p>
+          <mat-form-field>
+            <input matInput [(ngModel)]="data.user">
+          </mat-form-field>
+      </div>
+      <div *ngIf="data.team || data.scenario">
+          <button mat-button matStepperNext>Next</button>
+      </div>
+      <div *ngIf="!data.team && !data.scenario" mat-dialog-actions>
+        <button mat-button (click)="onNoClick()">No Thanks</button>
+        <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+      </div>
+  </mat-step>
+  <mat-step *ngIf="data.team">
+    <p>Nom de votre équipe?</p>
+    <mat-form-field>
+      <input matInput [(ngModel)]="data.team">
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="onNoClick()">No Thanks</button>
+      <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+    </div>
+  </mat-step>
+  <mat-step *ngIf="data.scenario">
+    <p>Introduction:</p>
+    <p>
+      {{data.scenario}}
+    </p>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+    </mat-step>
+</mat-horizontal-stepper>

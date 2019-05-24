@@ -1,0 +1,16 @@
+<div id="main">
+
+<mat-sidenav-container>
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+    <mat-sidenav class="sidenav" position="end" #sidenav mode="side" [(opened)]="this.opened">
+      <app-chat *ngIf=isLogged() (close)=setSidenav($event) [isOpen]=this.sidenavEmitter ></app-chat>
+    </mat-sidenav>
+</mat-sidenav-container>
+
+</div>
+<div id="control" style="text-align:center;">
+  <app-control (actions)=toggleAction($event) ></app-control>
+</div>
+

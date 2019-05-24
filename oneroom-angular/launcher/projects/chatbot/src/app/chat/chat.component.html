@@ -1,0 +1,13 @@
+<div style="padding-top: 3%; padding-left: 5%; padding-right: 5%; height: 82vh; overflow: auto">
+  <mat-card [style.background-color]='message.color' style="margin-bottom: 2%" *ngFor="let message of messages" >
+    {{message.name}}
+  </mat-card>
+</div>
+<div style="height: 10vh;">
+  <mat-progress-bar *ngIf=this.processing mode="buffer"></mat-progress-bar>
+  <mat-form-field style="width: 70%; margin-left: 5%">
+    <textarea [disabled]=this.processing [(ngModel)]=question (keyup.enter)=askStephane() matInput placeholder="Demander a Stéphane (enter pour envoyer)"></textarea>
+  </mat-form-field>
+  <button [disabled]=this.processing mat-fab style='width:15%; margin-right: 5%; margin-left: 5%' (click)='start()' *ngIf=!this.recording color="primary" ><mat-icon>mic_none</mat-icon></button>
+  <button mat-fab style='width:15%; margin-right: 5%; margin-left: 5%' (click)='stop()' *ngIf=this.recording color="warn"><mat-icon>mic</mat-icon></button>
+</div>

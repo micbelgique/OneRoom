@@ -1,0 +1,68 @@
+<h1 style='text-align: center'>Teams</h1>
+  <div style='text-align: center'>
+    <mat-form-field>
+      <mat-select placeholder="Game" >
+        <mat-option *ngFor="let g of games" [value]="g.gameId" (click)="loadTeams(g)">
+          {{g.groupName}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div *ngIf='teams'>
+    <ng-container
+      *ngIf="teams.length; then CreatedTeam; else CreateTeam">
+    </ng-container>
+  </div>
+  <ng-template #CreateTeam>
+    <form class="example-container" style='text-align: center;'>
+      <mat-form-field style='margin: 2%;'>
+        <input matInput i18n-placeholder="@@TeamsNumber" min="1" placeholder="Number of teams" type='number' [(ngModel)]="nbTeams" name="nbTeams">
+      </mat-form-field>
+      <button mat-raised-button (click)='createTeam()' color="primary">Créer</button>
+    </form>
+  </ng-template>
+  <ng-template #CreatedTeam>
+    <form class="example-container" style='text-align: right; margin: 1%;'>
+        <button mat-raised-button color="accent" i18n="@@settingsDelete" (click)='deleteTeams()'>Supprimer toutes les teams</button>
+    </form>
+    <table mat-table [dataSource]="teams" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="Id">
+        <th mat-header-cell *matHeaderCellDef> Matricule </th>
+        <td mat-cell *matCellDef="let element"> {{element.teamId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef> Nom d'équipe </th>
+        <td mat-cell *matCellDef="let element"> {{element.teamName.toUpperCase()}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Color">
+        <th mat-header-cell *matHeaderCellDef> Couleur </th>
+        <td mat-cell *matCellDef="let element">
+          <svg width="200" height="100" style='text-align: center;'>
+            <rect width="200" height="100" [style.fill]='getTeamColor(element.teamColor)' style="stroke-width:3;stroke:rgb(0,0,0)"/>
+          </svg>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Users">
+        <th mat-header-cell *matHeaderCellDef> Nombre d'utilisateurs </th>
+        <td mat-cell *matCellDef="let element"> {{element.users.length}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-form-field class="example-full-width">
+              <input matInput [(ngModel)]="element.description" placeholder="Description for each team">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="saveTeam(element)">Save</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </ng-template>
+

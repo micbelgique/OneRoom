@@ -1,0 +1,72 @@
+<div class="backgroundOnePoint">
+  <h1 *ngIf='game.state === 1' style='display:block; margin:0; text-align: center; color:white;background-color: black '>{{ this.timeLeft }} SECONDES RESTANTES</h1>
+  <mat-grid-list cols="{{cols}}" rowHeight="{{rows}}:1">
+
+    <ng-container *ngTemplateOutlet="teams.length > 0 ? game.state >= 1 ? TeamView : TeamsHandle : UserCard; context: {$implicit: this}"></ng-container>
+
+    <ng-template #TeamsHandle let-TeamsContainer>
+      <ng-container *ngFor="let tc of TeamsContainer.teams">
+        <ng-container *ngTemplateOutlet="UserCard; context: {$implicit: tc}"></ng-container>
+      </ng-container>
+    </ng-template>
+
+    <ng-template #TeamView let-TeamsContainer>
+      <div *ngFor="let t of TeamsContainer.teams">
+        <mat-grid-tile>
+          <mat-card style="padding: 0px;">
+            <div [style.background-color]='getTeamColor(t?.teamColor)' style="width: calc(2%); border-top-left-radius: inherit; border-bottom-left-radius: inherit;"></div>
+            <div style="padding: 10px; position: relative;">
+              <div [ngClass]="{'gradient' : hasFinished(t.teamId)}" style="width: 100%;height: 38%;border-radius: 10px;padding-left: 5px;">
+                  <mat-card-title style="font-size:2vw;">{{t.teamName.toUpperCase()}}</mat-card-title>
+                  <div style="display: flex; justify-content:flex-end; position: absolute; right: 10px; top: 10px; height: calc(30%);" [style.width.%]="3.479*t.challenges.length">
+                      <ng-container *ngFor="let c of t.challenges">
+                          <div class="circle" [style.width.%]="100 / t.challenges.length" [style.background-color]="c.completed ? 'green': ''"></div>
+                      </ng-container>
+                </div>
+              </div>
+              <div style="position: absolute; bottom: 10px; height: auto;">
+                <ng-container *ngFor="let u of t.users">
+                  <img style="width: calc(5%);" src="{{ u.urlAvatar + '&avatarStyle=Circle' }}" alt="Avataaars">
+                </ng-container>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+      </div>
+    </ng-template>
+
+    <ng-template #UserCard let-UsersContainer>
+      <div *ngFor="let u of UsersContainer.users" >
+        <mat-grid-tile *ngIf="u.recognized >= this.minimumRecognized">
+          <mat-card [style.background-color]='getTeamColor(UsersContainer?.teamColor)' [style.box-shadow]='isHighLighted(u.userId)' [ngClass]='hasFinished(UsersContainer?.teamId)'>
+            <div style="width: calc(40%);">
+              <img mat-card-image src="{{ u.urlAvatar }}" alt="Avataaars">
+            </div>
+            <div style="width: calc(60%); padding: 10px;">
+              <mat-card-title style="font-size:2vw;">{{truncateName(u.name)}}</mat-card-title>
+              <mat-card-content>
+                <div>
+                  <div style="margin: 10px 10px 10px 0px;"><span i18n="@@leaderboardAge" style="font-size:1vw;">{{ u.age}} ans</span></div>
+                  <div style="margin: 10px 10px 10px 0px;">
+                    <ng-container *ngTemplateOutlet="UsersContainer.teamName ? TeamsName : RecognizedDetails; context: {container: UsersContainer, user: u}"></ng-container>
+                  </div>
+                </div>
+              </mat-card-content>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+      </div>
+    </ng-template>
+
+    <ng-template #TeamsName let-container='container'>
+      <span i18n="@@leaderboardRecognized" style="font-size:1vw;">{{ container.teamName.toUpperCase()}}</span>
+    </ng-template>
+
+    <ng-template #RecognizedDetails let-user='user'>
+      <span i18n="@@leaderboardRecognized" style="font-size:1vw;">aperçu {{ user.recognized }} fois</span>
+    </ng-template>
+
+  </mat-grid-list>
+</div>
+
+

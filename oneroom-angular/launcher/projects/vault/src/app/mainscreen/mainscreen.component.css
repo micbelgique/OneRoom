@@ -1,0 +1,49 @@
+.content {
+  height: 95vh;
+  padding-right: 10%;
+  padding-left: 10%;
+  overflow-y: auto;
+}
+
+
+/* gradient effect win */
+
+.gradient {
+  background: rgba(255, 0, 89, 1);
+  background: -webkit-linear-gradient(45deg, rgba(255, 0, 89, 1) 0%, rgba(0, 179, 255, 1) 33%, rgba(255, 0, 89, 1) 66%, rgba(0, 179, 255, 1) 100%);
+  background: -moz-linear-gradient(45deg, rgba(255, 0, 89, 1) 0%, rgba(0, 179, 255, 1) 33%, rgba(255, 0, 89, 1) 66%, rgba(0, 179, 255, 1) 100%);
+  background: -ms-linear-gradient(45deg, rgba(255, 0, 89, 1) 0%, rgba(0, 179, 255, 1) 33%, rgba(255, 0, 89, 1) 66%, rgba(0, 179, 255, 1) 100%);
+  background: -o-linear-gradient(45deg, rgba(255, 0, 89, 1) 0%, rgba(0, 179, 255, 1) 33%, rgba(255, 0, 89, 1) 66%, rgba(0, 179, 255, 1) 100%);
+  background: linear-gradient(45deg, rgba(255, 0, 89, 1) 0%, rgba(0, 179, 255, 1) 33%, rgba(255, 0, 89, 1) 66%, rgba(0, 179, 255, 1) 100%);
+  background-size: 400% 400%;
+  -webkit-animation: gradientBg 5s linear infinite;
+  -moz-animation: gradientBg 5s linear infinite;
+  animation: gradientBg 5s linear infinite;
+}
+
+@-webkit-keyframes gradientBg {
+  0% {
+      background-position: 100% 0%
+  }
+  100% {
+      background-position: 15% 100%
+  }
+}
+
+@-moz-keyframes gradientBg {
+  0% {
+      background-position: 100% 0%
+  }
+  100% {
+      background-position: 15% 100%
+  }
+}
+
+@keyframes gradientBg {
+  0% {
+      background-position: 100% 0%
+  }
+  100% {
+      background-position: 15% 100%
+  }
+}

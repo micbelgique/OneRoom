@@ -1,0 +1,16 @@
+{
+  "name": "@oneroomic/oneroomlibrary",
+  "version": "0.0.76",
+  "description": "This library is made to communicate with the coordinator of the oneroom project",
+  "keywords" : [
+    "oneroom", "escape room", "escape game", "MIC", "onepoint"
+  ],
+  "license" : "MIT",
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0",
+    "@aspnet/signalr": "^1.1.2"
+
+  },
+  "private": false
+}

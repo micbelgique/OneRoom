@@ -1,0 +1,145 @@
+<div class="launcher" [style.background-color]="getColorTeam()">
+<mat-toolbar  role="heading"  >
+  <mat-toolbar-row style="text-align:center">
+      <h3>Hello {{user.name}},</h3>
+      <span class="example-spacer"></span>
+      <h3> {{ teamUser?.teamName | uppercase }} - Matricule {{teamUser?.teamId}}</h3>
+      <span class="example-spacer"></span>
+      <button (click)=logOut() mat-stroked-button >
+          <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-grid-list cols="4" rowHeight="3:3">
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/scanner">
+        <!--
+        <mat-icon class='app-mat-icon' aria-label="Scanner">control_camera</mat-icon> -->
+        <svg id="icon-aperature" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="#2a2a31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+            <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+            <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+            <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+            <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+            <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+        </svg>
+        <p class='launcher-app-title'>Scanner</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/translator">
+        <!--<mat-icon class='app-mat-icon' aria-label="translate">translate</mat-icon>-->
+        <svg id="icon-reload" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z" />
+          <path d="M0 0h24v24H0z" fill="none" />
+        </svg>
+        <p class='launcher-app-title'>Traducteur</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/profil">
+        <img src='{{ user.urlAvatar }}' class="img-profil">
+        <p class='launcher-app-title'>Profil</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/vault">
+        <!--<mat-icon class='app-mat-icon' aria-label="vault">lock</mat-icon>-->
+        <svg id="icon-server" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="#2a2a31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line class="ind1" stroke="#ea3970" x1="6" y1="6" x2="6" y2="6"></line>
+          <line class="ind2" stroke="#ea3970" x1="6" y1="18" x2="6" y2="18"></line>
+      </svg>
+        <p class='launcher-app-title'>Coffre</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/settings">
+        <!--<mat-icon class='app-mat-icon' aria-label="settings">settings</mat-icon>-->
+        <svg id="icon-wrench" viewBox="0 0 383 383" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 316c0 15 6 29 16 40l12 11c10 11 24 16 39 16s29-5 40-16l115-115a128 128 0 0 0 161-124c0-18-3-35-10-51l-1-1v-1l-1-2-1-1-1-1-2-1-1-1-1-1-1-1h-3l-2-1h-3l-2 1h-1l-2 1h-1l-1 1-2 1-1 1-68 68-33-34 67-68 1-1 1-1 1-2 1-1v-2l1-1v-1-2-1-2l-1-2v-1l-1-1v-2l-1-1-1-1-1-1-2-1-1-1-1-1h-1a128 128 0 0 0-175 150L16 276a56 56 0 0 0-16 40zM255 32l16 1-49 49a32 32 0 0 0 0 46l34 34a32 32 0 0 0 45 0l49-49 1 15a96 96 0 0 1-128 90 96 96 0 0 1 32-186zM39 299l106-106 1 2 6 8 3 4c6 8 13 15 21 22l4 2 9 6 1 1L84 344c-9 9-25 10-34 0l-11-11a24 24 0 0 1 0-34zm0 0" />
+        </svg>
+        <p class='launcher-app-title'>Paramètres</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/clock">
+        <svg id="icon-speed" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        x="0px" y="0px" width="20px" height="20px" viewBox="0 0 20 20" enable-background="new 0 0 20 20"
+                        xml:space="preserve">
+                        <path d="M10,20C4.5,20,0,15.5,0,10S4.5,0,10,0s10,4.5,10,10S15.5,20,10,20z M10,2c-4.4,0-8,3.6-8,8s3.6,8,8,8s8-3.6,8-8S14.4,2,10,2
+                  z" />
+                        <path class="meter-r" fill="#ea3970" d="M8.6,11.4c-0.8-0.8-2.8-5.7-2.8-5.7s4.9,2,5.7,2.8c0.8,0.8,0.8,2,0,2.8C10.6,12.2,9.4,12.2,8.6,11.4z" />
+        </svg>
+        <br>
+        <p class='launcher-app-title'>Horloge</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a class='launcher-app' mat-raised-button>
+      <svg id="icon-activity" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="#2a2a31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline class="activity" points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+    </svg>
+    <p class='launcher-app-title'>Panic</p>
+    </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a class='launcher-app' mat-raised-button routerLink="/notepad">
+        <svg id="icon-page" viewBox="0 0 178 211" xmlns="http://www.w3.org/2000/svg" clip-rule="evenodd"
+        stroke-linejoin="round" stroke-miterlimit="1.5">
+          <path class="page-outline" fill="none" stroke="#000" stroke-width="15" d="M5.208 5.208h166.667v200H5.208z" />
+          <path class="page-line blink" d="M138.542 65.778a4.167 4.167 0 0 0-4.167-4.166H42.708a4.166 4.166 0 0 0-4.166 4.166v8.334a4.166 4.166 0 0 0 4.166 4.166h91.667a4.167 4.167 0 0 0 4.167-4.166v-8.334zM138.542 136.305a4.167 4.167 0 0 0-4.167-4.167H42.708a4.167 4.167 0 0 0-4.166 4.167v8.334a4.166 4.166 0 0 0 4.166 4.166h91.667a4.167 4.167 0 0 0 4.167-4.166v-8.334z"
+                fill="#ff4776" />
+        </svg>
+        <p class='launcher-app-title'>Notes</p>
+    </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button>
+          <svg id="icon-img-animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M18 3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zM6 5h12a1 1 0 0 1 1 1v8.36l-3.2-2.73a2.77 2.77 0 0 0-3.52 0L5 17.7V6a1 1 0 0 1 1-1zm12 14H6.56l7-5.84a.78.78 0 0 1 .93 0L19 17v1a1 1 0 0 1-1 1z" />
+            <circle fill="#ea3970" cx="8" cy="8.5" r="1.5" class="sun-loading" />
+          </svg>
+          <p class='launcher-app-title'>Gallerie</p>
+      </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a class='launcher-app' mat-raised-button routerLink="/battery">
+      <svg id="icon-charge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="#2a2a31" d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M15 6h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3.19">
+        </path>
+        <line stroke="#2a2a31" x1="23" y1="13" x2="23" y2="11"></line>
+        <polyline class="charging" stroke="#ea3970" points="11 6 7 12 13 12 9 18"></polyline>
+      </svg>
+      <p class='launcher-app-title'>Batterie</p>
+    </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <a class='launcher-app' mat-raised-button routerLink="/browser">
+      <svg id="icon-compass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47 47">
+        <circle cx="23.5" cy="23.5" r="22" style="fill:none;stroke:#2a2a31;stroke-miterlimit:10;stroke-width:3px;" />
+        <polygon class="meter" style="fill:#ea3970;" points="32.83 14.17 28.16 28.16 14.17 32.83 18.84 18.84 32.83 14.17" />
+      </svg>
+      <p class='launcher-app-title'>Navigateur</p>
+    </a>
+  </mat-grid-tile>
+  <mat-grid-tile>
+      <a class='launcher-app' mat-raised-button routerLink="/radio">
+          <svg id="icon-radio" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 448 448" width="448" height="448">
+          <path d=" M 394.667 106.667 L 145.173 106.667 L 321.493 35.52 L 306.773 0 L 37.013 109.867 C 21.546 115.947 10.666 131.52 10.666 149.334 L 10.666 405.334 C 10.667 428.907 29.76 448 53.333 448 L 394.666 448 C 418.239 448 437.333 428.907 437.333 405.333 L 437.333 149.333 C 437.333 125.76 418.24 106.667 394.667 106.667 Z  M 117.333 405.333 C 82.026 405.333 53.333 376.64 53.333 341.333 C 53.333 306.026 82.026 277.333 117.333 277.333 C 152.64 277.333 181.333 306.026 181.333 341.333 C 181.333 376.64 152.64 405.333 117.333 405.333 Z  M 394.667 234.667 L 53.333 234.667 L 53.333 149.334 L 394.666 149.334 L 394.666 234.667 L 394.667 234.667 Z "
+                  fill="rgb(0,0,0)" />
+          <rect class="rad-modular" x="322" y="186" width="49" height="49" fill="red" />
+        </svg>
+        <p class='launcher-app-title'>Radio</p>
+      </a>
+  </mat-grid-tile>
+</mat-grid-list>
+</div>

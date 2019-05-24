@@ -1,0 +1,123 @@
+<mat-accordion class="example-headers-align">
+      <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title i18n="@@settingsGroup">Game</div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card-content>
+            <mat-form-field style="width: 100%">
+              <input matInput placeholder="Nom Game" type='text' [(ngModel)]="game.groupName" value='{{game.groupName}}'>
+            </mat-form-field>
+            <mat-accordion class="example-headers-align">
+              <mat-expansion-panel [expanded]=false>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                      Configuration
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-card-content>
+                  <h3>Choisir existante: </h3>
+                  <div style="text-align: center">
+                    <mat-form-field>
+                        <mat-select i18n="@@settingsConfiguration" placeholder="Config" >
+                          <mat-option *ngFor="let config of this.configs; let i = index" [value]="i" (click)=fillConfig(config)>
+                            N' {{config.id}}
+                          </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <br>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Face endpoint" type='url' [(ngModel)]="game.config.faceEndpoint" value='{{game.config.faceEndpoint}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Face clé" type='text' [(ngModel)]="game.config.faceKey" value='{{game.config.faceKey}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Custom vision endpoint longueur de cheveux" type='url' [(ngModel)]="game.config.visionEndpoint" value='{{game.config.visionEndpoint}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Custom vision clé longueur de cheveux" type='text' [(ngModel)]="game.config.visionKey" value='{{game.config.visionKey}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                      <input matInput placeholder="Custom vision endpoint couleur de peau" type='url' [(ngModel)]="game.config.visionEndpointSkinColor" value='{{game.config.visionEndpointSkinColor}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                      <input matInput placeholder="Custom vision clé couleur de peau" type='text' [(ngModel)]="game.config.visionKeySkinColor" value='{{game.config.visionKeySkinColor}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                        <input matInput placeholder="Taux de rafraichissement (ms)" type='number' min='1000' [(ngModel)]="game.config.refreshRate" value='{{game.config.refreshRate}}'>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%">
+                      <input matInput placeholder="Reconnaissance minimale" type='number' min="1" [(ngModel)]="game.config.minimumRecognized" value='{{game.config.minimumRecognized}}'>
+                    </mat-form-field>
+                </mat-card-content>
+              </mat-expansion-panel>
+        </mat-accordion>
+        </mat-card-content>
+        <mat-card-actions>
+          <div style="text-align: center">
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='createGame()' color="primary" i18n="@@settingsCreate" >Create</button>
+          </div>
+        </mat-card-actions>
+      </mat-expansion-panel>
+</mat-accordion>
+<br>
+<h1 style='text-align: center'>Liste de Games</h1>
+<br>
+  <table mat-table [dataSource]="games" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.gameId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <td mat-cell *matCellDef="let element"> {{element.groupName}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Date de création </th>
+        <td mat-cell *matCellDef="let element">{{element.creationDate.split('T')[0]}} {{element.creationDate.split('T')[1].split('.')[0]}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="update">
+        <th mat-header-cell *matHeaderCellDef> Modifier état </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-form-field>
+            <mat-select i18n="@@settingsState" placeholder="Etat" [(ngModel)]="element.state" >
+              <mat-option *ngFor="let state of this.gameStates; let i = index" [value]="i" (click)=changeStateGame(element.groupName,element.state)>
+                {{state}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="scenario">
+        <th mat-header-cell *matHeaderCellDef> Scénario </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-form-field>
+            <mat-select i18n="@@settingsSenario" placeholder="Scénario" [(ngModel)]="element.scenarioId">
+              <mat-option *ngFor="let scenario of this.scenarios" [value]="scenario.scenarioId" (click)=setScenario(element)>
+              {{scenario.title}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteScenario(element)' color="accent" i18n="@@settingsDelete">Delete</button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteGame(element)' color="accent" i18n="@@settingsDelete">Delete</button>
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='recreateGroup(element)' color="accent" i18n="@@settingsDelete">Regenerer</button>
+          </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>

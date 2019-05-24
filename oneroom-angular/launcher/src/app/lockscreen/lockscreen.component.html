@@ -1,0 +1,42 @@
+<div id="mainLock">
+  <div class="lock">
+  <img id='background' src="assets/wallpaperlockscreen.png" alt="lockscreen">
+
+    <mat-toolbar role="heading" id='toolbar'>
+        <mat-toolbar-row>
+            <span class="example-fill-remaining-space"></span>
+            <button mat-stroked-button color="white" (click)=unLock()>
+              <mat-icon style="color:white">remove_red_eye</mat-icon>
+            </button>
+            <span class="example-fill-remaining-space"></span>
+            <button [matMenuTriggerFor]="settings" mat-stroked-button >
+              <mat-icon style="color:white">settings</mat-icon>
+            </button>
+            <mat-menu #settings="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="camera">Cameras</button>
+                <button mat-menu-item [routerLink]="['/settings']" routerLinkActive="router-link-active" >Paramètres</button>
+            </mat-menu>
+            <mat-menu #camera="matMenu">
+                <button mat-menu-item *ngFor="let cam of this.selectors" (click)=this.unLock(cam.id) >Camera {{cam.label}}</button>
+            </mat-menu>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+  <mat-progress-bar *ngIf=this.buttonLock mode="buffer"></mat-progress-bar>
+  </div>
+
+  <div class='content' style='display: none'>
+    <div [style.display]=this.displayStream style="text-align: center;">
+        <mat-progress-bar *ngIf="this.isLoading" mode="indeterminate"></mat-progress-bar>
+          <div>
+            <select #devices (change)="this.startStream()" >
+                <option *ngFor="let cam of this.selectors" value="{{cam.id}}">Camera {{cam.label}}</option>
+            </select>
+            <div id="overlayContainer" class="center">
+              <video id="stream" #webcam autoplay></video>
+              <canvas #canvas2 id="overlay" ></canvas>
+            </div>
+          </div>
+    </div>
+  </div>
+</div>

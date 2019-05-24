@@ -1,0 +1,20 @@
+  <mat-accordion class="example-headers-align">
+    <mat-expansion-panel [expanded]=false>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              <div mat-card-title i18n="@@settingsCoordinator">Coordinateur</div>
+          </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+            <mat-form-field style="width: 100%">
+                <input matInput placeholder="EndPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
+            </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+            <div style="text-align: center">
+                <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
+              </div>
+      </mat-card-actions>
+    </mat-expansion-panel>
+  </mat-accordion>
+

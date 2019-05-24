@@ -1,0 +1,211 @@
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=false>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div mat-card-title i18n="@@settingsChallenge">Challenge</div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+      <div style="text-align: center">
+
+        <mat-form-field style="width: 90%">
+          <input matInput placeholder="Titre" type='text' [(ngModel)]="challenge.title" value='{{challenge.title}}'>
+        </mat-form-field>
+
+        <mat-form-field style="width: 90%">
+            <textarea matInput placeholder="Description" type='text' [(ngModel)]="challenge.description" value='{{challenge.description}}'></textarea>
+        </mat-form-field>
+
+        <mat-form-field style="width: 90%">
+            <mat-select i18n="@@settingsConfiguration" [(ngModel)]="challenge.appName" placeholder="App name" >
+              <mat-option *ngFor="let app of this.appSelections; let i = index" [value]="app" (click)=this.appSelected()>
+                {{app}}
+              </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field style="width: 90%">
+          <input matInput placeholder="Order" type='text' [(ngModel)]="challenge.order" value='{{challenge.order}}'>
+        </mat-form-field>
+
+        <mat-form-field style="width: 90%">
+          <input matInput placeholder="Time Box" type='text' [(ngModel)]="challenge.timeBox" value='{{challenge.timeBox}}'>
+        </mat-form-field>
+
+        <!-- answers : List -->
+        <h3>Answers</h3>
+        <div *ngFor="let item of challenge.answers; let i = index">
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="Réponses" type='text' [(ngModel)]="item" disabled>
+          </mat-form-field>
+          <mat-icon style="cursor: pointer" (click)='removeAnswer(i)'>clear</mat-icon>
+        </div>
+        <div>
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="Réponse" type='text' [(ngModel)]="currentAnswer" (keydown.enter)=addAnswer() >
+          </mat-form-field>
+        </div>
+
+        <!-- Hints : List -->
+        <h3>Indices</h3>
+        <div *ngFor="let item of challenge.hints; let i = index">
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="Indice" type='text' [(ngModel)]="item" disabled>
+          </mat-form-field>
+          <mat-icon style="cursor: pointer" (click)='removeHint(i)'>clear</mat-icon>
+        </div>
+        <div>
+          <mat-form-field style="width: 90%">
+            <input matInput placeholder="indice" type='text' [(ngModel)]="currentHint" (keydown.enter)=addHint()>
+          </mat-form-field>
+        </div>
+
+        <!-- Config : dictionary -->
+        <h3>Configuration</h3>
+        <p>Les données de configuration requises pour le choix de l'app: "{{challenge.appName}}" seront autocomplétées lors de la saisie, pour valider appuyez sur enter après avoir encodé la valeur correspondant à la clé</p>
+        <div *ngFor="let item of challenge.config | keyvalue">
+          <mat-form-field style="width: 40%;">
+                <input matInput placeholder="Clé" type='text' [(ngModel)]='item.key' disabled>
+          </mat-form-field>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%;">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
+          </mat-form-field>
+          <mat-icon style="cursor: pointer" (click)='removeConfig(item.key)'>clear</mat-icon>
+        </div>
+        <div>
+          <mat-form-field style="width: 40%;" >
+                <input type="text" placeholder="clé" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+          </mat-form-field>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%;">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentConfigValue' (keydown.enter)=addConfig()>
+          </mat-form-field>
+        </div>
+
+        <!-- Data : dictionary -->
+        <h3>Data</h3>
+        <p>Les données requises pour le choix de l'app: "{{challenge.appName}}", pour valider appuyez sur enter après avoir encodé la valeur correspondant à la clé</p>
+        <div *ngFor="let item of challenge.data | keyvalue">
+          <mat-form-field style="width: 40%;">
+            <input matInput placeholder="Clé" type='text' [(ngModel)]="item.key" disabled>
+          </mat-form-field>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='item.value' disabled>
+          </mat-form-field>
+          <mat-icon style="cursor: pointer" (click)='removeData(item.key)'>clear</mat-icon>
+        </div>
+        <div>
+          <mat-form-field style="width: 40%">
+            <input matInput placeholder="Clé" type='text' [(ngModel)]="currentDataKey">
+          </mat-form-field>
+          <span style="margin: 5%"> </span>
+          <mat-form-field style="width: 40%">
+            <input matInput placeholder="Valeur" type='text' [(ngModel)]='currentDataValue' (keydown.enter)=addData()>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div style="text-align: center">
+        <button style="width: 45%;" mat-raised-button (click)='createChallenge()' color="primary" i18n="@@settingsCreate" >Create</button>
+      </div>
+    </mat-card-actions>
+
+  </mat-expansion-panel>
+</mat-accordion>
+
+<br>
+<h1 style='text-align: center'>Liste de Challenges</h1>
+<br>
+<table mat-table [dataSource]="challenges" multiTemplateDataRows class="mat-elevation-z8">
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.challengeId}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef> Titre </th>
+    <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="appName">
+    <th mat-header-cell *matHeaderCellDef> appName </th>
+    <td mat-cell *matCellDef="let element">{{element.appName}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="order">
+    <th mat-header-cell *matHeaderCellDef> order </th>
+    <td mat-cell *matCellDef="let element">{{element.order}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="timeBox">
+    <th mat-header-cell *matHeaderCellDef> timeBox </th>
+    <td mat-cell *matCellDef="let element">{{element.timeBox}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element">
+        <button style="width: 40%; margin:5px" mat-raised-button (click)='deleteChallenge(element); $event.stopPropagation()' color="accent" i18n="@@settingsDelete">Delete</button>
+      </td>
+  </ng-container>
+
+  <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+      <div class="challenge-element-detail" [@detailExpand]="element == expandedChallenge ? 'expanded' : 'collapsed'">
+            <h3>Ordre</h3>
+            <p>
+              {{element.order}}
+            </p>
+            <h3>Durée estimée</h3>
+            <p>
+              {{element.timeBox}}
+            </p>
+            <h3>Description</h3>
+            <p>
+              {{element.description}}
+            </p>
+            <h3>Indices</h3>
+            <ul>
+              <li *ngFor="let hint of element.hints">{{hint}}</li>
+            </ul>
+            <h3>Réponses</h3>
+            <ul>
+              <li *ngFor="let answer of element.answers">{{answer}}</li>
+            </ul>
+            <h3>Configuration</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let config of ( element.config | keyvalue )">
+                <td style="font-weight: bold">{{config.key}}</td>
+                <td>{{config.value}}</td>
+              </tr>
+            </table>
+            <h3>Data</h3>
+            <table style="width: 100%">
+              <tr *ngFor="let data of ( element.data | keyvalue )">
+                <td style="font-weight: bold">{{data.key}}</td>
+                <td>{{data.value}}</td>
+              </tr>
+            </table>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let element; columns: displayedColumns;"
+      class="challenge-element-row"
+      [class.challenge-expanded-row]="expandedChallenge === element"
+      (click)="expandedChallenge = expandedChallenge === element ? null : element">
+  </tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="challenge-detail-row"></tr>
+</table>

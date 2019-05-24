@@ -1,0 +1,31 @@
+<div class='content'>
+<mat-accordion>
+  <mat-expansion-panel class="newnote">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Write a note...
+      </mat-panel-title>
+      <mat-panel-description>
+        Click on it to add your note
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+      <input style="width: 100%" type="text" matInput placeholder="the title..." [(ngModel)]=currentTitle >
+    <br><br>
+      <textarea matInput placeholder="the description..." [(ngModel)]=currentDescription></textarea>
+    <button id="buttonAdd" mat-raised-button color="primary" (click)='addNote()'>Add your note</button>
+  </mat-expansion-panel>
+  <mat-expansion-panel *ngFor="let note of notes; index as i">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{note.title}}
+      </mat-panel-title>
+      <mat-panel-description>
+        {{note.date}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    {{note.description}}
+    <br><br>
+    <button  id="buttonRemove" mat-raised-button color="warn" (click)='removeNote(i)'>Remove your note</button>
+  </mat-expansion-panel>
+</mat-accordion>
+</div>

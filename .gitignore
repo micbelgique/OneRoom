@@ -328,3 +328,55 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Angular
+
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/oneroom-angular/dist
+/oneroom-angular/tmp
+/oneroom-angular/out-tsc
+
+# dependencies
+/oneroom-angular/node_modules
+
+# profiling files
+/oneroom-angular/chrome-profiler-events.json
+/oneroom-angular/speed-measure-plugin.json
+
+# IDEs and editors
+/oneroom-angular/.idea
+/oneroom-angular/.project
+/oneroom-angular/.classpath
+/oneroom-angular/.c9/
+/oneroom-angular/*.launch
+/oneroom-angular/.settings/
+/oneroom-angular/*.sublime-workspace
+
+# IDE - VSCode
+/oneroom-angular/.vscode/*
+/oneroom-angular/!.vscode/settings.json
+/oneroom-angular/!.vscode/tasks.json
+/oneroom-angular/!.vscode/launch.json
+/oneroom-angular/!.vscode/extensions.json
+/oneroom-angular/.history/*
+
+# misc
+/oneroom-angular/.sass-cache
+/oneroom-angular/connect.lock
+/oneroom-angular/coverage
+/oneroom-angular/libpeerconnection.log
+/oneroom-angular/npm-debug.log
+/oneroom-angular/yarn-error.log
+/oneroom-angular/testem.log
+/oneroom-angular/typings
+
+# System Files
+/oneroom-angular/.DS_Store
+/oneroom-angular/Thumbs.db
+/oneroom-angular/package-lock.json
+/oneroom-angular/launcher/launcher-win32-x64.zip
+/oneroom-angular/launcher/launcher-win32-x64/*
+/oneroom-angular/register/register-win32-x64.zip
+/oneroom-angular/register/register-win32-x64/*

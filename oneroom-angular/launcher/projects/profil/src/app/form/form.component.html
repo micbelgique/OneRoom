@@ -1,0 +1,90 @@
+<div class='content'>
+<div class="example-container">
+
+<div style="text-align: center">
+  <img class='img-profil' src='{{user.urlAvatar}}' alt='profil image'>
+</div>
+
+<mat-form-field>
+    <input matInput type="text" required placeholder="Nom" [minlength]="3" [maxlength]="32" [(ngModel)]=user.name (change)=saveProfile()>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput type="number" required placeholder="Age" [min]="0" [max]="100" [(ngModel)]=user.age (change)=saveProfile()>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Genre" [(ngModel)]=user.gender>
+        <mat-option (click)=saveProfile() *ngFor="let gen of this.genders" [value]="gen.toLowerCase()">
+          {{gen | lowercase}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <label>Moustache {{this.user.moustacheLevel * 100}}%</label>
+  <mat-slider (change)=saveProfile()
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.moustacheLevel"
+        [vertical]="false">
+  </mat-slider>
+  <label>Barbe {{this.user.beardLevel * 100}}%</label>
+  <mat-slider (change)=saveProfile()
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.beardLevel"
+        [vertical]="false">
+  </mat-slider>
+  <label>Calvitie {{this.user.baldLevel * 100}}%</label>
+  <mat-slider (change)=saveProfile()
+        class="example-margin"
+        [invert]="false"
+        [max]="1"
+        [min]="0"
+        [step]="0.1"
+        [thumbLabel]="true"
+        [tickInterval]="true"
+        [(ngModel)]="user.baldLevel"
+        [vertical]="false">
+  </mat-slider>
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Lunettes" [(ngModel)]=user.glassesType>
+        <mat-option (click)=saveProfile() *ngFor="let gla of this.glasses" [value]="gla">
+          {{gla}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+  <br>
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Couleur de cheveux" [(ngModel)]=user.hairColor>
+        <mat-option (click)=saveProfile() *ngFor="let gla of this.hairColors" [value]="gla">
+          {{gla}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+  <br>
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Longueur de cheveux" [(ngModel)]=user.hairLength>
+        <mat-option (click)=saveProfile() *ngFor="let gla of this.hairLengths" [value]="gla">
+          {{gla}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+  <br>
+  <mat-form-field>
+      <mat-select i18n="@@profilGender" placeholder="Couleur de peau" [(ngModel)]=user.skinColor>
+        <mat-option (click)=saveProfile() *ngFor="let gla of this.skinColors" [value]="gla">
+          {{gla}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+
+</div>
+</div>

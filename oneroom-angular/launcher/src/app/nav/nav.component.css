@@ -1,0 +1,88 @@
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.launcher {
+  height: 95vh;
+  overflow-y: auto;
+}
+
+.launcher-app {
+  height: 80%;
+  width: 80%;
+  border-radius: 5%;
+  margin: 10%;
+  padding: 10%;
+}
+
+.launcher-app:hover {
+  background: lightgray;
+  box-shadow: 1px 1px 5px black;
+}
+
+.launcher-app:active {
+  background: darkgray;
+  box-shadow: -1px -1px 3px black;
+}
+
+.app-mat-icon, .img-profil {
+  height: 40%;
+  width: 40%;
+}
+
+.launcher-app-title {
+  font-size: 2vw;
+  margin: 10%;
+}
+
+.app-mat-icon.material-icons {
+  font-size: 6vw;
+  display: inline-block;
+  text-align: center;
+}
+#icon-compass .meter {
+  -webkit-animation-name: meterturn;
+  animation-name: meterturn;
+  -webkit-animation-duration: 4s;
+  animation-duration: 4s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+}
+
+@-webkit-keyframes meterturn {
+  0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  }
+
+  50% {
+          -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+  }
+
+  100% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  }
+}
+
+@keyframes meterturn {
+  0% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  }
+
+  50% {
+          -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+  }
+
+  100% {
+          -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  }
+}
+/* actual time */

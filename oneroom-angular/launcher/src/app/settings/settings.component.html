@@ -1,0 +1,112 @@
+<div class="content">
+
+<mat-card style="text-align:center" *ngIf=infoMessage>
+  <mat-card-title>{{infoMessage}}</mat-card-title>
+  <mat-card-content>Nom de la partie en cours : {{game.groupName}}</mat-card-content>
+</mat-card>
+
+<div *ngIf=!infoMessage>
+
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=false>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div mat-card-title i18n="@@settingsCoordinator">Coordinateur</div>
+        </mat-panel-title>
+        </mat-expansion-panel-header>
+    <mat-card-content>
+        <p>Url du coordinateur de jeu</p>
+        <mat-form-field style="width: 100%">
+              <input matInput placeholder="EndPoint" type='url' [(ngModel)]="endPoint" value='{{endPoint}}'>
+        </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+          <div style="text-align: center">
+              <button style="width: 40%; margin:5px" mat-raised-button (click)='saveCoordinatorSettings()' color="primary" i18n="@@settingsSave">Sauver</button>
+          </div>
+    </mat-card-actions>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=false>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          <div mat-card-title i18n="@@settingsGroup">Lier une game</div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+      <p>Sélection de la partie à rejoindre</p>
+      <div style='text-align: center'>
+        <mat-form-field>
+          <mat-select placeholder="Game" [(ngModel)]="this.game.groupName">
+            <mat-option *ngFor="let game of games" [value]="game.groupName">
+              {{game.groupName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <div style="text-align: center">
+        <button style="width: 40%; margin:5px" mat-raised-button (click)='getGame()' color="primary" i18n="@@settingsCreate" >Connecter</button>
+      </div>
+    </mat-card-actions>
+
+  </mat-expansion-panel>
+</mat-accordion>
+
+<mat-accordion class="example-headers-align">
+    <mat-expansion-panel [expanded]=false>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div mat-card-title i18n="@@settingsRefreshRate">Taux de rafraichissement</div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+          <p>Taux de rafraichissement de la détection faciale</p>
+          <mat-form-field style="width: 100%">
+            <input matInput placeholder="Refresh rate (ms)" type='number' min='1000' [(ngModel)]="this.game.config.refreshRate" value='{{this.game.config.refreshRate}}'>
+          </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <div style="text-align: center">
+          <button style="width: 40%; margin:5px" mat-raised-button (click)='saveConfiguration()' color="primary" i18n="@@settingsConfigure" >Sauver</button>
+        </div>
+      </mat-card-actions>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]=false>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div mat-card-title>Face</div>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card-content>
+          <p>Configuration pour la détection faciale</p>
+          <mat-slide-toggle [(ngModel)]='callFaceStatus' color="primary" (click)='this.toggleFaceCalls()' i18n="@@settingsCognitives">Appels API</mat-slide-toggle>
+          <br><br>
+          <mat-form-field style="width: 100%">
+              <input matInput placeholder="Cognitive endPoint" type='url' [(ngModel)]="this.game.config.faceEndpoint" value='{{this.game.config.faceEndpoint}}'>
+          </mat-form-field>
+          <br><br>
+          <mat-form-field style="width: 100%">
+            <input matInput placeholder="Subscription Key" type='url' [(ngModel)]="this.game.config.faceKey" value='{{this.game.config.faceKey}}'>
+          </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+          <div style="text-align: center">
+            <button style="width: 40%; margin:5px" mat-raised-button (click)='saveConfiguration()' color="primary" i18n="@@settingsSave">Sauver</button>
+          </div>
+    </mat-card-actions>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div *ngIf="this.challenges.length > 0">
+  <h2 style="text-align: center">{{this.challenges.length}} challenges récupérés</h2>
+</div>
+
+</div>
+</div>
