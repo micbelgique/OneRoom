@@ -1,4 +1,4 @@
-<div class="launcher">
+<div class="launcher" [style.background-color]="getColorTeam()">
 <mat-toolbar  role="heading"  >
   <mat-toolbar-row style="text-align:center">
       <h3>Hello {{user.name}},</h3>
@@ -11,7 +11,7 @@
     </mat-toolbar-row>
 </mat-toolbar>
 
-<mat-grid-list [style.background-color]="getColorTeam()" cols="4" rowHeight="3:3">
+<mat-grid-list cols="4" rowHeight="3:3">
   <mat-grid-tile>
       <a class='launcher-app' mat-raised-button routerLink="/scanner">
         <!--
