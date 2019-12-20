@@ -147,13 +147,19 @@ export class TranslatorComponent implements OnInit {
         this.talk(this.translated);
         // remove all chars
         const num = this.translated.replace(/[^0-9]/g, '');
-        if (this.challenge.answers.includes(num) && this.team) {
-          console.log('code found');
-          this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
-            () => {
-              console.log('challenge completed');
-            }
-          );
+        console.log(num);
+        // tslint:disable-next-line:prefer-for-of
+        for (let index = 0; index < this.challenge.answers.length; index++) {
+          const element = this.challenge.answers[index];
+          console.log(num.includes(element));
+          if (num.includes(element) && this.team) {
+            console.log('code found');
+            this.challengeService.setCompleted(this.team.teamId, this.challenge.challengeId).subscribe(
+              () => {
+                console.log('challenge completed');
+              }
+            );
+          }
         }
       }
     );

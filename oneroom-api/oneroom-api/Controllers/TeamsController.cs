@@ -84,9 +84,9 @@ namespace oneroom_api.Controllers
 
             List<Team> teams = new List<Team>();
 
-            for (int i = 0; i < numOfTeams; i++)
+            for (var i = 0; i < numOfTeams; i++)
             {
-                Team team = new Team();
+                var team = new Team();
                 // pick random team name
                 string name;
                 do

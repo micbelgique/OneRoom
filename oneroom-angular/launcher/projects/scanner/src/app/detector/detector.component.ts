@@ -2,10 +2,12 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 // tslint:disable-next-line:max-line-length
 import { User, HubService, Challenge, ChallengeService, Team } from '@oneroomic/oneroomlibrary';
 import { MatDialog, MatBottomSheet } from '@angular/material';
-import { CustomVisionPredictionService } from '@oneroomic/facecognitivelibrary';
+import { CustomVisionPredictionService, ImagePrediction } from '@oneroomic/facecognitivelibrary';
 import { BottomSheetDetailComponent } from '../bottom-sheet-detail/bottom-sheet-detail.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Objects } from '../utilities/object';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-detector',
@@ -13,7 +15,7 @@ import { Objects } from '../utilities/object';
   styleUrls: ['./detector.component.css']
 })
 export class DetectorComponent implements OnInit, OnDestroy {
-
+  private headers: HttpHeaders;
   private team: Team;
   private challenge: Challenge;
   /* input stream devices */
@@ -71,7 +73,8 @@ export class DetectorComponent implements OnInit, OnDestroy {
     private challengeService: ChallengeService,
     private predictionService: CustomVisionPredictionService,
     private bottomSheet: MatBottomSheet,
-    private sanitizer: DomSanitizer) {
+    private sanitizer: DomSanitizer,
+    private http: HttpClient) {
       this.stream = null;
       this.opencam();
     }
@@ -255,7 +258,6 @@ export class DetectorComponent implements OnInit, OnDestroy {
     newCtx.putImageData(imageData, 0, 0);
     return newCan;
   }
-
   imageCapture(video) {
     const canvas = document.createElement('canvas');
     canvas.width = this.overlay.nativeElement.width;

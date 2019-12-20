@@ -21,7 +21,7 @@ export class CustomVisionPredictionService {
   predictImageWithNoStore(stream: Blob, endpoint: string, key: string): Observable<ImagePrediction> {
     let url;
     let h = this.headers.set('Content-Type', 'application/octet-stream');
-    h = this.headers.set('Prediction-Key', key);
+    h = h.set('Prediction-Key', key);
     url = endpoint + '/image/nostore';
     return this.http.post<ImagePrediction>(url, stream, {headers: h});
   }
@@ -29,7 +29,7 @@ export class CustomVisionPredictionService {
   predictImage(stream: Blob, endpoint: string, key: string): Observable<ImagePrediction> {
     let url;
     let h = this.headers.set('Content-Type', 'application/octet-stream');
-    h = this.headers.set('Prediction-Key', key);
+    h = h.set('Prediction-Key', key);
     url = endpoint + '/image';
     return this.http.post<ImagePrediction>(url, stream, {headers: h} );
   }
@@ -37,7 +37,7 @@ export class CustomVisionPredictionService {
   predictImageUrl(urlImage: string, endpoint: string, key: string): Observable<ImagePrediction> {
     let url;
     let h = this.headers.set('Content-Type', 'application/json');
-    h = this.headers.set('Prediction-Key', key);
+    h = h.set('Prediction-Key', key);
     url = endpoint + '/url';
     return this.http.post<ImagePrediction>(url, {Url: urlImage}, {headers: h});
   }

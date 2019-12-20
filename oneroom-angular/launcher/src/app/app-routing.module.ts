@@ -42,7 +42,7 @@ const routes: Routes = [
   { path: 'nav', component: NavComponent },
   { path: 'lock', component: LockscreenComponent },
   { path: 'settings', component : SettingsComponent},
-  { path: '**', redirectTo: '/lock'}
+  { path: '**', redirectTo: '/nav'}
 ];
 
 @NgModule({

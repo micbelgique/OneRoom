@@ -404,6 +404,7 @@ export class FacecamComponent implements OnInit, OnDestroy {
     const can = canvas;
 
     try {
+      console.log(localStorage.getItem('subscriptionKey'));
       can.toBlob((blob) => {
         const res$ = this.faceProcess.byImg(blob, this.group);
         // traitement face API

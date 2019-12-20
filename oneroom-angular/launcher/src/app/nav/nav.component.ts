@@ -31,7 +31,7 @@ export class NavComponent implements OnInit {
   ngOnInit() {
     this.game = JSON.parse(localStorage.getItem('gameData'));
     if (localStorage.getItem('user') == null) {
-      this.route.navigate(['/lock']);
+      // this.route.navigate(['/lock']);
     } else {
       this.user = JSON.parse(localStorage.getItem('user'));
       this.teamService.getTeams().subscribe((result) => {
