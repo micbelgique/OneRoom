@@ -37,6 +37,11 @@
   bottom:0;
 }
 
+.buttonScreenlock{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 
 
 
