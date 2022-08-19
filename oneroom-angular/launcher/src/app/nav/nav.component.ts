@@ -29,6 +29,8 @@ export class NavComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+
     this.game = JSON.parse(localStorage.getItem('gameData'));
     if (localStorage.getItem('user') == null) {
       // this.route.navigate(['/lock']);

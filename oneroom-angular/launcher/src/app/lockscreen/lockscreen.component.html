@@ -5,9 +5,11 @@
     <mat-toolbar role="heading" id='toolbar'>
         <mat-toolbar-row>
             <span class="example-fill-remaining-space"></span>
+
             <button mat-stroked-button color="white" (click)=unLock()>
-              <mat-icon style="color:white">remove_red_eye</mat-icon>
+              <mat-icon style="color:white;">remove_red_eye</mat-icon>
             </button>
+
             <span class="example-fill-remaining-space"></span>
             <button [matMenuTriggerFor]="settings" mat-stroked-button >
               <mat-icon style="color:white">settings</mat-icon>

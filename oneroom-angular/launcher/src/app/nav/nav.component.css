@@ -52,6 +52,21 @@
   transform-origin: 50% 50%;
 }
 
+.cardApp{
+  width:350px;
+  height:350px;
+  margin-top:2rem;
+}
+
+@media (max-width: 450px){
+  .cardApp{
+    width:200px;
+    height:200px;
+    margin-top:1rem;
+  }
+
+}
+
 @-webkit-keyframes meterturn {
   0% {
           -webkit-transform: rotate(0deg);

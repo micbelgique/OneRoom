@@ -1,12 +1,16 @@
 
-#control {
-  height: 5vh;
-}
-
 #main {
-  height: 95vh;
+  height: 92vh;
 }
-
+.control {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  height: 100px;
+  background-color: #9fa8da;
+  justify-content: space-around;
+  width: 100vw;
+}
 
 /*Sidenav*/
 
@@ -16,9 +20,13 @@
 }*/
 
 .sidenav {
-  width: 30vw;
+  width: 40vw;
 }
 /*
 .content {
   height: 95vh;
 }*/
+
+
+
+
