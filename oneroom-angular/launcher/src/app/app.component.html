@@ -10,6 +10,6 @@
   </mat-sidenav-container>
   </div>
   <div class="control" style="text-align:center;">
-    <mat-slide-toggle  style="text-align:center;" [(ngModel)]="opened">Chat</mat-slide-toggle>
+    <mat-slide-toggle  style="text-align:center;z-index:0;" [(ngModel)]="opened">Chat</mat-slide-toggle>
     <app-control (actions)=toggleAction($event) ></app-control>
   </div>
