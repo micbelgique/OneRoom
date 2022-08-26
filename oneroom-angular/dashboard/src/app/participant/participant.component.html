@@ -1,0 +1,23 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Avatar</th>
+    <th>ID-User</th>
+    <th>ID-Game</th>
+    <th></th>
+  </tr>
+  <tr *ngFor="let item of participantlist">
+       <td>{{item.name}}</td>
+    <td> <img alt="Avatar" src={{item.avatarUrl}} width="150" height="70">
+    </td>
+    <td>{{item.id}}</td>
+    <td>
+      <select (change)="selectChangeHandler($event)">
+        <option *ngFor="let game of gamelist" value="{{game.gameId}}" >{{game.groupName}} - {{game.gameId}}</option>
+      </select>
+    </td>
+    <td><button (click)="submit(item)" type ="submit" class="button button2">Add</button></td>
+  </tr>
+</table>
+
+

@@ -39,9 +39,11 @@ import { TeamsComponent } from './teams/teams.component';
 import { SettingsComponent } from './settings/settings.component';
 import { GamesComponent } from './games/games.component';
 import { UsersComponent } from './users/users.component';
+import { ParticipantComponent } from './participant/participant.component';
 import { ChallengeComponent } from './challenge/challenge.component';
 import { ScenarioComponent } from './scenario/scenario.component';
 import { NotifierModule } from 'angular-notifier';
+
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @NgModule({
@@ -52,7 +54,8 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     GamesComponent,
     UsersComponent,
     ChallengeComponent,
-    ScenarioComponent
+    ScenarioComponent,
+    ParticipantComponent
   ],
   imports: [
     BrowserModule,
@@ -82,6 +85,7 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
       { path: 'challenges', component: ChallengeComponent },
       { path: 'scenario', component: ScenarioComponent },
       { path: 'users', component: UsersComponent },
+      { path: 'participants', component: ParticipantComponent },
       { path: '**', redirectTo: 'settings', pathMatch: 'full' }
     ]),
     MatListModule,

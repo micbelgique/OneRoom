@@ -204,7 +204,64 @@ namespace oneroom_api.Controllers
 
                 return CreatedAtAction("GetUser", new { GameId = gameId, id = user.UserId }, user);
             }
-            catch (Exception)
+            catch (Exception e)
+            {
+                return Conflict("user already exists");
+            }
+
+        }
+
+        // POST: api/Games/1/Users
+        [HttpPost]
+        [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        public async Task<ActionResult<User>> PostUser(int gameId, User user)
+        {
+            try
+            {
+                if (user == null)
+                {
+                    return BadRequest("user is empty");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid user");
+                }
+
+                User usr = await _context.Users.SingleOrDefaultAsync(u => u.GameId == gameId && u.UserId == user.UserId);
+
+                if (usr != null)
+                {
+
+                    // warn dashboard user is in front of the camera
+                    await _hubClients.Clients.Group(gameId.ToString()).HighlightUser(user.UserId);
+                    return Conflict(usr);
+                }
+
+                int count = await _context.Users.Where(u => u.GameId == gameId)
+                                                .CountAsync();
+
+                user.Name = "Person " + (++count);
+                // Link user to game
+                user.GameId = gameId;
+                _context.Users.Add(user);
+
+                user.OptimizeResults();
+                user.GenerateAvatar();
+
+                await _context.SaveChangesAsync();
+
+                // update users dashboard and leaderboard
+                await _hubClients.Clients.Group(gameId.ToString()).CreateUser(user);
+
+                // warn dashboard user is in front of the camera
+                await _hubClients.Clients.Group(gameId.ToString()).HighlightUser(user.UserId);
+
+                return CreatedAtAction("GetUser", new { GameId = gameId, id = user.UserId }, user);
+            }
+            catch (Exception e)
             {
                 return Conflict("user already exists");
             }
