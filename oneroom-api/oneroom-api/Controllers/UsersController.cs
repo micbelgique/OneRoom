@@ -155,11 +155,12 @@ namespace oneroom_api.Controllers
         }
 
         // POST: api/Games/1/Users
+        [HttpPost("newuser")]
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(Task<ActionResult<User>>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(409)]
-        public async Task<ActionResult<User>> PostUser(int gameId, User user)
+        public async Task<ActionResult<User>> PostNewUser(int gameId, User user)
         {
             try
             {
@@ -186,14 +187,8 @@ namespace oneroom_api.Controllers
                 int count = await _context.Users.Where(u => u.GameId == gameId)
                                                 .CountAsync();
 
-                user.Name = "Person " + (++count);
-                // Link user to game
                 user.GameId = gameId;
                 _context.Users.Add(user);
-
-                user.OptimizeResults();
-                user.GenerateAvatar();
-
                 await _context.SaveChangesAsync();
 
                 // update users dashboard and leaderboard
