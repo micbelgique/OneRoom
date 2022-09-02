@@ -13,7 +13,7 @@ export class UserService {
 
     AddUser(gameId: string, user : User): Observable<User>{
 
-      return this._httpClient.post<User>(`https://waoneroomapi.azurewebsites.net/api/Games/${gameId}/Users`, user);
+      return this._httpClient.post<User>(`https://oneroom-coordinator-dev.azurewebsites.net/api/Games/${gameId}/Users/newuser`, user);
 
     }
 

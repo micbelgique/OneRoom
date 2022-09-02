@@ -49,7 +49,8 @@ export class ParticipantComponent implements OnInit {
       CreationDate : selectedUser.created,
       Name : selectedUser.name,
       UrlAvatar : selectedUser.avatarUrl,
-      GameId : this.selectedGame
+      GameId : this.selectedGame,
+      Recognized: 20
     }
 
     console.log(participantFinal);

@@ -11,7 +11,7 @@ export class GameService {
 
   GetAllGames(): Observable<any[]>{
 
-    return this._httpClient.get<any[]>(`https://waoneroomapi.azurewebsites.net/api/Games`);
+    return this._httpClient.get<any[]>(`https://oneroom-coordinator-dev.azurewebsites.net/api/Games`);
 
   }
 
